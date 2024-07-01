@@ -425,115 +425,52 @@ static void test_hsm(void) {
 
 /* Test hsm_top() as NCA. */
 
-static enum OncHsmRc t11(struct test *me, const struct OncEvent *event);
-static enum OncHsmRc t2(struct test *me, const struct OncEvent *event);
+static enum hsm_rc t11(struct test *me, const struct hsm_event *event);
+static enum hsm_rc t2(struct test *me, const struct hsm_event *event);
 
-static enum OncHsmRc t1(struct test *me, const struct OncEvent *event) {
+static enum hsm_rc t1(struct test *me, const struct hsm_event *event) {
     switch (event->id) {
-        case ONC_EVT_INIT:
-            return ONC_HSM_TRAN(t11);
+        case HSM_EVT_INIT:
+            return HSM_TRAN(t11);
         default:
             break;
     }
-    return ONC_HSM_SUPER(onc_hsm_top);
+    return HSM_SUPER(hsm_top);
 }
 
-static enum OncHsmRc t11(struct test *me, const struct OncEvent *event) {
+static enum hsm_rc t11(struct test *me, const struct hsm_event *event) {
     switch (event->id) {
-        case ONC_EVT_A:
-            return ONC_HSM_TRAN(t2);
+        case HSM_EVT_A:
+            return HSM_TRAN(t2);
         default:
             break;
     }
-    return ONC_HSM_SUPER(t1);
+    return HSM_SUPER(t1);
 }
 
-static enum OncHsmRc t2(struct test *me, ONC_MAYBE_UNUSED const struct OncEvent *event) {
-    return ONC_HSM_SUPER(onc_hsm_top);
+static enum hsm_rc t2(struct test *me, const struct hsm_event *event) {
+    return HSM_SUPER(hsm_top);
 }
 
-static enum OncHsmRc tinit(struct test *me, ONC_MAYBE_UNUSED const struct OncEvent *event) {
-    return ONC_HSM_TRAN(t1);
+static enum hsm_rc tinit(struct test *me, const struct hsm_event *event) {
+    return HSM_TRAN(t1);
 }
 
 static void test_hsm_top_as_nca(void) {
     struct test *me = &m_test;
-    onc_hsm_ctor(&me->hsm, ONC_HSM_STATE(tinit));
+    hsm_ctor(&me->hsm, HSM_STATE(tinit));
 
-    onc_hsm_init(&me->hsm, /*init_event=*/NULL);
-    ONC_ASSERT(onc_hsm_is_in(&me->hsm, ONC_HSM_STATE(t11)));
+    hsm_init(&me->hsm, /*init_event=*/NULL);
+    ASSERT(hsm_is_in(&me->hsm, HSM_STATE(t11)));
 
-    static const struct OncEvent E = {.id = ONC_EVT_A};
-    onc_hsm_dispatch(&me->hsm, &E);
-    ONC_ASSERT(onc_hsm_is_in(&me->hsm, ONC_HSM_STATE(t2)));
-}
-
-/*
- * Test reusable bottom level state 'reuse()'.
- * Shows that 'reuse()' can have 'r1()' or 'r2()' as its immediate superstate.
- */
-
-static struct Reuse {
-    struct OncHsm hsm;
-    OncHsmStateHandlerFunc_t super;
-} m_reuse;
-
-static enum OncHsmRc r1(struct Reuse *me, const struct OncEvent *event);
-static enum OncHsmRc r2(struct Reuse *me, const struct OncEvent *event);
-static enum OncHsmRc reuse(struct Reuse *me, const struct OncEvent *event);
-
-static enum OncHsmRc r1(struct Reuse *me, const struct OncEvent *event) {
-    switch (event->id) {
-        case ONC_EVT_INIT:
-            me->super = ONC_HSM_STATE(r1);
-            return ONC_HSM_TRAN(reuse);
-        default:
-            break;
-    }
-    return ONC_HSM_SUPER(onc_hsm_top);
-}
-
-static enum OncHsmRc r2(struct Reuse *me, ONC_MAYBE_UNUSED const struct OncEvent *event) {
-    switch (event->id) {
-        case ONC_EVT_INIT:
-            me->super = ONC_HSM_STATE(r2);
-            return ONC_HSM_TRAN(reuse);
-        default:
-            break;
-    }
-    return ONC_HSM_SUPER(onc_hsm_top);
-}
-
-static enum OncHsmRc reuse(struct Reuse *me, const struct OncEvent *event) {
-    switch (event->id) {
-        case ONC_EVT_A:
-            return ONC_HSM_TRAN(r2);
-        default:
-            break;
-    }
-    return ONC_HSM_SUPER(me->super);
-}
-
-static enum OncHsmRc rinit(struct Reuse *me, ONC_MAYBE_UNUSED const struct OncEvent *event) {
-    return ONC_HSM_TRAN(r1);
-}
-
-static void test_hsm_reuse(void) {
-    struct Reuse *me = &m_reuse;
-    onc_hsm_ctor(&me->hsm, ONC_HSM_STATE(rinit));
-
-    onc_hsm_init(&me->hsm, /*init_event=*/NULL);
-    ONC_ASSERT(onc_hsm_is_in(&me->hsm, ONC_HSM_STATE(r1)));
-    ONC_ASSERT(onc_hsm_is_in(&me->hsm, ONC_HSM_STATE(reuse)));
-
-    static const struct OncEvent E = {.id = ONC_EVT_A};
-    onc_hsm_dispatch(&me->hsm, &E);
-    ONC_ASSERT(onc_hsm_is_in(&me->hsm, ONC_HSM_STATE(r2)));
-    ONC_ASSERT(onc_hsm_is_in(&me->hsm, ONC_HSM_STATE(reuse)));
+    static const struct hsm_event E = {.id = HSM_EVT_A};
+    hsm_dispatch(&me->hsm, &E);
+    ASSERT(hsm_is_in(&me->hsm, HSM_STATE(t2)));
 }
 
 int main(void) {
     test_hsm();
+    test_hsm_top_as_nca();
 
     return 0;
 }
