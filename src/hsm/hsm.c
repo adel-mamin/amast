@@ -42,7 +42,8 @@ static const struct hsm_event m_hsm_evt[] = {
     {.id = HSM_EVT_EMPTY},
     {.id = HSM_EVT_INIT},
     {.id = HSM_EVT_ENTRY},
-    {.id = HSM_EVT_EXIT}};
+    {.id = HSM_EVT_EXIT}
+};
 
 /**
  * Build ancestor chain path.
@@ -53,9 +54,9 @@ static const struct hsm_event m_hsm_evt[] = {
  * @return the path length
  */
 static int hsm_build(
-    hsm_state_handler_func (*path)[HSM_HIERARCHY_DEPTH_MAX],
-    hsm_state_handler_func from,
-    hsm_state_handler_func until
+    hsm_state_fn (*path)[HSM_HIERARCHY_DEPTH_MAX],
+    hsm_state_fn from,
+    hsm_state_fn until
 ) {
     struct hsm hsm = {.state = from, .temp = from};
     int len = 0;
@@ -77,9 +78,7 @@ static int hsm_build(
  * @param path  the path to enter
  * @param len   the path[] length
  */
-static void hsm_enter(
-    struct hsm *hsm, const hsm_state_handler_func *path, int len
-) {
+static void hsm_enter(struct hsm *hsm, const hsm_state_fn *path, int len) {
     for (int i = len - 1; i >= 0; --i) {
         hsm->state = hsm->temp = path[i];
         int rc = path[i](hsm, &m_hsm_evt[HSM_EVT_ENTRY]);
@@ -92,7 +91,7 @@ static void hsm_enter(
  * @param hsm    exit the states of this HSM
  * @param until  stop the exit when reaching this state (not exited)
  */
-static void hsm_exit(struct hsm *hsm, hsm_state_handler_func until) {
+static void hsm_exit(struct hsm *hsm, hsm_state_fn until) {
     while (hsm->temp != until) {
         hsm->state = hsm->temp;
         int rc = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EXIT]);
@@ -119,9 +118,9 @@ static void hsm_exit(struct hsm *hsm, hsm_state_handler_func until) {
  */
 static void hsm_enter_and_init(
     struct hsm *hsm,
-    hsm_state_handler_func (*path)[HSM_HIERARCHY_DEPTH_MAX],
+    hsm_state_fn (*path)[HSM_HIERARCHY_DEPTH_MAX],
     int len,
-    hsm_state_handler_func dst
+    hsm_state_fn dst
 ) {
     hsm_enter(hsm, &(*path)[0], len);
     hsm->state = hsm->temp = dst;
@@ -139,7 +138,7 @@ void hsm_dispatch(struct hsm *hsm, const struct hsm_event *event) {
     ASSERT(hsm->state == hsm->temp);
     ASSERT(event);
 
-    hsm_state_handler_func src = NULL;
+    hsm_state_fn src = NULL;
     int rc = 0;
     /*
      * propagate event up the ancestor chain till it is either
@@ -157,14 +156,14 @@ void hsm_dispatch(struct hsm *hsm, const struct hsm_event *event) {
 
     /* the event triggered transition */
 
-    hsm_state_handler_func dst = hsm->temp;
+    hsm_state_fn dst = hsm->temp;
     hsm->temp = hsm->state;
 
     if (hsm->state != src) {
         hsm_exit(hsm, /*until=*/src);
     }
 
-    hsm_state_handler_func path[HSM_HIERARCHY_DEPTH_MAX];
+    hsm_state_fn path[HSM_HIERARCHY_DEPTH_MAX];
 
     if (src == dst) { /* transition to itself */
         path[0] = dst;
@@ -203,7 +202,7 @@ void hsm_dispatch(struct hsm *hsm, const struct hsm_event *event) {
     hsm_enter_and_init(hsm, &path, len, dst);
 }
 
-bool hsm_is_in(const struct hsm *hsm, const hsm_state_handler_func state) {
+bool hsm_is_in(struct hsm *hsm, const hsm_state_fn state) {
     ASSERT(hsm);
     ASSERT(hsm->state);
     ASSERT(hsm->temp == hsm->state);
@@ -220,13 +219,13 @@ bool hsm_is_in(const struct hsm *hsm, const hsm_state_handler_func state) {
     return in;
 }
 
-hsm_state_handler_func hsm_state(struct hsm *hsm) {
+hsm_state_fn hsm_state(struct hsm *hsm) {
     ASSERT(hsm);
     ASSERT(hsm->state);
     return hsm->state;
 }
 
-void hsm_ctor(struct hsm *hsm, hsm_state_handler_func state) {
+void hsm_ctor(struct hsm *hsm, hsm_state_fn state) {
     ASSERT(hsm);
     ASSERT(state);
     hsm->state = hsm_top;
@@ -248,8 +247,8 @@ void hsm_init(struct hsm *hsm, const struct hsm_event *init_event) {
     int rc = hsm->temp(hsm, init_event);
     ASSERT(HSM_STATE_TRAN == rc);
 
-    hsm_state_handler_func dst = hsm->temp;
-    hsm_state_handler_func path[HSM_HIERARCHY_DEPTH_MAX];
+    hsm_state_fn dst = hsm->temp;
+    hsm_state_fn path[HSM_HIERARCHY_DEPTH_MAX];
     int len = hsm_build(&path, /*from=*/dst, /*until=*/hsm_top);
     hsm_enter_and_init(hsm, &path, len, dst);
 }

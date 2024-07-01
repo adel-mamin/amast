@@ -90,23 +90,21 @@ struct hsm;
  * @param event the event to handle.
  * @return One of HSM_STATE_... constants.
  */
-typedef int (*hsm_state_handler_func)(
-    struct hsm *hsm, const struct hsm_event *event
-);
+typedef int (*hsm_state_fn)(struct hsm *hsm, const struct hsm_event *event);
 
 /**
  * Get HSM state from HSM handler.
  * @param h HSM handler
  * @return HSM state handler
  */
-#define HSM_STATE(h) ((hsm_state_handler_func)(h))
+#define HSM_STATE(h) ((hsm_state_fn)(h))
 
 /** HSM state */
 struct hsm {
     /** the current state */
-    hsm_state_handler_func state;
+    hsm_state_fn state;
     /** temp state during transitions and event processing */
-    hsm_state_handler_func temp;
+    hsm_state_fn temp;
 };
 
 /** The event processing is over. No transition was taken. */
@@ -151,14 +149,14 @@ void hsm_dispatch(struct hsm *hsm, const struct hsm_event *event);
  * @retval false     not in the state in the hierarchical sense.
  * @retval true      in the state.
  */
-bool hsm_is_in(const struct hsm *hsm, hsm_state_handler_func state);
+bool hsm_is_in(struct hsm *hsm, hsm_state_fn state);
 
 /**
  * Return the current HSM state.
  * @param hsm        the hierarchical state machine handler.
  * @return           The current HSM state.
  */
-hsm_state_handler_func hsm_state(struct hsm *hsm);
+hsm_state_fn hsm_state(struct hsm *hsm);
 
 /**
  * Hierarchical state machine constructor.
@@ -166,7 +164,7 @@ hsm_state_handler_func hsm_state(struct hsm *hsm);
  * @param state      the initial state of the hierarchical state machine object.
  *                   The initial state must return HSM_TRAN(s).
  */
-void hsm_ctor(struct hsm *hsm, hsm_state_handler_func state);
+void hsm_ctor(struct hsm *hsm, hsm_state_fn state);
 
 /**
  * Hierarchical state machine destructor.
