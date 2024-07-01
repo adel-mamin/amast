@@ -105,6 +105,8 @@ struct hsm {
     hsm_state_fn state;
     /** temp state during transitions and event processing */
     hsm_state_fn temp;
+    unsigned istate : 8;
+    unsigned itemp : 8;
 };
 
 /** The event processing is over. No transition was taken. */
@@ -113,6 +115,14 @@ struct hsm {
 /** The event was ignored. No transition was taken. */
 #define HSM_IGNORED() HSM_STATE_IGNORED
 
+#define HSM_GET_MACRO_(_1, _2, NAME, ...) NAME
+
+#define HSM_SET_TEMP_(s, i) \
+    (((struct hsm *)me)->temp = HSM_STATE(s), ((struct hsm *)me)->itemp = (i))
+
+#define HSM_TRAN_1_(s) (HSM_SET_TEMP_(s, 0), HSM_STATE_TRAN)
+#define HSM_TRAN_2_(s, i) (HSM_SET_TEMP_(s, i), HSM_STATE_TRAN)
+
 /**
  * The event processing is over. Transition is taken.
  * It should never be returned for entry or exit events.
@@ -120,17 +130,24 @@ struct hsm {
  * this macro to designate transition to the the provided substate
  * of the current state.
  * The transition can only be done to substates of the state.
- * @param s          the new state of type #hsm_state_handler_func.
+ * @param s  the new state of type #hsm_state_fn (mandatory).
+ * @param i  the superstate submachine instance index (optional, default is 0).
  */
-#define HSM_TRAN(s) (((struct hsm *)me)->temp = HSM_STATE(s), HSM_STATE_TRAN)
+#define HSM_TRAN(...) \
+    HSM_GET_MACRO_(__VA_ARGS__, HSM_TRAN_2_, HSM_TRAN_1_)(__VA_ARGS__)
+
+#define HSM_SUPER_1_(s) (HSM_SET_TEMP_(s, 0), HSM_STATE_SUPER)
+#define HSM_SUPER_2_(s, i) (HSM_SET_TEMP_(s, i), HSM_STATE_SUPER)
 
 /**
  * The event processing is passed to the superstate. No transition was taken.
  * If no explicit superstate exists, then the top (super)state hsm_top()
  * must be used.
- * @param s          the superstate of type #hsm_state_handler_func.
+ * @param s  the superstate of type #hsm_state_fn (mandatory).
+ * @param i  the superstate submachine instance index (optional, default is 0).
  */
-#define HSM_SUPER(s) (((struct hsm *)me)->temp = HSM_STATE(s), HSM_STATE_SUPER)
+#define HSM_SUPER(...) \
+    HSM_GET_MACRO_(__VA_ARGS__, HSM_SUPER_2_, HSM_SUPER_1_)(__VA_ARGS__)
 
 /**
  * Synchronous dispatching of event to the given HSM.
