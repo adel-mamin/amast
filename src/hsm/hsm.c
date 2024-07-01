@@ -210,11 +210,13 @@ bool hsm_is_in(struct hsm *hsm, const hsm_state_fn state) {
 
     struct hsm hsm_ = *hsm;
 
-    while ((hsm_.temp != state) && (hsm_.temp != hsm_top)) {
-        int rc = hsm_.temp(&hsm_, &m_hsm_evt[HSM_EVT_EMPTY]);
+    while ((hsm->temp != state) && (hsm->temp != hsm_top)) {
+        int rc = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EMPTY]);
         ASSERT(HSM_STATE_SUPER == rc);
     }
-    bool in = (hsm_.temp == state);
+    int in = (hsm->temp == state);
+
+    *hsm = hsm_;
 
     return in;
 }
