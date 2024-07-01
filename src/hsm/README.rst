@@ -13,34 +13,6 @@ states impacts both event handling and transitions.
 The HSM is a combination of one or more state-handler functions of
 type **hsm_state_handler_func**.
 
-EXAMPLE HSM
-===========
-
-In order to explore how event handling and transitions work in an HSM,
-consider the below state machine:
-
-::
-
-       +----------------------------------------------+
-       |                                              |
-       |                     Z                        |
-       |      (HSM top superstate hsm_top())          |
-       |                                              |
-       |  +---------------------------------+  +---+  |
-       |  |  A                              |  | F |  |
-       |  |  +-----------+  +------------+  |  +---+  |
-       |  |  |  B        |  |  D    *    |  |         |
-       |  |  |           |  |       |    |  |         |
-       |  |  |  +-----+  |  |  +----v-+  |  |         |
-       |  |  |  |  C  |  |  |  |   E  |  |  |         |
-       |  |  |  +-----+  |  |  +------+  |  |         |
-       |  |  |           |  |            |  |         |
-       |  |  +-----------+  +------------+  |         |
-       |  |                                 |         |
-       |  +---------------------------------+         |
-       |                                              |
-       +----------------------------------------------+
-
 GLOSSARY
 ========
 
@@ -85,7 +57,7 @@ GLOSSARY
        (children, substates). A,B,D,Z are all superstates.
 
    top (super)state
-       the unltimate root of the state hierarchy (**hsm_top()**)
+       the ultimate root of the state hierarchy (**hsm_top()**)
 
    substate
        a state that has a superstate as its parent (ancestor).
@@ -114,6 +86,34 @@ GLOSSARY
    topology
        HSM topology is the architecture of HSM - the set of all parent -
        child relations between HSM states
+
+EXAMPLE HSM
+===========
+
+In order to explore how event handling and transitions work in an HSM,
+consider the below state machine:
+
+::
+
+       +----------------------------------------------+
+       |                                              |
+       |                     Z                        |
+       |      (HSM top superstate hsm_top())          |
+       |                                              |
+       |  +---------------------------------+  +---+  |
+       |  |  A                              |  | F |  |
+       |  |  +-----------+  +------------+  |  +---+  |
+       |  |  |  B        |  |  D    *    |  |         |
+       |  |  |           |  |       |    |  |         |
+       |  |  |  +-----+  |  |  +----v-+  |  |         |
+       |  |  |  |  C  |  |  |  |   E  |  |  |         |
+       |  |  |  +-----+  |  |  +------+  |  |         |
+       |  |  |           |  |            |  |         |
+       |  |  +-----------+  +------------+  |         |
+       |  |                                 |         |
+       |  +---------------------------------+         |
+       |                                              |
+       +----------------------------------------------+
 
 STATE RELATIONS
 ===============
