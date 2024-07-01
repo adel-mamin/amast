@@ -46,7 +46,7 @@
 #define HSM_EVT_I (HSM_EVT_USER + 8)
 #define HSM_EVT_TERM (HSM_EVT_USER + 9)
 
-static struct Test {
+static struct test {
     struct hsm hsm;
     int foo;
 } m_test;
@@ -84,13 +84,13 @@ static int str_lcat(char *dst, const char *src, int lim) {
 #undef LOG
 #define LOG(s) str_lcat(m_log_buf, s, (int)sizeof(m_log_buf))
 
-static int s2(struct Test *me, const struct hsm_event *event);
-static int s21(struct Test *me, const struct hsm_event *event);
-static int s211(struct Test *me, const struct hsm_event *event);
-static int s1(struct Test *me, const struct hsm_event *event);
-static int s11(struct Test *me, const struct hsm_event *event);
+static enum hsm_rc s2(struct test *me, const struct hsm_event *event);
+static enum hsm_rc s21(struct test *me, const struct hsm_event *event);
+static enum hsm_rc s211(struct test *me, const struct hsm_event *event);
+static enum hsm_rc s1(struct test *me, const struct hsm_event *event);
+static enum hsm_rc s11(struct test *me, const struct hsm_event *event);
 
-static int test_init(struct Test *me, const struct hsm_event *event) {
+static enum hsm_rc test_init(struct test *me, const struct hsm_event *event) {
     (void)event;
 
     memset(&m_log_buf, 0, sizeof(m_log_buf));
@@ -99,7 +99,7 @@ static int test_init(struct Test *me, const struct hsm_event *event) {
     return HSM_TRAN(s2);
 }
 
-static int s(struct Test *me, const struct hsm_event *event) {
+static enum hsm_rc s(struct test *me, const struct hsm_event *event) {
     switch (event->id) {
         case HSM_EVT_ENTRY:
             LOG("s-ENTRY;");
@@ -146,7 +146,7 @@ static int s(struct Test *me, const struct hsm_event *event) {
     return HSM_SUPER(hsm_top);
 }
 
-static int s1(struct Test *me, const struct hsm_event *event) {
+static enum hsm_rc s1(struct test *me, const struct hsm_event *event) {
     switch (event->id) {
         case HSM_EVT_ENTRY:
             LOG("s1-ENTRY;");
@@ -204,7 +204,7 @@ static int s1(struct Test *me, const struct hsm_event *event) {
     return HSM_SUPER(s);
 }
 
-static int s11(struct Test *me, const struct hsm_event *event) {
+static enum hsm_rc s11(struct test *me, const struct hsm_event *event) {
     switch (event->id) {
         case HSM_EVT_ENTRY:
             LOG("s11-ENTRY;");
@@ -248,7 +248,7 @@ static int s11(struct Test *me, const struct hsm_event *event) {
     return HSM_SUPER(s1);
 }
 
-static int s2(struct Test *me, const struct hsm_event *event) {
+static enum hsm_rc s2(struct test *me, const struct hsm_event *event) {
     switch (event->id) {
         case HSM_EVT_ENTRY:
             LOG("s2-ENTRY;");
@@ -293,7 +293,7 @@ static int s2(struct Test *me, const struct hsm_event *event) {
     return HSM_SUPER(s);
 }
 
-static int s21(struct Test *me, const struct hsm_event *event) {
+static enum hsm_rc s21(struct test *me, const struct hsm_event *event) {
     switch (event->id) {
         case HSM_EVT_ENTRY:
             LOG("s21-ENTRY;");
@@ -340,7 +340,7 @@ static int s21(struct Test *me, const struct hsm_event *event) {
     return HSM_SUPER(s2);
 }
 
-static int s211(struct Test *me, const struct hsm_event *event) {
+static enum hsm_rc s211(struct test *me, const struct hsm_event *event) {
     switch (event->id) {
         case HSM_EVT_ENTRY:
             LOG("s211-ENTRY;");

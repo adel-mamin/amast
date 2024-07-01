@@ -63,10 +63,13 @@ ASSERT_STATIC(HSM_EVT_USER == 4)
 #define HSM_EVT_USER 4 /**< user event IDs start with this ID (inclusive) */
 #endif
 
-#define HSM_STATE_HANDLED 0
-#define HSM_STATE_IGNORED 0
-#define HSM_STATE_TRAN 1
-#define HSM_STATE_SUPER 2
+/** HSM state handler return codes */
+enum hsm_rc {
+    HSM_STATE_HANDLED = 0,
+    HSM_STATE_IGNORED = HSM_STATE_HANDLED,
+    HSM_STATE_TRAN,
+    HSM_STATE_SUPER
+};
 
 /** Event descriptor */
 struct hsm_event {
