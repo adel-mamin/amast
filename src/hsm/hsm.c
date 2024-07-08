@@ -32,13 +32,14 @@
 
 #include "common/compiler.h"
 #include "common/macros.h"
+#include "common/types.h"
 #include "hsm/hsm.h"
 
 /** The maximum depth of HSM hierarchy. */
 #define HSM_HIERARCHY_DEPTH_MAX 16
 
 /** Canned events */
-static const struct hsm_event m_hsm_evt[] = {
+static const struct event m_hsm_evt[] = {
     {.id = HSM_EVT_EMPTY},
     {.id = HSM_EVT_INIT},
     {.id = HSM_EVT_ENTRY},
@@ -132,7 +133,7 @@ static void hsm_enter_and_init(
     hsm->state = hsm->temp = dst;
 }
 
-void hsm_dispatch(struct hsm *hsm, const struct hsm_event *event) {
+void hsm_dispatch(struct hsm *hsm, const struct event *event) {
     ASSERT(hsm);
     ASSERT(hsm->state);
     ASSERT(hsm->state == hsm->temp);
@@ -240,7 +241,7 @@ void hsm_dtor(struct hsm *hsm) {
     hsm->state = hsm->temp = hsm_top;
 }
 
-void hsm_init(struct hsm *hsm, const struct hsm_event *init_event) {
+void hsm_init(struct hsm *hsm, const struct event *init_event) {
     ASSERT(hsm);
     ASSERT(hsm->state == hsm_top); /* was hsm_ctor() called? */
     ASSERT(hsm->temp != NULL);
@@ -255,7 +256,7 @@ void hsm_init(struct hsm *hsm, const struct hsm_event *init_event) {
     hsm_enter_and_init(hsm, &path, len, dst);
 }
 
-int hsm_top(struct hsm *hsm, const struct hsm_event *event) {
+int hsm_top(struct hsm *hsm, const struct event *event) {
     (void)hsm;
     (void)event;
     return HSM_IGNORED();

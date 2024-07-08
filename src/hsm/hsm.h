@@ -71,12 +71,6 @@ enum hsm_rc {
     HSM_STATE_SUPER
 };
 
-/** Event descriptor */
-struct hsm_event {
-    /** event ID. */
-    int id;
-};
-
 /** forward declaration */
 struct hsm;
 
@@ -90,7 +84,7 @@ struct hsm;
  * @param event the event to handle.
  * @return One of HSM_STATE_... constants.
  */
-typedef int (*hsm_state_fn)(struct hsm *hsm, const struct hsm_event *event);
+typedef int (*hsm_state_fn)(struct hsm *hsm, const struct event *event);
 
 /**
  * Get HSM state from HSM handler.
@@ -154,7 +148,7 @@ struct hsm {
  * @param hsm        the hierarchical state machine handler.
  * @param event      the event to dispatch.
  */
-void hsm_dispatch(struct hsm *hsm, const struct hsm_event *event);
+void hsm_dispatch(struct hsm *hsm, const struct event *event);
 
 /**
  * Test whether the HSM is in a given state.
@@ -194,14 +188,14 @@ void hsm_dtor(struct hsm *hsm);
  * @param hsm        the hierarchical state machine handler.
  * @param init_event the init event. Can be NULL. The event is not recycled.
  */
-void hsm_init(struct hsm *hsm, const struct hsm_event *init_event);
+void hsm_init(struct hsm *hsm, const struct event *init_event);
 
 /**
  * Every HSM has the implicit top state, which surrounds all the other elements
  * of the entire state machine.
  * One should never target top state in a state transition.
  */
-int hsm_top(struct hsm *hsm, const struct hsm_event *event);
+int hsm_top(struct hsm *hsm, const struct event *event);
 
 #ifdef __cplusplus
 }
