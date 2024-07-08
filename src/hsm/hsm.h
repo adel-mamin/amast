@@ -83,7 +83,7 @@ struct hsm;
  * @param event  the event to handle
  * @return One of HSM_STATE_... constants.
  */
-typedef int (*hsm_state_fn)(struct hsm *hsm, const struct event *event);
+typedef enum hsm_rc (*hsm_state_fn)(struct hsm *hsm, const struct event *event);
 
 /**
  * Get HSM state from HSM handler.
@@ -195,7 +195,7 @@ void hsm_init(struct hsm *hsm, const struct event *init_event);
  * of the entire state machine.
  * One should never target top state in a state transition.
  */
-int hsm_top(struct hsm *hsm, const struct event *event);
+enum hsm_rc hsm_top(struct hsm *hsm, const struct event *event);
 
 #ifdef __cplusplus
 }
