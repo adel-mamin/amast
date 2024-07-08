@@ -48,28 +48,31 @@ static const struct event m_hsm_evt[] = {
 
 /**
  * Build ancestor chain path.
- * The path starts with 'from' state and ends with substate of #utill state.
+ * The path starts with 'from' state and ends with substate of #until state.
  * @param path   the path is placed here
  * @param from   placed to path[0]
  * @param until  the substate of it is placed to the end of path[]
  * @return the path length
  */
 static int hsm_build(
+    struct hsm *hsm,
     hsm_state_fn (*path)[HSM_HIERARCHY_DEPTH_MAX],
     hsm_state_fn from,
     hsm_state_fn until
 ) {
-    struct hsm hsm = {.state = from, .temp = from};
+    struct hsm hsm_ = *hsm;
+    hsm->state = hsm->temp = from;
     int len = 0;
     (*path)[len++] = from;
-    int rc = hsm.temp(&hsm, &m_hsm_evt[HSM_EVT_EMPTY]);
+    int rc = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EMPTY]);
     ASSERT(HSM_STATE_SUPER == rc);
-    while (hsm.temp != until) {
+    while (hsm->temp != until) {
         ASSERT(len < HSM_HIERARCHY_DEPTH_MAX);
-        (*path)[len++] = hsm.temp;
-        rc = hsm.temp(&hsm, &m_hsm_evt[HSM_EVT_EMPTY]);
+        (*path)[len++] = hsm->temp;
+        rc = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EMPTY]);
         ASSERT(HSM_STATE_SUPER == rc);
     }
+    *hsm = hsm_;
     return len;
 }
 
@@ -126,7 +129,7 @@ static void hsm_enter_and_init(
     hsm_enter(hsm, &(*path)[0], len);
     hsm->state = hsm->temp = dst;
     while (dst(hsm, &m_hsm_evt[HSM_EVT_INIT]) == HSM_STATE_TRAN) {
-        len = hsm_build(path, /*from=*/hsm->temp, /*until=*/dst);
+        len = hsm_build(hsm, path, /*from=*/hsm->temp, /*until=*/dst);
         hsm_enter(hsm, &(*path)[0], len);
         hsm->state = hsm->temp = dst = (*path)[0];
     }
@@ -175,7 +178,7 @@ void hsm_dispatch(struct hsm *hsm, const struct event *event) {
         return;
     }
 
-    int len = hsm_build(&path, /*from=*/dst, /*until=*/hsm_top);
+    int len = hsm_build(hsm, &path, /*from=*/dst, /*until=*/hsm_top);
 
     /*
      * Exit states from src till hsm_top() and search LCA along the way.
@@ -252,7 +255,7 @@ void hsm_init(struct hsm *hsm, const struct event *init_event) {
 
     hsm_state_fn dst = hsm->temp;
     hsm_state_fn path[HSM_HIERARCHY_DEPTH_MAX];
-    int len = hsm_build(&path, /*from=*/dst, /*until=*/hsm_top);
+    int len = hsm_build(hsm, &path, /*from=*/dst, /*until=*/hsm_top);
     hsm_enter_and_init(hsm, &path, len, dst);
 }
 
