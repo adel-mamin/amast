@@ -206,7 +206,7 @@ void hsm_dispatch(struct hsm *hsm, const struct event *event) {
     hsm_enter_and_init(hsm, &path, len, dst);
 }
 
-bool hsm_is_in(struct hsm *hsm, const hsm_state_fn state) {
+bool hsm_is_in(struct hsm *hsm, const struct hsm_state *state) {
     ASSERT(hsm);
     ASSERT(hsm->state);
     ASSERT(hsm->temp == hsm->state);
@@ -214,33 +214,38 @@ bool hsm_is_in(struct hsm *hsm, const hsm_state_fn state) {
 
     struct hsm hsm_ = *hsm;
 
-    while ((hsm->temp != state) && (hsm->temp != hsm_top)) {
+    while ((hsm->temp != state->fn) && (hsm->temp != hsm_top)) {
         enum hsm_rc rc = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EMPTY]);
         ASSERT(HSM_STATE_SUPER == rc);
     }
-    int in = (hsm->temp == state);
+    int in = (hsm->temp == state->fn);
 
     *hsm = hsm_;
 
     return in;
 }
 
-hsm_state_fn hsm_state(struct hsm *hsm) {
+bool hsm_state_is_eq(struct hsm *hsm, const struct hsm_state *state) {
     ASSERT(hsm);
     ASSERT(hsm->state);
-    return hsm->state;
+    ASSERT(state);
+    ASSERT(state->fn);
+    return (hsm->state == state->fn) && (hsm->istate == state->instance);
 }
 
-void hsm_ctor(struct hsm *hsm, hsm_state_fn state) {
+void hsm_ctor(struct hsm *hsm, const struct hsm_state *state) {
     ASSERT(hsm);
     ASSERT(state);
+    ASSERT(state->fn);
     hsm->state = hsm_top;
-    hsm->temp = state;
+    hsm->istate = 0;
+    hsm->temp = state->fn;
+    hsm->itemp = state->instance;
 }
 
 void hsm_dtor(struct hsm *hsm) {
     ASSERT(hsm);
-    hsm_exit(hsm, /*until=*/HSM_STATE(hsm_top));
+    hsm_exit(hsm, /*until=*/HSM_STATE_FN(hsm_top));
     hsm->state = hsm->temp = hsm_top;
 }
 

@@ -23,6 +23,11 @@
 #
 
 project('tikli', 'c',
+        default_options : [
+            'c_std=c99',
+            'warning_level=3',
+            'werror=true'
+        ],
         meson_version: '>= 1.0.1')
 
 CLANG_FORMAT = find_program('clang-format', required: false, disabler: true)

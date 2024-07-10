@@ -182,6 +182,20 @@ typedef int ssize_t;
 /** Join x and y together */
 #define JOINSTR_(x, y) STRINGIFY__(x##y)
 
+/**
+ * Choose one of two macros.
+ *
+ * Given:
+ * #define BAR1(a) (a)
+ * #define BAR2(a, b) (a, b)
+ * #define BAR(a, ...) \
+ *    GET_MACRO_2_(a, ##__VA_ARGS__, FOO2, FOO1)(s, ##__VA_ARGS__)
+ * Then:
+ * BAR(a)    expands to BAR1(a)
+ * BAR(a, b) expands to BAR2(a, b)
+ */
+#define GET_MACRO_2_(_1, _2, NAME, ...) NAME
+
 /*! @cond Doxygen_Suppress */
 #ifdef _MSC_VER
 #define DIAG_DO_PRAGMA(x) __pragma(#x)
@@ -516,13 +530,6 @@ static inline unsigned long long __rdtsc() {
 
 /* static assert */
 /* clang-format off */
-#if (COMPILER_ID == COMPILER_GCC) || (COMPILER_ID == COMPILER_CLANG)
-#   ifdef __cplusplus
-#        define ASSERT_STATIC(expr) static_assert(expr, "")
-#   else
-#        define ASSERT_STATIC(expr) _Static_assert(expr, "")
-#    endif
-#else /*#if (COMPILER_ID == COMPILER_GCC) || (COMPILER_ID == COMPILER_CLANG)*/
 /* The compile time assert code is taken from here:
    http://stackoverflow.com/questions/3385515/static-assert-in-c */
 
@@ -537,8 +544,6 @@ static inline unsigned long long __rdtsc() {
 
 /** Compile time assert */
 #define ASSERT_STATIC(x) COMPILE_TIME_ASSERT(x, __LINE__)
-#endif /*#if (COMPILER_ID == COMPILER_GCC) || (COMPILER_ID == \
-          COMPILER_CLANG)*/
 /* clang-format on */
 
 /*! @cond Doxygen_Suppress */

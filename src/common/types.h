@@ -48,5 +48,4 @@ struct event {
     unsigned flags;
 };
 
-#endif  /* COMMON_TYPES_H_INCLUDED */
-
+#endif /* COMMON_TYPES_H_INCLUDED */
