@@ -90,18 +90,13 @@ struct hsm_state {
     /** HSM state function  */
     hsm_state_fn fn;
     /** HSM state function instance. Used for submachines. Default is 0. */
-    int instance;
+    unsigned char instance;
 };
 
-/**
- * Get HSM state function from HSM event handler.
- * @param h HSM event handler
- * @return HSM state function
- */
-#define HSM_STATE_FN(h) ((hsm_state_fn)(h))
-
+/** Helper macro. Not to be used directly. */
 #define HSM_STATE_1_(f) \
     (struct hsm_state) { .fn = (hsm_state_fn)f, .instance = 0 }
+/** Helper macro. Not to be used directly. */
 #define HSM_STATE_2_(f, i) \
     (struct hsm_state) { .fn = (hsm_state_fn)f, .instance = i }
 
@@ -111,12 +106,19 @@ struct hsm_state {
  * HSM_STATE(fn)    is converted to (struct hsm_state){.fn = fn, .instance = 0}
  * HSM_STATE(fn, i) is converted to (struct hsm_state){.fn = fn, .instance = i}
  *
- * @param h HSM event handler
- * @param i HSM event handler instance. Used by submachines. Default is 0.
+ * @param h  HSM event handler
+ * @param i  HSM event handler instance. Used by submachines. Default is 0.
  * @return HSM state function
  */
 #define HSM_STATE(...) \
     GET_MACRO_2_(__VA_ARGS__, HSM_STATE_2_, HSM_STATE_1_, _)(__VA_ARGS__)
+
+/**
+ * Get HSM state function from HSM event handler.
+ * @param h HSM event handler
+ * @return HSM state function
+ */
+#define HSM_STATE_FN(h) ((hsm_state_fn)(h))
 
 /** HSM state */
 struct hsm {
@@ -136,12 +138,17 @@ struct hsm {
 /** Event was ignored. No transition was taken. */
 #define HSM_IGNORED() HSM_STATE_IGNORED
 
-#define HSM_SET_TEMP_(s, i)                      \
+/** Helper macro. Not to be used directly. */
+#define HSM_SET_TEMP_1_(s) (((struct hsm *)me)->temp = HSM_STATE_FN(s))
+/** Helper macro. Not to be used directly. */
+#define HSM_SET_TEMP_2_(s, i)                    \
     (((struct hsm *)me)->temp = HSM_STATE_FN(s), \
      ((struct hsm *)me)->itemp = (i))
 
-#define HSM_TRAN_1_(s) (HSM_SET_TEMP_(s, 0), HSM_STATE_TRAN)
-#define HSM_TRAN_2_(s, i) (HSM_SET_TEMP_(s, i), HSM_STATE_TRAN)
+/** Helper macro. Not to be used directly. */
+#define HSM_TRAN_1_(s) (HSM_SET_TEMP_1_(s), HSM_STATE_TRAN)
+/** Helper macro. Not to be used directly. */
+#define HSM_TRAN_2_(s, i) (HSM_SET_TEMP_2_(s, i), HSM_STATE_TRAN)
 
 /**
  * Event processing is over. Transition is taken.
@@ -155,8 +162,10 @@ struct hsm {
 #define HSM_TRAN(...) \
     GET_MACRO_2_(__VA_ARGS__, HSM_TRAN_2_, HSM_TRAN_1_, _)(__VA_ARGS__)
 
-#define HSM_SUPER_1_(s) (HSM_SET_TEMP_(s, 0), HSM_STATE_SUPER)
-#define HSM_SUPER_2_(s, i) (HSM_SET_TEMP_(s, i), HSM_STATE_SUPER)
+/** Helper macro. Not to be used directly. */
+#define HSM_SUPER_1_(s) (HSM_SET_TEMP_1_(s), HSM_STATE_SUPER)
+/** Helper macro. Not to be used directly. */
+#define HSM_SUPER_2_(s, i) (HSM_SET_TEMP_2_(s, i), HSM_STATE_SUPER)
 
 /**
  * Event processing is passed to superstate. No transition was taken.
@@ -170,8 +179,8 @@ struct hsm {
 
 /**
  * Synchronous dispatching of event to the given HSM.
- * @param hsm        the hierarchical state machine handler
- * @param event      the event to dispatch
+ * @param hsm    the HSM handler
+ * @param event  the event to dispatch
  */
 void hsm_dispatch(struct hsm *hsm, const struct event *event);
 
@@ -180,22 +189,22 @@ void hsm_dispatch(struct hsm *hsm, const struct event *event);
  * Note that an HSM is in all superstates of the currently active state.
  * Use sparingly to test the current state of other state machine as
  * it breaks encapsulation.
- * @param hsm        the hierarchical state machine handler
- * @param state      the state to check
- * @retval false     not in the state in the hierarchical sense
- * @retval true      in the state
+ * @param hsm     the HSM handler
+ * @param state   the state to check
+ * @retval false  not in the state in the hierarchical sense
+ * @retval true   in the state
  */
 bool hsm_is_in(struct hsm *hsm, const struct hsm_state *state);
 
 /**
- * Check if current state equals to #state (not in hierarchical state).
+ * Check if current state equals to #state (not in hierarchical sense).
  *
  * If current state of hsm is A, which is substate of B, then
  *
  * hsm_state_is_eq(hsm, &HSM_STATE(A)) is true, but
  * hsm_state_is_eq(hsm, &HSM_STATE(B)) is false.
  *
- * @param hsm     the hierarchical state machine handler
+ * @param hsm     the HSM handler
  * @param state   the state to compare against
  * @retval true   the current HSM state equals #state
  * @retval false  the current HSM state DOES NOT equal #state
@@ -203,22 +212,30 @@ bool hsm_is_in(struct hsm *hsm, const struct hsm_state *state);
 bool hsm_state_is_eq(struct hsm *hsm, const struct hsm_state *state);
 
 /**
- * Hierarchical state machine constructor.
- * @param hsm        the hierarchical state machine to construct
- * @param state      the initial state of the hierarchical state machine object
- *                   The initial state must return HSM_TRAN(s) or HSM_TRAN(s, i)
+ * Get state instance.
+ * Always returns the instance of the state that calls the API.
+ * @param hsm  the HSM handler
+ * @return the instance
+ */
+int hsm_get_instance(const struct hsm *hsm);
+
+/**
+ * HSM constructor.
+ * @param hsm    the HSM to construct
+ * @param state  the initial state of the HSM object
+ *               The initial state must return HSM_TRAN(s) or HSM_TRAN(s, i)
  */
 void hsm_ctor(struct hsm *hsm, const struct hsm_state *state);
 
 /**
- * Hierarchical state machine destructor.
- * @param hsm        the hierarchical state machine to destruct
+ * HSM destructor.
+ * @param hsm  the HSM to destruct
  */
 void hsm_dtor(struct hsm *hsm);
 
 /**
  * Performs HSM initial transition.
- * @param hsm        the hierarchical state machine handler
+ * @param hsm        the HSM handler
  * @param init_event the init event. Can be NULL. The event is not recycled.
  */
 void hsm_init(struct hsm *hsm, const struct event *init_event);

@@ -22,9 +22,27 @@
 # SOFTWARE.
 #
 
-hsm_src = [files('hsm.c')]
-src += [hsm_src]
+test_lib = library('test_lib', [hsm_src, 'common.c'], include_directories: inc)
 
 if unit_test
-    subdir('test')
+    e = executable(
+        'regular',
+        ['regular.c'],
+        link_with: test_lib,
+        include_directories: inc)
+    test('regular', e, suite: 'hsm')
+
+    e = executable(
+        'hsm_top_as_nca',
+        ['hsm_top_as_nca.c'],
+        link_with: test_lib,
+        include_directories: inc)
+    test('hsm_top_as_nca', e, suite: 'hsm')
+
+    e = executable(
+        'submachine',
+        ['submachine.c'],
+        link_with: test_lib,
+        include_directories: inc)
+    test('submachine', e, suite: 'hsm')
 endif
