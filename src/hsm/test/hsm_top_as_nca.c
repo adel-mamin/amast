@@ -40,20 +40,20 @@ static enum hsm_rc s2(struct test *me, const struct event *event);
 
 static enum hsm_rc s1(struct test *me, const struct event *event) {
     switch (event->id) {
-        case HSM_EVT_INIT:
-            return HSM_TRAN(s11);
-        default:
-            break;
+    case HSM_EVT_INIT:
+        return HSM_TRAN(s11);
+    default:
+        break;
     }
     return HSM_SUPER(hsm_top);
 }
 
 static enum hsm_rc s11(struct test *me, const struct event *event) {
     switch (event->id) {
-        case HSM_EVT_A:
-            return HSM_TRAN(s2);
-        default:
-            break;
+    case HSM_EVT_A:
+        return HSM_TRAN(s2);
+    default:
+        break;
     }
     return HSM_SUPER(s1);
 }
