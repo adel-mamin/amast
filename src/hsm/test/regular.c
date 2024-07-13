@@ -41,7 +41,9 @@ static char m_log_buf[TEST_LOG_SIZE];
 /*
  * Contrived hierarchical state machine (HSM) that contains all possible
  * state transition topologies up to four level of state nesting.
- * Depicted by hsm.png file.
+ * Depicted by hsm.png file borrowed from
+ * "Practical UML Statecharts in C/C++: Event-Driven Programming for Embedded
+ * Systems 2nd Edition" by Miro Samek <https://www.state-machine.com/psicc2>
  */
 
 static struct test m_test;

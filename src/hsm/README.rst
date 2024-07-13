@@ -2,16 +2,13 @@
 Hierarchical State Machine (HSM)
 ================================
 
-INTRODUCTION
-============
+CREDIT
+======
 
-HSM differs from a Finite State Machine (FSM) in that a state can have a
-parent state that can be used to share behavior via a mechanism similar to
-inheritance - behavioral inheritance. The parent-child relationship between
-states impacts both event handling and transitions.
-
-The HSM is a combination of one or more state-handler functions of
-type **hsm_state_handler_func**.
+The design and implementation of the HSM library is heavily inspired by
+`Practical UML Statecharts in C/C++: Event-Driven Programming for Embedded Systems 2nd Edition <https://www.state-machine.com/psicc2>`_
+by Miro Samek. Also the example HSM state diagram for unit testing is borrowed
+from the book.
 
 GLOSSARY
 ========
@@ -86,6 +83,17 @@ GLOSSARY
    topology
        HSM topology is the architecture of HSM - the set of all parent -
        child relations between HSM states
+
+INTRODUCTION
+============
+
+HSM differs from a Finite State Machine (FSM) in that a state can have a
+parent state that can be used to share behavior via a mechanism similar to
+inheritance - behavioral inheritance. The parent-child relationship between
+states impacts both event handling and transitions.
+
+The HSM is a combination of one or more state-handler functions of
+type **hsm_state_handler_func**.
 
 EXAMPLE HSM
 ===========
@@ -217,4 +225,4 @@ HSM TOPOLOGY
 
 HSM framework discovers the HSM topology by sending **HSM_EVT_EMPTY** event
 to state event handlers. The state event handlers should explicitly process
-the event and always return **HSM_HSM_SUPER(superstate)** in response.
+the event and always return **HSM_SUPER(superstate)** in response.
