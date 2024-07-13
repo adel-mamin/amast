@@ -385,15 +385,18 @@ static void test_hsm(void) {
 
     hsm_init(&m_test.hsm, /*init_event=*/NULL);
 
-    const char *out = "top-INIT;s-ENTRY;s2-ENTRY;s2-INIT;s21-ENTRY;s211-ENTRY;";
-    ASSERT(0 == strncmp(m_log_buf, out, strlen(out)));
-    m_log_buf[0] = '\0';
+    {
+        const char *out =
+            "top-INIT;s-ENTRY;s2-ENTRY;s2-INIT;s21-ENTRY;s211-ENTRY;";
+        ASSERT(0 == strncmp(m_log_buf, out, strlen(out)));
+        m_log_buf[0] = '\0';
+    }
 
     struct test2 {
         int evt;
         const char *out;
     };
-    static const struct test2 IN[] = {
+    static const struct test2 in[] = {
         /* clang-format off */
         {HSM_EVT_G, "s21-G;s211-EXIT;s21-EXIT;s2-EXIT;s1-ENTRY;s1-INIT;s11-ENTRY;"},
         {HSM_EVT_I, "s1-I;"},
@@ -423,16 +426,17 @@ static void test_hsm(void) {
         /* clang-format on */
     };
 
-    for (int i = 0; i < ARRAY_SIZE(IN); i++) {
-        struct event e = {.id = IN[i].evt};
+    for (int i = 0; i < ARRAY_SIZE(in); i++) {
+        struct event e = {.id = in[i].evt};
         hsm_dispatch(&m_test.hsm, &e);
-        ASSERT(0 == strncmp(m_log_buf, IN[i].out, strlen(IN[i].out)));
+        ASSERT(0 == strncmp(m_log_buf, in[i].out, strlen(in[i].out)));
         m_log_buf[0] = '\0';
     }
 
+    hsm_dtor(&m_test.hsm);
+
     {
         static const char *destruction = "s211-EXIT;s21-EXIT;s2-EXIT;s-EXIT;";
-        hsm_dtor(&m_test.hsm);
         ASSERT(0 == strncmp(m_log_buf, destruction, strlen(destruction)));
         m_log_buf[0] = '\0';
     }
