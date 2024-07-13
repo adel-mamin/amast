@@ -93,7 +93,7 @@ inheritance - behavioral inheritance. The parent-child relationship between
 states impacts both event handling and transitions.
 
 The HSM is a combination of one or more state-handler functions of
-type **hsm_state_handler_func**.
+type **hsm_state_fn**.
 
 EXAMPLE HSM
 ===========
@@ -149,9 +149,9 @@ state B also chooses to pass then the event will finally be sent to state
 A. If A chooses to pass then event is consumed by **hsm_top()**.
 
 To inform the framework that an event is handled the event handler function
-must return **HSM_HSM_HANDLED()**.
+must return **HSM_HANDLED()**.
 To inform the framework that an event is passed to a superstate the event
-handler function must return **HSM_HSM_SUPER(superstate)**.
+handler function must return **HSM_SUPER(superstate)**.
 
 STATE TRANSITION
 ================
@@ -189,7 +189,7 @@ target state A, then NCA is A, the exit events are sent to C,B,A and then the
 entry event is sent to A followed by the init event.
 
 To initiate a transition the state handler function must return
-**HSM_HSM_TRAN(target_state)**.
+**HSM_TRAN(target_state)**.
 
 HSM states cannot initiate state transitions when processing entry and exit
 events.
