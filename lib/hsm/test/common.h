@@ -22,8 +22,10 @@
  * SOFTWARE.
  */
 
-#ifndef TEST_H_INCLUDED
-#define TEST_H_INCLUDED
+#ifndef COMMON_H_INCLUDED
+#define COMMON_H_INCLUDED
+
+#include <stdarg.h>
 
 #define HSM_EVT_A (HSM_EVT_USER)
 #define HSM_EVT_B (HSM_EVT_USER + 1)
@@ -36,12 +38,8 @@
 #define HSM_EVT_I (HSM_EVT_USER + 8)
 #define HSM_EVT_TERM (HSM_EVT_USER + 9)
 
-struct test {
-    struct hsm hsm;
-    int foo;
-};
-
 int str_lcat(char *dst, const char *src, int lim);
 int str_lcatf(char *dst, int lim, const char *fmt, ...);
+int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap);
 
-#endif /* TEST_H_INCLUDED */
+#endif

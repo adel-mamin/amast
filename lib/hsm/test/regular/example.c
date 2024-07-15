@@ -31,61 +31,12 @@
 #include "hsm/hsm.h"
 #include "common.h"
 
-struct test {
-    struct hsm hsm;
-};
+#define TEST_LOG_SIZE 256 /* [bytes] */
 
-static struct test m_test;
-
-/* Test hsm_top() as NCA. */
-
-static enum hsm_rc s11(struct test *me, const struct event *event);
-static enum hsm_rc s2(struct test *me, const struct event *event);
-
-static enum hsm_rc s1(struct test *me, const struct event *event) {
-    switch (event->id) {
-    case HSM_EVT_INIT:
-        return HSM_TRAN(s11);
-    default:
-        break;
-    }
-    return HSM_SUPER(hsm_top);
-}
-
-static enum hsm_rc s11(struct test *me, const struct event *event) {
-    switch (event->id) {
-    case HSM_EVT_A:
-        return HSM_TRAN(s2);
-    default:
-        break;
-    }
-    return HSM_SUPER(s1);
-}
-
-static enum hsm_rc s2(struct test *me, const struct event *event) {
-    (void)event;
-    return HSM_SUPER(hsm_top);
-}
-
-static enum hsm_rc sinit(struct test *me, const struct event *event) {
-    (void)event;
-    return HSM_TRAN(s1);
-}
-
-static void test_hsm_top_as_nca(void) {
-    struct test *me = &m_test;
-    hsm_ctor(&me->hsm, &HSM_STATE(sinit));
-
-    hsm_init(&me->hsm, /*init_event=*/NULL);
-    ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s11)));
-
-    static const struct event E = {.id = HSM_EVT_A};
-    hsm_dispatch(&me->hsm, &E);
-    ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s2)));
-}
+static char m_log_buf[TEST_LOG_SIZE];
 
 int main(void) {
-    test_hsm_top_as_nca();
+    test_hsm();
 
     return 0;
 }

@@ -69,6 +69,29 @@ int str_lcat(char *dst, const char *src, int lim) {
  * @return Returns the total length of the string they tried to create.
  *         It means the initial length of dst plus the length of src.
  */
+int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap) {
+    ASSERT(dst);
+    ASSERT(lim > 0);
+    ASSERT(fmt);
+
+    long len = (int)strlen(dst);
+    ASSERT(len <= lim);
+
+    len += vsnprintf(dst + len, (size_t)(lim - len), fmt, ap); /* NOLINT */
+
+    ASSERT(len <= INT_MAX);
+
+    return (int)len;
+}
+
+/**
+ * Same as str_lcat(), but the source buffer is replaced with format string.
+ * @param dst the destination buffer.
+ * @param lim the full size of the buffer (not just the length) [bytes].
+ * @param fmt the format string.
+ * @return Returns the total length of the string they tried to create.
+ *         It means the initial length of dst plus the length of src.
+ */
 int str_lcatf(char *dst, int lim, const char *fmt, ...) {
     ASSERT(dst);
     ASSERT(lim > 0);
@@ -79,7 +102,7 @@ int str_lcatf(char *dst, int lim, const char *fmt, ...) {
 
     va_list ap;
     va_start(ap, fmt);
-    len += vsnprintf(dst + len, (size_t)(lim - len), fmt, ap); /* NOLINT */
+    str_vlcatf(dst, lim, fmt, ap);
     va_end(ap);
 
     ASSERT(len <= INT_MAX);

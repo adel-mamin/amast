@@ -27,7 +27,11 @@ test_lib = library('test_lib', [hsm_src, 'common.c'], include_directories: inc)
 if unit_test
     e = executable(
         'regular',
-        ['regular.c'],
+        [
+            'common.c',
+            'regular' / 'regular.c',
+            'regular' / 'test.c'
+        ],
         link_with: test_lib,
         include_directories: inc)
     test('regular', e, suite: 'hsm')
@@ -41,7 +45,11 @@ if unit_test
 
     e = executable(
         'submachine',
-        ['submachine.c'],
+        [
+            'common.c',
+            'submachine' / 'submachine.c',
+            'submachine' / 'test.c'
+        ],
         link_with: test_lib,
         include_directories: inc)
     test('submachine', e, suite: 'hsm')
