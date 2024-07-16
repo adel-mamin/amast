@@ -37,6 +37,16 @@ if unit_test
     test('regular', e, suite: 'hsm')
 
     e = executable(
+        'regular-example',
+        [
+            'common.c',
+            'regular' / 'regular.c',
+            'regular' / 'example.c'
+        ],
+        link_with: test_lib,
+        include_directories: inc)
+
+    e = executable(
         'hsm_top_as_nca',
         ['hsm_top_as_nca.c'],
         link_with: test_lib,

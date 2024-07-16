@@ -30,13 +30,92 @@
 #include "common/types.h"
 #include "hsm/hsm.h"
 #include "common.h"
+#include "regular.h"
+#include <ctype.h>
+
+#define ANSI_COLOR_BLUE_BOLD "\x1b[1;34m"
+#define ANSI_COLOR_YELLOW_BOLD "\x1b[1;33m"
+#define ANSI_COLOR_RESET "\x1b[0m"
 
 #define TEST_LOG_SIZE 256 /* [bytes] */
 
 static char m_log_buf[TEST_LOG_SIZE];
 
+void test_log(char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    str_vlcatf(m_log_buf, (int)sizeof(m_log_buf), fmt, ap);
+    va_end(ap);
+}
+
+static void test_print(char c) {
+    printf(ANSI_COLOR_YELLOW_BOLD);
+    printf("%c", c);
+    printf(ANSI_COLOR_RESET);
+    printf(": %s\n", m_log_buf);
+}
+
 int main(void) {
-    test_hsm();
+    regular_ctor(test_log);
+
+    printf(ANSI_COLOR_BLUE_BOLD);
+    printf("Type event [A,B,C,D,E,F,G,H,I] (T to terminate)\n");
+    printf(ANSI_COLOR_RESET);
+
+    m_log_buf[0] = '\0';
+    hsm_init(g_regular, /*init_event=*/NULL);
+    test_print('*');
+
+    static const char *blank = "        ";
+    static const int e[] = {
+        HSM_EVT_A,
+        HSM_EVT_B,
+        HSM_EVT_C,
+        HSM_EVT_D,
+        HSM_EVT_E,
+        HSM_EVT_F,
+        HSM_EVT_G,
+        HSM_EVT_H,
+        HSM_EVT_I
+    };
+
+    for (;;) {
+        char c = getchar();
+        /* move the cursor up one line */
+        printf("\033[A\r");
+        if ('\n' == c) {
+            continue;
+        }
+        printf("\r");
+        printf("%s", blank);
+
+        char n = getchar();
+        while (n != '\n') {
+            printf("%s", blank);
+            n = getchar();
+        }
+        printf("\r");
+
+        c = toupper(c);
+        int index = c - 'A';
+        int valid = (0 <= index) && (index < ARRAY_SIZE(e));
+        if (!valid) {
+            continue;
+        }
+        m_log_buf[0] = '\0';
+
+        int terminate = 'T' == c;
+        if (terminate) {
+            hsm_dispatch(g_regular, &(struct event){.id = HSM_EVT_TERM});
+            test_print(c);
+            break;
+        }
+        hsm_dispatch(g_regular, &(struct event){.id = e[index]});
+        test_print(c);
+    }
+    m_log_buf[0] = '\0';
+    hsm_dtor(g_regular);
+    test_print('*');
 
     return 0;
 }
