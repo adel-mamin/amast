@@ -198,6 +198,7 @@ static enum hsm_rc s11(struct test *me, const struct event *event) {
         return HSM_HANDLED();
 
     case HSM_EVT_INIT:
+        me->log("s11-INIT;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s11)));
         ASSERT(hsm_get_instance(&me->hsm) == 0);
         return HSM_HANDLED();
@@ -352,6 +353,7 @@ static enum hsm_rc s211(struct test *me, const struct event *event) {
         return HSM_HANDLED();
 
     case HSM_EVT_INIT:
+        me->log("s211-INIT;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s211)));
         ASSERT(hsm_get_instance(&me->hsm) == 0);
         return HSM_HANDLED();

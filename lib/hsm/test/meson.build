@@ -63,4 +63,14 @@ if unit_test
         link_with: test_lib,
         include_directories: inc)
     test('submachine', e, suite: 'hsm')
+
+    e = executable(
+        'submachine-example',
+        [
+            'common.c',
+            'submachine' / 'submachine.c',
+            'submachine' / 'example.c'
+        ],
+        link_with: test_lib,
+        include_directories: inc)
 endif

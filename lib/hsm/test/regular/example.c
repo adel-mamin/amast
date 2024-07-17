@@ -94,14 +94,14 @@ int main(void) {
         printf("\r");
 
         c = toupper(c);
+        int terminate = 'T' == c;
         int index = c - 'A';
         int valid = (0 <= index) && (index < ARRAY_SIZE(e));
-        if (!valid) {
+        if (!valid && !terminate) {
             continue;
         }
         m_log_buf[0] = '\0';
 
-        int terminate = 'T' == c;
         if (terminate) {
             hsm_dispatch(g_regular, &(struct event){.id = HSM_EVT_TERM});
             test_print(c);
