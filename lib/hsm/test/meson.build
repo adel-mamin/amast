@@ -54,6 +54,13 @@ if unit_test
     test('hsm_top_as_nca', e, suite: 'hsm')
 
     e = executable(
+        'redispatch',
+        ['redispatch.c'],
+        link_with: test_lib,
+        include_directories: inc)
+    test('redispatch', e, suite: 'hsm')
+
+    e = executable(
         'submachine',
         [
             'common.c',

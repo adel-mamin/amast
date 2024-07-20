@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020-2023 Adel Mamin
+ * Copyright (c) 2020-2024 Adel Mamin
  * Copyright (c) 2019 Ryan Hartlage (documentation)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -67,6 +67,7 @@ enum hsm_rc {
     HSM_STATE_HANDLED = 0,
     HSM_STATE_IGNORED = HSM_STATE_HANDLED,
     HSM_STATE_TRAN,
+    HSM_STATE_TRAN_REDISPATCH,
     HSM_STATE_SUPER
 };
 
@@ -161,6 +162,24 @@ struct hsm {
  */
 #define HSM_TRAN(...) \
     GET_MACRO_2_(__VA_ARGS__, HSM_TRAN_2_, HSM_TRAN_1_, _)(__VA_ARGS__)
+
+/** Helper macro. Not to be used directly. */
+#define HSM_TRAN_REDISPATCH_1_(s) \
+    (HSM_SET_TEMP_1_(s), HSM_STATE_TRAN_REDISPATCH)
+/** Helper macro. Not to be used directly. */
+#define HSM_TRAN_REDISPATCH_2_(s, i) \
+    (HSM_SET_TEMP_2_(s, i), HSM_STATE_TRAN_REDISPATCH)
+
+/**
+ * Event redispatch is requested. Transition is taken.
+ * It should never be returned for entry, exit or init events.
+ * Do not redispatch the same event more than once.
+ * @param s  the new state of type #hsm_state_fn (mandatory)
+ * @param i  the new state submachine instance (optional, default is 0)
+ */
+#define HSM_TRAN_REDISPATCH(...)                                                 \
+    GET_MACRO_2_(__VA_ARGS__, HSM_TRAN_REDISPATCH_2_, HSM_TRAN_REDISPATCH_1_, _) \
+    (__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
 #define HSM_SUPER_1_(s) (HSM_SET_TEMP_1_(s), HSM_STATE_SUPER)

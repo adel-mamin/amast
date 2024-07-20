@@ -136,7 +136,7 @@ EVENT PROPAGATION
 Events are always sent first to the active state. The active state can choose
 whether to consume the event or to pass it to its parent. If the state
 chooses to consume the event then event handling ends with the state. If,
-however, the state chooses to pass then the event will be sent to the state's
+however, the state chooses to pass, then the event will be sent to the state's
 parent. At this point the parent must make the same decision. Event handling
 ends when the state or one of its ancestors consumes the event or the event
 reaches the default superstate **hsm_top()**. The default top level
@@ -144,7 +144,7 @@ superstate **hsm_top()** always ignores all events.
 
 Assume that the state C shown above is active and an event is sent to the
 state machine. State C will be the first state to receive this event. If it
-chooses to pass then the event will be sent to state B, its direct parent. If
+chooses to pass then, the event will be sent to state B, its direct parent. If
 state B also chooses to pass then the event will finally be sent to state
 A. If A chooses to pass then event is consumed by **hsm_top()**.
 
@@ -178,7 +178,7 @@ to E.
 
 If B is the current state and F is the target state, then the NCA
 is the default top level state Z, so exit events are sent to B and A
-and then an entry event is sent to F. Then the init event is sent to F
+and then an entry event is sent to F. Then the init event is sent to F.
 
 If C is the current state and the target state, this exercises the special
 case of a self-transition so C will be sent an exit event then an entry event
@@ -188,8 +188,18 @@ If C is the current state and the transition is initiated by A with the
 target state A, then NCA is A, the exit events are sent to C,B,A and then the
 entry event is sent to A followed by the init event.
 
+If C is the current state and the transition is initiated by C with the
+target state A, then NCA is A, the exit events are sent to C,B and then the
+init event is sent to A. Please note that the state A is not exited in
+this case.
+
 To initiate a transition the state handler function must return
-**HSM_TRAN(target_state)**.
+**HSM_TRAN(target_state)** or **HSM_TRAN_REDISPATCH(target_state)**.
+
+If state handler function returns **HSM_TRAN_REDISPATCH(target_state)**,
+then the transition is executed first and then the same event is
+dispatched to the new current state. This is a convenience feature,
+that allows HSM to handle the event in the state that expects it.
 
 HSM states cannot initiate state transitions when processing entry and exit
 events.
@@ -201,9 +211,14 @@ If C is the current state and the transition is initiated by A with the
 target state D, then NCA is A, the exit events are sent to C,B and then the
 entry event is sent to D followed by the init event. The init event triggers
 the initial state transition to E. So, the entry event is sent to E followed
-by the init event.  The initial state transition must necessarily target a
-direct or transitive substate of a given state. An initial transition cannot
-target a peer state or go up in state hierarchy to higher-level states,
+by the init event.
+
+The initial state transition must necessarily target a direct or transitive
+substate of a given state. An initial transition cannot target a peer state
+or go up in state hierarchy to higher-level states.
+
+For example, the initial transition of state D can only target E and no any
+other state.
 
 INITIAL STATE
 =============

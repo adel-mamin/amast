@@ -161,7 +161,7 @@ static void hsm_enter_and_init(struct hsm *hsm, struct hsm_path *path) {
     hsm_set_current(hsm, &HSM_STATE(path->fn[0], path->instance[0]));
 }
 
-void hsm_dispatch(struct hsm *hsm, const struct event *event) {
+static enum hsm_rc hsm_dispatch_(struct hsm *hsm, const struct event *event) {
     ASSERT(hsm);
     ASSERT(hsm->state);
     ASSERT(hsm->state == hsm->temp);
@@ -180,10 +180,13 @@ void hsm_dispatch(struct hsm *hsm, const struct event *event) {
         rc = hsm->temp(hsm, event);
     } while (HSM_STATE_SUPER == rc);
 
-    if (rc != HSM_STATE_TRAN) { /* event is handled or ignored */
-        hsm->temp = hsm->state;
-        hsm->itemp = hsm->istate;
-        return;
+    {
+        int tran = (HSM_STATE_TRAN == rc) || (HSM_STATE_TRAN_REDISPATCH == rc);
+        if (!tran) { /* event is handled or ignored */
+            hsm->temp = hsm->state;
+            hsm->itemp = hsm->istate;
+            return rc;
+        }
     }
 
     /* the event triggered state transition */
@@ -204,10 +207,10 @@ void hsm_dispatch(struct hsm *hsm, const struct event *event) {
         path.fn[0] = dst.fn;
         path.instance[0] = dst.instance;
         path.len = 1;
-        rc = src.fn(hsm, &m_hsm_evt[HSM_EVT_EXIT]);
-        ASSERT((HSM_STATE_SUPER == rc) || (HSM_STATE_HANDLED == rc));
+        enum hsm_rc r = src.fn(hsm, &m_hsm_evt[HSM_EVT_EXIT]);
+        ASSERT((HSM_STATE_SUPER == r) || (HSM_STATE_HANDLED == r));
         hsm_enter_and_init(hsm, &path);
-        return;
+        return rc;
     }
 
     hsm_build(hsm, &path, /*from=*/&dst, /*until=*/&HSM_STATE(hsm_top));
@@ -223,19 +226,29 @@ void hsm_dispatch(struct hsm *hsm, const struct event *event) {
                 /* LCA is other than hsm_top() */
                 path.len = i;
                 hsm_enter_and_init(hsm, &path);
-                return;
+                return rc;
             }
         }
-        rc = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EXIT]);
-        if (HSM_STATE_HANDLED == rc) {
-            rc = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EMPTY]);
+        enum hsm_rc r = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EXIT]);
+        if (HSM_STATE_HANDLED == r) {
+            r = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EMPTY]);
         }
-        ASSERT(HSM_STATE_SUPER == rc);
+        ASSERT(HSM_STATE_SUPER == r);
         hsm->state = hsm->temp;
         hsm->istate = hsm->itemp;
     }
     /* LCA is hsm_top() */
     hsm_enter_and_init(hsm, &path);
+
+    return rc;
+}
+
+void hsm_dispatch(struct hsm *hsm, const struct event *event) {
+    enum hsm_rc rc = hsm_dispatch_(hsm, event);
+    if (HSM_STATE_TRAN_REDISPATCH == rc) {
+        rc = hsm_dispatch_(hsm, event);
+        ASSERT(HSM_STATE_TRAN_REDISPATCH != rc);
+    }
 }
 
 bool hsm_is_in(struct hsm *hsm, const struct hsm_state *state) {
