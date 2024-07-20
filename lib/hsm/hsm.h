@@ -177,8 +177,10 @@ struct hsm {
  * @param s  the new state of type #hsm_state_fn (mandatory)
  * @param i  the new state submachine instance (optional, default is 0)
  */
-#define HSM_TRAN_REDISPATCH(...)                                                 \
-    GET_MACRO_2_(__VA_ARGS__, HSM_TRAN_REDISPATCH_2_, HSM_TRAN_REDISPATCH_1_, _) \
+#define HSM_TRAN_REDISPATCH(...)                                       \
+    GET_MACRO_2_(                                                      \
+        __VA_ARGS__, HSM_TRAN_REDISPATCH_2_, HSM_TRAN_REDISPATCH_1_, _ \
+    )                                                                  \
     (__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
@@ -236,7 +238,7 @@ bool hsm_state_is_eq(struct hsm *hsm, const struct hsm_state *state);
  * @param hsm  the HSM handler
  * @return the instance
  */
-int hsm_get_instance(const struct hsm *hsm);
+int hsm_get_state_instance(const struct hsm *hsm);
 
 /**
  * HSM constructor.

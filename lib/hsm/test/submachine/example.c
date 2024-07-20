@@ -65,11 +65,7 @@ int main(void) {
 
     static const char *blank = "        ";
     static const int e[] = {
-        HSM_EVT_A,
-        HSM_EVT_B,
-        HSM_EVT_C,
-        HSM_EVT_D,
-        HSM_EVT_E
+        HSM_EVT_A, HSM_EVT_B, HSM_EVT_C, HSM_EVT_D, HSM_EVT_E
     };
 
     for (;;) {
@@ -112,4 +108,3 @@ int main(void) {
 
     return 0;
 }
-

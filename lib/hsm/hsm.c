@@ -69,7 +69,7 @@ bool hsm_state_is_eq(struct hsm *hsm, const struct hsm_state *state) {
     return (hsm->state == state->fn) && (hsm->istate == state->instance);
 }
 
-int hsm_get_instance(const struct hsm *hsm) {
+int hsm_get_state_instance(const struct hsm *hsm) {
     ASSERT(hsm);
     return hsm->itemp;
 }
