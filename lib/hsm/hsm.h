@@ -140,16 +140,14 @@ struct hsm {
 #define HSM_IGNORED() HSM_STATE_IGNORED
 
 /** Helper macro. Not to be used directly. */
-#define HSM_SET_TEMP_1_(s) (((struct hsm *)me)->temp = HSM_STATE_FN(s))
-/** Helper macro. Not to be used directly. */
-#define HSM_SET_TEMP_2_(s, i)                    \
+#define HSM_SET_TEMP_(s, i)                    \
     (((struct hsm *)me)->temp = HSM_STATE_FN(s), \
      ((struct hsm *)me)->itemp = (i))
 
 /** Helper macro. Not to be used directly. */
-#define HSM_TRAN_1_(s) (HSM_SET_TEMP_1_(s), HSM_STATE_TRAN)
+#define HSM_TRAN_1_(s) (HSM_SET_TEMP_(s, 0), HSM_STATE_TRAN)
 /** Helper macro. Not to be used directly. */
-#define HSM_TRAN_2_(s, i) (HSM_SET_TEMP_2_(s, i), HSM_STATE_TRAN)
+#define HSM_TRAN_2_(s, i) (HSM_SET_TEMP_(s, i), HSM_STATE_TRAN)
 
 /**
  * Event processing is over. Transition is taken.
@@ -165,10 +163,10 @@ struct hsm {
 
 /** Helper macro. Not to be used directly. */
 #define HSM_TRAN_REDISPATCH_1_(s) \
-    (HSM_SET_TEMP_1_(s), HSM_STATE_TRAN_REDISPATCH)
+    (HSM_SET_TEMP_(s, 0), HSM_STATE_TRAN_REDISPATCH)
 /** Helper macro. Not to be used directly. */
 #define HSM_TRAN_REDISPATCH_2_(s, i) \
-    (HSM_SET_TEMP_2_(s, i), HSM_STATE_TRAN_REDISPATCH)
+    (HSM_SET_TEMP_(s, i), HSM_STATE_TRAN_REDISPATCH)
 
 /**
  * Event redispatch is requested. Transition is taken.
@@ -184,9 +182,9 @@ struct hsm {
     (__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
-#define HSM_SUPER_1_(s) (HSM_SET_TEMP_1_(s), HSM_STATE_SUPER)
+#define HSM_SUPER_1_(s) (HSM_SET_TEMP_(s, 0), HSM_STATE_SUPER)
 /** Helper macro. Not to be used directly. */
-#define HSM_SUPER_2_(s, i) (HSM_SET_TEMP_2_(s, i), HSM_STATE_SUPER)
+#define HSM_SUPER_2_(s, i) (HSM_SET_TEMP_(s, i), HSM_STATE_SUPER)
 
 /**
  * Event processing is passed to superstate. No transition was taken.
