@@ -68,8 +68,7 @@ static enum hsm_rc s1(struct basic *me, const struct event *event) {
     switch (event->id) {
     case HSM_EVT_INIT: {
         static const struct hsm_state tt[] = {
-            [S1_0] = {.fn = HSM_STATE_FN(s2)},
-            [S1_1] = {.fn = HSM_STATE_FN(s3)}
+            [S1_0] = {.fn = HSM_STATE_FN(s2)}, [S1_1] = {.fn = HSM_STATE_FN(s3)}
         };
         int instance = hsm_get_state_instance(&me->hsm);
         ASSERT(instance < ARRAY_SIZE(tt));

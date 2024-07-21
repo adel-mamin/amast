@@ -140,7 +140,7 @@ struct hsm {
 #define HSM_IGNORED() HSM_STATE_IGNORED
 
 /** Helper macro. Not to be used directly. */
-#define HSM_SET_TEMP_(s, i)                    \
+#define HSM_SET_TEMP_(s, i)                      \
     (((struct hsm *)me)->temp = HSM_STATE_FN(s), \
      ((struct hsm *)me)->itemp = (i))
 
