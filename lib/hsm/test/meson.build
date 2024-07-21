@@ -61,6 +61,13 @@ if unit_test
     test('redispatch', e, suite: 'hsm')
 
     e = executable(
+        'history',
+        ['history.c'],
+        link_with: test_lib,
+        include_directories: inc)
+    test('history', e, suite: 'hsm')
+
+    e = executable(
         'submachine',
         [
             'common.c',

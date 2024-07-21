@@ -241,3 +241,53 @@ HSM TOPOLOGY
 HSM framework discovers the HSM topology by sending **HSM_EVT_EMPTY** event
 to state event handlers. The state event handlers should explicitly process
 the event and always return **HSM_SUPER(superstate)** in response.
+
+TRANSITION TO HISTORY
+=====================
+
+Transition to history is a useful technique that is convenient to apply in
+certain use cases. It does not require to use any dedicated HSM API.
+
+Given the example HSM above the transition to history technique can be
+demonstrated as follows. Assume that the HSM is in the state B.
+The user code stores the current state in a local variable of type
+**struct hsm_state**. This is done with:
+
+.. code-block:: C
+
+   struct foo {
+       struct hsm hsm;
+       ...
+       struct hsm_state history;
+       ...
+   };
+   ...
+   static enum hsm_rc B(struct oven *me, const struct event *event) {
+       switch (event->id) {
+       case HSM_EVT_ENTRY:
+           me->history  = HSM_STATE(B);
+           return HSM_HANLDED();
+       ...
+       }
+       return HSM_SUPER(A);
+   }
+
+Then the transition to state F happens, which is then followed by a request
+to transition back to the previous state. Since the previous state is captured
+in **me->history** it can be achieved by doing this:
+
+.. code-block:: C
+
+   static enum hsm_rc F(struct oven *me, const struct event *event) {
+       switch (event->id) {
+       case HSM_EVT_FOO:
+           return HSM_TRAN(me->history.fn, me->history.instance);
+       ...
+       }
+       return HSM_SUPER(hsm_top);
+   }
+
+So, that is essentially all about it.
+
+Another example of the usage of the transition to history technique can be seen
+in **test/history.c** unit test.
