@@ -68,22 +68,32 @@ if unit_test
     test('history', e, suite: 'hsm')
 
     e = executable(
-        'submachine',
+        'submachine-basic',
         [
             'common.c',
-            'submachine' / 'submachine.c',
-            'submachine' / 'test.c'
+            'submachine' / 'basic' / 'test.c'
         ],
         link_with: test_lib,
         include_directories: inc)
-    test('submachine', e, suite: 'hsm')
+    test('submachine-basic', e, suite: 'hsm')
+
+    e = executable(
+        'submachine-complex',
+        [
+            'common.c',
+            'submachine' / 'complex' / 'submachine.c',
+            'submachine' / 'complex' / 'test.c'
+        ],
+        link_with: test_lib,
+        include_directories: inc)
+    test('submachine-complex', e, suite: 'hsm')
 
     e = executable(
         'submachine-example',
         [
             'common.c',
-            'submachine' / 'submachine.c',
-            'submachine' / 'example.c'
+            'submachine' / 'complex' / 'submachine.c',
+            'submachine' / 'complex' / 'example.c'
         ],
         link_with: test_lib,
         include_directories: inc)

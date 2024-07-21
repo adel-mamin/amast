@@ -291,3 +291,93 @@ So, that is essentially all about it.
 
 Another example of the usage of the transition to history technique can be seen
 in **test/history.c** unit test.
+
+SUBMACHINES
+===========
+
+Submachines are reusable HSMs. They can be as simple as one reusable state.
+The more complex submachines can be multistate interconnected HSMs.
+
+The main purpose of submachines is code reuse.
+
+Here is an example of submachine with one reusable state S1.
+It shows to instances of S1 called S1/0 and S1/1.
+
+::
+
+       +---------------------------------------+
+       |                                       |
+       |                  Z                    |
+       |      (HSM top superstate hsm_top())   |
+       |                                       |
+       |  +---------------------------------+  |
+       |  |               s                 |  |
+       |  |  +-----------+  +------------+  |  |
+       |  |  |    s1/0   |  |    s1/1    |  |  |
+       |  |  |   *       |  |   *        |  |  |
+       |  |  |   |       |  |   |        |  |  |
+       |  |  | +-v-----+ |  | +-v------+ |  |  |
+       |  |  | |   s2  | |  | |   s3   | |  |  |
+       |  |  | +-------+ |  | +--------+ |  |  |
+       |  |  +---^-------+  +---^--------+  |  |
+       |  |      | FOO          | BAR       |  |
+       |  +------+-------^--+---+-----------+  |
+       |                 |  |                  |
+       |                 +--+ BAZ              |
+       +---------------------------------------+
+
+Here is how it is coded in pseudocode:
+
+.. code-block:: C
+
+   /* s1 submachine indices */
+   #define S1_0 0
+   #define S1_1 1
+
+   static enum hsm_rc s(struct oven *me, const struct event *event) {
+       switch (event->id) {
+       case FOO:
+           return HSM_TRAN(s1, /*instance=*/S1_0);
+       case BAR:
+           return HSM_TRAN(s1, /*instance=*/S1_1);
+       case BAZ:
+           return HSM_TRAN(s);
+       ...
+       }
+       return HSM_SUPER(hsm_top);
+   }
+
+   static enum hsm_rc s1(struct oven *me, const struct event *event) {
+       switch (event->id) {
+       case HSM_EVT_INIT: {
+           static const struct hsm_state tt[] = {
+               [S1_0] = {.fn = HSM_STATE_FN(s2)},
+               [S1_1] = {.fn = HSM_STATE_FN(s3)}
+           };
+           int instance = hsm_get_state_instance(&me->hsm);
+           ASSERT(instance < ARRAY_SIZE(tt));
+           const struct hsm_state *tran = &tt[instance];
+           return HSM_TRAN(tran->fn, tran->instance);
+       }
+       ...
+       }
+       return HSM_SUPER(s);
+   }
+
+   static enum hsm_rc s2(struct oven *me, const struct event *event) {
+       ...
+       return HSM_SUPER(s1, S1_0);
+   }
+
+   static enum hsm_rc s3(struct oven *me, const struct event *event) {
+       ...
+       return HSM_SUPER(s1, S1_1);
+   }
+
+Please note that any transitions between states within submachines as well as
+all references to them via **HSM_SUPER()**  must be done
+with explicit specification of state instance, which can be retrieved by
+calling **hsm_get_state_instance()** API.
+
+The complete implementation of the given submachine example can be found
+in **test/submachine/basic/test.c**
