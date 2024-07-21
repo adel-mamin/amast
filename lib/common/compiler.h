@@ -73,7 +73,8 @@
 /* #endif /\* #ifndef COMPILER *\/ */
 
 #ifndef COMPILER_BITS
-#if (defined(__x86_64__) || defined(__64BIT__) || (defined(__WORDSIZE) && (__WORDSIZE == 64)))
+#if (defined(__x86_64__) || defined(__64BIT__) || \
+     (defined(__WORDSIZE) && (__WORDSIZE == 64)))
 #define COMPILER_BITS 64 /*!< Compiler native word size */
 #define INT_BITS 32
 #define LONG_BITS 64
@@ -498,7 +499,9 @@ typedef int ssize_t;
 /* Workaround missing __rdtsc in Clang < 3.5 (or Clang < 6.0 on Xcode) */
 #if defined(__x86_64__) || defined(__i386__)
 #if (COMPILER_ID == COMPILER_CLANG)
-#if (!defined(__apple_build_version__) && ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ < 5)))) || \
+#if (!defined(__apple_build_version__) &&                    \
+     ((__clang_major__ < 3) ||                               \
+      ((__clang_major__ == 3) && (__clang_minor__ < 5)))) || \
     (defined(__apple_build_version__) && (__clang_major__ < 6))
 static inline unsigned long long __rdtsc() {
 #if defined __i386__
