@@ -66,7 +66,14 @@ bool hsm_state_is_eq(struct hsm *hsm, const struct hsm_state *state) {
     ASSERT(hsm->state);
     ASSERT(state);
     ASSERT(state->fn);
-    return (hsm->state == state->fn) && (hsm->istate == state->instance);
+    if (hsm->state != state->fn) {
+        return false;
+    }
+    if (hsm->state == HSM_STATE_FN(hsm_top)) {
+        ASSERT(0 == hsm->istate);
+        return true;
+    }
+    return hsm->istate == state->instance;
 }
 
 int hsm_get_state_instance(const struct hsm *hsm) {
@@ -181,7 +188,7 @@ static enum hsm_rc hsm_dispatch_(struct hsm *hsm, const struct event *event) {
     } while (HSM_STATE_SUPER == rc);
 
     {
-        int tran = (HSM_STATE_TRAN == rc) || (HSM_STATE_TRAN_REDISPATCH == rc);
+        bool tran = (HSM_STATE_TRAN == rc) || (HSM_STATE_TRAN_REDISPATCH == rc);
         if (!tran) { /* event is handled or ignored */
             hsm->temp = hsm->state;
             hsm->itemp = hsm->istate;
