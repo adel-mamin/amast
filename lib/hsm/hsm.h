@@ -39,30 +39,44 @@ extern "C" {
 #endif
 
 /**
+ * Empty event.
  * Should not cause any side effects in event handlers.
- * The event handlers must always return the HSM_SUPER() in response.
+ * The event handlers must always return the HSM_SUPER() in response
+ * to this event.
  */
 #define HSM_EVT_EMPTY 0
 
 /**
+ * Init event.
  * Run initial transition from a given state.
  * Always follows the #HSM_EVT_ENTRY event.
  */
 #define HSM_EVT_INIT 1
 
 /**
+ * Entry event.
  * Run entry action(s) for a given state.
  * Always precedes the #HSM_EVT_INIT event.
+ * No state transition is allowed in response to this event.
  */
 #define HSM_EVT_ENTRY 2
 
-/** Run exit action(s) for a given state. */
+/**
+ * Exit event.
+ * Run exit action(s) for a given state.
+ * No state transition is allowed in response to this event.
+ */
 #define HSM_EVT_EXIT 3
 
 /** User event IDs start with this ID (inclusive). */
 #define HSM_EVT_USER 4
 
-/** HSM state handler return codes */
+/**
+ * HSM state handler return codes.
+ * These return codes are not used directly in user code.
+ * Instead user code is expected to use as return values the macros
+ * listed in descriptions to each of the constants.
+ */
 enum hsm_rc {
     /* Returned by HSM_HANDLED() */
     HSM_RC_HANDLED = 0,
@@ -81,8 +95,8 @@ struct hsm;
  * A state handler.
  * One should not assume that a state handler would be invoked only for
  * processing event IDs enlisted in the case statement of internal
- * switch statement. You should avoid any code outside of the switch
- * statement, especially code that would have side effects.
+ * switch statement. Event handlers should avoid using any code outside
+ * of the switch statement, especially code that has side effects.
  * @param hsm    the state machine
  * @param event  the event to handle
  * @return One of HSM_RC_... constants.
@@ -136,8 +150,6 @@ struct hsm {
     unsigned itemp : 8;
 };
 
-/** Event was ignored. No transition was taken. */
-#define HSM_IGNORED() HSM_STATE_IGNORED
 /**
  * Event processing is over. No transition was taken.
  * Used as a return value from an event handler that handled
@@ -159,9 +171,10 @@ struct hsm {
 /**
  * Event processing is over. Transition is taken.
  * It should never be returned for entry or exit events.
- * Conversely, the response to init event can optionally include
- * this macro to designate transition to the provided substate
- * of the current state.
+ * Conversely, the response to init event can optionally use
+ * this macro as a return value to designate transition to
+ * the provided state. The target state in this case must be
+ * a substate of the current state.
  * @param s  the new state of type #hsm_state_fn (mandatory)
  * @param i  the new state submachine instance (optional, default is 0)
  */
@@ -204,7 +217,7 @@ struct hsm {
     GET_MACRO_2_(__VA_ARGS__, HSM_SUPER_2_, HSM_SUPER_1_, _)(__VA_ARGS__)
 
 /**
- * Synchronous dispatching of event to the given HSM.
+ * Synchronous dispatch of event to the given HSM.
  * @param hsm    the HSM handler
  * @param event  the event to dispatch
  */
@@ -226,7 +239,6 @@ bool hsm_is_in(struct hsm *hsm, const struct hsm_state *state);
  * Check if current state equals to #state (not in hierarchical sense).
  *
  * If current state of hsm is A, which is substate of B, then
- *
  * hsm_state_is_eq(hsm, &HSM_STATE(A)) is true, but
  * hsm_state_is_eq(hsm, &HSM_STATE(B)) is false.
  *
@@ -261,8 +273,8 @@ void hsm_dtor(struct hsm *hsm);
 
 /**
  * Performs HSM initial transition.
- * @param hsm        the HSM handler
- * @param init_event the init event. Can be NULL. The event is not recycled.
+ * @param hsm         the HSM handler
+ * @param init_event  the init event. Can be NULL. The event is not recycled.
  */
 void hsm_init(struct hsm *hsm, const struct event *init_event);
 
