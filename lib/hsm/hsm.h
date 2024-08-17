@@ -64,11 +64,14 @@ extern "C" {
 
 /** HSM state handler return codes */
 enum hsm_rc {
-    HSM_STATE_HANDLED = 0,
-    HSM_STATE_IGNORED = HSM_STATE_HANDLED,
-    HSM_STATE_TRAN,
-    HSM_STATE_TRAN_REDISPATCH,
-    HSM_STATE_SUPER
+    /* Returned by HSM_HANDLED() */
+    HSM_RC_HANDLED = 0,
+    /* Returned by HSM_TRAN() */
+    HSM_RC_TRAN,
+    /* Returned by HSM_TRAN_REDISPATCH() */
+    HSM_RC_TRAN_REDISPATCH,
+    /* Returned by HSM_SUPER() */
+    HSM_RC_SUPER
 };
 
 /** forward declaration */
@@ -82,7 +85,7 @@ struct hsm;
  * statement, especially code that would have side effects.
  * @param hsm    the state machine
  * @param event  the event to handle
- * @return One of HSM_STATE_... constants.
+ * @return One of HSM_RC_... constants.
  */
 typedef enum hsm_rc (*hsm_state_fn)(struct hsm *hsm, const struct event *event);
 
@@ -109,14 +112,14 @@ struct hsm_state {
  *
  * @param h  HSM event handler
  * @param i  HSM event handler instance. Used by submachines. Default is 0.
- * @return HSM state function
+ * @return HSM state structure
  */
 #define HSM_STATE(...) \
     GET_MACRO_2_(__VA_ARGS__, HSM_STATE_2_, HSM_STATE_1_, _)(__VA_ARGS__)
 
 /**
- * Get HSM state function from HSM event handler.
- * @param h HSM event handler
+ * Get HSM state function of type hsm_state_fn from any HSM event handler.
+ * @param h  HSM event handler
  * @return HSM state function
  */
 #define HSM_STATE_FN(h) ((hsm_state_fn)(h))
@@ -133,11 +136,15 @@ struct hsm {
     unsigned itemp : 8;
 };
 
-/** Event processing is over. No transition was taken. */
-#define HSM_HANDLED() HSM_STATE_HANDLED
-
 /** Event was ignored. No transition was taken. */
 #define HSM_IGNORED() HSM_STATE_IGNORED
+/**
+ * Event processing is over. No transition was taken.
+ * Used as a return value from an event handler that handled
+ * an event and wants to prevent the event propagation to
+ * superstate(s).
+ */
+#define HSM_HANDLED() HSM_RC_HANDLED
 
 /** Helper macro. Not to be used directly. */
 #define HSM_SET_TEMP_(s, i)                      \
@@ -145,9 +152,9 @@ struct hsm {
      ((struct hsm *)me)->itemp = (i))
 
 /** Helper macro. Not to be used directly. */
-#define HSM_TRAN_1_(s) (HSM_SET_TEMP_(s, 0), HSM_STATE_TRAN)
+#define HSM_TRAN_1_(s) (HSM_SET_TEMP_(s, 0), HSM_RC_TRAN)
 /** Helper macro. Not to be used directly. */
-#define HSM_TRAN_2_(s, i) (HSM_SET_TEMP_(s, i), HSM_STATE_TRAN)
+#define HSM_TRAN_2_(s, i) (HSM_SET_TEMP_(s, i), HSM_RC_TRAN)
 
 /**
  * Event processing is over. Transition is taken.
@@ -163,10 +170,10 @@ struct hsm {
 
 /** Helper macro. Not to be used directly. */
 #define HSM_TRAN_REDISPATCH_1_(s) \
-    (HSM_SET_TEMP_(s, 0), HSM_STATE_TRAN_REDISPATCH)
+    (HSM_SET_TEMP_(s, 0), HSM_RC_TRAN_REDISPATCH)
 /** Helper macro. Not to be used directly. */
 #define HSM_TRAN_REDISPATCH_2_(s, i) \
-    (HSM_SET_TEMP_(s, i), HSM_STATE_TRAN_REDISPATCH)
+    (HSM_SET_TEMP_(s, i), HSM_RC_TRAN_REDISPATCH)
 
 /**
  * Event redispatch is requested. Transition is taken.
@@ -182,9 +189,9 @@ struct hsm {
     (__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
-#define HSM_SUPER_1_(s) (HSM_SET_TEMP_(s, 0), HSM_STATE_SUPER)
+#define HSM_SUPER_1_(s) (HSM_SET_TEMP_(s, 0), HSM_RC_SUPER)
 /** Helper macro. Not to be used directly. */
-#define HSM_SUPER_2_(s, i) (HSM_SET_TEMP_(s, i), HSM_STATE_SUPER)
+#define HSM_SUPER_2_(s, i) (HSM_SET_TEMP_(s, i), HSM_RC_SUPER)
 
 /**
  * Event processing is passed to superstate. No transition was taken.

@@ -101,14 +101,14 @@ static void hsm_build(
     path->instance[0] = from->instance;
     path->len = 1;
     enum hsm_rc rc = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EMPTY]);
-    ASSERT(HSM_STATE_SUPER == rc);
+    ASSERT(HSM_RC_SUPER == rc);
     while (!hsm_temp_is_eq(hsm, until)) {
         ASSERT(path->len < HSM_HIERARCHY_DEPTH_MAX);
         path->fn[path->len] = hsm->temp;
         path->instance[path->len] = hsm->itemp;
         path->len++;
         rc = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EMPTY]);
-        ASSERT(HSM_STATE_SUPER == rc);
+        ASSERT(HSM_RC_SUPER == rc);
     }
     *hsm = hsm_;
 }
@@ -122,7 +122,7 @@ static void hsm_enter(struct hsm *hsm, const struct hsm_path *path) {
     for (int i = path->len - 1; i >= 0; --i) {
         hsm_set_current(hsm, &HSM_STATE(path->fn[i], path->instance[i]));
         enum hsm_rc rc = hsm->state(hsm, &m_hsm_evt[HSM_EVT_ENTRY]);
-        ASSERT((HSM_STATE_SUPER == rc) || (HSM_STATE_HANDLED == rc));
+        ASSERT((HSM_RC_SUPER == rc) || (HSM_RC_HANDLED == rc));
     }
 }
 
@@ -136,11 +136,11 @@ static void hsm_exit(struct hsm *hsm, struct hsm_state *until) {
         hsm->state = hsm->temp;
         hsm->istate = hsm->itemp;
         enum hsm_rc rc = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EXIT]);
-        ASSERT(rc != HSM_STATE_TRAN);
-        if (HSM_STATE_HANDLED == rc) {
+        ASSERT(rc != HSM_RC_TRAN);
+        if (HSM_RC_HANDLED == rc) {
             rc = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EMPTY]);
         }
-        ASSERT(HSM_STATE_SUPER == rc);
+        ASSERT(HSM_RC_SUPER == rc);
     }
 }
 
@@ -158,7 +158,7 @@ static void hsm_exit(struct hsm *hsm, struct hsm_state *until) {
 static void hsm_enter_and_init(struct hsm *hsm, struct hsm_path *path) {
     hsm_enter(hsm, path);
     hsm_set_current(hsm, &HSM_STATE(path->fn[0], path->instance[0]));
-    while (hsm->state(hsm, &m_hsm_evt[HSM_EVT_INIT]) == HSM_STATE_TRAN) {
+    while (hsm->state(hsm, &m_hsm_evt[HSM_EVT_INIT]) == HSM_RC_TRAN) {
         struct hsm_state from = HSM_STATE(hsm->temp, hsm->itemp);
         struct hsm_state until = HSM_STATE(path->fn[0], path->instance[0]);
         hsm_build(hsm, path, &from, &until);
@@ -176,7 +176,7 @@ static enum hsm_rc hsm_dispatch_(struct hsm *hsm, const struct event *event) {
     ASSERT(event);
 
     struct hsm_state src = {.fn = NULL, .instance = 0};
-    enum hsm_rc rc = HSM_STATE_HANDLED;
+    enum hsm_rc rc = HSM_RC_HANDLED;
     /*
      * propagate event up the ancestor chain till it is either
      * handled or ignored or triggers transition
@@ -185,10 +185,10 @@ static enum hsm_rc hsm_dispatch_(struct hsm *hsm, const struct event *event) {
         src.fn = hsm->temp;
         src.instance = hsm->itemp;
         rc = hsm->temp(hsm, event);
-    } while (HSM_STATE_SUPER == rc);
+    } while (HSM_RC_SUPER == rc);
 
     {
-        bool tran = (HSM_STATE_TRAN == rc) || (HSM_STATE_TRAN_REDISPATCH == rc);
+        bool tran = (HSM_RC_TRAN == rc) || (HSM_RC_TRAN_REDISPATCH == rc);
         if (!tran) { /* event is handled or ignored */
             hsm->temp = hsm->state;
             hsm->itemp = hsm->istate;
@@ -215,7 +215,7 @@ static enum hsm_rc hsm_dispatch_(struct hsm *hsm, const struct event *event) {
         path.instance[0] = dst.instance;
         path.len = 1;
         enum hsm_rc r = src.fn(hsm, &m_hsm_evt[HSM_EVT_EXIT]);
-        ASSERT((HSM_STATE_SUPER == r) || (HSM_STATE_HANDLED == r));
+        ASSERT((HSM_RC_SUPER == r) || (HSM_RC_HANDLED == r));
         hsm_enter_and_init(hsm, &path);
         return rc;
     }
@@ -237,10 +237,10 @@ static enum hsm_rc hsm_dispatch_(struct hsm *hsm, const struct event *event) {
             }
         }
         enum hsm_rc r = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EXIT]);
-        if (HSM_STATE_HANDLED == r) {
+        if (HSM_RC_HANDLED == r) {
             r = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EMPTY]);
         }
-        ASSERT(HSM_STATE_SUPER == r);
+        ASSERT(HSM_RC_SUPER == r);
         hsm->state = hsm->temp;
         hsm->istate = hsm->itemp;
     }
@@ -252,9 +252,9 @@ static enum hsm_rc hsm_dispatch_(struct hsm *hsm, const struct event *event) {
 
 void hsm_dispatch(struct hsm *hsm, const struct event *event) {
     enum hsm_rc rc = hsm_dispatch_(hsm, event);
-    if (HSM_STATE_TRAN_REDISPATCH == rc) {
+    if (HSM_RC_TRAN_REDISPATCH == rc) {
         rc = hsm_dispatch_(hsm, event);
-        ASSERT(HSM_STATE_TRAN_REDISPATCH != rc);
+        ASSERT(HSM_RC_TRAN_REDISPATCH != rc);
     }
 }
 
@@ -270,7 +270,7 @@ bool hsm_is_in(struct hsm *hsm, const struct hsm_state *state) {
 
     while (!hsm_temp_is_eq(hsm, state) && (hsm->temp != hsm_top)) {
         enum hsm_rc rc = hsm->temp(hsm, &m_hsm_evt[HSM_EVT_EMPTY]);
-        ASSERT(HSM_STATE_SUPER == rc);
+        ASSERT(HSM_RC_SUPER == rc);
     }
     bool in = hsm_temp_is_eq(hsm, state);
 
@@ -304,7 +304,7 @@ void hsm_init(struct hsm *hsm, const struct event *init_event) {
     hsm->state = hsm->temp;
     hsm->istate = hsm->itemp;
     enum hsm_rc rc = hsm->temp(hsm, init_event);
-    ASSERT(HSM_STATE_TRAN == rc);
+    ASSERT(HSM_RC_TRAN == rc);
 
     struct hsm_state dst = {.fn = hsm->temp, .instance = hsm->itemp};
     struct hsm_path path;
@@ -315,5 +315,5 @@ void hsm_init(struct hsm *hsm, const struct event *init_event) {
 enum hsm_rc hsm_top(struct hsm *hsm, const struct event *event) {
     (void)hsm;
     (void)event;
-    return HSM_IGNORED();
+    return HSM_RC_HANDLED;
 }
