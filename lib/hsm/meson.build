@@ -117,7 +117,13 @@ e = executable(
         'example' / 'submachine' / 'example.c'
     ],
     link_with: test_lib,
-    include_directories: include_directories('test'))
+    include_directories: [
+        inc,
+        include_directories(
+            'test' / 'submachine' / 'complex',
+            'test',
+        )
+    ])
 
 e = executable(
     'regular-example',
@@ -126,4 +132,10 @@ e = executable(
         'example' / 'regular' / 'example.c'
     ],
     link_with: test_lib,
-    include_directories: include_directories('test'))
+    include_directories: [
+        inc,
+        include_directories(
+            'test' / 'regular',
+            'test'
+        )
+    ])
