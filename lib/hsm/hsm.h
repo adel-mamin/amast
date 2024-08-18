@@ -252,6 +252,8 @@ bool hsm_state_is_eq(struct hsm *hsm, const struct hsm_state *state);
 /**
  * Get state instance.
  * Always returns the instance of the state that calls the API.
+ * Calling the function in a state that is not part of any submachine
+ * will always return 0.
  * @param hsm  the HSM handler
  * @return the instance
  */

@@ -7,7 +7,7 @@ CREDIT
 
 The design and implementation of the HSM library is heavily inspired by
 `Practical UML Statecharts in C/C++: Event-Driven Programming for Embedded Systems 2nd Edition <https://www.state-machine.com/psicc2>`_
-by Miro Samek. Also the example HSM state diagram for unit testing is borrowed
+by Miro Samek. Also the example HSM state diagram in **hsm.png** is borrowed
 from the book.
 
 GLOSSARY
@@ -27,7 +27,7 @@ GLOSSARY
        (**HSM_EVT_INIT**). It immediately follows the entry event.
 
    state
-       an event handler. A,B,C,D,E,F,Z are all states
+       an event handler. A,B,C,D,E,F,hsm_top are all states
 
    current state
        the state which currently gets the incoming events
@@ -51,7 +51,7 @@ GLOSSARY
 
    superstate
        an HSM state that is a parent (ancestor) of one or more other states
-       (children, substates). A,B,D,Z are all superstates.
+       (children, substates). A,B,D,hsm_top are all superstates.
 
    top (super)state
        the ultimate root of the state hierarchy (**hsm_top()**)
@@ -59,7 +59,7 @@ GLOSSARY
    substate
        a state that has a superstate as its parent (ancestor).
        A state can be substate and superstate simultaneously.
-       A,B,C,D,E,F,Z are all substates.
+       A,B,C,D,E,F are all substates.
 
    child state
        same as substate
@@ -72,13 +72,13 @@ GLOSSARY
 
    ancestor chain
        the parent-child relation chain from a state to the top level superstate.
-       B-A-Z is an ancestor chain. Same is F-Z etc.
+       B-A-hsm_top is an ancestor chain. Same is F-hsm_top etc.
 
    nearest common ancestor (NCA)
        the first common ancestor in two ancestor chains.
-       For B-A-Z and F-Z the NCA is Z.
-       For C-B-A-Z and D-A-Z the NCA is A.
-       For C-B-A-Z and B-A-Z the NCA is B.
+       For B-A-hsm_top and F-hsm_top the NCA is hsm_top.
+       For C-B-A-hsm_top and D-A-hsm_top the NCA is A.
+       For C-B-A-hsm_top and B-A-hsm_top the NCA is B.
 
    topology
        HSM topology is the architecture of HSM - the set of all parent -
@@ -105,7 +105,7 @@ consider the below state machine:
 
        +----------------------------------------------+
        |                                              |
-       |                     Z                        |
+       |                hsm_top                       |
        |      (HSM top superstate hsm_top())          |
        |                                              |
        |  +---------------------------------+  +---+  |
@@ -128,7 +128,7 @@ STATE RELATIONS
 
 States B and D are children of A. States C and E are children of B and D,
 respectively.  State F has no children. Both A and F have the default parent
-Z provided by the framework (**hsm_top()**).
+hsm_top provided by the framework (**hsm_top()**).
 
 EVENT PROPAGATION
 =================
@@ -140,7 +140,7 @@ however, the state chooses to pass, then the event will be sent to the state's
 parent. At this point the parent must make the same decision. Event handling
 ends when the state or one of its ancestors consumes the event or the event
 reaches the default superstate **hsm_top()**. The default top level
-superstate **hsm_top()** always ignores all events.
+superstate **hsm_top()** always returns **HSM_RC_HANDLED** for all events.
 
 Assume that the state C shown above is active and an event is sent to the
 state machine. State C will be the first state to receive this event. If it
@@ -177,7 +177,7 @@ and B and then entry events are sent to D and E. Then the init event is sent
 to E.
 
 If B is the current state and F is the target state, then the NCA
-is the default top level state Z, so exit events are sent to B and A
+is the default top level state hsm_top, so exit events are sent to B and A
 and then an entry event is sent to F. Then the init event is sent to F.
 
 If C is the current state and the target state, this exercises the special
@@ -301,13 +301,13 @@ The more complex submachines can be multistate interconnected HSMs.
 The main purpose of submachines is code reuse.
 
 Here is an example of submachine with one reusable state S1.
-It shows to instances of S1 called S1/0 and S1/1.
+It shows two instances of S1 called S1/0 and S1/1.
 
 ::
 
        +---------------------------------------+
        |                                       |
-       |                  Z                    |
+       |               hsm_top                 |
        |      (HSM top superstate hsm_top())   |
        |                                       |
        |  +---------------------------------+  |
@@ -375,7 +375,7 @@ Here is how it is coded in pseudocode:
    }
 
 Please note that any transitions between states within submachines as well as
-all references to them via **HSM_SUPER()**  must be done
+all references to any submachine state via **HSM_SUPER()**  must be done
 with explicit specification of state instance, which can be retrieved by
 calling **hsm_get_state_instance()** API.
 

@@ -31,6 +31,11 @@
 #include "hsm/hsm.h"
 #include "common.h"
 
+/*
+ * This test is a full implementation of the example described in
+ * SUBMACHINES section of README.rst
+ */
+
 /* s1 submachine indices */
 #define S1_0 0
 #define S1_1 1
@@ -51,6 +56,7 @@ static enum hsm_rc s2(struct basic *me, const struct event *event);
 static enum hsm_rc s3(struct basic *me, const struct event *event);
 
 static enum hsm_rc s(struct basic *me, const struct event *event) {
+    ASSERT(0 == hsm_get_state_instance(&me->hsm));
     switch (event->id) {
     case FOO:
         return HSM_TRAN(s1, /*instance=*/S1_0);
@@ -83,11 +89,13 @@ static enum hsm_rc s1(struct basic *me, const struct event *event) {
 
 static enum hsm_rc s2(struct basic *me, const struct event *event) {
     (void)event;
+    ASSERT(0 == hsm_get_state_instance(&me->hsm));
     return HSM_SUPER(s1, S1_0);
 }
 
 static enum hsm_rc s3(struct basic *me, const struct event *event) {
     (void)event;
+    ASSERT(0 == hsm_get_state_instance(&me->hsm));
     return HSM_SUPER(s1, S1_1);
 }
 
