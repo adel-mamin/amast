@@ -182,8 +182,7 @@ struct hsm {
     GET_MACRO_2_(__VA_ARGS__, HSM_TRAN_2_, HSM_TRAN_1_, _)(__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
-#define HSM_TRAN_REDISPATCH_1_(s) \
-    (HSM_SET_TEMP_(s, 0), HSM_RC_TRAN_REDISPATCH)
+#define HSM_TRAN_REDISPATCH_1_(s) (HSM_SET_TEMP_(s, 0), HSM_RC_TRAN_REDISPATCH)
 /** Helper macro. Not to be used directly. */
 #define HSM_TRAN_REDISPATCH_2_(s, i) \
     (HSM_SET_TEMP_(s, i), HSM_RC_TRAN_REDISPATCH)
