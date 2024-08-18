@@ -25,6 +25,105 @@
 hsm_src = [files('hsm.c')]
 src += [hsm_src]
 
+test_lib = library(
+    'test_lib',
+    [
+        hsm_src, 'test' / 'common.c'
+    ],
+    include_directories: inc
+)
+
 if unit_test
-    subdir('test')
+    e = executable(
+        'regular',
+        [
+            'test' / 'regular' / 'regular.c',
+            'test' / 'regular' / 'test.c'
+        ],
+        link_with: test_lib,
+        include_directories: [
+            inc,
+            include_directories('test')
+        ])
+    test('regular', e, suite: 'hsm')
+
+    e = executable(
+        'hsm_top_as_nca',
+        [
+            'test' / 'hsm_top_as_nca.c'
+        ],
+        link_with: test_lib,
+        include_directories: [
+            inc,
+            include_directories('test')
+        ])
+    test('hsm_top_as_nca', e, suite: 'hsm')
+
+    e = executable(
+        'redispatch',
+        [
+            'test'/ 'redispatch.c'
+        ],
+        link_with: test_lib,
+        include_directories: [
+            inc,
+            include_directories('test')
+        ])
+    test('redispatch', e, suite: 'hsm')
+
+    e = executable(
+        'history',
+        [
+            'test' / 'history.c'
+        ],
+        link_with: test_lib,
+        include_directories: [
+            inc,
+            include_directories('test')
+        ])
+    test('history', e, suite: 'hsm')
+
+    e = executable(
+        'submachine-basic',
+        [
+            'test' / 'submachine' / 'basic' / 'test.c'
+        ],
+        link_with: test_lib,
+        include_directories: [
+            inc,
+            include_directories('test')
+        ])
+    test('submachine-basic', e, suite: 'hsm')
+
+    e = executable(
+        'submachine-complex',
+        [
+            'test' / 'submachine' / 'complex' / 'submachine.c',
+            'test' / 'submachine' / 'complex' / 'test.c'
+        ],
+        link_with: test_lib,
+        include_directories: [
+            inc,
+            include_directories('test')
+        ])
+    test('submachine-complex', e, suite: 'hsm')
+
 endif
+
+e = executable(
+    'submachine-example',
+    [
+        'test' / 'submachine' / 'complex' / 'submachine.c',
+        'example' / 'submachine' / 'example.c'
+    ],
+    link_with: test_lib,
+    include_directories: include_directories('test'))
+
+e = executable(
+    'regular-example',
+    [
+        'test' / 'regular' / 'regular.c',
+        'example' / 'regular' / 'example.c'
+    ],
+    link_with: test_lib,
+    include_directories: include_directories('test'))

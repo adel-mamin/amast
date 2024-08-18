@@ -27,3 +27,4 @@ src = []
 
 subdir('common')
 subdir('hsm')
+subdir('queue')
