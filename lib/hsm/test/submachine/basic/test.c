@@ -78,8 +78,7 @@ static enum hsm_rc s1(struct basic *me, const struct event *event) {
         };
         int instance = hsm_get_state_instance(&me->hsm);
         ASSERT(instance < ARRAY_SIZE(tt));
-        const struct hsm_state *tran = &tt[instance];
-        return HSM_TRAN(tran->fn, tran->instance);
+        return HSM_TRAN(tt[instance].fn);
     }
     default:
         break;
@@ -99,14 +98,14 @@ static enum hsm_rc s3(struct basic *me, const struct event *event) {
     return HSM_SUPER(s1, S1_1);
 }
 
-static enum hsm_rc binit(struct basic *me, const struct event *event) {
+static enum hsm_rc sinit(struct basic *me, const struct event *event) {
     (void)event;
     return HSM_TRAN(s);
 }
 
 static void test_basic(void) {
     struct basic *me = &m_basic;
-    hsm_ctor(&me->hsm, &HSM_STATE(binit));
+    hsm_ctor(&me->hsm, &HSM_STATE(sinit));
 
     hsm_init(&me->hsm, /*init_event=*/NULL);
     ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s)));
@@ -115,22 +114,28 @@ static void test_basic(void) {
         struct event e = {.id = FOO};
         hsm_dispatch(&me->hsm, &e);
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s1, S1_0)));
+        ASSERT(!hsm_is_in(&me->hsm, &HSM_STATE(s1, S1_1)));
         ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s2)));
     }
     {
         struct event e = {.id = BAZ};
         hsm_dispatch(&me->hsm, &e);
+        ASSERT(!hsm_is_in(&me->hsm, &HSM_STATE(s1, S1_0)));
+        ASSERT(!hsm_is_in(&me->hsm, &HSM_STATE(s1, S1_1)));
         ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s)));
     }
     {
         struct event e = {.id = BAR};
         hsm_dispatch(&me->hsm, &e);
+        ASSERT(!hsm_is_in(&me->hsm, &HSM_STATE(s1, S1_0)));
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s1, S1_1)));
         ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s3)));
     }
     {
         struct event e = {.id = BAZ};
         hsm_dispatch(&me->hsm, &e);
+        ASSERT(!hsm_is_in(&me->hsm, &HSM_STATE(s1, S1_0)));
+        ASSERT(!hsm_is_in(&me->hsm, &HSM_STATE(s1, S1_1)));
         ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s)));
     }
 }

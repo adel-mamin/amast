@@ -123,7 +123,7 @@ e = executable(
             'test' / 'submachine' / 'complex',
             'test',
         )
-    ])
+])
 
 e = executable(
     'regular-example',
@@ -138,4 +138,4 @@ e = executable(
             'test' / 'regular',
             'test'
         )
-    ])
+])

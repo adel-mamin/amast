@@ -1,7 +1,7 @@
 /*
  *  The MIT License (MIT)
  *
- * Copyright (c) 2020-2023 Adel Mamin
+ * Copyright (c) 2020-2024 Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -56,7 +56,7 @@ int main(void) {
     submachine_ctor(test_log);
 
     printf(ANSI_COLOR_BLUE_BOLD);
-    printf("Type event [A,B,C,D,E] (T to terminate)\n");
+    printf("Type event [A,B,C,D,E,F,G,H] (T to terminate)\n");
     printf(ANSI_COLOR_RESET);
 
     m_log_buf[0] = '\0';
@@ -65,7 +65,14 @@ int main(void) {
 
     static const char *blank = "        ";
     static const int e[] = {
-        HSM_EVT_A, HSM_EVT_B, HSM_EVT_C, HSM_EVT_D, HSM_EVT_E
+        HSM_EVT_A,
+        HSM_EVT_B,
+        HSM_EVT_C,
+        HSM_EVT_D,
+        HSM_EVT_E,
+        HSM_EVT_F,
+        HSM_EVT_G,
+        HSM_EVT_H
     };
 
     for (;;) {

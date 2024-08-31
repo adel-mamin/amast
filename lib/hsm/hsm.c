@@ -189,7 +189,7 @@ static enum hsm_rc hsm_dispatch_(struct hsm *hsm, const struct event *event) {
 
     {
         bool tran = (HSM_RC_TRAN == rc) || (HSM_RC_TRAN_REDISPATCH == rc);
-        if (!tran) { /* event is handled or ignored */
+        if (!tran) { /* event was handled or ignored */
             hsm->temp = hsm->state;
             hsm->itemp = hsm->istate;
             return rc;

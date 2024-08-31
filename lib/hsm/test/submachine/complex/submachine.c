@@ -33,34 +33,56 @@
 #include "submachine.h"
 
 /**
- * Test submachines with the following topology:
+ * Test state machine with the following topology:
  *
- *  +------------------------------------------------------------------------+
- *  |                                                                        |
- *  |                               hsm_top                                  |
- *  |                    (HSM top superstate hsm_top())                      |
- *  |                                                                        |
- *  |  +---------------+  +----------------+  +-----------+  +------------+  |
- *  |  |      s1/0     |  |      s2/0      |  |    s1/2   |  |    s2/2    |  |
- *  |  |     *         |  |     *          |  |   *       |  |   *        |  |
- *  |  |     |         |  |     |          |  |   |       |  |   |        |  |
- *  |  |   +-v-----+   |  |   +-v------+   |  | +-v-----+ |  | +-v------+ |  |
- *  |  |   | s11/0 |   |  |   |  s21/0 |   |  | | s11/2 | |  | |  s21/2 | |  |
- *  |  |   +-------+   |  |   +--------+   |  | +-------+ |  | +--------+ |  |
- *  |  | +-----------+ |  | +------------+ |  +-----------+  +------------+  |
- *  |  | |    s1/1   | |  | |    s2/1    | |                                 |
- *  |  | |   *       | |  | |   *        | |                                 |
- *  |  | |   |       | |  | |   |        | |                                 |
- *  |  | | +-v-----+ | |  | | +-v------+ | |                                 |
- *  |  | | | s11/1 | | |  | | |  s21/1 | | |                                 |
- *  |  | | +-------+ | |  | | +--------+ | |                                 |
- *  |  | +---^-------+ |  | +------------+ |                                 |
- *  |  +-----|---------+  +----------------+                                 |
- *  |        |                                                               |
- *  |        *                                                               |
- *  +------------------------------------------------------------------------+
+ * +---------------------------------------------------------------------------+
+ * |                                   s                                       |
+ * | +------------------------------------+ +--------------------------------+ |
+ * | |       *        s1/0                | |     +        s1/2              | |
+ * | |   +---|--------+  +------------+   | | +---|--------+  +------------+ | |
+ * | |   |   | s11/0  |  |   s12/0    |   | | |   | s11/2  |  |   s12/2    | | |
+ * | |   |   |        |  |   *        |   | | |   |        |  |   *        | | |
+ * | |   |   |        |  |   |        |   | | |   |        |  |   |        | | |
+ * | |   | +-v------+ |  | +-v------+ |   | | | +-v------+ |  | +-v------+ | | |
+ * | |   | | s111/0 | |  | | s121/0 | |   | | | | s111/2 | |  | | s121/2 | | | |
+ * | |   | +--------+ |  | +--------+ |   | | | +--------+ |  | +--------+ | | |
+ * | |   +------------+  +------------+   | | +------------+  +------------+ | |
+ * | | +--------------------------------+ | +---------------^----------------+ |
+ * | | |     *        s1/1              | |                 |                  |
+ * | | | +---|--------+  +------------+ | |                 |                  |
+ * | | | |   | s11/1  |  |   s12/1    | | |                 *                  |
+ * | | | |   |        |  |   *        | | |                                    |
+ * | | | |   |        |  |   |        | | |                                    |
+ * | | | | +-v------+ |  | +-v------+ | | |                                    |
+ * | | | | | s111/1 | |  | | s121/1 | | | |                                    |
+ * | | | | +--------+ |  | +--------+ | | |                                    |
+ * | | | +------------+  +------------+ | |                                    |
+ * | | +---------------^----------------+ |                                    |
+ * | +-----------------|------------------+                                    |
+ * +-------------------|------------------------------------+------------------+
+ *                     |                                    | TERMINATE
+ *                     *                                    *
+ * [s1, s11, s111, s12, s121] states constitute a submachine:
  *
- * [s1, s11, s2, s21] states constitute the submachine.
+ *   +---------------------------------+
+ *   |     +         s1                |
+ *   | +---|--------+   +------------+ |
+ *   | |   | s11    |   |    s12     | +--+
+ *   | |   |        |   |   *        | |  | A
+ *   | |   |        |   |   |        | <--+
+ *   | | +-v------+ |   | +-v------+ | |
+ *   | | |        | | D | |        | | | F   [SM_0]->s12/SM_1
+ *   | | |  s111  +-----> |  s121  | +-----> [SM_1]->s12/SM_2
+ *   | | |        | |   | |        | | |     [SM_2]->s12/SM_0
+ *   | | +--------+ |   | +-^---+--+ | |
+ *   | |            |   |   |   | E  | | H
+ *   | +---^----+---+   +---|---v----+ +---> s
+ *   |     | B  | G         | C        |
+ *   +-----+----|-----------+----------+
+ *              | [SM_0]->s1/SM_1
+ *              v [SM_1]->s1/SM_2
+ *                [SM_2]->s1/SM_0
+ *
  * The test instantiates three instances of the submachine:
  * SM_0(0), SM_1(1) and SM_2(2).
  */
@@ -78,92 +100,107 @@ struct hsm *g_submachine = &m_test.hsm;
 #define SM_1 1
 #define SM_2 2
 
+static enum hsm_rc s(struct test *me, const struct event *event);
 static enum hsm_rc s1(struct test *me, const struct event *event);
 static enum hsm_rc s11(struct test *me, const struct event *event);
-static enum hsm_rc s2(struct test *me, const struct event *event);
-static enum hsm_rc s21(struct test *me, const struct event *event);
+static enum hsm_rc s111(struct test *me, const struct event *event);
+static enum hsm_rc s12(struct test *me, const struct event *event);
+static enum hsm_rc s121(struct test *me, const struct event *event);
 
-static enum hsm_rc s1(struct test *me, const struct event *event) {
+static enum hsm_rc s(struct test *me, const struct event *event) {
     const int instance = hsm_get_state_instance(&me->hsm);
+    ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s)));
     switch (event->id) {
     case HSM_EVT_ENTRY:
-        me->log("s1/%d-ENTRY;", hsm_get_state_instance(&me->hsm));
-        ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s1)));
+        me->log("s/%d-ENTRY;", instance);
         return HSM_HANDLED();
 
     case HSM_EVT_EXIT:
-        me->log("s1/%d-EXIT;", hsm_get_state_instance(&me->hsm));
-        ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s1)));
+        me->log("s/%d-EXIT;", instance);
         return HSM_HANDLED();
 
     case HSM_EVT_INIT:
-        me->log("s1/%d-INIT;", hsm_get_state_instance(&me->hsm));
-        ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s1)));
-        return HSM_TRAN(s11, instance);
+        me->log("s/%d-INIT;", instance);
+        return HSM_TRAN(s111, SM_2);
 
-    case HSM_EVT_A:
-        me->log("s1/%d-A;", hsm_get_state_instance(&me->hsm));
-        ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s1, 0)));
-        ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s1, 1)));
-        return HSM_TRAN(s1, instance);
-
-    case HSM_EVT_B:
-        me->log("s1/%d-B;", hsm_get_state_instance(&me->hsm));
-        ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s1, 0)));
-        ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s1, 1)));
-        return HSM_TRAN(s2, instance);
-
-    case HSM_EVT_D: {
-        me->log("s1/%d-D;", hsm_get_state_instance(&me->hsm));
-        ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s1, instance)));
-
-        static const struct hsm_state tt[] = {
-            [SM_0] = {.fn = HSM_STATE_FN(s1), .instance = SM_1},
-            [SM_1] = {.fn = HSM_STATE_FN(s1), .instance = SM_0},
-            [SM_2] = {.fn = HSM_STATE_FN(s1), .instance = SM_2}
-        };
-        ASSERT(instance < ARRAY_SIZE(tt));
-        const struct hsm_state *tran = &tt[instance];
-
-        return HSM_TRAN(tran->fn, tran->instance);
-    }
     default:
         break;
     }
+    return HSM_SUPER(hsm_top);
+}
 
+static enum hsm_rc s1(struct test *me, const struct event *event) {
+    const int instance = hsm_get_state_instance(&me->hsm);
+    ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s1, instance)));
+    switch (event->id) {
+    case HSM_EVT_ENTRY:
+        me->log("s1/%d-ENTRY;", instance);
+        return HSM_HANDLED();
+
+    case HSM_EVT_EXIT:
+        me->log("s1/%d-EXIT;", instance);
+        return HSM_HANDLED();
+
+    case HSM_EVT_INIT:
+        me->log("s1/%d-INIT;", instance);
+        return HSM_TRAN(s111, instance);
+
+    case HSM_EVT_A:
+        me->log("s1/%d-A;", instance);
+        return HSM_TRAN(s1, instance);
+
+    case HSM_EVT_B:
+        me->log("s1/%d-B;", instance);
+        return HSM_TRAN(s11, instance);
+
+    case HSM_EVT_C:
+        me->log("s1/%d-C;", instance);
+        return HSM_TRAN(s121, instance);
+
+    case HSM_EVT_H:
+        me->log("s1/%d-H;", instance);
+        return HSM_TRAN(s);
+
+    default:
+        break;
+    }
     static const struct hsm_state ss[] = {
-        [SM_0] = {.fn = hsm_top, .instance = 0},
+        [SM_0] = {.fn = HSM_STATE_FN(s), .instance = 0},
         [SM_1] = {.fn = HSM_STATE_FN(s1), .instance = SM_0},
-        [SM_2] = {.fn = hsm_top, .instance = 0}
+        [SM_2] = {.fn = HSM_STATE_FN(s), .instance = 0}
     };
     ASSERT(instance < ARRAY_SIZE(ss));
     const struct hsm_state *super = &ss[instance];
-
     return HSM_SUPER(super->fn, super->instance);
 }
 
 static enum hsm_rc s11(struct test *me, const struct event *event) {
     const int instance = hsm_get_state_instance(&me->hsm);
+    ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s11, instance)));
     switch (event->id) {
     case HSM_EVT_ENTRY:
-        me->log("s11/%d-ENTRY;", hsm_get_state_instance(&me->hsm));
+        me->log("s11/%d-ENTRY;", instance);
         return HSM_HANDLED();
 
     case HSM_EVT_EXIT:
-        me->log("s11/%d-EXIT;", hsm_get_state_instance(&me->hsm));
+        me->log("s11/%d-EXIT;", instance);
         return HSM_HANDLED();
 
     case HSM_EVT_INIT:
-        me->log("s11/%d-INIT;", hsm_get_state_instance(&me->hsm));
+        me->log("s11/%d-INIT;", instance);
         return HSM_HANDLED();
 
-    case HSM_EVT_C:
-        me->log("s11/%d-C;", hsm_get_state_instance(&me->hsm));
-        return HSM_TRAN(s11, instance);
+    case HSM_EVT_G:
+        me->log("s11/%d-G;", instance);
+        static const struct hsm_state tt[] = {
+            [SM_0] = {.fn = HSM_STATE_FN(s1), .instance = SM_1},
+            [SM_1] = {.fn = HSM_STATE_FN(s1), .instance = SM_2},
+            [SM_2] = {.fn = HSM_STATE_FN(s1), .instance = SM_0}
+        };
+        ASSERT(instance < ARRAY_SIZE(tt));
+        const struct hsm_state *tran = &tt[instance];
 
-    case HSM_EVT_E:
-        me->log("s11/%d-E;", hsm_get_state_instance(&me->hsm));
-        return HSM_TRAN(s2, SM_2);
+        return HSM_TRAN(tran->fn, tran->instance);
 
     default:
         break;
@@ -171,66 +208,90 @@ static enum hsm_rc s11(struct test *me, const struct event *event) {
     return HSM_SUPER(s1, instance);
 }
 
-static enum hsm_rc s2(struct test *me, const struct event *event) {
+static enum hsm_rc s111(struct test *me, const struct event *event) {
     const int instance = hsm_get_state_instance(&me->hsm);
+    ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s111, instance)));
     switch (event->id) {
     case HSM_EVT_ENTRY:
-        me->log("s2/%d-ENTRY;", hsm_get_state_instance(&me->hsm));
+        me->log("s111/%d-ENTRY;", instance);
         return HSM_HANDLED();
 
     case HSM_EVT_EXIT:
-        me->log("s2/%d-EXIT;", hsm_get_state_instance(&me->hsm));
+        me->log("s111/%d-EXIT;", instance);
         return HSM_HANDLED();
 
     case HSM_EVT_INIT:
-        me->log("s2/%d-INIT;", hsm_get_state_instance(&me->hsm));
-        return HSM_TRAN(s21, instance);
+        me->log("s111/%d-INIT;", instance);
+        return HSM_HANDLED();
 
-    case HSM_EVT_A:
-        me->log("s2/%d-A;", hsm_get_state_instance(&me->hsm));
-        return HSM_TRAN(s2, instance);
+    case HSM_EVT_D:
+        me->log("s111/%d-D;", instance);
+        return HSM_TRAN(s12, instance);
 
-    case HSM_EVT_B:
-        me->log("s2/%d-B;", hsm_get_state_instance(&me->hsm));
-        return HSM_TRAN(s1, instance);
     default:
         break;
     }
-
-    static const struct hsm_state ss[] = {
-        [SM_0] = {.fn = hsm_top, .instance = 0},
-        [SM_1] = {.fn = HSM_STATE_FN(s2), .instance = SM_0},
-        [SM_2] = {.fn = hsm_top, .instance = 0}
-    };
-    ASSERT(instance < ARRAY_SIZE(ss));
-    const struct hsm_state *super = &ss[instance];
-
-    return HSM_SUPER(super->fn, super->instance);
+    return HSM_SUPER(s11, instance);
 }
 
-static enum hsm_rc s21(struct test *me, const struct event *event) {
+static enum hsm_rc s12(struct test *me, const struct event *event) {
     const int instance = hsm_get_state_instance(&me->hsm);
+    ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s12, instance)));
     switch (event->id) {
     case HSM_EVT_ENTRY:
-        me->log("s21/%d-ENTRY;", hsm_get_state_instance(&me->hsm));
+        me->log("s12/%d-ENTRY;", instance);
         return HSM_HANDLED();
 
     case HSM_EVT_EXIT:
-        me->log("s21/%d-EXIT;", hsm_get_state_instance(&me->hsm));
+        me->log("s12/%d-EXIT;", instance);
         return HSM_HANDLED();
 
     case HSM_EVT_INIT:
-        me->log("s21/%d-INIT;", hsm_get_state_instance(&me->hsm));
-        return HSM_HANDLED();
+        me->log("s12/%d-INIT;", instance);
+        return HSM_TRAN(s121, instance);
 
-    case HSM_EVT_C:
-        me->log("s11/%d-C;", hsm_get_state_instance(&me->hsm));
-        return HSM_TRAN(s21, instance);
+    case HSM_EVT_F:
+        me->log("s12/%d-F;", instance);
+        static const struct hsm_state tt[] = {
+            [SM_0] = {.fn = HSM_STATE_FN(s12), .instance = SM_1},
+            [SM_1] = {.fn = HSM_STATE_FN(s12), .instance = SM_2},
+            [SM_2] = {.fn = HSM_STATE_FN(s12), .instance = SM_0}
+        };
+        ASSERT(instance < ARRAY_SIZE(tt));
+        const struct hsm_state *tran = &tt[instance];
+
+        return HSM_TRAN(tran->fn, tran->instance);
 
     default:
         break;
     }
-    return HSM_SUPER(s2, instance);
+    return HSM_SUPER(s1, instance);
+}
+
+static enum hsm_rc s121(struct test *me, const struct event *event) {
+    const int instance = hsm_get_state_instance(&me->hsm);
+    ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s121, instance)));
+    switch (event->id) {
+    case HSM_EVT_ENTRY:
+        me->log("s121/%d-ENTRY;", instance);
+        return HSM_HANDLED();
+
+    case HSM_EVT_EXIT:
+        me->log("s121/%d-EXIT;", instance);
+        return HSM_HANDLED();
+
+    case HSM_EVT_INIT:
+        me->log("s121/%d-INIT;", instance);
+        return HSM_HANDLED();
+
+    case HSM_EVT_E:
+        me->log("s121/%d-E;", instance);
+        return HSM_TRAN(s12, instance);
+
+    default:
+        break;
+    }
+    return HSM_SUPER(s12, instance);
 }
 
 static enum hsm_rc sinit(struct test *me, const struct event *event) {

@@ -1,7 +1,7 @@
 /*
  *  The MIT License (MIT)
  *
- * Copyright (c) 2020-2023 Adel Mamin
+ * Copyright (c) 2020-2024 Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,10 +53,7 @@ static void test_submachine(void) {
     hsm_init(g_submachine, /*init_event=*/NULL);
 
     {
-        const char *out =
-            "top/0-INIT;s1/0-ENTRY;s1/1-ENTRY;"
-            "s1/1-INIT;s11/1-ENTRY;s11/1-INIT;";
-
+        const char *out = "top/0-INIT;s/0-ENTRY;s1/0-ENTRY;s1/1-ENTRY;s1/1-INIT;s11/1-ENTRY;s111/1-ENTRY;s111/1-INIT;";
         ASSERT(0 == strncmp(m_log_buf, out, strlen(out)));
         m_log_buf[0] = '\0';
     }
@@ -67,30 +64,36 @@ static void test_submachine(void) {
     };
     static const struct test2 in[] = {
         /* clang-format off */
+        {HSM_EVT_A, "s1/1-A;s111/1-EXIT;s11/1-EXIT;s1/1-EXIT;s1/1-ENTRY;"
+                    "s1/1-INIT;s11/1-ENTRY;s111/1-ENTRY;s111/1-INIT;"},
+
+        {HSM_EVT_C, "s1/1-C;s111/1-EXIT;s11/1-EXIT;s12/1-ENTRY;s121/1-ENTRY;"
+                    "s121/1-INIT;"},
+
+        {HSM_EVT_B, "s1/1-B;s121/1-EXIT;s12/1-EXIT;s11/1-ENTRY;s11/1-INIT;"},
+
+        {HSM_EVT_D, ""},
+
         {HSM_EVT_A, "s1/1-A;s11/1-EXIT;s1/1-EXIT;s1/1-ENTRY;s1/1-INIT;"
-                    "s11/1-ENTRY;s11/1-INIT;"},
+                    "s11/1-ENTRY;s111/1-ENTRY;s111/1-INIT;"},
 
-        {HSM_EVT_C, "s11/1-C;s11/1-EXIT;s11/1-ENTRY;s11/1-INIT;"},
+        {HSM_EVT_D, "s111/1-D;s111/1-EXIT;s11/1-EXIT;s12/1-ENTRY;s12/1-INIT;"
+                    "s121/1-ENTRY;s121/1-INIT;"},
 
-        {HSM_EVT_B, "s1/1-B;s11/1-EXIT;s1/1-EXIT;s1/0-EXIT;s2/0-ENTRY;"
-                    "s2/1-ENTRY;s2/1-INIT;s21/1-ENTRY;s21/1-INIT;"},
+        {HSM_EVT_F, "s12/1-F;s121/1-EXIT;s12/1-EXIT;s1/1-EXIT;s1/0-EXIT;"
+                    "s1/2-ENTRY;s12/2-ENTRY;s12/2-INIT;s121/2-ENTRY;"
+                    "s121/2-INIT;"},
 
-        {HSM_EVT_A, "s2/1-A;s21/1-EXIT;s2/1-EXIT;s2/1-ENTRY;s2/1-INIT;"
-                    "s21/1-ENTRY;s21/1-INIT;"},
+        {HSM_EVT_E, "s121/2-E;s121/2-EXIT;s12/2-INIT;s121/2-ENTRY;"
+                    "s121/2-INIT;"},
 
-        {HSM_EVT_C, "s11/1-C;s21/1-EXIT;s21/1-ENTRY;s21/1-INIT;"},
+        {HSM_EVT_B, "s1/2-B;s121/2-EXIT;s12/2-EXIT;s11/2-ENTRY;s11/2-INIT;"},
 
-        {HSM_EVT_B, "s2/1-B;s21/1-EXIT;s2/1-EXIT;s2/0-EXIT;s1/0-ENTRY;"
-                    "s1/1-ENTRY;s1/1-INIT;s11/1-ENTRY;s11/1-INIT;"},
+        {HSM_EVT_G, "s11/2-G;s11/2-EXIT;s1/2-EXIT;s1/0-ENTRY;s1/0-INIT;"
+                    "s11/0-ENTRY;s111/0-ENTRY;s111/0-INIT;"},
 
-        {HSM_EVT_D, "s1/1-D;s11/1-EXIT;s1/1-EXIT;s1/0-INIT;s11/0-ENTRY;"
-                    "s11/0-INIT;"},
-
-        {HSM_EVT_D, "s1/0-D;s11/0-EXIT;s1/1-ENTRY;s1/1-INIT;s11/1-ENTRY;"
-                    "s11/1-INIT;"},
-
-        {HSM_EVT_E, "s11/1-E;s11/1-EXIT;s1/1-EXIT;s1/0-EXIT;s2/2-ENTRY;"
-                    "s2/2-INIT;s21/2-ENTRY;s21/2-INIT;"},
+        {HSM_EVT_H, "s1/0-H;s111/0-EXIT;s11/0-EXIT;s1/0-EXIT;s/0-INIT;"
+                    "s1/2-ENTRY;s11/2-ENTRY;s111/2-ENTRY;s111/2-INIT;"},
         /* clang-format on */
     };
 
@@ -102,9 +105,9 @@ static void test_submachine(void) {
     }
 
     {
-        static const char *destruction = "s21/2-EXIT;s2/2-EXIT;";
+        static const char *dest = "s111/2-EXIT;s11/2-EXIT;s1/2-EXIT;s/0-EXIT;";
         hsm_dtor(g_submachine);
-        ASSERT(0 == strncmp(m_log_buf, destruction, strlen(destruction)));
+        ASSERT(0 == strncmp(m_log_buf, dest, strlen(dest)));
         m_log_buf[0] = '\0';
     }
 }
