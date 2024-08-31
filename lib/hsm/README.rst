@@ -305,12 +305,12 @@ It shows two instances of S1 called S1/0 and S1/1.
 
 ::
 
-       +---------------------------------------+
-       |                                       |
-       |               hsm_top                 |
-       |      (HSM top superstate hsm_top())   |
-       |                                       |
-       |  +---------------------------------+  |
+            *
+       +----|----------------------------------+
+       |    |          hsm_top                 |
+       |    | (HSM top superstate hsm_top())   |
+       |    |                                  |
+       |  +-v-------------------------------+  |
        |  |               s                 |  |
        |  |  +-----------+  +------------+  |  |
        |  |  |    s1/0   |  |    s1/1    |  |  |
@@ -330,7 +330,7 @@ Here is how it is coded in pseudocode:
 
 .. code-block:: C
 
-   /* s1 submachine indices */
+   /* s1 submachine instances */
    #define S1_0 0
    #define S1_1 1
 
@@ -356,8 +356,7 @@ Here is how it is coded in pseudocode:
            };
            int instance = hsm_get_state_instance(&me->hsm);
            ASSERT(instance < ARRAY_SIZE(tt));
-           const struct hsm_state *tran = &tt[instance];
-           return HSM_TRAN(tran->fn, tran->instance);
+           return HSM_TRAN(tt[instance].fn);
        }
        ...
        }
