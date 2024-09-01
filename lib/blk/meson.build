@@ -22,12 +22,10 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
-src = []
+blk_src = [files('blk.c')]
+src += blk_src
 
-subdir('blk')
-subdir('common')
-subdir('dlist')
-subdir('hsm')
-subdir('queue')
-subdir('slist')
+if unit_test
+    e = executable('blk', ['blk.c', 'test.c'], include_directories: inc)
+    test('blk', e)
+endif
