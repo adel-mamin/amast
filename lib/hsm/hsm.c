@@ -24,7 +24,7 @@
 
 /**
  * @file
- * Hierarchical State Machine (HSM) framework API implementation.
+ * Hierarchical State Machine (HSM) API implementation.
  */
 
 #include <stdbool.h>
