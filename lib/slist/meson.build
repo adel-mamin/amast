@@ -22,11 +22,10 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
-src = []
+slist_src = [files('slist.c')]
+src += slist_src
 
-subdir('common')
-subdir('hsm')
-subdir('slist')
-subdir('dlist')
-subdir('queue')
+if unit_test
+    e = executable('slist', ['slist.c', 'test.c'], include_directories: inc)
+    test('slist', e)
+endif
