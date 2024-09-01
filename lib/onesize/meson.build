@@ -22,13 +22,12 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
-src = []
+src += [files('onesize.c')]
 
-subdir('blk')
-subdir('common')
-subdir('dlist')
-subdir('hsm')
-subdir('queue')
-subdir('slist')
-subdir('onesize')
+if unit_test
+    e = executable(
+        'onesize',
+        ['onesize.c', 'test.c', blk_src, slist_src],
+        include_directories: inc)
+    test('onesize', e)
+endif
