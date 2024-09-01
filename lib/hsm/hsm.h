@@ -266,7 +266,7 @@ void hsm_ctor(struct hsm *hsm, const struct hsm_state *state);
 void hsm_dtor(struct hsm *hsm);
 
 /**
- * Performs HSM initial transition.
+ * Perform HSM initial transition.
  * @param hsm         the HSM handler
  * @param init_event  the init event. Can be NULL. The event is not recycled.
  */
