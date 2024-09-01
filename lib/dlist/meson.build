@@ -22,10 +22,9 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
-src = []
+src += [files('dlist.c')]
 
-subdir('common')
-subdir('hsm')
-subdir('dlist')
-subdir('queue')
+if unit_test
+    e = executable('dlist', ['dlist.c', 'test.c'], include_directories: inc)
+    test('dlist', e, suite: 'tikli')
+endif
