@@ -65,27 +65,24 @@ static enum hsm_rc test_init(struct test *me, const struct event *event) {
 }
 
 static enum hsm_rc s(struct test *me, const struct event *event) {
+    ASSERT(hsm_get_state_instance(&me->hsm) == 0);
     switch (event->id) {
     case HSM_EVT_ENTRY:
         me->log("s-ENTRY;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_HANDLED();
 
     case HSM_EVT_INIT:
         me->log("s-INIT;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_TRAN(s11);
 
     case HSM_EVT_EXIT:
         me->log("s-EXIT;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_HANDLED();
 
     case HSM_EVT_I: {
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s)));
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(hsm_top)));
         ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s211)));
@@ -97,7 +94,6 @@ static enum hsm_rc s(struct test *me, const struct event *event) {
         return HSM_HANDLED();
     }
     case HSM_EVT_E:
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         ASSERT(
             (hsm_state_is_eq(&me->hsm, &HSM_STATE(s211))) ||
             (hsm_state_is_eq(&me->hsm, &HSM_STATE(s11)))
@@ -117,23 +113,21 @@ static enum hsm_rc s(struct test *me, const struct event *event) {
 }
 
 static enum hsm_rc s1(struct test *me, const struct event *event) {
+    ASSERT(hsm_get_state_instance(&me->hsm) == 0);
     switch (event->id) {
     case HSM_EVT_ENTRY:
         me->log("s1-ENTRY;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s1)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_HANDLED();
 
     case HSM_EVT_INIT:
         me->log("s1-INIT;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s1)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_TRAN(s11);
 
     case HSM_EVT_EXIT:
         me->log("s1-EXIT;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s1)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_HANDLED();
 
     case HSM_EVT_I:
@@ -141,34 +135,28 @@ static enum hsm_rc s1(struct test *me, const struct event *event) {
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s)));
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(hsm_top)));
         ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s11)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         me->log("s1-I;");
         return HSM_HANDLED();
 
     case HSM_EVT_C:
         ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s11)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         me->log("s1-C;");
         return HSM_TRAN(s2);
 
     case HSM_EVT_F:
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         me->log("s1-F;");
         return HSM_TRAN(s211);
 
     case HSM_EVT_A:
         me->log("s1-A;");
         ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s11)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_TRAN(s1);
 
     case HSM_EVT_B:
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         me->log("s1-B;");
         return HSM_TRAN(s11);
 
     case HSM_EVT_D:
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s11)));
         if (!me->foo) {
             me->foo = 1;
@@ -184,23 +172,21 @@ static enum hsm_rc s1(struct test *me, const struct event *event) {
 }
 
 static enum hsm_rc s11(struct test *me, const struct event *event) {
+    ASSERT(hsm_get_state_instance(&me->hsm) == 0);
     switch (event->id) {
     case HSM_EVT_ENTRY:
         me->log("s11-ENTRY;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s11)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_HANDLED();
 
     case HSM_EVT_EXIT:
         me->log("s11-EXIT;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s11)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_HANDLED();
 
     case HSM_EVT_INIT:
         me->log("s11-INIT;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s11)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_HANDLED();
 
     case HSM_EVT_G:
@@ -209,18 +195,15 @@ static enum hsm_rc s11(struct test *me, const struct event *event) {
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s)));
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(hsm_top)));
         ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s11)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         me->log("s11-G;");
         return HSM_TRAN(s211);
 
     case HSM_EVT_H:
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         me->log("s11-H;");
         return HSM_TRAN(s);
 
     case HSM_EVT_D:
         ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s11)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         if (me->foo) {
             me->foo = 0;
             me->log("s11-D;");
@@ -235,23 +218,21 @@ static enum hsm_rc s11(struct test *me, const struct event *event) {
 }
 
 static enum hsm_rc s2(struct test *me, const struct event *event) {
+    ASSERT(hsm_get_state_instance(&me->hsm) == 0);
     switch (event->id) {
     case HSM_EVT_ENTRY:
         me->log("s2-ENTRY;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s2)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_HANDLED();
 
     case HSM_EVT_INIT:
         me->log("s2-INIT;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s2)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_TRAN(s211);
 
     case HSM_EVT_EXIT:
         me->log("s2-EXIT;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s2)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_HANDLED();
 
     case HSM_EVT_I:
@@ -261,7 +242,6 @@ static enum hsm_rc s2(struct test *me, const struct event *event) {
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s)));
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(hsm_top)));
         ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s211)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         if (!me->foo) {
             me->foo = 1;
             me->log("s2-I;");
@@ -270,12 +250,10 @@ static enum hsm_rc s2(struct test *me, const struct event *event) {
         break;
 
     case HSM_EVT_F:
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         me->log("s2-F;");
         return HSM_TRAN(s11);
 
     case HSM_EVT_C:
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         me->log("s2-C;");
         return HSM_TRAN(s1);
 
@@ -286,23 +264,21 @@ static enum hsm_rc s2(struct test *me, const struct event *event) {
 }
 
 static enum hsm_rc s21(struct test *me, const struct event *event) {
+    ASSERT(hsm_get_state_instance(&me->hsm) == 0);
     switch (event->id) {
     case HSM_EVT_ENTRY:
         me->log("s21-ENTRY;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s21)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_HANDLED();
 
     case HSM_EVT_INIT:
         me->log("s21-INIT;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s21)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_TRAN(s211);
 
     case HSM_EVT_EXIT:
         me->log("s21-EXIT;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s21)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_HANDLED();
 
     case HSM_EVT_A:
@@ -313,12 +289,10 @@ static enum hsm_rc s21(struct test *me, const struct event *event) {
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s)));
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(hsm_top)));
         ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s211)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         me->log("s21-A;");
         return HSM_TRAN(s21);
 
     case HSM_EVT_B:
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         me->log("s21-B;");
         return HSM_TRAN(s211);
 
@@ -329,7 +303,6 @@ static enum hsm_rc s21(struct test *me, const struct event *event) {
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s)));
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(hsm_top)));
         ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s211)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_TRAN(s1);
 
     default:
@@ -339,23 +312,21 @@ static enum hsm_rc s21(struct test *me, const struct event *event) {
 }
 
 static enum hsm_rc s211(struct test *me, const struct event *event) {
+    ASSERT(hsm_get_state_instance(&me->hsm) == 0);
     switch (event->id) {
     case HSM_EVT_ENTRY:
         me->log("s211-ENTRY;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s211)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_HANDLED();
 
     case HSM_EVT_EXIT:
         me->log("s211-EXIT;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s211)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_HANDLED();
 
     case HSM_EVT_INIT:
         me->log("s211-INIT;");
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s211)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         return HSM_HANDLED();
 
     case HSM_EVT_D:
@@ -366,12 +337,10 @@ static enum hsm_rc s211(struct test *me, const struct event *event) {
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s2)));
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s)));
         ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(hsm_top)));
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         me->log("s211-D;");
         return HSM_TRAN(s21);
 
     case HSM_EVT_H:
-        ASSERT(hsm_get_state_instance(&me->hsm) == 0);
         me->log("s211-H;");
         return HSM_TRAN(s);
 
