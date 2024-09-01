@@ -35,13 +35,18 @@
 
 /**
  * Returns number of elements in the array.
- * Note that the macro uses a small trick of putting the array
- * name in the index operator ('[]') instead of the 0.
- * This is done in case the macro is mistakenly used in C++ code
- * with an item that overloads operator[]().
- * The compiler will complain instead of giving a bad result.
+ * Note two triks:
+ * 1. putting the array name in the index operator ('[]') instead of the 0.
+ *    This is done in case the macro is mistakenly used in C++ code
+ *    with an item that overloads operator[]().
+ *    The compiler will complain instead of giving a bad result.
+ * 2. if a pointer is mistakenly passed as the argument, the compiler will
+ *    complain in some cases - specifically if the pointer's size isn't evenly
+ *    divisible by the size of the object the pointer points to.
+ *    In that situation a divide-by-zero will cause the compiler to error out.
  */
-#define COUNT_OF(arr) ((int)(sizeof(arr) / sizeof(0 [arr])))
+#define COUNT_OF(arr) \
+   ((int)( sizeof(arr) / sizeof(0 [arr]) / !(sizeof(arr) % sizeof(0 [arr]))))
 
 /** Returns maximum element */
 #undef MAX
