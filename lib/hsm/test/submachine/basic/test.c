@@ -77,7 +77,7 @@ static enum hsm_rc s1(struct basic *me, const struct event *event) {
             [S1_0] = {.fn = (hsm_state_fn)s2}, [S1_1] = {.fn = (hsm_state_fn)s3}
         };
         int instance = hsm_get_state_instance(&me->hsm);
-        ASSERT(instance < ARRAY_SIZE(tt));
+        ASSERT(instance < COUNT_OF(tt));
         return HSM_TRAN(tt[instance].fn);
     }
     default:

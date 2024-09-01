@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2018 Adel Mamin
+ * Copyright (c) 2016-2024 Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,8 +33,15 @@
 #ifndef COMMON_MACROS_H_INCLUDED
 #define COMMON_MACROS_H_INCLUDED
 
-/** Returns number of elements in the array */
-#define ARRAY_SIZE(p) ((int)(sizeof(p) / sizeof((p)[0])))
+/**
+ * Returns number of elements in the array.
+ * Note that the macro uses a small trick of putting the array
+ * name in the index operator ('[]') instead of the 0.
+ * This is done in case the macro is mistakenly used in C++ code
+ * with an item that overloads operator[]().
+ * The compiler will complain instead of giving a bad result.
+ */
+#define COUNT_OF(arr) ((int)(sizeof(arr) / sizeof(0 [arr])))
 
 /** Returns maximum element */
 #undef MAX

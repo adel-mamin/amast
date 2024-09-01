@@ -98,7 +98,7 @@ static void test_hsm(void) {
         /* clang-format on */
     };
 
-    for (int i = 0; i < ARRAY_SIZE(in); i++) {
+    for (int i = 0; i < COUNT_OF(in); i++) {
         struct event e = {.id = in[i].evt};
         hsm_dispatch(g_regular, &e);
         ASSERT(0 == strncmp(m_log_buf, in[i].out, strlen(in[i].out)));
