@@ -130,15 +130,14 @@ void dlist_pop(struct dlist_item *item) {
 }
 
 struct dlist_item *dlist_find(
-    const struct dlist *hnd,
-    int (*is_found)(void *context, struct dlist_item *item),
-    void *context
+    const struct dlist *hnd, dlist_item_found_cb_t is_found_cb, void *context
 ) {
     ASSERT(hnd);
-    ASSERT(is_found);
+    ASSERT(is_found_cb);
 
     struct dlist_item *candidate = hnd->sentinel.next;
-    while ((candidate != &hnd->sentinel) && (!is_found(context, candidate))) {
+    while ((candidate != &hnd->sentinel) && (!is_found_cb(context, candidate))
+    ) {
         candidate = candidate->next;
     }
     return (candidate == &hnd->sentinel) ? NULL : candidate;

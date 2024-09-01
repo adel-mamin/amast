@@ -223,7 +223,7 @@ static void test_dlist_pop(void) {
     ASSERT(((struct ut_data *)e)->data == 2);
 }
 
-static int predicate(void *context, struct dlist_item *item) {
+static bool predicate(void *context, struct dlist_item *item) {
     int v = *(int *)context;
     const struct ut_data *data = (struct ut_data *)item;
 

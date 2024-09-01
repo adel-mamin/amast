@@ -217,7 +217,7 @@ struct dlist_item *dlist_peek_back(struct dlist *hnd);
  * @retval true    item was found
  * @retval false   item was not found
  */
-typedef (*dlist_item_found_cb_t)(void *context, struct dlist_item *item);
+typedef bool (*dlist_item_found_cb_t)(void *context, struct dlist_item *item);
 
 /**
  * Find an element in the list using the predicate function.

@@ -26,5 +26,5 @@ src += [files('dlist.c')]
 
 if unit_test
     e = executable('dlist', ['dlist.c', 'test.c'], include_directories: inc)
-    test('dlist', e, suite: 'tikli')
+    test('dlist', e)
 endif
