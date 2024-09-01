@@ -53,7 +53,9 @@ static void test_submachine(void) {
     hsm_init(g_submachine, /*init_event=*/NULL);
 
     {
-        const char *out = "top/0-INIT;s/0-ENTRY;s1/0-ENTRY;s1/1-ENTRY;s1/1-INIT;s11/1-ENTRY;s111/1-ENTRY;s111/1-INIT;";
+        const char *out =
+            "top/0-INIT;s/0-ENTRY;s1/0-ENTRY;s1/1-ENTRY;s1/1-INIT;s11/"
+            "1-ENTRY;s111/1-ENTRY;s111/1-INIT;";
         ASSERT(0 == strncmp(m_log_buf, out, strlen(out)));
         m_log_buf[0] = '\0';
     }
