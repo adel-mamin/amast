@@ -22,9 +22,9 @@
 # SOFTWARE.
 #
 
-src += [files('crc.c')]
+src += [files('strlib.c')]
 
 if unit_test
-    e = executable('crc', ['crc.c', 'test.c'], include_directories: inc)
-    test('crc', e)
+    e = executable('strlib', ['strlib.c', 'test.c'], include_directories: inc)
+    test('strlib', e)
 endif
