@@ -46,7 +46,7 @@
  *    In that situation a divide-by-zero will cause the compiler to error out.
  */
 #define COUNT_OF(arr) \
-   ((int)( sizeof(arr) / sizeof(0 [arr]) / !(sizeof(arr) % sizeof(0 [arr]))))
+    ((int)(sizeof(arr) / sizeof(0 [arr]) / !(sizeof(arr) % sizeof(0 [arr]))))
 
 /** Returns maximum element */
 #undef MAX
