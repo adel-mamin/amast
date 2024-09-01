@@ -22,14 +22,9 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
-src = []
+src += [files('crc.c')]
 
-subdir('blk')
-subdir('common')
-subdir('crc')
-subdir('dlist')
-subdir('hsm')
-subdir('queue')
-subdir('slist')
-subdir('onesize')
+if unit_test
+    e = executable('crc', ['crc.c', 'test.c'], include_directories: inc)
+    test('crc', e, suite: 'tikli')
+endif
