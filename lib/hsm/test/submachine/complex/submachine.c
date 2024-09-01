@@ -165,9 +165,9 @@ static enum hsm_rc s1(struct test *me, const struct event *event) {
         break;
     }
     static const struct hsm_state ss[] = {
-        [SM_0] = {.fn = HSM_STATE_FN(s), .instance = 0},
-        [SM_1] = {.fn = HSM_STATE_FN(s1), .instance = SM_0},
-        [SM_2] = {.fn = HSM_STATE_FN(s), .instance = 0}
+        [SM_0] = {.fn = (hsm_state_fn)s},
+        [SM_1] = {.fn = (hsm_state_fn)s1, .instance = SM_0},
+        [SM_2] = {.fn = (hsm_state_fn)s}
     };
     ASSERT(instance < ARRAY_SIZE(ss));
     const struct hsm_state *super = &ss[instance];
@@ -193,9 +193,9 @@ static enum hsm_rc s11(struct test *me, const struct event *event) {
     case HSM_EVT_G:
         me->log("s11/%d-G;", instance);
         static const struct hsm_state tt[] = {
-            [SM_0] = {.fn = HSM_STATE_FN(s1), .instance = SM_1},
-            [SM_1] = {.fn = HSM_STATE_FN(s1), .instance = SM_2},
-            [SM_2] = {.fn = HSM_STATE_FN(s1), .instance = SM_0}
+            [SM_0] = {.fn = (hsm_state_fn)s1, .instance = SM_1},
+            [SM_1] = {.fn = (hsm_state_fn)s1, .instance = SM_2},
+            [SM_2] = {.fn = (hsm_state_fn)s1, .instance = SM_0}
         };
         ASSERT(instance < ARRAY_SIZE(tt));
         const struct hsm_state *tran = &tt[instance];
@@ -253,9 +253,9 @@ static enum hsm_rc s12(struct test *me, const struct event *event) {
     case HSM_EVT_F:
         me->log("s12/%d-F;", instance);
         static const struct hsm_state tt[] = {
-            [SM_0] = {.fn = HSM_STATE_FN(s12), .instance = SM_1},
-            [SM_1] = {.fn = HSM_STATE_FN(s12), .instance = SM_2},
-            [SM_2] = {.fn = HSM_STATE_FN(s12), .instance = SM_0}
+            [SM_0] = {.fn = (hsm_state_fn)s12, .instance = SM_1},
+            [SM_1] = {.fn = (hsm_state_fn)s12, .instance = SM_2},
+            [SM_2] = {.fn = (hsm_state_fn)s12, .instance = SM_0}
         };
         ASSERT(instance < ARRAY_SIZE(tt));
         const struct hsm_state *tran = &tt[instance];

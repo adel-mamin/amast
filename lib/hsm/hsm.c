@@ -69,7 +69,7 @@ bool hsm_state_is_eq(struct hsm *hsm, const struct hsm_state *state) {
     if (hsm->state != state->fn) {
         return false;
     }
-    if (hsm->state == HSM_STATE_FN(hsm_top)) {
+    if (hsm->state == (hsm_state_fn)hsm_top) {
         ASSERT(0 == hsm->istate);
         return true;
     }

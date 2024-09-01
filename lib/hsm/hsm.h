@@ -131,13 +131,6 @@ struct hsm_state {
 #define HSM_STATE(...) \
     GET_MACRO_2_(__VA_ARGS__, HSM_STATE_2_, HSM_STATE_1_, _)(__VA_ARGS__)
 
-/**
- * Get HSM state function of type hsm_state_fn from any HSM event handler.
- * @param h  HSM event handler
- * @return HSM state function
- */
-#define HSM_STATE_FN(h) ((hsm_state_fn)(h))
-
 /** HSM state */
 struct hsm {
     /** current state */
@@ -160,7 +153,7 @@ struct hsm {
 
 /** Helper macro. Not to be used directly. */
 #define HSM_SET_TEMP_(s, i)                      \
-    (((struct hsm *)me)->temp = HSM_STATE_FN(s), \
+    (((struct hsm *)me)->temp = (hsm_state_fn)s, \
      ((struct hsm *)me)->itemp = (i))
 
 /** Helper macro. Not to be used directly. */
