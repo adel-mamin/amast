@@ -48,4 +48,4 @@ void *blk_copy(struct blk *dst, const struct blk *src);
 }
 #endif
 
-#endif /* #ifndef BLK_H_INCLUDED */
+#endif /* BLK_H_INCLUDED */

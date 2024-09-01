@@ -189,4 +189,4 @@ bool slist_owns(const struct slist *hnd, const struct slist_item *item);
 }
 #endif
 
-#endif /* #ifndef SLIST_H_INCLUDED */
+#endif /* SLIST_H_INCLUDED */
