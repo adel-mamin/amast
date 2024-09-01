@@ -45,7 +45,7 @@
  *    divisible by the size of the object the pointer points to.
  *    In that situation a divide-by-zero will cause the compiler to error out.
  */
-#define COUNT_OF(arr) \
+#define COUNTOF(arr) \
     ((int)(sizeof(arr) / sizeof(0 [arr]) / !(sizeof(arr) % sizeof(0 [arr]))))
 
 /** Returns maximum element */

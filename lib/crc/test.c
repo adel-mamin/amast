@@ -30,11 +30,11 @@ static void test_crc16(void) {
     {
         unsigned char data[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
         static const unsigned int crc_init = 0xFFFF;
-        unsigned int crc = crc16(data, COUNT_OF(data), crc_init);
+        unsigned int crc = crc16(data, COUNTOF(data), crc_init);
         ASSERT(0x29b1 == crc);
 
         crc = crc_init;
-        for (int i = 0; i < COUNT_OF(data); i++) {
+        for (int i = 0; i < COUNTOF(data); i++) {
             crc = crc16(&data[i], 1, crc);
         }
         ASSERT(0x29b1 == crc);
@@ -45,7 +45,7 @@ static void test_crc16(void) {
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '0'
         };
         static const unsigned int crc_init = 0xFFFF;
-        unsigned int crc = crc16(data, COUNT_OF(data), crc_init);
+        unsigned int crc = crc16(data, COUNTOF(data), crc_init);
         data[9] = (unsigned char)(crc >> 8u);
         data[10] = (unsigned char)crc;
         crc = crc16(&data[9], 2, crc);
@@ -57,11 +57,11 @@ static void test_crc24(void) {
     {
         unsigned char data[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
         static const unsigned long crc_init = 0;
-        unsigned long crc = crc24(data, COUNT_OF(data), crc_init);
+        unsigned long crc = crc24(data, COUNTOF(data), crc_init);
         ASSERT(0xcde703 == crc);
 
         crc = crc_init;
-        for (int i = 0; i < COUNT_OF(data); i++) {
+        for (int i = 0; i < COUNTOF(data); i++) {
             crc = crc24(&data[i], 1, crc);
         }
         ASSERT(0xcde703 == crc);
@@ -72,7 +72,7 @@ static void test_crc24(void) {
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '0', '0'
         };
         static const unsigned long crc_init = 0;
-        unsigned long crc = crc24(data, COUNT_OF(data), crc_init);
+        unsigned long crc = crc24(data, COUNTOF(data), crc_init);
         data[9] = (unsigned char)(crc >> 16u);
         data[10] = (unsigned char)(crc >> 8u);
         data[11] = (unsigned char)crc;
@@ -85,11 +85,11 @@ static void test_crc32(void) {
     {
         unsigned char data[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
         static const unsigned long crc_init = 0xFFFFFFFF;
-        unsigned long crc = crc32(data, COUNT_OF(data), crc_init);
+        unsigned long crc = crc32(data, COUNTOF(data), crc_init);
         ASSERT(0x0376e6e7 == crc);
 
         crc = crc_init;
-        for (int i = 0; i < COUNT_OF(data); i++) {
+        for (int i = 0; i < COUNTOF(data); i++) {
             crc = crc32(&data[i], 1, crc);
         }
         ASSERT(0x0376e6e7 == crc);
@@ -100,7 +100,7 @@ static void test_crc32(void) {
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '0', '0', '0'
         };
         static const unsigned long crc_init = 0;
-        unsigned long crc = crc32(data, COUNT_OF(data), crc_init);
+        unsigned long crc = crc32(data, COUNTOF(data), crc_init);
         data[9] = (unsigned char)(crc >> 24U);
         data[10] = (unsigned char)(crc >> 16U);
         data[11] = (unsigned char)(crc >> 8U);

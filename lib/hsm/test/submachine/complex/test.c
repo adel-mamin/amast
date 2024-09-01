@@ -99,7 +99,7 @@ static void test_submachine(void) {
         /* clang-format on */
     };
 
-    for (int i = 0; i < COUNT_OF(in); i++) {
+    for (int i = 0; i < COUNTOF(in); i++) {
         struct event e = {.id = in[i].evt};
         hsm_dispatch(g_submachine, &e);
         ASSERT(0 == strncmp(m_log_buf, in[i].out, strlen(in[i].out)));

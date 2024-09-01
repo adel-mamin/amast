@@ -184,7 +184,7 @@ unsigned long crc32(const unsigned char *data, int size, unsigned long crc) {
     for (int i = 0; i < size; i++) {
         unsigned int idx = (unsigned int)((crc >> 24U) ^ *data++);
         idx &= (CRC32_LOOKUP_SIZE - 1);
-        ASSERT(idx < COUNT_OF(crc32_lookup));
+        ASSERT(idx < COUNTOF(crc32_lookup));
         crc = (crc << 8U) ^ crc32_lookup[idx];
     }
 

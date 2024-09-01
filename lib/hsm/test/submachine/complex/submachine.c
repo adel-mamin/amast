@@ -171,7 +171,7 @@ static enum hsm_rc s1(struct test *me, const struct event *event) {
         [SM_1] = {.fn = (hsm_state_fn)s1, .instance = SM_0},
         [SM_2] = {.fn = (hsm_state_fn)s}
     };
-    ASSERT(instance < COUNT_OF(ss));
+    ASSERT(instance < COUNTOF(ss));
     const struct hsm_state *super = &ss[instance];
     return HSM_SUPER(super->fn, super->instance);
 }
@@ -199,7 +199,7 @@ static enum hsm_rc s11(struct test *me, const struct event *event) {
             [SM_1] = {.fn = (hsm_state_fn)s1, .instance = SM_2},
             [SM_2] = {.fn = (hsm_state_fn)s1, .instance = SM_0}
         };
-        ASSERT(instance < COUNT_OF(tt));
+        ASSERT(instance < COUNTOF(tt));
         const struct hsm_state *tran = &tt[instance];
 
         return HSM_TRAN(tran->fn, tran->instance);
@@ -259,7 +259,7 @@ static enum hsm_rc s12(struct test *me, const struct event *event) {
             [SM_1] = {.fn = (hsm_state_fn)s12, .instance = SM_2},
             [SM_2] = {.fn = (hsm_state_fn)s12, .instance = SM_0}
         };
-        ASSERT(instance < COUNT_OF(tt));
+        ASSERT(instance < COUNTOF(tt));
         const struct hsm_state *tran = &tt[instance];
 
         return HSM_TRAN(tran->fn, tran->instance);

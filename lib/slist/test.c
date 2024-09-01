@@ -47,7 +47,7 @@ static struct ut_data test_data[10];
 
 static void test_init(struct slist *data) {
     slist_init(data);
-    for (int i = 0; i < COUNT_OF(test_data); i++) {
+    for (int i = 0; i < COUNTOF(test_data); i++) {
         test_data[i].data = i;
     }
 }

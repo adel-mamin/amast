@@ -44,7 +44,7 @@ static struct ut_data test_data[10];
 
 static void test_setup(struct dlist *list) {
     dlist_init(list);
-    for (int i = 0; i < COUNT_OF(test_data); i++) {
+    for (int i = 0; i < COUNTOF(test_data); i++) {
         test_data[i].data = i;
     }
 }
@@ -273,11 +273,11 @@ static void test_dlist_back(void) {
     test_setup(&dlist);
 
     int i = 0;
-    for (i = 0; i < COUNT_OF(test_data); i++) {
+    for (i = 0; i < COUNTOF(test_data); i++) {
         dlist_push_front(&dlist, &test_data[i].hdr);
     }
 
-    for (i = 0; i < COUNT_OF(test_data); i++) {
+    for (i = 0; i < COUNTOF(test_data); i++) {
         const struct ut_data *e = (struct ut_data *)dlist_pop_back(&dlist);
         ASSERT(e);
         ASSERT(test_data[i].data == e->data);
@@ -290,11 +290,11 @@ static void test_dlist_front(void) {
     test_setup(&dlist);
 
     int i = 0;
-    for (i = 0; i < COUNT_OF(test_data); i++) {
+    for (i = 0; i < COUNTOF(test_data); i++) {
         dlist_push_front(&dlist, &test_data[i].hdr);
     }
 
-    for (i = COUNT_OF(test_data); i > 0; i--) {
+    for (i = COUNTOF(test_data); i > 0; i--) {
         const struct ut_data *e = (struct ut_data *)dlist_pop_front(&dlist);
         ASSERT(e);
         ASSERT(test_data[i - 1].data == e->data);
@@ -307,11 +307,11 @@ static void test_dlist_back2(void) {
     test_setup(&dlist);
 
     int i = 0;
-    for (i = 0; i < COUNT_OF(test_data); i++) {
+    for (i = 0; i < COUNTOF(test_data); i++) {
         dlist_push_back(&dlist, &test_data[i].hdr);
     }
 
-    for (i = COUNT_OF(test_data); i > 0; i--) {
+    for (i = COUNTOF(test_data); i > 0; i--) {
         const struct ut_data *e = (struct ut_data *)dlist_pop_back(&dlist);
         ASSERT(e);
         ASSERT(test_data[i - 1].data == e->data);
