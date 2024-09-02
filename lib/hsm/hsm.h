@@ -33,6 +33,7 @@
 #define HSM_H_INCLUDED
 
 #include <stdbool.h>
+#include "event/event.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,8 +69,7 @@ extern "C" {
  */
 #define HSM_EVT_EXIT 3
 
-/** User event IDs start with this ID (inclusive). */
-#define HSM_EVT_USER 4
+ASSERT_STATIC(EVT_USER > HSM_EVT_EXIT);
 
 /**
  * HSM state handler return codes.

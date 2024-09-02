@@ -40,9 +40,9 @@
 #define S1_0 0
 #define S1_1 1
 
-#define FOO (HSM_EVT_USER)
-#define BAR (HSM_EVT_USER + 1)
-#define BAZ (HSM_EVT_USER + 2)
+#define FOO (EVT_USER)
+#define BAR (EVT_USER + 1)
+#define BAZ (EVT_USER + 2)
 
 struct basic {
     struct hsm hsm;

@@ -1,7 +1,8 @@
 /*
- *  The MIT License (MIT)
+ * The MIT License (MIT)
  *
- * Copyright (c) 2020-2023 Adel Mamin
+ * Copyright (c) 2020-2024 Adel Mamin
+ * Copyright (c) 2019 Ryan Hartlage (documentation)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,24 +23,43 @@
  * SOFTWARE.
  */
 
-#ifndef COMMON_H_INCLUDED
-#define COMMON_H_INCLUDED
+/**
+ * @file
+ *
+ * Hierarchical State Machine (HSM) framework API declaration.
+ */
 
-#include <stdarg.h>
+#ifndef EVENT_H_INCLUDED
+#define EVENT_H_INCLUDED
 
-#define HSM_EVT_A (EVT_USER)
-#define HSM_EVT_B (EVT_USER + 1)
-#define HSM_EVT_C (EVT_USER + 2)
-#define HSM_EVT_D (EVT_USER + 3)
-#define HSM_EVT_E (EVT_USER + 4)
-#define HSM_EVT_F (EVT_USER + 5)
-#define HSM_EVT_G (EVT_USER + 6)
-#define HSM_EVT_H (EVT_USER + 7)
-#define HSM_EVT_I (EVT_USER + 8)
-#define HSM_EVT_TERM (EVT_USER + 9)
+/**
+ * The event IDs below this value are reserved
+ * and should not be used for user events.
+ */
+#define EVT_USER 4
 
-int str_lcat(char *dst, const char *src, int lim);
-int str_lcatf(char *dst, int lim, const char *fmt, ...);
-int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap);
+/** Event descriptor */
+struct event {
+    /** event ID */
+    int id;
 
-#endif
+    /**
+     * Has a special purpose in active objects framework (AOF).
+     * Otherwise is unused.
+     *
+     * Below is the description of the purpose in AOF.
+     * If pool index is set to zero, then the event is statically allocated.
+     *
+     *  15  14  13          11 10         6 5           0
+     * +---+---+--------------+------------+-------------+
+     * |n/a|PST| clock domain | pool index | ref counter |
+     * +---+---+--------------+------------+-------------+
+     *
+     * n/a - reserved
+     * PST - pubsub time
+     */
+    unsigned flags;
+};
+
+#endif /* EVENT_H_INCLUDED */
+

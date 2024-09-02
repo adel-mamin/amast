@@ -25,27 +25,4 @@
 #ifndef COMMON_TYPES_H_INCLUDED
 #define COMMON_TYPES_H_INCLUDED
 
-/** Event descriptor */
-struct event {
-    /** event ID */
-    int id;
-
-    /**
-     * Has a special purpose in active objects framework (AOF).
-     * Otherwise is unused.
-     *
-     * Below is the description of the purpose in AOF.
-     * If pool index is set to zero, then the event is statically allocated.
-     *
-     *  15  14  13          11 10         6 5           0
-     * +---+---+--------------+------------+-------------+
-     * |n/a|PST| clock domain | pool index | ref counter |
-     * +---+---+--------------+------------+-------------+
-     *
-     * n/a - reserved
-     * PST - pubsub time
-     */
-    unsigned flags;
-};
-
 #endif /* COMMON_TYPES_H_INCLUDED */
