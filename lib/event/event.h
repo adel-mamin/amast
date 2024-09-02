@@ -44,21 +44,20 @@ struct event {
     int id;
 
     /**
-     * Has a special purpose in active objects framework (AOF).
-     * Otherwise is unused.
-     *
-     * Below is the description of the purpose in AOF.
-     * If pool index is set to zero, then the event is statically allocated.
-     *
-     *  15  14  13          11 10         6 5           0
-     * +---+---+--------------+------------+-------------+
-     * |n/a|PST| clock domain | pool index | ref counter |
-     * +---+---+--------------+------------+-------------+
-     *
-     * n/a - reserved
-     * PST - pubsub time
+     * The flags below have special purpose in active objects framework (AOF).
+     * Otherwise are unused.
      */
-    unsigned flags;
+
+    /** reference counter */
+    unsigned ref_counter : 6;
+    /** if set to zero, then event is statically allocated */
+    unsigned pool_index : 5;
+    /** clock domain for time events */
+    unsigned clock_domain : 3;
+    /** PUB/SUB type of event */
+    unsigned pubsub : 1;
+    /** n/a */
+    unsigned reserved : 1;
 };
 
 #endif /* EVENT_H_INCLUDED */
