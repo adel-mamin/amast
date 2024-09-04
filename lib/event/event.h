@@ -38,6 +38,16 @@
  */
 #define EVT_USER 4
 
+/**
+ * Check if event has a valid user event ID
+ * @param event   event to check
+ * @retval true   the event has user event ID
+ * @retval false  the event does not have user event ID
+ */
+#define EVENT_HAS_USER_ID(event) (((struct event*)(event))->id >= EVT_USER)
+
+#define EVENT_TICK_DOMAIN_BITS 3
+
 /** Event descriptor */
 struct event {
     /** event ID */
@@ -52,13 +62,12 @@ struct event {
     unsigned ref_counter : 6;
     /** if set to zero, then event is statically allocated */
     unsigned pool_index : 5;
-    /** clock domain for time events */
-    unsigned clock_domain : 3;
-    /** PUB/SUB type of event */
-    unsigned pubsub : 1;
+    /** tick domain for time events */
+    unsigned tick_domain : EVENT_TICK_DOMAIN_BITS;
+    /** PUB/SUB time event */
+    unsigned pubsub_time : 1;
     /** n/a */
     unsigned reserved : 1;
 };
 
 #endif /* EVENT_H_INCLUDED */
-
