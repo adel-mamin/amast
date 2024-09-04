@@ -22,16 +22,12 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
-src = []
+src += [files('timer.c')]
 
-subdir('blk')
-subdir('common')
-subdir('crc')
-subdir('dlist')
-subdir('hsm')
-subdir('queue')
-subdir('slist')
-subdir('strlib')
-subdir('onesize')
-subdir('timer')
+if unit_test
+    e = executable(
+        'timer',
+        ['timer.c', 'test.c', dlist_src],
+        include_directories: inc)
+    test('timer', e)
+endif
