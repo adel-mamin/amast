@@ -68,7 +68,7 @@ struct slist {
 /** Singly linked list iterator handler */
 struct slist_iterator {
     struct slist *hnd;      /**< list handler */
-    struct slist_item *cur; /**< current element of the list */
+    struct slist_item *cur; /**< current item of the list */
 };
 
 /**
@@ -100,7 +100,7 @@ void slist_push_after(
  * The provided item must be part of the list.
  * Otherwise the behaviour is undefined.
  * @param hnd   the list handler
- * @param item  the element after this item is popped
+ * @param item  the item after this item is popped
  * @return The popped item or NULL if nothing to remove
  */
 struct slist_item *slist_pop_after(struct slist *hnd, struct slist_item *item);
@@ -125,12 +125,12 @@ struct slist_item *slist_next(
 typedef bool (*slist_item_found_cb_t)(void *context, struct slist_item *item);
 
 /**
- * Find an element in the list using the predicate function.
+ * Find an item in the list using the predicate function.
  * @param hnd          the list handler
  * @param is_found_cb  the predicate callback
  * @param context      the context, which is provided verbatim to predicate
- * @return The element, found by the predicate callback function.
- *         NULL, if nothing was found. The found element is not popped
+ * @return The item, found by the predicate callback function.
+ *         NULL, if nothing was found. The found item is not popped
  *         from the list.
  */
 struct slist_item *slist_find(
@@ -138,27 +138,27 @@ struct slist_item *slist_find(
 );
 
 /**
- * Return the list element at the front (head) of the list.
- * The list element is not popped from the list.
+ * Return the list item at the front (head) of the list.
+ * The list item is not popped from the list.
  * @param hnd  the list handler
- * @return The element at the front of the list or NULL, if no
- *         element exists at the given index.
+ * @return The item at the front of the list or NULL, if no
+ *         item exists at the given index.
  */
 struct slist_item *slist_peek_front(const struct slist *hnd);
 
 /**
- * Return the list element at the back (tail) of the list.
- * The lists element is not popped from the list.
+ * Return the list item at the back (tail) of the list.
+ * The lists item is not popped from the list.
  * @param hnd  the list handler
- * @return The element at the back of the list or NULL, if no
- *         element exists at the given index.
+ * @return The item at the back of the list or NULL, if no
+ *         item exists at the given index.
  */
 struct slist_item *slist_peek_back(const struct slist *hnd);
 
 /**
  * Push an item to the front (head) of the list.
  * @param hnd   the list handler
- * @param item  the element to be pushed
+ * @param item  the item to be pushed
  */
 void slist_push_front(struct slist *hnd, struct slist_item *item);
 
@@ -170,18 +170,18 @@ void slist_push_front(struct slist *hnd, struct slist_item *item);
 struct slist_item *slist_pop_front(struct slist *hnd);
 
 /**
- * Add a new element at the back (tail) of the list.
+ * Add a new item at the back (tail) of the list.
  * @param hnd   the list handler
- * @param item  the element to be added
+ * @param item  the item to be added
  */
 void slist_push_back(struct slist *hnd, struct slist_item *item);
 
 /**
- * Check if the given element is part of the list.
+ * Check if the given item is part of the list.
  * @param hnd     the list handler
- * @param item    the element to be checked
- * @retval true   the given element belongs to the list
- * @retval false  the given element is not part of the list
+ * @param item    the item to be checked
+ * @retval true   the given item belongs to the list
+ * @retval false  the given item is not part of the list
  */
 bool slist_owns(const struct slist *hnd, const struct slist_item *item);
 
