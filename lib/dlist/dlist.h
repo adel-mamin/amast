@@ -43,8 +43,8 @@ extern "C" {
  * in which doubly linked list iterator traverses the list.
  */
 enum dlist_direction {
-    dlist_forward, /**< forward list traverse */
-    dlist_backward /**< backward list traverse */
+    DLIST_FORWARD, /**< forward list traverse */
+    DLIST_BACKWARD /**< backward list traverse */
 };
 
 /**
@@ -80,7 +80,7 @@ struct dlist {
 /** Doubly linked list iterator handler */
 struct dlist_iterator {
     struct dlist *hnd;        /**< list handler */
-    struct dlist_item *cur;   /**< current element of the list */
+    struct dlist_item *cur;   /**< current item of the list */
     enum dlist_direction dir; /**< direction of traverse */
 };
 
@@ -138,9 +138,9 @@ struct dlist_item *dlist_prev(
 );
 
 /**
- * Return the number of elements in the list.
+ * Return the number of items in the list.
  * @param hnd  the list handler
- * @return The number of elements in the list.
+ * @return The number of items in the list.
  */
 int dlist_size(const struct dlist *hnd);
 
@@ -166,24 +166,26 @@ void dlist_push_after(struct dlist_item *item, struct dlist_item *new_item);
 void dlist_push_front(struct dlist *hnd, struct dlist_item *item);
 
 /**
- * Add a new element at the back (tail) of the list.
+ * Add a new item at the back (tail) of the list.
  * @param hnd   the list handler
  * @param item  the item to be added
  */
 void dlist_push_back(struct dlist *hnd, struct dlist_item *item);
 
 /**
- * Pop the given element from the list.
- * The provided element must be part of the list.
+ * Pop the given item from the list.
+ * The provided item must be part of the list.
  * Otherwise the behavior is undefined.
- * @param item  the element to pop
+ * @param item    the item to pop
+ * @retval true   the item was popped
+ * @retval false  the item was not popped as it was not linked
  */
-void dlist_pop(struct dlist_item *item);
+bool dlist_pop(struct dlist_item *item);
 
 /**
- * Pop an element in front (head) of the list.
+ * Pop an item in front (head) of the list.
  * @param hnd  the list handler
- * @return the popped element or NULL if the list was empty
+ * @return the popped item or NULL if the list was empty
  */
 struct dlist_item *dlist_pop_front(struct dlist *hnd);
 
@@ -195,18 +197,18 @@ struct dlist_item *dlist_pop_front(struct dlist *hnd);
 struct dlist_item *dlist_pop_back(struct dlist *hnd);
 
 /**
- * Return the list element at the front (head) of the list.
- * The element is not removed from the list.
+ * Return the list item at the front (head) of the list.
+ * The item is not removed from the list.
  * @param hnd  the list handler
- * @return The pointer to the front (head) element or NULL if the list is empty
+ * @return The pointer to the front (head) item or NULL if the list is empty
  */
 struct dlist_item *dlist_peek_front(struct dlist *hnd);
 
 /**
- * Return the list element at the back (tail) of the list.
- * The element is not removed from the list.
+ * Return the list item at the back (tail) of the list.
+ * The item is not removed from the list.
  * @param hnd  the list handler
- * @return The pointer to the back (tail) element or NULL if the list is empty
+ * @return The pointer to the back (tail) item or NULL if the list is empty
  */
 struct dlist_item *dlist_peek_back(struct dlist *hnd);
 
@@ -220,14 +222,14 @@ struct dlist_item *dlist_peek_back(struct dlist *hnd);
 typedef bool (*dlist_item_found_cb_t)(void *context, struct dlist_item *item);
 
 /**
- * Find an element in the list using the predicate function.
+ * Find an item in the list using the predicate function.
  * @param hnd          the list handler
- * @param is_found_cb  the predicate function, which tells if the element
- *                     is found. If the predicate returns 1, the element is
- *                     found. If it returns 0, the element is not found.
+ * @param is_found_cb  the predicate function, which tells if the item
+ *                     is found. If the predicate returns 1, the item is
+ *                     found. If it returns 0, the item is not found.
  * @param context      the context, which is provided verbatim to predicate
- * @return The element, found by the predicate callback function.
- *         NULL, if nothing was found. The found element is not popped
+ * @return The item, found by the predicate callback function.
+ *         NULL, if nothing was found. The found item is not popped
  *         from the list.
  */
 struct dlist_item *dlist_find(
@@ -254,17 +256,17 @@ void dlist_iterator_init(
 /**
  * Iterate over the list in the predefined direction.
  * Is supposed to be called in iterative way to traverse part or full list.
- * The iteration can visit each element only once. When all elements of
+ * The iteration can visit each item only once. When all items of
  * the list were visited, the next invocation of the function returns NULL.
- * The current visited element can only be popped with
+ * The current visited item can only be popped with
  * dlist_iterator_pop().
  * @param it the iterator initialized by dlist_iterator_init()
- * @return The visited element. The element is not popped from the list.
+ * @return The visited item. The item is not popped from the list.
  */
 struct dlist_item *dlist_iterator_next(struct dlist_iterator *it);
 
 /**
- * Pop the element pointed by the iterator from the list.
+ * Pop the item pointed by the iterator from the list.
  * The popped item is returned. The iterator is still usable after the removal.
  * At least one dlist_iterator_next() is expected for the iterator before
  * this function is called. Otherwise the behavior is undefined. The only valid
@@ -276,11 +278,11 @@ struct dlist_item *dlist_iterator_next(struct dlist_iterator *it);
 struct dlist_item *dlist_iterator_pop(struct dlist_iterator *it);
 
 /**
- * Check if the given element is part of the list.
+ * Check if the given item is part of the list.
  * @param hnd     the list handler
- * @param item    the element to be checked
- * @retval true   the given element belongs to the list
- * @retval false  the given element is not part of the list
+ * @param item    the item to be checked
+ * @retval true   the given item belongs to the list
+ * @retval false  the given item is not part of the list
  */
 bool dlist_owns(const struct dlist *hnd, const struct dlist_item *item);
 

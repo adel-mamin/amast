@@ -168,7 +168,7 @@ static void test_dlist_iterator_forward(void) {
     test_setup(&dlist);
 
     struct dlist_iterator it;
-    dlist_iterator_init(&dlist, &it, dlist_forward);
+    dlist_iterator_init(&dlist, &it, DLIST_FORWARD);
 
     dlist_push_back(&dlist, &test_data[0].hdr);
     dlist_push_back(&dlist, &test_data[1].hdr);
@@ -193,7 +193,7 @@ static void test_dlist_iterator_backward(void) {
     dlist_push_back(&dlist, &test_data[2].hdr);
 
     struct dlist_iterator it;
-    dlist_iterator_init(&dlist, &it, dlist_backward);
+    dlist_iterator_init(&dlist, &it, DLIST_BACKWARD);
 
     struct dlist_item *e = dlist_iterator_next(&it);
     ASSERT(((struct ut_data *)e)->data == 2);

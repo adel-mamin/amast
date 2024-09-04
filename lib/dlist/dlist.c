@@ -93,7 +93,7 @@ struct dlist_item *dlist_iterator_next(struct dlist_iterator *it) {
     ASSERT(it->hnd);
     ASSERT(it->cur);
 
-    if (dlist_forward == it->dir) {
+    if (DLIST_FORWARD == it->dir) {
         it->cur = it->cur->next;
     } else {
         it->cur = it->cur->prev;
@@ -117,7 +117,7 @@ struct dlist_item *dlist_iterator_pop(struct dlist_iterator *it) {
     return pop;
 }
 
-void dlist_pop(struct dlist_item *item) {
+bool dlist_pop(struct dlist_item *item) {
     ASSERT(item);
 
     if (item->next) {
@@ -126,7 +126,9 @@ void dlist_pop(struct dlist_item *item) {
     if (item->prev) {
         item->prev->next = item->next;
     }
+    bool popped = item->next && item->prev;
     item->next = item->prev = NULL;
+    return popped;
 }
 
 struct dlist_item *dlist_find(

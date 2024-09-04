@@ -22,7 +22,8 @@
 # SOFTWARE.
 #
 
-src += [files('dlist.c')]
+dlist_src = files('dlist.c')
+src += [dlist_src]
 
 if unit_test
     e = executable('dlist', ['dlist.c', 'test.c'], include_directories: inc)
