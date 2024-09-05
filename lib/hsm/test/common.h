@@ -1,7 +1,7 @@
 /*
- *  The MIT License (MIT)
+ * The MIT License (MIT)
  *
- * Copyright (c) 2020-2023 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,8 +38,4 @@
 #define HSM_EVT_I (EVT_USER + 8)
 #define HSM_EVT_TERM (EVT_USER + 9)
 
-int str_lcat(char *dst, const char *src, int lim);
-int str_lcatf(char *dst, int lim, const char *fmt, ...);
-int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap);
-
-#endif
+#endif /* COMMON_H_INCLUDED */

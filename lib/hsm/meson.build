@@ -1,7 +1,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2024 Adel Mamin
+# Copyright (c) Adel Mamin
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,11 @@
 # SOFTWARE.
 #
 
-hsm_src = [files('hsm.c')]
-src += [hsm_src]
+a1hsm_src = [files('hsm.c')]
+src += [a1hsm_src]
 
-test_lib = library(
-    'test_lib',
-    [
-        hsm_src, 'test' / 'common.c'
-    ],
-    include_directories: inc
-)
+liba1hsm = library('liba1hsm', [a1hsm_src], include_directories: inc)
+liba1hsm_dep = declare_dependency(link_with : liba1hsm, include_directories : inc)
 
 if unit_test
     e = executable(
@@ -40,35 +35,26 @@ if unit_test
             'test' / 'regular' / 'regular.c',
             'test' / 'regular' / 'test.c'
         ],
-        link_with: test_lib,
-        include_directories: [
-            inc,
-            include_directories('test')
-        ])
+        dependencies: [liba1hsm_dep, libstr_dep],
+        include_directories: [include_directories('test')])
     test('regular', e, suite: 'hsm')
 
     e = executable(
-        'hsm_top_as_nca',
+        'a1hsm_top_as_nca',
         [
-            'test' / 'hsm_top_as_nca.c'
+            'test' / 'a1hsm_top_as_nca.c'
         ],
-        link_with: test_lib,
-        include_directories: [
-            inc,
-            include_directories('test')
-        ])
-    test('hsm_top_as_nca', e, suite: 'hsm')
+        dependencies: [liba1hsm_dep, libstr_dep],
+        include_directories: [include_directories('test')])
+    test('a1hsm_top_as_nca', e, suite: 'hsm')
 
     e = executable(
         'redispatch',
         [
             'test'/ 'redispatch.c'
         ],
-        link_with: test_lib,
-        include_directories: [
-            inc,
-            include_directories('test')
-        ])
+        dependencies: [liba1hsm_dep, libstr_dep],
+        include_directories: [include_directories('test')])
     test('redispatch', e, suite: 'hsm')
 
     e = executable(
@@ -76,11 +62,8 @@ if unit_test
         [
             'test' / 'history.c'
         ],
-        link_with: test_lib,
-        include_directories: [
-            inc,
-            include_directories('test')
-        ])
+        dependencies: [liba1hsm_dep, libstr_dep],
+        include_directories: [include_directories('test')])
     test('history', e, suite: 'hsm')
 
     e = executable(
@@ -88,11 +71,8 @@ if unit_test
         [
             'test' / 'submachine' / 'basic' / 'test.c'
         ],
-        link_with: test_lib,
-        include_directories: [
-            inc,
-            include_directories('test')
-        ])
+        dependencies: [liba1hsm_dep, libstr_dep],
+        include_directories: [include_directories('test')])
     test('submachine-basic', e, suite: 'hsm')
 
     e = executable(
@@ -101,29 +81,11 @@ if unit_test
             'test' / 'submachine' / 'complex' / 'submachine.c',
             'test' / 'submachine' / 'complex' / 'test.c'
         ],
-        link_with: test_lib,
-        include_directories: [
-            inc,
-            include_directories('test')
-        ])
+        dependencies: [liba1hsm_dep, libstr_dep],
+        include_directories: [include_directories('test')])
     test('submachine-complex', e, suite: 'hsm')
 
 endif
-
-e = executable(
-    'submachine-example',
-    [
-        'test' / 'submachine' / 'complex' / 'submachine.c',
-        'example' / 'submachine' / 'example.c'
-    ],
-    link_with: test_lib,
-    include_directories: [
-        inc,
-        include_directories(
-            'test' / 'submachine' / 'complex',
-            'test',
-        )
-])
 
 e = executable(
     'regular-example',
@@ -131,11 +93,19 @@ e = executable(
         'test' / 'regular' / 'regular.c',
         'example' / 'regular' / 'example.c'
     ],
-    link_with: test_lib,
+    dependencies: [liba1hsm_dep, libstr_dep],
+    include_directories: [include_directories('test' / 'regular', 'test')])
+
+e = executable(
+    'submachine-example',
+    [
+        'test' / 'submachine' / 'complex' / 'submachine.c',
+        'example' / 'submachine' / 'example.c'
+    ],
+    dependencies: [liba1hsm_dep, libstr_dep],
     include_directories: [
-        inc,
         include_directories(
-            'test' / 'regular',
-            'test'
+            'test' / 'submachine' / 'complex',
+            'test',
         )
 ])

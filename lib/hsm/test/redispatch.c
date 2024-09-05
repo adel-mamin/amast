@@ -1,7 +1,7 @@
 /*
- *  The MIT License (MIT)
+ * The MIT License (MIT)
  *
- * Copyright (c) 2024 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,55 +31,55 @@
 #include "common.h"
 
 struct redispatch {
-    struct hsm hsm;
+    struct a1hsm hsm;
     int foo;
 };
 
 static struct redispatch m_redispatch;
 
-/* test HSM_TRAN_REDISPATCH() */
+/* test A1HSM_TRAN_REDISPATCH() */
 
-static enum hsm_rc s(struct redispatch *me, const struct event *event);
-static enum hsm_rc s1(struct redispatch *me, const struct event *event);
+static enum a1hsmrc s1(struct redispatch *me, const struct event *event);
+static enum a1hsmrc s2(struct redispatch *me, const struct event *event);
 
-static enum hsm_rc s(struct redispatch *me, const struct event *event) {
+static enum a1hsmrc s1(struct redispatch *me, const struct event *event) {
     switch (event->id) {
     case HSM_EVT_A:
-        return HSM_TRAN_REDISPATCH(s1);
+        return A1HSM_TRAN_REDISPATCH(s2);
     default:
         break;
     }
-    return HSM_SUPER(hsm_top);
+    return A1HSM_SUPER(a1hsm_top);
 }
 
-static enum hsm_rc s1(struct redispatch *me, const struct event *event) {
+static enum a1hsmrc s2(struct redispatch *me, const struct event *event) {
     switch (event->id) {
     case HSM_EVT_A:
         me->foo = 1;
-        return HSM_HANDLED();
+        return A1HSM_HANDLED();
     default:
         break;
     }
-    return HSM_SUPER(s);
+    return A1HSM_SUPER(a1hsm_top);
 }
 
-static enum hsm_rc sinit(struct redispatch *me, const struct event *event) {
+static enum a1hsmrc sinit(struct redispatch *me, const struct event *event) {
     (void)event;
-    return HSM_TRAN(s);
+    me->foo = 0;
+    return A1HSM_TRAN(s1);
 }
 
 static void test_redispatch(void) {
     struct redispatch *me = &m_redispatch;
-    hsm_ctor(&me->hsm, &HSM_STATE(sinit));
-    me->foo = 0;
+    a1hsm_ctor(&me->hsm, &A1HSM_STATE(sinit));
 
-    hsm_init(&me->hsm, /*init_event=*/NULL);
+    a1hsm_init(&me->hsm, /*init_event=*/NULL);
     ASSERT(0 == me->foo);
 
     static const struct event e = {.id = HSM_EVT_A};
-    hsm_dispatch(&me->hsm, &e);
+    a1hsm_dispatch(&me->hsm, &e);
     ASSERT(1 == me->foo);
-    ASSERT(hsm_state_is_eq(&me->hsm, &HSM_STATE(s1)));
+    ASSERT(a1hsm_state_is_eq(&me->hsm, &A1HSM_STATE(s2)));
 }
 
 int main(void) {

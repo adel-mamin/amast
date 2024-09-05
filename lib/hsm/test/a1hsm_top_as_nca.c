@@ -1,7 +1,7 @@
 /*
- *  The MIT License (MIT)
+ * The MIT License (MIT)
  *
- * Copyright (c) 2020-2023 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,60 +32,60 @@
 #include "common.h"
 
 struct test {
-    struct hsm hsm;
+    struct a1hsm hsm;
 };
 
 static struct test m_test;
 
-/* Test hsm_top() as NCA. */
+/* Test a1hsm_top() as NCA. */
 
-static enum hsm_rc s11(struct test *me, const struct event *event);
-static enum hsm_rc s2(struct test *me, const struct event *event);
+static enum a1hsmrc s11(struct test *me, const struct event *event);
+static enum a1hsmrc s2(struct test *me, const struct event *event);
 
-static enum hsm_rc s1(struct test *me, const struct event *event) {
+static enum a1hsmrc s1(struct test *me, const struct event *event) {
     switch (event->id) {
-    case HSM_EVT_INIT:
-        return HSM_TRAN(s11);
+    case A1HSM_EVT_INIT:
+        return A1HSM_TRAN(s11);
     default:
         break;
     }
-    return HSM_SUPER(hsm_top);
+    return A1HSM_SUPER(a1hsm_top);
 }
 
-static enum hsm_rc s11(struct test *me, const struct event *event) {
+static enum a1hsmrc s11(struct test *me, const struct event *event) {
     switch (event->id) {
     case HSM_EVT_A:
-        return HSM_TRAN(s2);
+        return A1HSM_TRAN(s2);
     default:
         break;
     }
-    return HSM_SUPER(s1);
+    return A1HSM_SUPER(s1);
 }
 
-static enum hsm_rc s2(struct test *me, const struct event *event) {
+static enum a1hsmrc s2(struct test *me, const struct event *event) {
     (void)event;
-    return HSM_SUPER(hsm_top);
+    return A1HSM_SUPER(a1hsm_top);
 }
 
-static enum hsm_rc sinit(struct test *me, const struct event *event) {
+static enum a1hsmrc sinit(struct test *me, const struct event *event) {
     (void)event;
-    return HSM_TRAN(s1);
+    return A1HSM_TRAN(s1);
 }
 
-static void test_hsm_top_as_nca(void) {
+static void test_a1hsm_top_as_nca(void) {
     struct test *me = &m_test;
-    hsm_ctor(&me->hsm, &HSM_STATE(sinit));
+    a1hsm_ctor(&me->hsm, &A1HSM_STATE(sinit));
 
-    hsm_init(&me->hsm, /*init_event=*/NULL);
-    ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s11)));
+    a1hsm_init(&me->hsm, /*init_event=*/NULL);
+    ASSERT(a1hsm_is_in(&me->hsm, &A1HSM_STATE(s11)));
 
     static const struct event E = {.id = HSM_EVT_A};
-    hsm_dispatch(&me->hsm, &E);
-    ASSERT(hsm_is_in(&me->hsm, &HSM_STATE(s2)));
+    a1hsm_dispatch(&me->hsm, &E);
+    ASSERT(a1hsm_is_in(&me->hsm, &A1HSM_STATE(s2)));
 }
 
 int main(void) {
-    test_hsm_top_as_nca();
+    test_a1hsm_top_as_nca();
 
     return 0;
 }

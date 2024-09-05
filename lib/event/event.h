@@ -48,6 +48,8 @@
 
 #define EVENT_TICK_DOMAIN_BITS 3
 
+#define A1EVT_CTOR(id_) ((struct event){.id = (id_)})
+
 /** Event descriptor */
 struct event {
     /** event ID */

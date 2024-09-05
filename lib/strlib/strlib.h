@@ -35,6 +35,7 @@
 
 #include <complex.h>
 #include <stdarg.h>
+#include <inttypes.h>
 
 /**
  * Check if string has a boolean value.

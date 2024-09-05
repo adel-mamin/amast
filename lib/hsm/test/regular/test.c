@@ -1,7 +1,7 @@
 /*
- *  The MIT License (MIT)
+ * The MIT License (MIT)
  *
- * Copyright (c) 2020-2023 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
+#include "strlib/strlib.h"
 #include "hsm/hsm.h"
 #include "common.h"
 #include "regular.h"
@@ -55,7 +56,7 @@ void test_log(char *fmt, ...) {
 static void test_hsm(void) {
     regular_ctor(test_log);
 
-    hsm_init(g_regular, /*init_event=*/NULL);
+    a1hsm_init(g_regular, /*init_event=*/NULL);
 
     {
         const char *out =
@@ -100,12 +101,12 @@ static void test_hsm(void) {
 
     for (int i = 0; i < COUNTOF(in); i++) {
         struct event e = {.id = in[i].evt};
-        hsm_dispatch(g_regular, &e);
+        a1hsm_dispatch(g_regular, &e);
         ASSERT(0 == strncmp(m_log_buf, in[i].out, strlen(in[i].out)));
         m_log_buf[0] = '\0';
     }
 
-    hsm_dtor(g_regular);
+    a1hsm_dtor(g_regular);
 
     {
         static const char *destruction = "s211-EXIT;s21-EXIT;s2-EXIT;s-EXIT;";

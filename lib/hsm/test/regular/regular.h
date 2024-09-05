@@ -1,7 +1,7 @@
 /*
- *  The MIT License (MIT)
+ * The MIT License (MIT)
  *
- * Copyright (c) 2020-2023 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 #ifndef REGULAR_H_INCLUDED
 #define REGULAR_H_INCLUDED
 
-extern struct hsm *g_regular;
+extern struct a1hsm *g_regular;
 void regular_ctor(void (*log)(char *fmt, ...));
 
 #endif /* REGULAR_H_INCLUDED */

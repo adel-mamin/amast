@@ -1,7 +1,7 @@
 /*
- *  The MIT License (MIT)
+ * The MIT License (MIT)
  *
- * Copyright (c) 2020-2024 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
+#include "strlib/strlib.h"
 #include "hsm/hsm.h"
 #include "common.h"
 #include "submachine.h"
@@ -50,7 +51,7 @@ static void test_submachine(void) {
 
     m_log_buf[0] = '\0';
 
-    hsm_init(g_submachine, /*init_event=*/NULL);
+    a1hsm_init(g_submachine, /*init_event=*/NULL);
 
     {
         const char *out =
@@ -101,14 +102,14 @@ static void test_submachine(void) {
 
     for (int i = 0; i < COUNTOF(in); i++) {
         struct event e = {.id = in[i].evt};
-        hsm_dispatch(g_submachine, &e);
+        a1hsm_dispatch(g_submachine, &e);
         ASSERT(0 == strncmp(m_log_buf, in[i].out, strlen(in[i].out)));
         m_log_buf[0] = '\0';
     }
 
     {
         static const char *dest = "s111/2-EXIT;s11/2-EXIT;s1/2-EXIT;s/0-EXIT;";
-        hsm_dtor(g_submachine);
+        a1hsm_dtor(g_submachine);
         ASSERT(0 == strncmp(m_log_buf, dest, strlen(dest)));
         m_log_buf[0] = '\0';
     }

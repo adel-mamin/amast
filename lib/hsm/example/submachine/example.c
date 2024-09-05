@@ -1,7 +1,7 @@
 /*
- *  The MIT License (MIT)
+ * The MIT License (MIT)
  *
- * Copyright (c) 2020-2024 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@
 #include "common/constants.h"
 #include "common/macros.h"
 #include "common/types.h"
+#include "strlib/strlib.h"
 #include "hsm/hsm.h"
 #include "common.h"
 #include "submachine.h"
@@ -60,7 +61,7 @@ int main(void) {
     printf(ANSI_COLOR_RESET);
 
     m_log_buf[0] = '\0';
-    hsm_init(g_submachine, /*init_event=*/NULL);
+    a1hsm_init(g_submachine, /*init_event=*/NULL);
     test_print('*');
 
     static const char *blank = "        ";
@@ -95,22 +96,22 @@ int main(void) {
         c = toupper(c);
         int terminate = 'T' == c;
         int index = c - 'A';
-        int valid = (0 <= index) && (index < ARRAY_SIZE(e));
+        int valid = (0 <= index) && (index < COUNTOF(e));
         if (!valid && !terminate) {
             continue;
         }
         m_log_buf[0] = '\0';
 
         if (terminate) {
-            hsm_dispatch(g_submachine, &(struct event){.id = HSM_EVT_TERM});
+            a1hsm_dispatch(g_submachine, &(struct event){.id = HSM_EVT_TERM});
             test_print(c);
             break;
         }
-        hsm_dispatch(g_submachine, &(struct event){.id = e[index]});
+        a1hsm_dispatch(g_submachine, &(struct event){.id = e[index]});
         test_print(c);
     }
     m_log_buf[0] = '\0';
-    hsm_dtor(g_submachine);
+    a1hsm_dtor(g_submachine);
     test_print('*');
 
     return 0;
