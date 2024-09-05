@@ -422,6 +422,21 @@ int str_lcatf(char *dst, int lim, const char *fmt, ...) {
     return (int)len;
 }
 
+int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap) {
+    ASSERT(dst);
+    ASSERT(lim > 0);
+    ASSERT(fmt);
+
+    long len = (int)strlen(dst);
+    ASSERT(len <= lim);
+
+    len += vsnprintf(dst + len, (size_t)(lim - len), fmt, ap); /* NOLINT */
+
+    ASSERT(len <= INT_MAX);
+
+    return (int)len;
+}
+
 char *str_sep(char **sp, const char *delim) {
     ASSERT(sp);
     ASSERT(delim);

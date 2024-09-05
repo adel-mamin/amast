@@ -34,6 +34,7 @@
 #define STRLIB_H_INCLUDED
 
 #include <complex.h>
+#include <stdarg.h>
 
 /**
  * Check if string has a boolean value.
@@ -221,6 +222,16 @@ int str_lcpy(char *dst, const char *src, int lim);
  *         It means the initial length of dst plus the length of src.
  */
 int str_lcat(char *dst, const char *src, int lim);
+
+/**
+ * Same as str_lcat(), but the source buffer is replaced with format string.
+ * @param dst  the destination buffer.
+ * @param lim  the full size of the buffer (not just the length) [bytes].
+ * @param fmt  the format string.
+ * @return Returns the total length of the string they tried to create.
+ *         It means the initial length of dst plus the length of src.
+ */
+int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap);
 
 /**
  * Same as str_lcat(), but the source buffer is replaced with format string.
