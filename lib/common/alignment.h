@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,13 +32,13 @@
 
 #if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L))
 #include <stddef.h>
-#define ALIGN_MAX ALIGNOF(max_align_t)
+#define A1_ALIGN_MAX A1_ALIGNOF(max_align_t)
 #else
-#define ALIGN_MAX 16
+#define A1_ALIGN_MAX 16
 #endif
 
 /** Alignment of a type */
-#define ALIGNOF(type)        \
+#define A1_ALIGNOF(type)     \
     ((int)offsetof(          \
         struct {             \
             unsigned char c; \
@@ -47,17 +47,17 @@
         d                    \
     ))
 
-#define ALIGNOF_PTR(ptr) (1U << (unsigned)__builtin_ctz((uintptr_t)ptr))
+#define A1_ALIGNOF_PTR(ptr) (1U << (unsigned)__builtin_ctz((uintptr_t)ptr))
 
-#define ALIGN_PTR_UP(ptr, align)                              \
+#define A1_ALIGN_PTR_UP(ptr, align)                           \
     ((void *)(((uintptr_t)(ptr) + (uintptr_t)((align) - 1)) & \
               ~(uintptr_t)((align) - 1)))
 
-#define ALIGN_PTR_DOWN(ptr, align) \
+#define A1_ALIGN_PTR_DOWN(ptr, align) \
     ((void *)((uintptr_t)(ptr) & ~(uintptr_t)((align) - 1)))
 
 /** The byte difference between aligned and unaligned size */
-#define ALIGN_SIZE(size, align)                          \
+#define A1_ALIGN_SIZE(size, align)                       \
     ((int)(((unsigned)(size) + (unsigned)(align) - 1u) & \
            (unsigned)~(unsigned)((unsigned)(align) - 1u)))
 

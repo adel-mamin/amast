@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020-2024 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -129,7 +129,7 @@ void onesize_iterate_over_allocated(
     int iterated = 0;
     num = MIN(num, total);
     for (int i = 0; (i < total) && (iterated < num); i++) {
-        ASSERT(ALIGNOF_PTR(ptr) >= ALIGNOF(struct slist_item));
+        ASSERT(A1_ALIGNOF_PTR(ptr) >= A1_ALIGNOF(struct slist_item));
         struct slist_item *item = CAST(struct slist_item *, ptr);
         if (slist_owns(&impl->fl, item)) {
             continue; /* the item is free */
@@ -169,11 +169,11 @@ void onesize_init(
     ASSERT(pool->ptr);
     ASSERT(pool->size > 0);
     ASSERT(pool->size >= block_size);
-    ASSERT(alignment >= ALIGNOF(struct slist_item));
+    ASSERT(alignment >= A1_ALIGNOF(struct slist_item));
 
     memset(hnd, 0, sizeof(*hnd));
 
-    void *alignedptr = ALIGN_PTR_UP(pool->ptr, alignment);
+    void *alignedptr = A1_ALIGN_PTR_UP(pool->ptr, alignment);
     int affix = (int)((uintptr_t)alignedptr - (uintptr_t)pool->ptr);
     ASSERT(affix < pool->size);
     pool->size -= affix;

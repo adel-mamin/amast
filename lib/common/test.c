@@ -49,32 +49,32 @@ struct test_align {
     unsigned long long d;
 };
 
-ASSERT_STATIC(ALIGNOF(struct test_align) >= sizeof(unsigned long long));
-ASSERT_STATIC(16 == ALIGN_SIZE(1u, 16u));
-ASSERT_STATIC(16 == ALIGN_SIZE(16u, 16u));
+ASSERT_STATIC(A1_ALIGNOF(struct test_align) >= sizeof(unsigned long long));
+ASSERT_STATIC(16 == A1_ALIGN_SIZE(1u, 16u));
+ASSERT_STATIC(16 == A1_ALIGN_SIZE(16u, 16u));
 
 int main(void) {
     unsigned long data = 0;
-    ASSERT(ALIGNOF_PTR(&data) >= 4);
+    ASSERT(A1_ALIGNOF_PTR(&data) >= 4);
 
     {
         uintptr_t ptr = 0x10;
-        ASSERT(0x10 == CAST(uintptr_t, ALIGN_PTR_UP((void *)ptr, 16)));
+        ASSERT(0x10 == CAST(uintptr_t, A1_ALIGN_PTR_UP((void *)ptr, 16)));
     }
 
     {
         uintptr_t ptr = 0x1F;
-        ASSERT(0x20 == CAST(uintptr_t, ALIGN_PTR_UP((void *)ptr, 16)));
+        ASSERT(0x20 == CAST(uintptr_t, A1_ALIGN_PTR_UP((void *)ptr, 16)));
     }
 
     {
         uintptr_t ptr = 0x10;
-        ASSERT(0x10 == CAST(uintptr_t, ALIGN_PTR_DOWN((void *)ptr, 16)));
+        ASSERT(0x10 == CAST(uintptr_t, A1_ALIGN_PTR_DOWN((void *)ptr, 16)));
     }
 
     {
         uintptr_t ptr = 0x1F;
-        ASSERT(0x10 == CAST(uintptr_t, ALIGN_PTR_DOWN((void *)ptr, 16)));
+        ASSERT(0x10 == CAST(uintptr_t, A1_ALIGN_PTR_DOWN((void *)ptr, 16)));
     }
 
     return 0;

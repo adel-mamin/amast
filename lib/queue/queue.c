@@ -55,7 +55,7 @@ void queue_init(struct queue *hnd, int isize, int alignment, struct blk *blk) {
 
     memset(hnd, 0, sizeof(*hnd));
 
-    void *alignedptr = ALIGN_PTR_UP(blk->ptr, alignment);
+    void *alignedptr = A1_ALIGN_PTR_UP(blk->ptr, alignment);
     int affix = (int)((uintptr_t)alignedptr - (uintptr_t)blk->ptr);
     ASSERT(affix < blk->size);
     blk->size -= affix;

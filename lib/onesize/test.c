@@ -1,7 +1,7 @@
 /*
- *  The MIT License (MIT)
+ * The MIT License (MIT)
  *
- * Copyright (c) 2020-2024 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,7 +49,7 @@ int main(void) {
     struct test test[3];
     struct blk blk = {.ptr = test, .size = sizeof(test)};
 
-    onesize_init(&ma, &blk, sizeof(struct test), ALIGN_MAX);
+    onesize_init(&ma, &blk, sizeof(struct test), A1_ALIGN_MAX);
 
     ASSERT(onesize_get_nfree(&ma) == 2);
 
