@@ -66,9 +66,9 @@ static void test_queue(const int capacity, const int rdwr_num) {
     for (int i = 0; i < rdwr_num; i++) {
         void *ptr = queue_pop_front(&q);
         ASSERT(ptr);
-        DISABLE_WARNING(W_NULL_DEREFERENCE)
+        A1DISABLE_WARNING(A1W_NULL_DEREFERENCE)
         ASSERT(i == *(int *)ptr);
-        ENABLE_WARNING(W_NULL_DEREFERENCE)
+        A1ENABLE_WARNING(A1W_NULL_DEREFERENCE)
     }
 
     for (int i = 0; i < rdwr_num; i++) {
@@ -82,9 +82,9 @@ static void test_queue(const int capacity, const int rdwr_num) {
     for (int i = rdwr_num - 1; i >= 0; i--) {
         void *ptr = queue_pop_front(&q);
         ASSERT(ptr);
-        DISABLE_WARNING(W_NULL_DEREFERENCE)
+        A1DISABLE_WARNING(A1W_NULL_DEREFERENCE)
         ASSERT(i == *(int *)ptr);
-        ENABLE_WARNING(W_NULL_DEREFERENCE)
+        A1ENABLE_WARNING(A1W_NULL_DEREFERENCE)
     }
 
     ASSERT(queue_length(&q) == 0);

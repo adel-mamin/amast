@@ -60,7 +60,7 @@
 #undef ASSERT
 
 /** Assert macro */
-#define ASSERT(x) assert(LIKELY(x))
+#define ASSERT(x) assert(A1LIKELY(x))
 
 /** Checks if #x is a power of two */
 #define IS_POWER_OF_TWO(x) (0 == (((x) - 1u) & (x)))
@@ -104,12 +104,9 @@
 /** A value with a magnitude of to and the sign of from */
 #define COPYSIGN(to, from) (((from) > 0) ? (to) : -(to))
 
-#define STRINGIFY(s) #s
-#define JOINSTR(x, y) STRINGIFY(x##y)
-
 /** Taken from http://nullprogram.com/blog/2015/02/17/ */
 #define CONTAINER_OF(ptr, type, member) \
-    (CAST(type *, ((char *)(ptr) - offsetof(type, member)))) /* NOLINT */
+    (A1CAST(type *, ((char *)(ptr) - offsetof(type, member)))) /* NOLINT */
 
 /** Counts the number of trailing zeros in a word */
 #define COUNT_TRAILING_ZEROS(word)              \

@@ -70,7 +70,7 @@ struct event_timer {
 #define TICK_DOMAIN_MAX 1
 #endif
 
-ASSERT_STATIC(TICK_DOMAIN_MAX < (1U << EVENT_TICK_DOMAIN_BITS));
+A1ASSERT_STATIC(TICK_DOMAIN_MAX < (1U << EVENT_TICK_DOMAIN_BITS));
 
 /** Timer module descriptor. */
 struct timer {

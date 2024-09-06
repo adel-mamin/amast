@@ -69,7 +69,7 @@ extern "C" {
  */
 #define A1HSM_EVT_EXIT 3
 
-ASSERT_STATIC(EVT_USER > A1HSM_EVT_EXIT);
+A1ASSERT_STATIC(EVT_USER > A1HSM_EVT_EXIT);
 
 /**
  * HSM state handler return codes.
@@ -134,7 +134,7 @@ struct a1hsm_state {
  * @return HSM state structure
  */
 #define A1HSM_STATE(...) \
-    GET_MACRO_2_(__VA_ARGS__, A1STATE2_, A1STATE1_, _)(__VA_ARGS__)
+    A1GET_MACRO_2_(__VA_ARGS__, A1STATE2_, A1STATE1_, _)(__VA_ARGS__)
 
 /** HSM state */
 struct a1hsm {
@@ -177,7 +177,7 @@ struct a1hsm {
  * @param i  the new state submachine instance (optional, default is 0)
  */
 #define A1HSM_TRAN(...) \
-    GET_MACRO_2_(__VA_ARGS__, A1TRAN2_, A1TRAN1_, _)(__VA_ARGS__)
+    A1GET_MACRO_2_(__VA_ARGS__, A1TRAN2_, A1TRAN1_, _)(__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
 #define A1TRAN_REDISPATCH1_(s) (A1SET_TEMP_(s, 0), A1HSM_RC_TRAN_REDISPATCH)
@@ -191,8 +191,8 @@ struct a1hsm {
  * @param s  the new state of type #a1hsm_state_fn (mandatory)
  * @param i  the new state submachine instance (optional, default is 0)
  */
-#define A1HSM_TRAN_REDISPATCH(...)                                         \
-    GET_MACRO_2_(__VA_ARGS__, A1TRAN_REDISPATCH2_, A1TRAN_REDISPATCH1_, _) \
+#define A1HSM_TRAN_REDISPATCH(...)                                           \
+    A1GET_MACRO_2_(__VA_ARGS__, A1TRAN_REDISPATCH2_, A1TRAN_REDISPATCH1_, _) \
     (__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
@@ -208,7 +208,7 @@ struct a1hsm {
  * @param i  the superstate submachine instance (optional, default is 0)
  */
 #define A1HSM_SUPER(...) \
-    GET_MACRO_2_(__VA_ARGS__, A1SUPER2_, A1SUPER1_, _)(__VA_ARGS__)
+    A1GET_MACRO_2_(__VA_ARGS__, A1SUPER2_, A1SUPER1_, _)(__VA_ARGS__)
 
 /**
  * Synchronous dispatch of event to the given HSM.

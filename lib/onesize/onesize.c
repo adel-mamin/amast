@@ -80,7 +80,7 @@ void onesize_free(struct onesize *hnd, const void *ptr) {
     ASSERT(ptr >= hnd->pool.ptr);
     ASSERT(ptr < (void *)((char *)hnd->pool.ptr + hnd->pool.size));
 
-    struct slist_item *p = CAST(struct slist_item *, ptr);
+    struct slist_item *p = A1CAST(struct slist_item *, ptr);
 
     slist_push_front(&hnd->fl, p);
     onesize_run_stats(hnd, 0, 1);
@@ -96,7 +96,7 @@ static void onesize_init_internal(struct onesize *hnd) {
     char *ptr = (char *)hnd->pool.ptr;
     int num = hnd->pool.size / hnd->block_size;
     for (int i = 0; i < num; i++) {
-        struct slist_item *item = CAST(struct slist_item *, ptr);
+        struct slist_item *item = A1CAST(struct slist_item *, ptr);
         slist_push_front(&hnd->fl, item);
         ptr += hnd->block_size;
     }
@@ -130,7 +130,7 @@ void onesize_iterate_over_allocated(
     num = MIN(num, total);
     for (int i = 0; (i < total) && (iterated < num); i++) {
         ASSERT(A1_ALIGNOF_PTR(ptr) >= A1_ALIGNOF(struct slist_item));
-        struct slist_item *item = CAST(struct slist_item *, ptr);
+        struct slist_item *item = A1CAST(struct slist_item *, ptr);
         if (slist_owns(&impl->fl, item)) {
             continue; /* the item is free */
         }
