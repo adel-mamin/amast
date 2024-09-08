@@ -34,8 +34,8 @@
 extern "C" {
 #endif
 
-/** onesize memory allocator descriptor */
-struct onesize {
+/** a1onesize memory allocator descriptor */
+struct a1onesize {
     struct blk pool;   /**< the pool */
     int block_size;    /**< maximum size of allocated block [bytes] */
     struct a1slist fl; /**< list of non-allocated memory blocks (free list) */
@@ -45,10 +45,10 @@ struct onesize {
 };
 
 /**
- * Initializes a new onesize allocator.
+ * Initializes a new a1onesize allocator.
  * Allocation requests up to block_size bytes are
  * rounded up to block_size bytes and served from a singly-linked
- * list of buffers. Due to the simplicity of onesize allocator
+ * list of buffers. Due to the simplicity of a1onesize allocator
  * management, allocations from it are fast.
  *
  * @param hnd         the allocator
@@ -58,8 +58,8 @@ struct onesize {
  *                    bigger that this size will fail.
  * @param alignment   the alignment of allocated memory blocks [bytes]
  */
-void onesize_init(
-    struct onesize *hnd, struct blk *pool, int block_size, int alignment
+void a1onesize_init(
+    struct a1onesize *hnd, struct blk *pool, int block_size, int alignment
 );
 
 /**
@@ -71,7 +71,7 @@ void onesize_init(
  * @param size  amount of memory to allocate [bytes]
  * @return the allocated memory or NULL, if allocation failed
  */
-void *onesize_allocate(struct onesize *hnd, int size);
+void *a1onesize_allocate(struct a1onesize *hnd, int size);
 
 /**
  * Free a memory block.
@@ -80,22 +80,22 @@ void *onesize_allocate(struct onesize *hnd, int size);
  * @param hnd  the allocator
  * @param ptr  memory block to free
  */
-void onesize_free(struct onesize *hnd, const void *ptr);
+void a1onesize_free(struct a1onesize *hnd, const void *ptr);
 
 /**
  * Reclaim all memory allocated so far.
  * @param hnd  the allocator
  */
-void onesize_free_all(struct onesize *hnd);
+void a1onesize_free_all(struct a1onesize *hnd);
 
 /**
- * The type of callback to be used with onesize_iterate_over_allocated()
+ * The type of callback to be used with a1onesize_iterate_over_allocated()
  * @param ctx    the caller's context
  * @param index  the buffer index
  * @param buf    the buffer pointer
  * @param size   the buffer size [bytes]
  */
-typedef void (*onesize_iterate_func)(
+typedef void (*a1onesize_iterate_func)(
     void *ctx, int index, const char *buf, int size
 );
 
@@ -108,8 +108,8 @@ typedef void (*onesize_iterate_func)(
  * @param ctx  the caller's specific context to be used with the callback
  * @param cb   the callback to call for each allocated memory block
  */
-void onesize_iterate_over_allocated(
-    struct onesize *hnd, int num, void *ctx, onesize_iterate_func cb
+void a1onesize_iterate_over_allocated(
+    struct a1onesize *hnd, int num, void *ctx, a1onesize_iterate_func cb
 );
 
 /**
@@ -117,7 +117,7 @@ void onesize_iterate_over_allocated(
  * @param hnd  the allocator
  * @return the number of free blocks
  */
-int onesize_get_nfree(struct onesize *hnd);
+int a1onesize_get_nfree(struct a1onesize *hnd);
 
 /**
  * The minimum number of free memory blocks of size block_size available so far.
@@ -125,20 +125,20 @@ int onesize_get_nfree(struct onesize *hnd);
  * @param hnd  the allocator
  * @return the minimum number of blocks of size block_size available so far
  */
-int onesize_get_min_nfree(struct onesize *hnd);
+int a1onesize_get_min_nfree(struct a1onesize *hnd);
 
 /**
  * Returns the memory block size.
  * @param hnd  the allocator
  * @return the block size [bytes]
  */
-int onesize_get_block_size(struct onesize *hnd);
+int a1onesize_get_block_size(struct a1onesize *hnd);
 
 /**
  * Get total number of memory blocks - the total capacity of the allocator.
  * @return the total number of blocks
  */
-int onesize_get_nblocks(struct onesize *hnd);
+int a1onesize_get_nblocks(struct a1onesize *hnd);
 
 #ifdef __cplusplus
 }

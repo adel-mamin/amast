@@ -24,7 +24,7 @@
 
 /**
  * @file
- * onesize memory allocator implementation
+ * a1onesize memory allocator implementation
  */
 
 #include <stddef.h>
@@ -45,14 +45,14 @@
  * @param subtract  the number of allocated blocks
  * @param add the number of blocks to add to statistics
  */
-static void onesize_run_stats(struct onesize *hnd, int subtract, int add) {
+static void a1onesize_run_stats(struct a1onesize *hnd, int subtract, int add) {
     ASSERT(hnd->nfree >= subtract);
     hnd->nfree -= subtract;
     hnd->nfree += add;
     hnd->minfree = MIN(hnd->minfree, hnd->nfree);
 }
 
-void *onesize_allocate(struct onesize *hnd, int size) {
+void *a1onesize_allocate(struct a1onesize *hnd, int size) {
     ASSERT(hnd);
     ASSERT(size >= 0);
 
@@ -67,12 +67,12 @@ void *onesize_allocate(struct onesize *hnd, int size) {
     struct a1slist_item *elem = a1slist_pop_front(&hnd->fl);
     ASSERT(elem);
 
-    onesize_run_stats(hnd, 1, 0);
+    a1onesize_run_stats(hnd, 1, 0);
 
     return elem;
 }
 
-void onesize_free(struct onesize *hnd, const void *ptr) {
+void a1onesize_free(struct a1onesize *hnd, const void *ptr) {
     ASSERT(hnd);
     ASSERT(ptr);
 
@@ -83,14 +83,14 @@ void onesize_free(struct onesize *hnd, const void *ptr) {
     struct a1slist_item *p = A1CAST(struct a1slist_item *, ptr);
 
     a1slist_push_front(&hnd->fl, p);
-    onesize_run_stats(hnd, 0, 1);
+    a1onesize_run_stats(hnd, 0, 1);
 }
 
 /**
  * Internal initialization routine.
  * @param hnd  the allocator
  */
-static void onesize_init_internal(struct onesize *hnd) {
+static void a1onesize_init_internal(struct a1onesize *hnd) {
     a1slist_init(&hnd->fl);
 
     char *ptr = (char *)hnd->pool.ptr;
@@ -103,24 +103,24 @@ static void onesize_init_internal(struct onesize *hnd) {
     hnd->ntotal = hnd->nfree = hnd->minfree = num;
 }
 
-void onesize_free_all(struct onesize *hnd) {
+void a1onesize_free_all(struct a1onesize *hnd) {
     ASSERT(hnd);
 
-    struct onesize *s = (struct onesize *)hnd;
+    struct a1onesize *s = (struct a1onesize *)hnd;
 
     int minfree = hnd->minfree;
-    onesize_init_internal(s);
+    a1onesize_init_internal(s);
     hnd->minfree = minfree;
 }
 
-void onesize_iterate_over_allocated(
-    struct onesize *hnd, int num, void *ctx, onesize_iterate_func cb
+void a1onesize_iterate_over_allocated(
+    struct a1onesize *hnd, int num, void *ctx, a1onesize_iterate_func cb
 ) {
     ASSERT(hnd);
     ASSERT(cb);
     ASSERT(num != 0);
 
-    struct onesize *impl = (struct onesize *)hnd;
+    struct a1onesize *impl = (struct a1onesize *)hnd;
     char *ptr = (char *)impl->pool.ptr;
     int total = impl->pool.size / impl->block_size;
     if (num < 0) {
@@ -141,28 +141,28 @@ void onesize_iterate_over_allocated(
     }
 }
 
-int onesize_get_nfree(struct onesize *hnd) {
+int a1onesize_get_nfree(struct a1onesize *hnd) {
     ASSERT(hnd);
     return hnd->nfree;
 }
 
-int onesize_get_min_nfree(struct onesize *hnd) {
+int a1onesize_get_min_nfree(struct a1onesize *hnd) {
     ASSERT(hnd);
     return hnd->minfree;
 }
 
-int onesize_get_block_size(struct onesize *hnd) {
+int a1onesize_get_block_size(struct a1onesize *hnd) {
     ASSERT(hnd);
     return hnd->block_size;
 }
 
-int onesize_get_nblocks(struct onesize *hnd) {
+int a1onesize_get_nblocks(struct a1onesize *hnd) {
     ASSERT(hnd);
     return hnd->ntotal;
 }
 
-void onesize_init(
-    struct onesize *hnd, struct blk *pool, int block_size, int alignment
+void a1onesize_init(
+    struct a1onesize *hnd, struct blk *pool, int block_size, int alignment
 ) {
     ASSERT(hnd);
     ASSERT(pool);
@@ -187,5 +187,5 @@ void onesize_init(
     hnd->pool = *pool;
     hnd->block_size = block_size;
 
-    onesize_init_internal(hnd);
+    a1onesize_init_internal(hnd);
 }
