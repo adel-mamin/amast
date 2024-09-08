@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2018,2024 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,31 +34,33 @@
 #include "common/macros.h"
 #include "dlist/dlist.h"
 
-void dlist_init(struct dlist *hnd) {
+void a1dlist_init(struct a1dlist *hnd) {
     hnd->sentinel.next = hnd->sentinel.prev = &hnd->sentinel;
 }
 
-void dlist_item_init(struct dlist_item *item) {
+void a1dlist_item_init(struct a1dlist_item *item) {
     item->next = item->prev = NULL;
 }
 
-struct dlist_item *dlist_next(
-    const struct dlist *hnd, const struct dlist_item *item
+struct a1dlist_item *a1dlist_next(
+    const struct a1dlist *hnd, const struct a1dlist_item *item
 ) {
     ASSERT(hnd);
     ASSERT(item);
     return (&hnd->sentinel == item->next) ? NULL : item->next;
 }
 
-struct dlist_item *dlist_prev(
-    const struct dlist *hnd, const struct dlist_item *item
+struct a1dlist_item *a1dlist_prev(
+    const struct a1dlist *hnd, const struct a1dlist_item *item
 ) {
     ASSERT(hnd);
     ASSERT(item);
     return (&hnd->sentinel == item->prev) ? NULL : item->prev;
 }
 
-void dlist_push_after(struct dlist_item *item, struct dlist_item *new_item) {
+void a1dlist_push_after(
+    struct a1dlist_item *item, struct a1dlist_item *new_item
+) {
     ASSERT(item);
     ASSERT(item->next);
     ASSERT(new_item);
@@ -69,7 +71,9 @@ void dlist_push_after(struct dlist_item *item, struct dlist_item *new_item) {
     item->next = new_item;
 }
 
-void dlist_push_before(struct dlist_item *item, struct dlist_item *new_item) {
+void a1dlist_push_before(
+    struct a1dlist_item *item, struct a1dlist_item *new_item
+) {
     ASSERT(item);
     ASSERT(item->prev);
     ASSERT(new_item);
@@ -80,20 +84,22 @@ void dlist_push_before(struct dlist_item *item, struct dlist_item *new_item) {
     item->prev = new_item;
 }
 
-void dlist_iterator_init(
-    struct dlist *hnd, struct dlist_iterator *it, enum dlist_direction direction
+void a1dlist_iterator_init(
+    struct a1dlist *hnd,
+    struct a1dlist_iterator *it,
+    enum a1dlist_direction direction
 ) {
     it->hnd = hnd;
     it->cur = &hnd->sentinel;
     it->dir = direction;
 }
 
-struct dlist_item *dlist_iterator_next(struct dlist_iterator *it) {
+struct a1dlist_item *a1dlist_iterator_next(struct a1dlist_iterator *it) {
     ASSERT(it);
     ASSERT(it->hnd);
     ASSERT(it->cur);
 
-    if (DLIST_FORWARD == it->dir) {
+    if (A1DLIST_FORWARD == it->dir) {
         it->cur = it->cur->next;
     } else {
         it->cur = it->cur->prev;
@@ -109,15 +115,15 @@ struct dlist_item *dlist_iterator_next(struct dlist_iterator *it) {
     return it->cur;
 }
 
-struct dlist_item *dlist_iterator_pop(struct dlist_iterator *it) {
+struct a1dlist_item *a1dlist_iterator_pop(struct a1dlist_iterator *it) {
     ASSERT(it->cur != &it->hnd->sentinel);
-    struct dlist_item *pop = it->cur;
+    struct a1dlist_item *pop = it->cur;
     it->cur = it->cur->prev;
-    dlist_pop(pop);
+    a1dlist_pop(pop);
     return pop;
 }
 
-bool dlist_pop(struct dlist_item *item) {
+bool a1dlist_pop(struct a1dlist_item *item) {
     ASSERT(item);
 
     if (item->next) {
@@ -131,13 +137,15 @@ bool dlist_pop(struct dlist_item *item) {
     return popped;
 }
 
-struct dlist_item *dlist_find(
-    const struct dlist *hnd, dlist_item_found_cb_t is_found_cb, void *context
+struct a1dlist_item *a1dlist_find(
+    const struct a1dlist *hnd,
+    a1dlist_item_found_cb_t is_found_cb,
+    void *context
 ) {
     ASSERT(hnd);
     ASSERT(is_found_cb);
 
-    struct dlist_item *candidate = hnd->sentinel.next;
+    struct a1dlist_item *candidate = hnd->sentinel.next;
     while ((candidate != &hnd->sentinel) && (!is_found_cb(context, candidate))
     ) {
         candidate = candidate->next;
@@ -145,15 +153,15 @@ struct dlist_item *dlist_find(
     return (candidate == &hnd->sentinel) ? NULL : candidate;
 }
 
-int dlist_size(const struct dlist *hnd) {
+int a1dlist_size(const struct a1dlist *hnd) {
     ASSERT(hnd);
 
-    if (dlist_is_empty(hnd)) {
+    if (a1dlist_is_empty(hnd)) {
         return 0;
     }
 
     int size = 0;
-    struct dlist_item *item = hnd->sentinel.next;
+    struct a1dlist_item *item = hnd->sentinel.next;
     while ((item != &hnd->sentinel) && (item != NULL)) {
         size++;
         item = item->next;
@@ -163,11 +171,11 @@ int dlist_size(const struct dlist *hnd) {
     return size;
 }
 
-bool dlist_owns(const struct dlist *hnd, const struct dlist_item *item) {
+bool a1dlist_owns(const struct a1dlist *hnd, const struct a1dlist_item *item) {
     ASSERT(hnd);
     ASSERT(item);
 
-    struct dlist_item *next = hnd->sentinel.next;
+    struct a1dlist_item *next = hnd->sentinel.next;
     while (next != &hnd->sentinel) {
         if (item == next) {
             return true;
@@ -178,52 +186,52 @@ bool dlist_owns(const struct dlist *hnd, const struct dlist_item *item) {
     return false;
 }
 
-void dlist_push_front(struct dlist *hnd, struct dlist_item *item) {
+void a1dlist_push_front(struct a1dlist *hnd, struct a1dlist_item *item) {
     ASSERT(hnd);
     ASSERT(item);
-    dlist_push_after(&hnd->sentinel, item);
+    a1dlist_push_after(&hnd->sentinel, item);
 }
 
-struct dlist_item *dlist_pop_front(struct dlist *hnd) {
-    if (dlist_is_empty(hnd)) {
+struct a1dlist_item *a1dlist_pop_front(struct a1dlist *hnd) {
+    if (a1dlist_is_empty(hnd)) {
         return NULL;
     }
-    struct dlist_item *ret = hnd->sentinel.next;
-    dlist_pop(hnd->sentinel.next);
+    struct a1dlist_item *ret = hnd->sentinel.next;
+    a1dlist_pop(hnd->sentinel.next);
     return ret;
 }
 
-struct dlist_item *dlist_pop_back(struct dlist *hnd) {
-    if (dlist_is_empty(hnd)) {
+struct a1dlist_item *a1dlist_pop_back(struct a1dlist *hnd) {
+    if (a1dlist_is_empty(hnd)) {
         return NULL;
     }
-    struct dlist_item *ret = hnd->sentinel.prev;
-    dlist_pop(hnd->sentinel.prev);
+    struct a1dlist_item *ret = hnd->sentinel.prev;
+    a1dlist_pop(hnd->sentinel.prev);
     return ret;
 }
 
-void dlist_push_back(struct dlist *hnd, struct dlist_item *item) {
+void a1dlist_push_back(struct a1dlist *hnd, struct a1dlist_item *item) {
     ASSERT(hnd);
     ASSERT(item);
-    dlist_push_before(&hnd->sentinel, item);
+    a1dlist_push_before(&hnd->sentinel, item);
 }
 
-struct dlist_item *dlist_peek_front(struct dlist *hnd) {
+struct a1dlist_item *a1dlist_peek_front(struct a1dlist *hnd) {
     ASSERT(hnd);
-    return dlist_is_empty(hnd) ? NULL : hnd->sentinel.next;
+    return a1dlist_is_empty(hnd) ? NULL : hnd->sentinel.next;
 }
 
-struct dlist_item *dlist_peek_back(struct dlist *hnd) {
+struct a1dlist_item *a1dlist_peek_back(struct a1dlist *hnd) {
     ASSERT(hnd);
-    return dlist_is_empty(hnd) ? NULL : hnd->sentinel.prev;
+    return a1dlist_is_empty(hnd) ? NULL : hnd->sentinel.prev;
 }
 
-bool dlist_is_empty(const struct dlist *hnd) {
+bool a1dlist_is_empty(const struct a1dlist *hnd) {
     ASSERT(hnd);
     return hnd->sentinel.next == &hnd->sentinel;
 }
 
-bool dlist_item_is_linked(const struct dlist_item *item) {
+bool a1dlist_item_is_linked(const struct a1dlist_item *item) {
     ASSERT(item);
     return (NULL != item->next) && (NULL != item->prev);
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2018 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,12 +39,12 @@ extern "C" {
 /**
  * List iterator traverse direction.
  * Used together with list iterator API
- * dlist_iterator_init() to specify the direction
+ * a1dlist_iterator_init() to specify the direction
  * in which doubly linked list iterator traverses the list.
  */
-enum dlist_direction {
-    DLIST_FORWARD, /**< forward list traverse */
-    DLIST_BACKWARD /**< backward list traverse */
+enum a1dlist_direction {
+    A1DLIST_FORWARD, /**< forward list traverse */
+    A1DLIST_BACKWARD /**< backward list traverse */
 };
 
 /**
@@ -53,35 +53,35 @@ enum dlist_direction {
  * a doubly linked list item:
  *
  * [1]
- * struct foo {int bar; struct dlist_item list;}
+ * struct foo {int bar; struct a1dlist_item list;}
  *
  * [2]
  * struct foo {int bar; }
- * struct foo_item {struct foo foo; struct dlist_item list}
+ * struct foo_item {struct foo foo; struct a1dlist_item list}
  *
  * Also `struct foo` can be part of several independent lists.
  * For example,
  *
- * struct foo {int bar; struct dlist_item list1; struct dlist_item list2;}
+ * struct foo {int bar; struct a1dlist_item list1; struct a1dlist_item list2;}
  */
-struct dlist_item {
+struct a1dlist_item {
     /** the next item in the list */
-    struct dlist_item *next;
+    struct a1dlist_item *next;
     /** the previous item in the list */
-    struct dlist_item *prev;
+    struct a1dlist_item *prev;
 };
 
 /** Doubly linked list handler */
-struct dlist {
+struct a1dlist {
     /** Keeps pointers to the beginning and end of the list */
-    struct dlist_item sentinel;
+    struct a1dlist_item sentinel;
 };
 
 /** Doubly linked list iterator handler */
-struct dlist_iterator {
-    struct dlist *hnd;        /**< list handler */
-    struct dlist_item *cur;   /**< current item of the list */
-    enum dlist_direction dir; /**< direction of traverse */
+struct a1dlist_iterator {
+    struct a1dlist *hnd;        /**< list handler */
+    struct a1dlist_item *cur;   /**< current item of the list */
+    enum a1dlist_direction dir; /**< direction of traverse */
 };
 
 /**
@@ -89,7 +89,7 @@ struct dlist_iterator {
  * The handler memory is provided by caller.
  * @param hnd  the list handler
  */
-void dlist_init(struct dlist *hnd);
+void a1dlist_init(struct a1dlist *hnd);
 
 /**
  * Tell if list is empty.
@@ -97,7 +97,7 @@ void dlist_init(struct dlist *hnd);
  * @retval true   the list is empty
  * @retval false  the list is not empty
  */
-bool dlist_is_empty(const struct dlist *hnd);
+bool a1dlist_is_empty(const struct a1dlist *hnd);
 
 /**
  * Check if the given list item is part of ANY list.
@@ -105,13 +105,13 @@ bool dlist_is_empty(const struct dlist *hnd);
  * @retval true     item IS part of SOME list
  * @retval false    item IS NOT part of ANY list
  */
-bool dlist_item_is_linked(const struct dlist_item *item);
+bool a1dlist_item_is_linked(const struct a1dlist_item *item);
 
 /**
  * Initialize list item.
  * @param item  list item to initialize.
  */
-void dlist_item_init(struct dlist_item *item);
+void a1dlist_item_init(struct a1dlist_item *item);
 
 /**
  * Give next item after the given one.
@@ -121,8 +121,8 @@ void dlist_item_init(struct dlist_item *item);
  * @param item  the item next to this one is returned.
  * @return The next item or NULL if \a item is the last one in the list
  */
-struct dlist_item *dlist_next(
-    const struct dlist *hnd, const struct dlist_item *item
+struct a1dlist_item *a1dlist_next(
+    const struct a1dlist *hnd, const struct a1dlist_item *item
 );
 
 /**
@@ -133,8 +133,8 @@ struct dlist_item *dlist_next(
  * @param item  the item previous to this one is returned
  * @return The previous item or NULL if \a item is the first one in the list
  */
-struct dlist_item *dlist_prev(
-    const struct dlist *hnd, const struct dlist_item *item
+struct a1dlist_item *a1dlist_prev(
+    const struct a1dlist *hnd, const struct a1dlist_item *item
 );
 
 /**
@@ -142,35 +142,39 @@ struct dlist_item *dlist_prev(
  * @param hnd  the list handler
  * @return The number of items in the list.
  */
-int dlist_size(const struct dlist *hnd);
+int a1dlist_size(const struct a1dlist *hnd);
 
 /**
  * Push a new item before the item, which is already in the list.
  * @param item  the new item is pushed before this item
  * @param new_item the new item to be pushed to the list
  */
-void dlist_push_before(struct dlist_item *item, struct dlist_item *new_item);
+void a1dlist_push_before(
+    struct a1dlist_item *item, struct a1dlist_item *new_item
+);
 
 /**
  * Push a new item after the item, which is already in the list.
  * @param item  the new item is pushed after this item
  * @param new_item the new item to be pushed to the list
  */
-void dlist_push_after(struct dlist_item *item, struct dlist_item *new_item);
+void a1dlist_push_after(
+    struct a1dlist_item *item, struct a1dlist_item *new_item
+);
 
 /**
  * Add a new item at the front (head) of the list.
  * @param hnd   the list handler
  * @param item  the item to be added
  */
-void dlist_push_front(struct dlist *hnd, struct dlist_item *item);
+void a1dlist_push_front(struct a1dlist *hnd, struct a1dlist_item *item);
 
 /**
  * Add a new item at the back (tail) of the list.
  * @param hnd   the list handler
  * @param item  the item to be added
  */
-void dlist_push_back(struct dlist *hnd, struct dlist_item *item);
+void a1dlist_push_back(struct a1dlist *hnd, struct a1dlist_item *item);
 
 /**
  * Pop the given item from the list.
@@ -180,21 +184,21 @@ void dlist_push_back(struct dlist *hnd, struct dlist_item *item);
  * @retval true   the item was popped
  * @retval false  the item was not popped as it was not linked
  */
-bool dlist_pop(struct dlist_item *item);
+bool a1dlist_pop(struct a1dlist_item *item);
 
 /**
  * Pop an item in front (head) of the list.
  * @param hnd  the list handler
  * @return the popped item or NULL if the list was empty
  */
-struct dlist_item *dlist_pop_front(struct dlist *hnd);
+struct a1dlist_item *a1dlist_pop_front(struct a1dlist *hnd);
 
 /**
  * Pop an item from the back (tail) of the list.
  * @param hnd  the list handler
  * @return the popped item or NULL if the list was empty
  */
-struct dlist_item *dlist_pop_back(struct dlist *hnd);
+struct a1dlist_item *a1dlist_pop_back(struct a1dlist *hnd);
 
 /**
  * Return the list item at the front (head) of the list.
@@ -202,7 +206,7 @@ struct dlist_item *dlist_pop_back(struct dlist *hnd);
  * @param hnd  the list handler
  * @return The pointer to the front (head) item or NULL if the list is empty
  */
-struct dlist_item *dlist_peek_front(struct dlist *hnd);
+struct a1dlist_item *a1dlist_peek_front(struct a1dlist *hnd);
 
 /**
  * Return the list item at the back (tail) of the list.
@@ -210,7 +214,7 @@ struct dlist_item *dlist_peek_front(struct dlist *hnd);
  * @param hnd  the list handler
  * @return The pointer to the back (tail) item or NULL if the list is empty
  */
-struct dlist_item *dlist_peek_back(struct dlist *hnd);
+struct a1dlist_item *a1dlist_peek_back(struct a1dlist *hnd);
 
 /**
  * Predicate callback type that tells if item is found.
@@ -219,7 +223,9 @@ struct dlist_item *dlist_peek_back(struct dlist *hnd);
  * @retval true    item was found
  * @retval false   item was not found
  */
-typedef bool (*dlist_item_found_cb_t)(void *context, struct dlist_item *item);
+typedef bool (*a1dlist_item_found_cb_t)(
+    void *context, struct a1dlist_item *item
+);
 
 /**
  * Find an item in the list using the predicate function.
@@ -232,25 +238,29 @@ typedef bool (*dlist_item_found_cb_t)(void *context, struct dlist_item *item);
  *         NULL, if nothing was found. The found item is not popped
  *         from the list.
  */
-struct dlist_item *dlist_find(
-    const struct dlist *hnd, dlist_item_found_cb_t is_found_cb, void *context
+struct a1dlist_item *a1dlist_find(
+    const struct a1dlist *hnd,
+    a1dlist_item_found_cb_t is_found_cb,
+    void *context
 );
 
 /**
  * Initialize a new iterator.
- * Must be called before calling dlist_iterator_next().
+ * Must be called before calling a1dlist_iterator_next().
  * If the iterator is used to traverse the list once, then
  * it must be re-initialized by calling this function in order to
- * be used with dlist_iterator_next() again.
+ * be used with a1dlist_iterator_next() again.
  * The only valid operation with the iterator after this one is
- * dlist_iterator_next(). Otherwise the behavior is undefined.
+ * a1dlist_iterator_next(). Otherwise the behavior is undefined.
  * @param hnd  the list handler
  * @param it   the iterator to be initialized
  * @param dir  the direction, at which the iteration is going to be done,
- *             when dlist_iterator_next() is used.
+ *             when a1dlist_iterator_next() is used.
  */
-void dlist_iterator_init(
-    struct dlist *hnd, struct dlist_iterator *it, enum dlist_direction direction
+void a1dlist_iterator_init(
+    struct a1dlist *hnd,
+    struct a1dlist_iterator *it,
+    enum a1dlist_direction direction
 );
 
 /**
@@ -259,23 +269,23 @@ void dlist_iterator_init(
  * The iteration can visit each item only once. When all items of
  * the list were visited, the next invocation of the function returns NULL.
  * The current visited item can only be popped with
- * dlist_iterator_pop().
- * @param it the iterator initialized by dlist_iterator_init()
+ * a1dlist_iterator_pop().
+ * @param it the iterator initialized by a1dlist_iterator_init()
  * @return The visited item. The item is not popped from the list.
  */
-struct dlist_item *dlist_iterator_next(struct dlist_iterator *it);
+struct a1dlist_item *a1dlist_iterator_next(struct a1dlist_iterator *it);
 
 /**
  * Pop the item pointed by the iterator from the list.
  * The popped item is returned. The iterator is still usable after the removal.
- * At least one dlist_iterator_next() is expected for the iterator before
+ * At least one a1dlist_iterator_next() is expected for the iterator before
  * this function is called. Otherwise the behavior is undefined. The only valid
- * operation possible after this call is dlist_iterator_next(); Otherwise the
+ * operation possible after this call is a1dlist_iterator_next(); Otherwise the
  * behavior is undefined.
  * @param it The iterator.
  * @retval The popped item.
  */
-struct dlist_item *dlist_iterator_pop(struct dlist_iterator *it);
+struct a1dlist_item *a1dlist_iterator_pop(struct a1dlist_iterator *it);
 
 /**
  * Check if the given item is part of the list.
@@ -284,7 +294,7 @@ struct dlist_item *dlist_iterator_pop(struct dlist_iterator *it);
  * @retval true   the given item belongs to the list
  * @retval false  the given item is not part of the list
  */
-bool dlist_owns(const struct dlist *hnd, const struct dlist_item *item);
+bool a1dlist_owns(const struct a1dlist *hnd, const struct a1dlist_item *item);
 
 #if defined __cplusplus
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ void timer_ctor(struct timer *hnd, const struct timer_cfg *cfg) {
 
     memset(hnd, 0, sizeof(*hnd));
     for (int i = 0; i < COUNTOF(hnd->domains); ++i) {
-        dlist_init(&hnd->domains[i]);
+        a1dlist_init(&hnd->domains[i]);
     }
     hnd->cfg = *cfg;
 }
@@ -51,7 +51,7 @@ void timer_event_ctor(struct event_timer *event, int id, int domain) {
     ASSERT(domain < TICK_DOMAIN_MAX);
 
     memset(event, 0, sizeof(*event));
-    dlist_item_init(&event->item);
+    a1dlist_item_init(&event->item);
     event->event.id = id;
     event->event.tick_domain = domain;
 }
@@ -66,7 +66,7 @@ static void timer_arm(
     ASSERT(hnd);
     ASSERT(event);
     /* make sure it wasn't already armed */
-    ASSERT(!dlist_item_is_linked(&event->item));
+    ASSERT(!a1dlist_item_is_linked(&event->item));
     ASSERT(EVENT_HAS_USER_ID(event));
     ASSERT(event->event.tick_domain < COUNTOF(hnd->domains));
     ASSERT(ticks >= 0);
@@ -75,7 +75,7 @@ static void timer_arm(
     event->shot_in_ticks = ticks;
     event->interval_ticks = interval;
     event->event.pubsub_time = owner ? false : true;
-    dlist_push_back(&hnd->domains[event->event.tick_domain], &event->item);
+    a1dlist_push_back(&hnd->domains[event->event.tick_domain], &event->item);
 }
 
 void timer_post_in_ticks(
@@ -106,7 +106,7 @@ bool onc_timer_disarm(struct event_timer *event) {
     ASSERT(event);
     ASSERT(EVENT_HAS_USER_ID(event));
 
-    bool was_armed = dlist_pop(&event->item);
+    bool was_armed = a1dlist_pop(&event->item);
     event->shot_in_ticks = event->interval_ticks = 0;
 
     return was_armed;
@@ -115,7 +115,7 @@ bool onc_timer_disarm(struct event_timer *event) {
 bool timer_is_armed(const struct event_timer *event) {
     ASSERT(event);
     ASSERT(EVENT_HAS_USER_ID(event));
-    return dlist_item_is_linked(&event->item);
+    return a1dlist_item_is_linked(&event->item);
 }
 
 bool timer_any_armed(const struct timer *hnd, int domain) {
@@ -124,10 +124,10 @@ bool timer_any_armed(const struct timer *hnd, int domain) {
     ASSERT(domain <= TICK_DOMAIN_MAX);
 
     if (domain < TICK_DOMAIN_MAX) {
-        return !dlist_is_empty(&hnd->domains[domain]);
+        return !a1dlist_is_empty(&hnd->domains[domain]);
     }
     for (int i = 0; i < COUNTOF(hnd->domains); ++i) {
-        if (!dlist_is_empty(&hnd->domains[i])) {
+        if (!a1dlist_is_empty(&hnd->domains[i])) {
             return true;
         }
     }
@@ -137,13 +137,13 @@ bool timer_any_armed(const struct timer *hnd, int domain) {
 void timer_tick(struct timer *hnd, int domain) {
     ASSERT(domain < COUNTOF(hnd->domains));
 
-    struct dlist_iterator it;
-    dlist_iterator_init(
-        &hnd->domains[domain], &it, /*direction=*/DLIST_FORWARD
+    struct a1dlist_iterator it;
+    a1dlist_iterator_init(
+        &hnd->domains[domain], &it, /*direction=*/A1DLIST_FORWARD
     );
 
-    struct dlist_item *p = NULL;
-    while ((p = dlist_iterator_next(&it)) != NULL) {
+    struct a1dlist_item *p = NULL;
+    while ((p = a1dlist_iterator_next(&it)) != NULL) {
         struct event_timer *timer = CONTAINER_OF(p, struct event_timer, item);
 
         ASSERT(timer->shot_in_ticks);
@@ -158,7 +158,7 @@ void timer_tick(struct timer *hnd, int domain) {
         if (t->interval_ticks) {
             t->shot_in_ticks = t->interval_ticks;
         } else {
-            dlist_iterator_pop(&it);
+            a1dlist_iterator_pop(&it);
         }
         if (t->event.pubsub_time) {
             ASSERT(hnd->cfg.publish);

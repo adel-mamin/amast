@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -56,7 +56,7 @@ struct event_timer {
     /** event descriptor */
     struct event event;
     /** to link time events together */
-    struct dlist_item item;
+    struct a1dlist_item item;
     /** the object, who receives the event */
     void *owner;
     /** the event is sent after this many ticks */
@@ -79,7 +79,7 @@ struct timer {
      * Each domain comprises a list of the timer events,
      * which belong to this domain.
      */
-    struct dlist domains[TICK_DOMAIN_MAX];
+    struct a1dlist domains[TICK_DOMAIN_MAX];
     /** timer module configuration */
     struct timer_cfg cfg;
 };
