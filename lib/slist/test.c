@@ -1,7 +1,7 @@
 /*
- *  The MIT License (MIT)
+ * The MIT License (MIT)
  *
- * Copyright (c) 2016-2018 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,152 +36,152 @@
 #include "common/compiler.h"
 #include "slist/slist.h"
 
-static struct slist slist;
+static struct a1slist a1slist;
 
 struct ut_data {
-    struct slist_item hdr;
+    struct a1slist_item hdr;
     int data;
 };
 
 static struct ut_data test_data[10];
 
-static void test_init(struct slist *data) {
-    slist_init(data);
+static void test_init(struct a1slist *data) {
+    a1slist_init(data);
     for (int i = 0; i < COUNTOF(test_data); i++) {
         test_data[i].data = i;
     }
 }
 
-static void test_slist_empty(void) {
-    test_init(&slist);
+static void test_a1slist_empty(void) {
+    test_init(&a1slist);
 
-    ASSERT(slist_is_empty(&slist) == 1);
+    ASSERT(a1slist_is_empty(&a1slist) == 1);
 
-    slist_push_back(&slist, &test_data[0].hdr);
-    ASSERT(slist_is_empty(&slist) == 0);
+    a1slist_push_back(&a1slist, &test_data[0].hdr);
+    ASSERT(a1slist_is_empty(&a1slist) == 0);
 
-    slist_pop_front(&slist);
-    ASSERT(slist_is_empty(&slist) == 1);
+    a1slist_pop_front(&a1slist);
+    ASSERT(a1slist_is_empty(&a1slist) == 1);
 }
 
-static void test_slist_push_after(void) {
-    test_init(&slist);
+static void test_a1slist_push_after(void) {
+    test_init(&a1slist);
 
-    slist_push_front(&slist, &test_data[0].hdr);
+    a1slist_push_front(&a1slist, &test_data[0].hdr);
 
-    slist_push_after(&slist, &test_data[0].hdr, &test_data[1].hdr);
-    struct slist_item *e = slist_peek_front(&slist);
+    a1slist_push_after(&a1slist, &test_data[0].hdr, &test_data[1].hdr);
+    struct a1slist_item *e = a1slist_peek_front(&a1slist);
     ASSERT(e);
     ASSERT(((struct ut_data *)e)->data == 0);
 
-    slist_pop_front(&slist);
+    a1slist_pop_front(&a1slist);
 
-    e = slist_peek_front(&slist);
+    e = a1slist_peek_front(&a1slist);
     ASSERT(e);
     ASSERT(((struct ut_data *)e)->data == 1);
 }
 
-static void test_slist_push_after_2(void) {
-    test_init(&slist);
+static void test_a1slist_push_after_2(void) {
+    test_init(&a1slist);
 
-    slist_push_back(&slist, &test_data[0].hdr);
-    slist_push_back(&slist, &test_data[1].hdr);
+    a1slist_push_back(&a1slist, &test_data[0].hdr);
+    a1slist_push_back(&a1slist, &test_data[1].hdr);
 
-    slist_push_after(&slist, &test_data[1].hdr, &test_data[2].hdr);
-    struct slist_item *e = slist_peek_back(&slist);
+    a1slist_push_after(&a1slist, &test_data[1].hdr, &test_data[2].hdr);
+    struct a1slist_item *e = a1slist_peek_back(&a1slist);
     ASSERT(e);
     ASSERT(((struct ut_data *)e)->data == 2);
 
-    e = slist_peek_front(&slist);
+    e = a1slist_peek_front(&a1slist);
     ASSERT(e);
     ASSERT(((struct ut_data *)e)->data == 0);
 }
 
-static void test_slist_push_after_3(void) {
-    test_init(&slist);
+static void test_a1slist_push_after_3(void) {
+    test_init(&a1slist);
 
-    slist_push_back(&slist, &test_data[0].hdr);
-    slist_push_back(&slist, &test_data[2].hdr);
+    a1slist_push_back(&a1slist, &test_data[0].hdr);
+    a1slist_push_back(&a1slist, &test_data[2].hdr);
 
-    slist_push_after(&slist, &test_data[0].hdr, &test_data[1].hdr);
-    struct slist_item *e = slist_peek_front(&slist);
+    a1slist_push_after(&a1slist, &test_data[0].hdr, &test_data[1].hdr);
+    struct a1slist_item *e = a1slist_peek_front(&a1slist);
     ASSERT(e);
     ASSERT(((struct ut_data *)e)->data == 0);
 
-    e = slist_peek_back(&slist);
+    e = a1slist_peek_back(&a1slist);
     ASSERT(e);
     ASSERT(((struct ut_data *)e)->data == 2);
 }
 
-static void test_slist_pop(void) {
-    test_init(&slist);
+static void test_a1slist_pop(void) {
+    test_init(&a1slist);
 
-    slist_push_front(&slist, &test_data[2].hdr);
-    slist_push_front(&slist, &test_data[1].hdr);
-    slist_push_front(&slist, &test_data[0].hdr);
+    a1slist_push_front(&a1slist, &test_data[2].hdr);
+    a1slist_push_front(&a1slist, &test_data[1].hdr);
+    a1slist_push_front(&a1slist, &test_data[0].hdr);
 
-    struct slist_item *e = slist_pop_front(&slist);
+    struct a1slist_item *e = a1slist_pop_front(&a1slist);
     ASSERT(e);
     ASSERT(((struct ut_data *)e)->data == 0);
 
-    e = slist_pop_after(&slist, &test_data[1].hdr);
+    e = a1slist_pop_after(&a1slist, &test_data[1].hdr);
     ASSERT(e);
     ASSERT(((struct ut_data *)e)->data == 2);
 }
 
-static bool predicate(void *context, struct slist_item *item) {
+static bool predicate(void *context, struct a1slist_item *item) {
     int v = *(int *)context;
     struct ut_data *data = (struct ut_data *)item;
 
     return (v == data->data);
 }
 
-static void test_slist_find(void) {
-    test_init(&slist);
+static void test_a1slist_find(void) {
+    test_init(&a1slist);
 
-    slist_push_front(&slist, &test_data[2].hdr);
-    slist_push_front(&slist, &test_data[1].hdr);
-    slist_push_front(&slist, &test_data[0].hdr);
+    a1slist_push_front(&a1slist, &test_data[2].hdr);
+    a1slist_push_front(&a1slist, &test_data[1].hdr);
+    a1slist_push_front(&a1slist, &test_data[0].hdr);
 
     int v;
-    struct slist_item *e;
+    struct a1slist_item *e;
 
     for (v = 0; v < 3; v++) {
-        e = slist_find(&slist, predicate, &v);
+        e = a1slist_find(&a1slist, predicate, &v);
         ASSERT(e != NULL);
         struct ut_data *d = (struct ut_data *)e;
         ASSERT(v == d->data);
     }
 
     v = 3;
-    e = slist_find(&slist, predicate, &v);
+    e = a1slist_find(&a1slist, predicate, &v);
     ASSERT(NULL == e);
 }
 
-static void test_slist_owns(void) {
-    test_init(&slist);
+static void test_a1slist_owns(void) {
+    test_init(&a1slist);
 
     for (int i = 0; i < 2; i++) {
-        slist_push_front(&slist, &test_data[i].hdr);
-        ASSERT(slist_owns(&slist, &test_data[i].hdr));
+        a1slist_push_front(&a1slist, &test_data[i].hdr);
+        ASSERT(a1slist_owns(&a1slist, &test_data[i].hdr));
     }
 
-    slist_pop_front(&slist);
+    a1slist_pop_front(&a1slist);
 
-    ASSERT(0 == slist_owns(&slist, &test_data[1].hdr));
+    ASSERT(0 == a1slist_owns(&a1slist, &test_data[1].hdr));
 }
 
 int main(void) {
-    test_slist_empty();
+    test_a1slist_empty();
 
-    test_slist_push_after();
-    test_slist_push_after_2();
-    test_slist_push_after_3();
+    test_a1slist_push_after();
+    test_a1slist_push_after_2();
+    test_a1slist_push_after_3();
 
-    test_slist_pop();
-    test_slist_find();
+    test_a1slist_pop();
+    test_a1slist_find();
 
-    test_slist_owns();
+    test_a1slist_owns();
 
     return 0;
 }

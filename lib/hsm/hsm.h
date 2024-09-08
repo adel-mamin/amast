@@ -69,7 +69,10 @@ extern "C" {
  */
 #define A1HSM_EVT_EXIT 3
 
-A1ASSERT_STATIC(EVT_USER > A1HSM_EVT_EXIT);
+/** HSM event with maximum value. */
+#define A1HSM_EVT_MAX A1HSM_EVT_EXIT
+
+A1ASSERT_STATIC(EVT_USER > A1HSM_EVT_MAX);
 
 /**
  * HSM state handler return codes.
@@ -252,6 +255,9 @@ bool a1hsm_state_is_eq(struct a1hsm *hsm, const struct a1hsm_state *state);
  * @return the instance
  */
 int a1hsm_get_state_instance(const struct a1hsm *hsm);
+
+/* const struct a1hsm_state *a1hsm_get_child_state(struct a1hsm *hsm); */
+/* const struct a1hsm_state *a1hsm_get_super_state(struct a1hsm *hsm); */
 
 /**
  * HSM constructor.

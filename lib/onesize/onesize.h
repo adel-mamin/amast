@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020-2024 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,12 +36,12 @@ extern "C" {
 
 /** onesize memory allocator descriptor */
 struct onesize {
-    struct blk pool; /**< the pool */
-    int block_size;  /**< maximum size of allocated block [bytes] */
-    struct slist fl; /**< the list of non-allocated memory blocks (free list) */
-    int nfree;       /**< current number of blocks in free list */
-    int ntotal;      /**< total number of blocks */
-    int minfree;     /**< minimum number of blocks in free list */
+    struct blk pool;   /**< the pool */
+    int block_size;    /**< maximum size of allocated block [bytes] */
+    struct a1slist fl; /**< list of non-allocated memory blocks (free list) */
+    int nfree;         /**< current number of blocks in free list */
+    int ntotal;        /**< total number of blocks */
+    int minfree;       /**< minimum number of blocks in free list */
 };
 
 /**
