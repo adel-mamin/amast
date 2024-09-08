@@ -66,14 +66,7 @@ bool a1hsm_state_is_eq(struct a1hsm *hsm, const struct a1hsm_state *state) {
     ASSERT(hsm->state);
     ASSERT(state);
     ASSERT(state->fn);
-    if (hsm->state != state->fn) {
-        return false;
-    }
-    if (hsm->state == (a1hsm_state_fn)a1hsm_top) {
-        ASSERT(0 == hsm->istate);
-        return true;
-    }
-    return hsm->istate == state->instance;
+    return (hsm->state == state->fn) && (hsm->istate == state->instance);
 }
 
 int a1hsm_get_state_instance(const struct a1hsm *hsm) {
