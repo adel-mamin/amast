@@ -34,8 +34,8 @@
 
 /**
  * Test state machine with the following topology.
- * Note that s is a substate of hsm_top - the HSM top superstate of a1hsm_top().
- * It was ommitted from the diagram for brevity.
+ * Note that s is a substate of hsm_top - the HSM top superstate of
+ * am_hsm_top(). It was ommitted from the diagram for brevity.
  *
  * +---------------------------------------------------------------------------+
  * |                                   s                                       |
@@ -90,222 +90,222 @@
  */
 
 struct test {
-    struct a1hsm hsm;
+    struct am_hsm hsm;
     void (*log)(char *fmt, ...);
 };
 
 static struct test m_test;
 
-struct a1hsm *g_submachine = &m_test.hsm;
+struct am_hsm *g_submachine = &m_test.hsm;
 
 #define SM_0 0
 #define SM_1 1
 #define SM_2 2
 
-static enum a1hsmrc s(struct test *me, const struct event *event);
-static enum a1hsmrc s1(struct test *me, const struct event *event);
-static enum a1hsmrc s11(struct test *me, const struct event *event);
-static enum a1hsmrc s111(struct test *me, const struct event *event);
-static enum a1hsmrc s12(struct test *me, const struct event *event);
-static enum a1hsmrc s121(struct test *me, const struct event *event);
+static enum am_hsm_rc s(struct test *me, const struct event *event);
+static enum am_hsm_rc s1(struct test *me, const struct event *event);
+static enum am_hsm_rc s11(struct test *me, const struct event *event);
+static enum am_hsm_rc s111(struct test *me, const struct event *event);
+static enum am_hsm_rc s12(struct test *me, const struct event *event);
+static enum am_hsm_rc s121(struct test *me, const struct event *event);
 
-static enum a1hsmrc s(struct test *me, const struct event *event) {
-    const int instance = a1hsm_get_state_instance(&me->hsm);
-    ASSERT(a1hsm_is_in(&me->hsm, &A1HSM_STATE(s)));
+static enum am_hsm_rc s(struct test *me, const struct event *event) {
+    const int instance = am_hsm_get_state_instance(&me->hsm);
+    AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s)));
     switch (event->id) {
-    case A1HSM_EVT_ENTRY:
+    case AM_HSM_EVT_ENTRY:
         me->log("s/%d-ENTRY;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
-    case A1HSM_EVT_EXIT:
+    case AM_HSM_EVT_EXIT:
         me->log("s/%d-EXIT;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
-    case A1HSM_EVT_INIT:
+    case AM_HSM_EVT_INIT:
         me->log("s/%d-INIT;", instance);
-        return A1HSM_TRAN(s111, SM_2);
+        return AM_HSM_TRAN(s111, SM_2);
 
     default:
         break;
     }
-    return A1HSM_SUPER(a1hsm_top);
+    return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum a1hsmrc s1(struct test *me, const struct event *event) {
-    const int instance = a1hsm_get_state_instance(&me->hsm);
-    ASSERT(a1hsm_is_in(&me->hsm, &A1HSM_STATE(s1, instance)));
+static enum am_hsm_rc s1(struct test *me, const struct event *event) {
+    const int instance = am_hsm_get_state_instance(&me->hsm);
+    AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s1, instance)));
     switch (event->id) {
-    case A1HSM_EVT_ENTRY:
+    case AM_HSM_EVT_ENTRY:
         me->log("s1/%d-ENTRY;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
-    case A1HSM_EVT_EXIT:
+    case AM_HSM_EVT_EXIT:
         me->log("s1/%d-EXIT;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
-    case A1HSM_EVT_INIT:
+    case AM_HSM_EVT_INIT:
         me->log("s1/%d-INIT;", instance);
-        return A1HSM_TRAN(s111, instance);
+        return AM_HSM_TRAN(s111, instance);
 
     case HSM_EVT_A:
         me->log("s1/%d-A;", instance);
-        return A1HSM_TRAN(s1, instance);
+        return AM_HSM_TRAN(s1, instance);
 
     case HSM_EVT_B:
         me->log("s1/%d-B;", instance);
-        return A1HSM_TRAN(s11, instance);
+        return AM_HSM_TRAN(s11, instance);
 
     case HSM_EVT_C:
         me->log("s1/%d-C;", instance);
-        return A1HSM_TRAN(s121, instance);
+        return AM_HSM_TRAN(s121, instance);
 
     case HSM_EVT_H:
         me->log("s1/%d-H;", instance);
-        return A1HSM_TRAN(s);
+        return AM_HSM_TRAN(s);
 
     default:
         break;
     }
-    static const struct a1hsm_state ss[] = {
-        [SM_0] = {.fn = (a1hsm_state_fn)s},
-        [SM_1] = {.fn = (a1hsm_state_fn)s1, .instance = SM_0},
-        [SM_2] = {.fn = (a1hsm_state_fn)s}
+    static const struct am_hsm_state ss[] = {
+        [SM_0] = {.fn = (am_hsm_state_fn)s},
+        [SM_1] = {.fn = (am_hsm_state_fn)s1, .instance = SM_0},
+        [SM_2] = {.fn = (am_hsm_state_fn)s}
     };
-    ASSERT(instance < COUNTOF(ss));
-    const struct a1hsm_state *super = &ss[instance];
-    return A1HSM_SUPER(super->fn, super->instance);
+    AM_ASSERT(instance < AM_COUNTOF(ss));
+    const struct am_hsm_state *super = &ss[instance];
+    return AM_HSM_SUPER(super->fn, super->instance);
 }
 
-static enum a1hsmrc s11(struct test *me, const struct event *event) {
-    const int instance = a1hsm_get_state_instance(&me->hsm);
-    ASSERT(a1hsm_is_in(&me->hsm, &A1HSM_STATE(s11, instance)));
+static enum am_hsm_rc s11(struct test *me, const struct event *event) {
+    const int instance = am_hsm_get_state_instance(&me->hsm);
+    AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s11, instance)));
     switch (event->id) {
-    case A1HSM_EVT_ENTRY:
+    case AM_HSM_EVT_ENTRY:
         me->log("s11/%d-ENTRY;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
-    case A1HSM_EVT_EXIT:
+    case AM_HSM_EVT_EXIT:
         me->log("s11/%d-EXIT;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
-    case A1HSM_EVT_INIT:
+    case AM_HSM_EVT_INIT:
         me->log("s11/%d-INIT;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
     case HSM_EVT_G:
         me->log("s11/%d-G;", instance);
-        static const struct a1hsm_state tt[] = {
-            [SM_0] = {.fn = (a1hsm_state_fn)s1, .instance = SM_1},
-            [SM_1] = {.fn = (a1hsm_state_fn)s1, .instance = SM_2},
-            [SM_2] = {.fn = (a1hsm_state_fn)s1, .instance = SM_0}
+        static const struct am_hsm_state tt[] = {
+            [SM_0] = {.fn = (am_hsm_state_fn)s1, .instance = SM_1},
+            [SM_1] = {.fn = (am_hsm_state_fn)s1, .instance = SM_2},
+            [SM_2] = {.fn = (am_hsm_state_fn)s1, .instance = SM_0}
         };
-        ASSERT(instance < COUNTOF(tt));
-        const struct a1hsm_state *tran = &tt[instance];
+        AM_ASSERT(instance < AM_COUNTOF(tt));
+        const struct am_hsm_state *tran = &tt[instance];
 
-        return A1HSM_TRAN(tran->fn, tran->instance);
+        return AM_HSM_TRAN(tran->fn, tran->instance);
 
     default:
         break;
     }
-    return A1HSM_SUPER(s1, instance);
+    return AM_HSM_SUPER(s1, instance);
 }
 
-static enum a1hsmrc s111(struct test *me, const struct event *event) {
-    const int instance = a1hsm_get_state_instance(&me->hsm);
-    ASSERT(a1hsm_is_in(&me->hsm, &A1HSM_STATE(s111, instance)));
+static enum am_hsm_rc s111(struct test *me, const struct event *event) {
+    const int instance = am_hsm_get_state_instance(&me->hsm);
+    AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s111, instance)));
     switch (event->id) {
-    case A1HSM_EVT_ENTRY:
+    case AM_HSM_EVT_ENTRY:
         me->log("s111/%d-ENTRY;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
-    case A1HSM_EVT_EXIT:
+    case AM_HSM_EVT_EXIT:
         me->log("s111/%d-EXIT;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
-    case A1HSM_EVT_INIT:
+    case AM_HSM_EVT_INIT:
         me->log("s111/%d-INIT;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
     case HSM_EVT_D:
         me->log("s111/%d-D;", instance);
-        return A1HSM_TRAN(s12, instance);
+        return AM_HSM_TRAN(s12, instance);
 
     default:
         break;
     }
-    return A1HSM_SUPER(s11, instance);
+    return AM_HSM_SUPER(s11, instance);
 }
 
-static enum a1hsmrc s12(struct test *me, const struct event *event) {
-    const int instance = a1hsm_get_state_instance(&me->hsm);
-    ASSERT(a1hsm_is_in(&me->hsm, &A1HSM_STATE(s12, instance)));
+static enum am_hsm_rc s12(struct test *me, const struct event *event) {
+    const int instance = am_hsm_get_state_instance(&me->hsm);
+    AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s12, instance)));
     switch (event->id) {
-    case A1HSM_EVT_ENTRY:
+    case AM_HSM_EVT_ENTRY:
         me->log("s12/%d-ENTRY;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
-    case A1HSM_EVT_EXIT:
+    case AM_HSM_EVT_EXIT:
         me->log("s12/%d-EXIT;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
-    case A1HSM_EVT_INIT:
+    case AM_HSM_EVT_INIT:
         me->log("s12/%d-INIT;", instance);
-        return A1HSM_TRAN(s121, instance);
+        return AM_HSM_TRAN(s121, instance);
 
     case HSM_EVT_F:
         me->log("s12/%d-F;", instance);
-        static const struct a1hsm_state tt[] = {
-            [SM_0] = {.fn = (a1hsm_state_fn)s12, .instance = SM_1},
-            [SM_1] = {.fn = (a1hsm_state_fn)s12, .instance = SM_2},
-            [SM_2] = {.fn = (a1hsm_state_fn)s12, .instance = SM_0}
+        static const struct am_hsm_state tt[] = {
+            [SM_0] = {.fn = (am_hsm_state_fn)s12, .instance = SM_1},
+            [SM_1] = {.fn = (am_hsm_state_fn)s12, .instance = SM_2},
+            [SM_2] = {.fn = (am_hsm_state_fn)s12, .instance = SM_0}
         };
-        ASSERT(instance < COUNTOF(tt));
-        const struct a1hsm_state *tran = &tt[instance];
+        AM_ASSERT(instance < AM_COUNTOF(tt));
+        const struct am_hsm_state *tran = &tt[instance];
 
-        return A1HSM_TRAN(tran->fn, tran->instance);
+        return AM_HSM_TRAN(tran->fn, tran->instance);
 
     default:
         break;
     }
-    return A1HSM_SUPER(s1, instance);
+    return AM_HSM_SUPER(s1, instance);
 }
 
-static enum a1hsmrc s121(struct test *me, const struct event *event) {
-    const int instance = a1hsm_get_state_instance(&me->hsm);
-    ASSERT(a1hsm_is_in(&me->hsm, &A1HSM_STATE(s121, instance)));
+static enum am_hsm_rc s121(struct test *me, const struct event *event) {
+    const int instance = am_hsm_get_state_instance(&me->hsm);
+    AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s121, instance)));
     switch (event->id) {
-    case A1HSM_EVT_ENTRY:
+    case AM_HSM_EVT_ENTRY:
         me->log("s121/%d-ENTRY;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
-    case A1HSM_EVT_EXIT:
+    case AM_HSM_EVT_EXIT:
         me->log("s121/%d-EXIT;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
-    case A1HSM_EVT_INIT:
+    case AM_HSM_EVT_INIT:
         me->log("s121/%d-INIT;", instance);
-        return A1HSM_HANDLED();
+        return AM_HSM_HANDLED();
 
     case HSM_EVT_E:
         me->log("s121/%d-E;", instance);
-        return A1HSM_TRAN(s12, instance);
+        return AM_HSM_TRAN(s12, instance);
 
     default:
         break;
     }
-    return A1HSM_SUPER(s12, instance);
+    return AM_HSM_SUPER(s12, instance);
 }
 
-static enum a1hsmrc sinit(struct test *me, const struct event *event) {
+static enum am_hsm_rc sinit(struct test *me, const struct event *event) {
     (void)event;
 
-    me->log("top/%d-INIT;", a1hsm_get_state_instance(&me->hsm));
+    me->log("top/%d-INIT;", am_hsm_get_state_instance(&me->hsm));
 
-    return A1HSM_TRAN(s1, SM_1);
+    return AM_HSM_TRAN(s1, SM_1);
 }
 
 void submachine_ctor(void (*log)(char *fmt, ...)) {
     struct test *me = &m_test;
-    a1hsm_ctor(&me->hsm, &A1HSM_STATE(sinit));
+    am_hsm_ctor(&me->hsm, &AM_HSM_STATE(sinit));
     me->log = log;
 }

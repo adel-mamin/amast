@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2024 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,28 +45,24 @@
  *    divisible by the size of the object the pointer points to.
  *    In that situation a divide-by-zero will cause the compiler to error out.
  */
-#define COUNTOF(arr) \
+#define AM_COUNTOF(arr) \
     ((int)(sizeof(arr) / sizeof(0 [arr]) / !(sizeof(arr) % sizeof(0 [arr]))))
 
 /** Returns maximum element */
-#undef MAX
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define AM_MAX(a, b) ((a) > (b) ? (a) : (b))
 /** Returns minimum element */
-#undef MIN
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define AM_MIN(a, b) ((a) < (b) ? (a) : (b))
 /** Returns absolute value */
-#define ABS(x) (((x) >= 0) ? (x) : -(x))
-
-#undef ASSERT
+#define AM_ABS(x) (((x) >= 0) ? (x) : -(x))
 
 /** Assert macro */
-#define ASSERT(x) assert(A1LIKELY(x))
+#define AM_ASSERT(x) assert(AM_LIKELY(x))
 
 /** Checks if #x is a power of two */
-#define IS_POWER_OF_TWO(x) (0 == (((x) - 1u) & (x)))
+#define AM_IS_POWER_OF_TWO(x) (0 == (((x) - 1u) & (x)))
 
 /** Check if a floating point number is NaN */
-#define ISNAN(x) ((x) != (x))
+#define AM_ISNAN(x) ((x) != (x))
 
 /**
    Determines whether the memory architecture of current processor is
@@ -75,7 +71,7 @@
    @retval true  Little-endian
    @retval false Not little-endian
  */
-#define IS_LITTLE_ENDIAN() (((*(char *)"21") & 0xFF) == '2')
+#define AM_IS_LITTLE_ENDIAN() (((*(char *)"21") & 0xFF) == '2')
 
 /**
    Determines whether the memory architecture of current processor is
@@ -84,32 +80,32 @@
    @retval true  Big-endian
    @retval false Not big-endian
  */
-#define IS_BIG_ENDIAN() (((*(char *)"21") & 0xFF) == '1')
+#define AM_IS_BIG_ENDIAN() (((*(char *)"21") & 0xFF) == '1')
 
 /** Convert degrees to radians */
-#define DEG2RAD(x) ((x) * (PI / 180.))
+#define AM_DEG2RAD(x) ((x) * (PI / 180.))
 
 /** Convert radians to degrees */
-#define RAD2DEG(x) ((x) * (180. / PI))
+#define AM_RAD2DEG(x) ((x) * (180. / PI))
 
 /** Do division and round up the result */
-#define DIVIDE_ROUND_UP(divident, divisor) \
+#define AM_DIVIDE_ROUND_UP(divident, divisor) \
     (((divident) + ((divisor) - 1)) / (divisor))
 
-#define ROUND_UP_TO_MULTIPLE_OF(n, m) (DIVIDE_ROUND_UP(n, m) * (m))
+#define AM_ROUND_UP_TO_MULTIPLE_OF(n, m) (DIVIDE_ROUND_UP(n, m) * (m))
 
 /** Return number of bits in the representation of the given parameter */
-#define BITS_IN_REPRESENTATION(x) ((int)(sizeof(x) * CHAR_BIT))
+#define AM_BITS_IN_REPRESENTATION(x) ((int)(sizeof(x) * CHAR_BIT))
 
 /** A value with a magnitude of to and the sign of from */
-#define COPYSIGN(to, from) (((from) > 0) ? (to) : -(to))
+#define AM_COPYSIGN(to, from) (((from) > 0) ? (to) : -(to))
 
 /** Taken from http://nullprogram.com/blog/2015/02/17/ */
-#define CONTAINER_OF(ptr, type, member) \
-    (A1CAST(type *, ((char *)(ptr) - offsetof(type, member)))) /* NOLINT */
+#define AM_CONTAINER_OF(ptr, type, member) \
+    (AM_CAST(type *, ((char *)(ptr) - offsetof(type, member)))) /* NOLINT */
 
 /** Counts the number of trailing zeros in a word */
-#define COUNT_TRAILING_ZEROS(word)              \
+#define AM_COUNT_TRAILING_ZEROS(word)           \
     EXTENSION({                                 \
         int ret__;                              \
         (word) = ((word) ^ ((word) - 1)) >> 1u; \
@@ -127,7 +123,7 @@
     2      | 1
     3      | 2
 */
-#define DO_EVERY(cnt, cmd)         \
+#define AM_DO_EVERY(cnt, cmd)      \
     do {                           \
         static unsigned cnt__ = 0; \
         cnt__++;                   \
@@ -145,7 +141,7 @@
     2      | 1
     3      | 1
 */
-#define DO_ONCE(cmd)           \
+#define AM_DO_ONCE(cmd)        \
     do {                       \
         static int done__ = 0; \
         if (!done__) {         \
@@ -154,7 +150,7 @@
         }                      \
     } while (0)
 
-#define DO_EACH_MS(ms, cmd)                       \
+#define AM_DO_EACH_MS(ms, cmd)                    \
     do {                                          \
         static struct timer timer__ = TIMER_INIT; \
         if (!timer_armed(&timer__)) {             \

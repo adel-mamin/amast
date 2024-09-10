@@ -49,7 +49,7 @@ static void test_am_queue(const int capacity, const int rdwr_num) {
         /*alignment=*/sizeof(int),
         &blk
     );
-    ASSERT(am_queue_is_empty(&q));
+    AM_ASSERT(am_queue_is_empty(&q));
 
     if (!rdwr_num) {
         return;
@@ -57,38 +57,38 @@ static void test_am_queue(const int capacity, const int rdwr_num) {
 
     for (int i = 0; i < rdwr_num; i++) {
         bool rc = am_queue_push_back(&q, &i, (int)sizeof(int));
-        ASSERT(true == rc);
-        ASSERT(am_queue_length(&q) == (i + 1));
-        ASSERT(am_queue_capacity(&q) >= am_queue_length(&q));
-        ASSERT(!am_queue_is_empty(&q));
+        AM_ASSERT(true == rc);
+        AM_ASSERT(am_queue_length(&q) == (i + 1));
+        AM_ASSERT(am_queue_capacity(&q) >= am_queue_length(&q));
+        AM_ASSERT(!am_queue_is_empty(&q));
     }
 
     for (int i = 0; i < rdwr_num; i++) {
         void *ptr = am_queue_pop_front(&q);
-        ASSERT(ptr);
-        A1DISABLE_WARNING(A1W_NULL_DEREFERENCE)
-        ASSERT(i == *(int *)ptr);
-        A1ENABLE_WARNING(A1W_NULL_DEREFERENCE)
+        AM_ASSERT(ptr);
+        AM_DISABLE_WARNING(AM_W_NULL_DEREFERENCE)
+        AM_ASSERT(i == *(int *)ptr);
+        AM_ENABLE_WARNING(AM_W_NULL_DEREFERENCE)
     }
 
     for (int i = 0; i < rdwr_num; i++) {
         bool rc = am_queue_push_front(&q, &i, (int)sizeof(i));
-        ASSERT(true == rc);
-        ASSERT(am_queue_length(&q) == (i + 1));
-        ASSERT(am_queue_capacity(&q) >= am_queue_length(&q));
-        ASSERT(!am_queue_is_empty(&q));
+        AM_ASSERT(true == rc);
+        AM_ASSERT(am_queue_length(&q) == (i + 1));
+        AM_ASSERT(am_queue_capacity(&q) >= am_queue_length(&q));
+        AM_ASSERT(!am_queue_is_empty(&q));
     }
 
     for (int i = rdwr_num - 1; i >= 0; i--) {
         void *ptr = am_queue_pop_front(&q);
-        ASSERT(ptr);
-        A1DISABLE_WARNING(A1W_NULL_DEREFERENCE)
-        ASSERT(i == *(int *)ptr);
-        A1ENABLE_WARNING(A1W_NULL_DEREFERENCE)
+        AM_ASSERT(ptr);
+        AM_DISABLE_WARNING(AM_W_NULL_DEREFERENCE)
+        AM_ASSERT(i == *(int *)ptr);
+        AM_ENABLE_WARNING(AM_W_NULL_DEREFERENCE)
     }
 
-    ASSERT(am_queue_length(&q) == 0);
-    ASSERT(am_queue_is_empty(&q));
+    AM_ASSERT(am_queue_length(&q) == 0);
+    AM_ASSERT(am_queue_is_empty(&q));
 }
 
 int main(void) {

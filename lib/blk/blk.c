@@ -47,14 +47,14 @@ bool blk_is_empty(const struct blk *blk) {
 }
 
 int blk_cmp(const struct blk *a, const struct blk *b) {
-    ASSERT(a);
-    ASSERT(a->ptr);
-    ASSERT(a->size > 0);
-    ASSERT(b);
-    ASSERT(b->ptr);
-    ASSERT(b->size > 0);
+    AM_ASSERT(a);
+    AM_ASSERT(a->ptr);
+    AM_ASSERT(a->size > 0);
+    AM_ASSERT(b);
+    AM_ASSERT(b->ptr);
+    AM_ASSERT(b->size > 0);
 
-    int minsize = MIN(a->size, b->size);
+    int minsize = AM_MIN(a->size, b->size);
     int cmp = memcmp(a->ptr, b->ptr, (size_t)minsize);
     if (cmp) {
         return cmp;
@@ -69,19 +69,19 @@ int blk_cmp(const struct blk *a, const struct blk *b) {
 }
 
 void blk_zero(struct blk *blk) {
-    ASSERT(blk);
-    ASSERT(blk->ptr);
-    ASSERT(blk->size > 0);
+    AM_ASSERT(blk);
+    AM_ASSERT(blk->ptr);
+    AM_ASSERT(blk->size > 0);
     memset(blk->ptr, 0, (size_t)blk->size);
 }
 
 void *blk_cpy(struct blk *dst, const struct blk *src) {
-    ASSERT(dst);
-    ASSERT(dst->ptr);
-    ASSERT(src);
-    ASSERT(src->ptr);
-    ASSERT(dst->size > 0);
-    ASSERT(dst->size == src->size);
+    AM_ASSERT(dst);
+    AM_ASSERT(dst->ptr);
+    AM_ASSERT(src);
+    AM_ASSERT(src->ptr);
+    AM_ASSERT(dst->size > 0);
+    AM_ASSERT(dst->size == src->size);
 
     return memcpy(dst->ptr, src->ptr, src->size);
 }

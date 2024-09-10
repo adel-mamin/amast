@@ -34,7 +34,7 @@
 extern "C" {
 #endif
 
-/** a1onesize memory allocator descriptor */
+/** onesize memory allocator descriptor */
 struct am_onesize {
     struct blk pool;    /**< the pool */
     int block_size;     /**< maximum size of allocated block [bytes] */

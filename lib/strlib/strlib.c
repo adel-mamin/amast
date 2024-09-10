@@ -148,7 +148,7 @@ bool str_is_binary(const char *str, intmax_t *extracted_val) {
         str,
         extracted_val,
         prefixes,
-        COUNTOF(prefixes),
+        AM_COUNTOF(prefixes),
         /* base = */ 2
     );
 }
@@ -159,7 +159,7 @@ bool str_is_octal(const char *str, intmax_t *extracted_val) {
         str,
         extracted_val,
         prefixes,
-        COUNTOF(prefixes),
+        AM_COUNTOF(prefixes),
         /* base = */ 8
     );
 }
@@ -170,7 +170,7 @@ bool str_is_hex(const char *str, intmax_t *extracted_val) {
         str,
         extracted_val,
         prefixes,
-        COUNTOF(prefixes),
+        AM_COUNTOF(prefixes),
         /* base = */ 16
     );
 }
@@ -202,13 +202,13 @@ float complex str_to_complex(char *str) {
     char *start = str;
     char *end = NULL;
     float real = strtof(start, &end);
-    ASSERT(start != end);
+    AM_ASSERT(start != end);
 
     start = end;
     end = NULL;
     float imag = strtof(start, &end);
-    ASSERT(start != end);
-    ASSERT(*end == 'i');
+    AM_ASSERT(start != end);
+    AM_ASSERT(*end == 'i');
 
     return real + imag * I;
 }
@@ -284,7 +284,7 @@ bool str_is_double(const char *str, double *extracted_val) {
 #define BIN_STR_MAX_SIZE_BYTES 256
 
 int uintmax_to_binstr(char *str, int strsize, uintmax_t uintmax) {
-    ASSERT(strsize > 0);
+    AM_ASSERT(strsize > 0);
 
     char buf[BIN_STR_MAX_SIZE_BYTES];
     char *bufptr = buf;
@@ -327,16 +327,16 @@ int uintmax_to_binstr(char *str, int strsize, uintmax_t uintmax) {
             continue;
         }
         written = snprintf(bufptr, (unsigned long)bufsize, "%s", pat[nybble]);
-        ASSERT(written > 0);
-        ASSERT(written < bufsize);
+        AM_ASSERT(written > 0);
+        AM_ASSERT(written < bufsize);
         bufptr += written;
         bufsize += written;
         printed = true;
     }
     if (!printed) {
         written = snprintf(bufptr, (unsigned long)bufsize, "0");
-        ASSERT(written > 0);
-        ASSERT(written < bufsize);
+        AM_ASSERT(written > 0);
+        AM_ASSERT(written < bufsize);
     }
     return snprintf(str, (unsigned long)strsize, "%s", buf);
 }
@@ -379,7 +379,7 @@ int str_lcpy(char *dst, const char *src, int lim) {
 }
 
 int str_lcat(char *dst, const char *src, int lim) {
-    ASSERT(lim > 0);
+    AM_ASSERT(lim > 0);
 
     char *d = memchr(dst, '\0', (size_t)lim);
     char *e = &dst[lim];
@@ -405,41 +405,41 @@ int str_lcat(char *dst, const char *src, int lim) {
 }
 
 int str_lcatf(char *dst, int lim, const char *fmt, ...) {
-    ASSERT(dst);
-    ASSERT(lim > 0);
-    ASSERT(fmt);
+    AM_ASSERT(dst);
+    AM_ASSERT(lim > 0);
+    AM_ASSERT(fmt);
 
     long len = (int)strlen(dst);
-    ASSERT(len <= lim);
+    AM_ASSERT(len <= lim);
 
     va_list ap;
     va_start(ap, fmt);
     len += vsnprintf(dst + len, (size_t)(lim - len), fmt, ap); /* NOLINT */
     va_end(ap);
 
-    ASSERT(len <= INT_MAX);
+    AM_ASSERT(len <= INT_MAX);
 
     return (int)len;
 }
 
 int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap) {
-    ASSERT(dst);
-    ASSERT(lim > 0);
-    ASSERT(fmt);
+    AM_ASSERT(dst);
+    AM_ASSERT(lim > 0);
+    AM_ASSERT(fmt);
 
     long len = (int)strlen(dst);
-    ASSERT(len <= lim);
+    AM_ASSERT(len <= lim);
 
     len += vsnprintf(dst + len, (size_t)(lim - len), fmt, ap); /* NOLINT */
 
-    ASSERT(len <= INT_MAX);
+    AM_ASSERT(len <= INT_MAX);
 
     return (int)len;
 }
 
 char *str_sep(char **sp, const char *delim) {
-    ASSERT(sp);
-    ASSERT(delim);
+    AM_ASSERT(sp);
+    AM_ASSERT(delim);
 
     if (!*sp) {
         return NULL;
@@ -466,8 +466,8 @@ char *str_sep(char **sp, const char *delim) {
 }
 
 bool str_has_prefix(const char *str, const char *prefix) {
-    ASSERT(str);
-    ASSERT(prefix);
+    AM_ASSERT(str);
+    AM_ASSERT(prefix);
     return (0 == strncmp(str, prefix, strlen(prefix)));
 }
 
@@ -481,8 +481,8 @@ char *str_upr(char *str) {
 }
 
 const char *str_skip_prefix(const char *str, const char *prefix) {
-    ASSERT(str);
-    ASSERT(prefix);
+    AM_ASSERT(str);
+    AM_ASSERT(prefix);
     int strsz = (int)strlen(str);
     int prefixsz = (int)strlen(prefix);
     while (strsz && prefixsz) {
@@ -515,9 +515,9 @@ void str_split_path(
     struct str_token *tail,
     const char *delim
 ) {
-    ASSERT(path);
-    ASSERT(head || tail);
-    ASSERT(delim);
+    AM_ASSERT(path);
+    AM_ASSERT(head || tail);
+    AM_ASSERT(delim);
 
     if (head) {
         head->start = head->end = -1;
@@ -567,9 +567,9 @@ void str_split_path(
 }
 
 int str_lcat_path(char *head, const char *tail, int lim, char delim) {
-    ASSERT(head);
-    ASSERT(tail);
-    ASSERT(lim > 0);
+    AM_ASSERT(head);
+    AM_ASSERT(tail);
+    AM_ASSERT(lim > 0);
 
     int l = (int)strlen(head);
     if (l && (head[l - 1] == delim)) {

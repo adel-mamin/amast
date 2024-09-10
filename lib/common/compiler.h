@@ -35,41 +35,41 @@
 
 #include <limits.h>
 
-#define A1COMPILER_UNKNOWN 0  /*!< Compiler is unknown */
-#define A1COMPILER_GCC 1000   /*!< GCC compiler */
-#define A1COMPILER_CLANG 2000 /*!< Clang compiler */
+#define AM_COMPILER_UNKNOWN 0  /*!< Compiler is unknown */
+#define AM_COMPILER_GCC 1000   /*!< GCC compiler */
+#define AM_COMPILER_CLANG 2000 /*!< Clang compiler */
 
-#ifndef A1COMPILER_BITS
+#ifndef AM_COMPILER_BITS
 #if (defined(__x86_64__) || defined(__64BIT__) || \
      (defined(__WORDSIZE) && (__WORDSIZE == 64)))
-#define A1COMPILER_BITS 64 /*!< Compiler native word size */
+#define AM_COMPILER_BITS 64 /*!< Compiler native word size */
 #define INT_BITS 32
 #define LONG_BITS 64
 #else
-#define A1COMPILER_BITS 32 /*!< Compiler native word size */
-#define INT_BITS 32        /*!< integer size in bits */
-#define LONG_BITS 32       /*!< long size in bits */
+#define AM_COMPILER_BITS 32 /*!< Compiler native word size */
+#define INT_BITS 32         /*!< integer size in bits */
+#define LONG_BITS 32        /*!< long size in bits */
 #endif
-#endif /* #ifndef A1COMPILER_BITS */
+#endif /* #ifndef AM_COMPILER_BITS */
 
-#ifndef A1COMPILER_ID
+#ifndef AM_COMPILER_ID
 /* Taken from
  * http://nadeausoftware.com/articles/2012/10/c_c_tip_how_detect_compiler_name_and_version_using_compiler_predefined_macros
  */
 #if defined(__clang__)
 
 /* Clang */
-#define A1COMPILER_VERSION \
+#define AM_COMPILER_VERSION \
     (__clang_major__ * 10000 + __clang_minor__ * 100 + __clang_patchlevel__)
-#define A1COMPILER_ID A1COMPILER_CLANG
+#define AM_COMPILER_ID AM_COMPILER_CLANG
 
 #elif defined(__ICC) || defined(__INTEL_COMPILER)
 
 /* Intel ICC/ICPC. */
 #elif defined(__GNUC__) || defined(__GNUG__)
-#define A1COMPILER_VERSION \
+#define AM_COMPILER_VERSION \
     (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
-#define A1COMPILER_ID A1COMPILER_GCC
+#define AM_COMPILER_ID AM_COMPILER_GCC
 
 #elif defined(__HP_cc) || defined(__HP_aCC)
 /* Hewlett-Packard C/aC++ */
@@ -84,9 +84,9 @@
 #else
 #error "Unknown compiler!"
 #endif
-#endif /* A1COMPILER_ID */
+#endif /* AM_COMPILER_ID */
 
-#if (64 == A1COMPILER_BITS)
+#if (64 == AM_COMPILER_BITS)
 typedef long ssize_t;
 #define SSIZE_MAX LONG_MAX
 #define SSIZE_MIN LONG_MINXS
@@ -98,15 +98,15 @@ typedef int ssize_t;
 #endif
 
 /* Optimisation hints. */
-#if (A1COMPILER_ID == A1COMPILER_GCC) || (A1COMPILER_ID == A1COMPILER_CLANG)
+#if (AM_COMPILER_ID == AM_COMPILER_GCC) || (AM_COMPILER_ID == AM_COMPILER_CLANG)
 /** the condition x is likely */
-#define A1LIKELY(x) __builtin_expect(!!(x), 1)
+#define AM_LIKELY(x) __builtin_expect(!!(x), 1)
 /** the condition x is unlikely */
-#define A1UNLIKELY(x) __builtin_expect(!!(x), 0)
+#define AM_UNLIKELY(x) __builtin_expect(!!(x), 0)
 /** no return compiler instruction */
-#define A1NORETURN __attribute__((noreturn))
+#define AM_NORETURN __attribute__((noreturn))
 /** alignment compiler instruction */
-#define A1ALIGNED(x) __attribute__((aligned(x)))
+#define AM_ALIGNED(x) __attribute__((aligned(x)))
 /**
   The parameter `si` specifies which argument is the format string argument
   (starting from 1), while `ftc` is the number of the first argument to check
@@ -114,32 +114,32 @@ typedef int ssize_t;
   to be checked (such as vprintf), specify the third parameter as zero.
   In this case the compiler only checks the format string for consistency.
  */
-#define A1PRINTF(si, ftc) __attribute__((format(printf, (si), (ftc))))
-#define A1ATTR(...) __attribute__((__VA_ARGS__))
-#define A1FALLTHROUGH __attribute__((fallthrough))
+#define AM_PRINTF(si, ftc) __attribute__((format(printf, (si), (ftc))))
+#define AM_ATTR(...) __attribute__((__VA_ARGS__))
+#define AM_FALLTHROUGH __attribute__((fallthrough))
 /** do not inline instruction */
-#define A1NOINLINE __attribute__((noinline))
-#define A1SECTION(name) __attribute__((section(name))) /**< section name */
-#define A1NOINLINE __attribute__((noinline))
+#define AM_NOINLINE __attribute__((noinline))
+#define AM_SECTION(name) __attribute__((section(name))) /**< section name */
+#define AM_NOINLINE __attribute__((noinline))
 /** Packed data structure/union attribute */
-#define A1PACKED __attribute__((packed))
+#define AM_PACKED __attribute__((packed))
 /** Compiler extension macro */
 #define EXTENSION __extension__
 #else
 #error "Define macros"
 #endif
 
-#define A1CAST(TYPE, PTR) (((TYPE)(uintptr_t)(const void *)(PTR)))
-#define A1VCAST(TYPE, PTR) (((TYPE)(uintptr_t)(const volatile void *)(PTR)))
+#define AM_CAST(TYPE, PTR) (((TYPE)(uintptr_t)(const void *)(PTR)))
+#define AM_VCAST(TYPE, PTR) (((TYPE)(uintptr_t)(const volatile void *)(PTR)))
 
 /* Taken from
    https://stackoverflow.com/questions/3378560/how-to-disable-gcc-warnings-for-a-few-lines-of-code
  */
 
 /** Stringification macro */
-#define A1STRINGIFY__(s) #s
+#define AM_STRINGIFY__(s) #s
 /** Join x and y together */
-#define A1JOINSTR_(x, y) A1STRINGIFY__(x##y)
+#define AM_JOINSTR_(x, y) AM_STRINGIFY__(x##y)
 
 /**
  * Choose one of two macros.
@@ -152,301 +152,304 @@ typedef int ssize_t;
  * BAR(a)    expands to BAR1(a)
  * BAR(a, b) expands to BAR2(a, b)
  */
-#define A1GET_MACRO_2_(_1, _2, NAME, ...) NAME
+#define AM_GET_MACRO_2_(_1, _2, NAME, ...) NAME
 
 /*! @cond Doxygen_Suppress */
 #ifdef _MSC_VER
-#define A1DIAG_DO_PRAGMA(x) __pragma(#x)
-#define A1DIAG_PRAGMA(compiler, x) A1DIAG_DO_PRAGMA(warning(x))
+#define AM_DIAG_DO_PRAGMA(x) __pragma(#x)
+#define AM_DIAG_PRAGMA(compiler, x) AM_DIAG_DO_PRAGMA(warning(x))
 #else
-#define A1DIAG_DO_PRAGMA(x) _Pragma(#x)
-#define A1DIAG_PRAGMA(compiler, x) A1DIAG_DO_PRAGMA(compiler diagnostic x)
+#define AM_DIAG_DO_PRAGMA(x) _Pragma(#x)
+#define AM_DIAG_PRAGMA(compiler, x) AM_DIAG_DO_PRAGMA(compiler diagnostic x)
 #endif
 /*! @endcond */
 
-#if ((A1COMPILER_ID == A1COMPILER_CLANG) || (A1COMPILER_ID == A1COMPILER_GCC))
+#if ((AM_COMPILER_ID == AM_COMPILER_CLANG) || \
+     (AM_COMPILER_ID == AM_COMPILER_GCC))
 /* clang-format off */
-#define A1W_SHADOW shadow
-#define A1W_FORMAT format
-#define A1W_REDUNDANT_DECLS redundant-decls /* NOLINT */
-#define A1W_MISSING_PROTOTYPES missing-prototypes /* NOLINT */
-#define A1W_CAST_ALIGN cast-align /* NOLINT */
-#define A1W_CAST_QUAL cast-qual /* NOLINT */
-#define A1W_MISSING_NORETURN missing-noreturn /* NOLINT */
-#define A1W_IMPLICIT_FUNCTION_DECLARATION error-implicit-function-declaration /* NOLINT */
-#define A1W_STRICT_OVERFLOW strict-overflow /* NOLINT */
-#define A1W_UNDEF undef /* NOLINT */
-#define A1W_DISCARDED_QUALIFIERS discarded-qualifiers /* NOLINT */
-#define A1W_WRITE_STRINGS write-strings /* NOLINT */
-#define A1W_SWITCH_DEFAULT switch-default /* NOLINT */
-#define A1W_SWITCH_ENUM switch-enum /* NOLINT */
-#define A1W_SUGGEST_ATTRIBUTE_NORETURN suggest-attribute=noreturn /* NOLINT */
-#define A1W_SUGGEST_ATTRIBUTE_FORMAT suggest-attribute=format /* NOLINT */
-#define A1W_UNUSED_LOCAL_TYPEDEF unused-local-typedef /* NOLINT */
-#define A1W_UNUSED_PARAMETER unused-parameter /* NOLINT */
-#define A1W_UNUSED_FUNCTION unused-function /* NOLINT */
-#define A1W_MISSING_FIELD_INITIALIZERS missing-field-initializers /* NOLINT */
-#define A1W_CONVERSION conversion /* NOLINT */
-#define A1W_SIGN_CONVERSION sign-conversion /* NOLINT */
-#define A1W_FLOAT_CONVERSION float-conversion /* NOLINT */
-#define A1W_FLOAT_EQUAL float-equal /* NOLINT */
-#define A1W_UNUSED_MACROS unused-macros /* NOLINT */
-#define A1W_LOGICAL_OP logical-op /* NOLINT */
-#define A1W_IMPLICIT_FALLTHROUGH implicit-fallthrough /* NOLINT */
-#define A1W_STRICT_PROTOTYPES strict-prototypes /* NOLINT */
-#define A1W_EXPANSION_TO_DEFINED expansion-to-defined /* NOLINT */
-#define A1W_DOUBLE_PROMOTION double-promotion         /* NOLINT */
-#define A1W_UNUSED_BUT_SET_VARIABLE unused-but-set-variable /* NOLINT */
-#define A1W_UNUSED_CONST_VARIABLE unused-const-variable= /* NOLINT */
-#define A1W_UNUSED_VALUE unused-value                    /* NOLINT */
-#define A1W_UNUSED_VARIABLE unused-variable                    /* NOLINT */
-#define A1W_FORMAT_NONLITERAL format-nonliteral          /* NOLINT */
-#define A1W_TYPE_LIMITS type-limits                      /* NOLINT */
-#define A1W_PEDANTIC pedantic
-#define A1W_LANGUAGE_EXTENSION_TOKEN language-extension-token /* NOLINT */
-#define A1W_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS gnu-zero-variadic-macro-arguments /* NOLINT */
-#define A1W_MISSING_VARIABLE_DECLARATIONS missing-variable-declarations /* NOLINT */
-#define A1W_RESERVED_ID_MACRO reserved-id-macro                         /* NOLINT */
-#define A1W_PADDED padded
-#define A1W_COVERED_SWITCH_DEFAULT covered-switch-default /* NOLINT */
-#define A1W_VLA vla
-#define A1W_INLINE inline
-#define A1W_DEPRECATED_COPY deprecated-copy /* NOLINT */
-#define A1W_IMPLICIT_FLOAT_CONVERSION implicit-float-conversion /* NOLINT */
-#define A1W_BAD_FUNCTION_CAST bad-function-cast                 /* NOLINT */
-#define A1W_INT_TO_POINTER_CAST int-to-pointer-cast             /* NOLINT */
-#define A1W_OLD_STYLE_DEFINITION old-style-definition           /* NOLINT */
-#define A1W_DANGLING_ELSE dangling-else                         /* NOLINT */
-#define A1W_NULL_DEREFERENCE null-dereference                   /* NOLINT */
-#define A1W_CONDITIONAL_UNINITIALIZED conditional-uninitialized /* NOLINT */
-#define A1W_NESTED_EXTERNS nested-externs                       /* NOLINT */
-#define A1W_ATTRIBUTES attributes                           /* NOLINT */
-#define A1W_PACKED packed                           /* NOLINT */
-#define A1W_DATE_TIME date-time                     /* NOLINT */
-#define A1W_NULL_DEREFERENCE null-dereference       /* NOLINT */
-#define A1W_ENUM_COMPARE enum-compare               /* NOLINT */
-#define A1W_CLASS_MEMACCESS class-memaccess         /* NOLINT */
+#define AM_W_SHADOW shadow
+#define AM_W_FORMAT format
+#define AM_W_REDUNDANT_DECLS redundant-decls /* NOLINT */
+#define AM_W_MISSING_PROTOTYPES missing-prototypes /* NOLINT */
+#define AM_W_CAST_ALIGN cast-align /* NOLINT */
+#define AM_W_CAST_QUAL cast-qual /* NOLINT */
+#define AM_W_MISSING_NORETURN missing-noreturn /* NOLINT */
+#define AM_W_IMPLICIT_FUNCTION_DECLARATION error-implicit-function-declaration /* NOLINT */
+#define AM_W_STRICT_OVERFLOW strict-overflow /* NOLINT */
+#define AM_W_UNDEF undef /* NOLINT */
+#define AM_W_DISCARDED_QUALIFIERS discarded-qualifiers /* NOLINT */
+#define AM_W_WRITE_STRINGS write-strings /* NOLINT */
+#define AM_W_SWITCH_DEFAULT switch-default /* NOLINT */
+#define AM_W_SWITCH_ENUM switch-enum /* NOLINT */
+#define AM_W_SUGGEST_ATTRIBUTE_NORETURN suggest-attribute=noreturn /* NOLINT */
+#define AM_W_SUGGEST_ATTRIBUTE_FORMAT suggest-attribute=format /* NOLINT */
+#define AM_W_UNUSED_LOCAL_TYPEDEF unused-local-typedef /* NOLINT */
+#define AM_W_UNUSED_PARAMETER unused-parameter /* NOLINT */
+#define AM_W_UNUSED_FUNCTION unused-function /* NOLINT */
+#define AM_W_MISSING_FIELD_INITIALIZERS missing-field-initializers /* NOLINT */
+#define AM_W_CONVERSION conversion /* NOLINT */
+#define AM_W_SIGN_CONVERSION sign-conversion /* NOLINT */
+#define AM_W_FLOAT_CONVERSION float-conversion /* NOLINT */
+#define AM_W_FLOAT_EQUAL float-equal /* NOLINT */
+#define AM_W_UNUSED_MACROS unused-macros /* NOLINT */
+#define AM_W_LOGICAL_OP logical-op /* NOLINT */
+#define AM_W_IMPLICIT_FALLTHROUGH implicit-fallthrough /* NOLINT */
+#define AM_W_STRICT_PROTOTYPES strict-prototypes /* NOLINT */
+#define AM_W_EXPANSION_TO_DEFINED expansion-to-defined /* NOLINT */
+#define AM_W_DOUBLE_PROMOTION double-promotion         /* NOLINT */
+#define AM_W_UNUSED_BUT_SET_VARIABLE unused-but-set-variable /* NOLINT */
+#define AM_W_UNUSED_CONST_VARIABLE unused-const-variable= /* NOLINT */
+#define AM_W_UNUSED_VALUE unused-value                    /* NOLINT */
+#define AM_W_UNUSED_VARIABLE unused-variable                    /* NOLINT */
+#define AM_W_FORMAT_NONLITERAL format-nonliteral          /* NOLINT */
+#define AM_W_TYPE_LIMITS type-limits                      /* NOLINT */
+#define AM_W_PEDANTIC pedantic
+#define AM_W_LANGUAGE_EXTENSION_TOKEN language-extension-token /* NOLINT */
+#define AM_W_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS gnu-zero-variadic-macro-arguments /* NOLINT */
+#define AM_W_MISSING_VARIABLE_DECLARATIONS missing-variable-declarations /* NOLINT */
+#define AM_W_RESERVED_ID_MACRO reserved-id-macro                         /* NOLINT */
+#define AM_W_PADDED padded
+#define AM_W_COVERED_SWITCH_DEFAULT covered-switch-default /* NOLINT */
+#define AM_W_VLA vla
+#define AM_W_INLINE inline
+#define AM_W_DEPRECATED_COPY deprecated-copy /* NOLINT */
+#define AM_W_IMPLICIT_FLOAT_CONVERSION implicit-float-conversion /* NOLINT */
+#define AM_W_BAD_FUNCTION_CAST bad-function-cast                 /* NOLINT */
+#define AM_W_INT_TO_POINTER_CAST int-to-pointer-cast             /* NOLINT */
+#define AM_W_OLD_STYLE_DEFINITION old-style-definition           /* NOLINT */
+#define AM_W_DANGLING_ELSE dangling-else                         /* NOLINT */
+#define AM_W_NULL_DEREFERENCE null-dereference                   /* NOLINT */
+#define AM_W_CONDITIONAL_UNINITIALIZED conditional-uninitialized /* NOLINT */
+#define AM_W_NESTED_EXTERNS nested-externs                       /* NOLINT */
+#define AM_W_ATTRIBUTES attributes                           /* NOLINT */
+#define AM_W_PACKED packed                           /* NOLINT */
+#define AM_W_DATE_TIME date-time                     /* NOLINT */
+#define AM_W_NULL_DEREFERENCE null-dereference       /* NOLINT */
+#define AM_W_ENUM_COMPARE enum-compare               /* NOLINT */
+#define AM_W_CLASS_MEMACCESS class-memaccess         /* NOLINT */
 
 /* clang-format on */
 #else
 #error "Missing compiler warning definitions"
-#endif /* A1COMPILER_ID */
+#endif /* AM_COMPILER_ID */
 
-#if (A1COMPILER_ID == A1COMPILER_GCC)
+#if (AM_COMPILER_ID == AM_COMPILER_GCC)
 
-#define A1ENABLE_WARNING_IMPLICIT_FUNCTION_DECLARATION() \
-    A1ENABLE_WARNING(A1W_IMPLICIT_FUNCTION_DECLARATION)
-#define A1DISABLE_WARNING_IMPLICIT_FUNCTION_DECLARATION() \
-    A1DISABLE_WARNING(A1W_IMPLICIT_FUNCTION_DECLARATION)
+#define AM_ENABLE_WARNING_IMPLICIT_FUNCTION_DECLARATION() \
+    AM_ENABLE_WARNING(AM_W_IMPLICIT_FUNCTION_DECLARATION)
+#define AM_DISABLE_WARNING_IMPLICIT_FUNCTION_DECLARATION() \
+    AM_DISABLE_WARNING(AM_W_IMPLICIT_FUNCTION_DECLARATION)
 
-#define A1ENABLE_WARNING_DISCARDED_QUALIFIERS() \
-    A1ENABLE_WARNING(A1W_DISCARDED_QUALIFIERS)
-#define A1DISABLE_WARNING_DISCARDED_QUALIFIERS() \
-    A1DISABLE_WARNING(A1W_DISCARDED_QUALIFIERS)
+#define AM_ENABLE_WARNING_DISCARDED_QUALIFIERS() \
+    AM_ENABLE_WARNING(AM_W_DISCARDED_QUALIFIERS)
+#define AM_DISABLE_WARNING_DISCARDED_QUALIFIERS() \
+    AM_DISABLE_WARNING(AM_W_DISCARDED_QUALIFIERS)
 
-#define A1ENABLE_WARNING_SUGGEST_ATTRIBUTE_NORETURN() \
-    A1ENABLE_WARNING(A1W_SUGGEST_ATTRIBUTE_NORETURN)
-#define A1DISABLE_WARNING_SUGGEST_ATTRIBUTE_NORETURN() \
-    A1DISABLE_WARNING(A1W_SUGGEST_ATTRIBUTE_NORETURN)
+#define AM_ENABLE_WARNING_SUGGEST_ATTRIBUTE_NORETURN() \
+    AM_ENABLE_WARNING(AM_W_SUGGEST_ATTRIBUTE_NORETURN)
+#define AM_DISABLE_WARNING_SUGGEST_ATTRIBUTE_NORETURN() \
+    AM_DISABLE_WARNING(AM_W_SUGGEST_ATTRIBUTE_NORETURN)
 
-#define A1DISABLE_WARNING_LANGUAGE_EXTENSION_TOKEN()
-#define A1ENABLE_WARNING_LANGUAGE_EXTENSION_TOKEN()
+#define AM_DISABLE_WARNING_LANGUAGE_EXTENSION_TOKEN()
+#define AM_ENABLE_WARNING_LANGUAGE_EXTENSION_TOKEN()
 
-#define A1ENABLE_WARNING_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS()
-#define A1DISABLE_WARNING_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS()
+#define AM_ENABLE_WARNING_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS()
+#define AM_DISABLE_WARNING_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS()
 
-#define A1ENABLE_WARNING_RESERVED_ID_MACRO()
-#define A1DISABLE_WARNING_RESERVED_ID_MACRO()
+#define AM_ENABLE_WARNING_RESERVED_ID_MACRO()
+#define AM_DISABLE_WARNING_RESERVED_ID_MACRO()
 
-#define A1ENABLE_WARNING_MISSING_VARIABLE_DECLARATIONS()
-#define A1DISABLE_WARNING_MISSING_VARIABLE_DECLARATIONS()
+#define AM_ENABLE_WARNING_MISSING_VARIABLE_DECLARATIONS()
+#define AM_DISABLE_WARNING_MISSING_VARIABLE_DECLARATIONS()
 
-#define A1ENABLE_WARNING_COVERED_SWITCH_DEFAULT()
-#define A1DISABLE_WARNING_COVERED_SWITCH_DEFAULT()
+#define AM_ENABLE_WARNING_COVERED_SWITCH_DEFAULT()
+#define AM_DISABLE_WARNING_COVERED_SWITCH_DEFAULT()
 
-#define A1ENABLE_WARNING_DEPRECATED_COPY() A1ENABLE_WARNING(A1W_DEPRECATED_COPY)
-#define A1DISABLE_WARNING_DEPRECATED_COPY() \
-    A1DISABLE_WARNING(A1W_DEPRECATED_COPY)
+#define AM_ENABLE_WARNING_DEPRECATED_COPY() \
+    AM_ENABLE_WARNING(AM_W_DEPRECATED_COPY)
+#define AM_DISABLE_WARNING_DEPRECATED_COPY() \
+    AM_DISABLE_WARNING(AM_W_DEPRECATED_COPY)
 
-#define A1ENABLE_WARNING_IMPLICIT_FLOAT_CONVERSION()
-#define A1DISABLE_WARNING_IMPLICIT_FLOAT_CONVERSION()
+#define AM_ENABLE_WARNING_IMPLICIT_FLOAT_CONVERSION()
+#define AM_DISABLE_WARNING_IMPLICIT_FLOAT_CONVERSION()
 
-#define A1ENABLE_WARNING_CONDITIONAL_UNINITIALIZED()
-#define A1DISABLE_WARNING_CONDITIONAL_UNINITIALIZED()
+#define AM_ENABLE_WARNING_CONDITIONAL_UNINITIALIZED()
+#define AM_DISABLE_WARNING_CONDITIONAL_UNINITIALIZED()
 
 #if defined __cplusplus
-#define A1ENABLE_WARNING_CLASS_MEMACCESS() A1ENABLE_WARNING(A1W_CLASS_MEMACCESS)
-#define A1DISABLE_WARNING_CLASS_MEMACCESS() \
-    A1DISABLE_WARNING(A1W_CLASS_MEMACCESS)
+#define AM_ENABLE_WARNING_CLASS_MEMACCESS() \
+    AM_ENABLE_WARNING(AM_W_CLASS_MEMACCESS)
+#define AM_DISABLE_WARNING_CLASS_MEMACCESS() \
+    AM_DISABLE_WARNING(AM_W_CLASS_MEMACCESS)
 #else
-#define A1ENABLE_WARNING_CLASS_MEMACCESS()
-#define A1DISABLE_WARNING_CLASS_MEMACCESS()
+#define AM_ENABLE_WARNING_CLASS_MEMACCESS()
+#define AM_DISABLE_WARNING_CLASS_MEMACCESS()
 #endif
 
-#elif (A1COMPILER_ID == A1COMPILER_CLANG)
+#elif (AM_COMPILER_ID == AM_COMPILER_CLANG)
 
-#define A1ENABLE_WARNING_IMPLICIT_FUNCTION_DECLARATION()
-#define A1DISABLE_WARNING_IMPLICIT_FUNCTION_DECLARATION()
+#define AM_ENABLE_WARNING_IMPLICIT_FUNCTION_DECLARATION()
+#define AM_DISABLE_WARNING_IMPLICIT_FUNCTION_DECLARATION()
 
-#define A1ENABLE_WARNING_DISCARDED_QUALIFIERS()
-#define A1DISABLE_WARNING_DISCARDED_QUALIFIERS()
+#define AM_ENABLE_WARNING_DISCARDED_QUALIFIERS()
+#define AM_DISABLE_WARNING_DISCARDED_QUALIFIERS()
 
-#define A1ENABLE_WARNING_SUGGEST_ATTRIBUTE_NORETURN()
-#define A1DISABLE_WARNING_SUGGEST_ATTRIBUTE_NORETURN()
+#define AM_ENABLE_WARNING_SUGGEST_ATTRIBUTE_NORETURN()
+#define AM_DISABLE_WARNING_SUGGEST_ATTRIBUTE_NORETURN()
 
-#define A1ENABLE_WARNING_LANGUAGE_EXTENSION_TOKEN() \
-    A1ENABLE_WARNING(A1W_LANGUAGE_EXTENSION_TOKEN)
+#define AM_ENABLE_WARNING_LANGUAGE_EXTENSION_TOKEN() \
+    AM_ENABLE_WARNING(AM_W_LANGUAGE_EXTENSION_TOKEN)
 
-#define A1DISABLE_WARNING_LANGUAGE_EXTENSION_TOKEN() \
-    A1DISABLE_WARNING(A1W_LANGUAGE_EXTENSION_TOKEN)
+#define AM_DISABLE_WARNING_LANGUAGE_EXTENSION_TOKEN() \
+    AM_DISABLE_WARNING(AM_W_LANGUAGE_EXTENSION_TOKEN)
 
-#define A1ENABLE_WARNING_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS() \
-    A1ENABLE_WARNING(A1W_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS)
+#define AM_ENABLE_WARNING_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS() \
+    AM_ENABLE_WARNING(AM_W_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS)
 
-#define A1DISABLE_WARNING_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS() \
-    A1DISABLE_WARNING(A1W_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS)
+#define AM_DISABLE_WARNING_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS() \
+    AM_DISABLE_WARNING(AM_W_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS)
 
-#define A1ENABLE_WARNING_RESERVED_ID_MACRO() \
-    A1ENABLE_WARNING(A1W_RESERVED_ID_MACRO)
+#define AM_ENABLE_WARNING_RESERVED_ID_MACRO() \
+    AM_ENABLE_WARNING(AM_W_RESERVED_ID_MACRO)
 
-#define A1DISABLE_WARNING_RESERVED_ID_MACRO() \
-    A1DISABLE_WARNING(A1W_RESERVED_ID_MACRO)
+#define AM_DISABLE_WARNING_RESERVED_ID_MACRO() \
+    AM_DISABLE_WARNING(AM_W_RESERVED_ID_MACRO)
 
-#define A1ENABLE_WARNING_MISSING_VARIABLE_DECLARATIONS() \
-    A1ENABLE_WARNING(A1W_MISSING_VARIABLE_DECLARATIONS)
+#define AM_ENABLE_WARNING_MISSING_VARIABLE_DECLARATIONS() \
+    AM_ENABLE_WARNING(AM_W_MISSING_VARIABLE_DECLARATIONS)
 
-#define A1DISABLE_WARNING_MISSING_VARIABLE_DECLARATIONS() \
-    A1DISABLE_WARNING(A1W_MISSING_VARIABLE_DECLARATIONS)
+#define AM_DISABLE_WARNING_MISSING_VARIABLE_DECLARATIONS() \
+    AM_DISABLE_WARNING(AM_W_MISSING_VARIABLE_DECLARATIONS)
 
-#define A1ENABLE_WARNING_COVERED_SWITCH_DEFAULT() \
-    A1ENABLE_WARNING(A1W_COVERED_SWITCH_DEFAULT)
+#define AM_ENABLE_WARNING_COVERED_SWITCH_DEFAULT() \
+    AM_ENABLE_WARNING(AM_W_COVERED_SWITCH_DEFAULT)
 
-#define A1DISABLE_WARNING_COVERED_SWITCH_DEFAULT() \
-    A1DISABLE_WARNING(A1W_COVERED_SWITCH_DEFAULT)
+#define AM_DISABLE_WARNING_COVERED_SWITCH_DEFAULT() \
+    AM_DISABLE_WARNING(AM_W_COVERED_SWITCH_DEFAULT)
 
-#define A1ENABLE_WARNING_DEPRECATED_COPY()
-#define A1DISABLE_WARNING_DEPRECATED_COPY()
+#define AM_ENABLE_WARNING_DEPRECATED_COPY()
+#define AM_DISABLE_WARNING_DEPRECATED_COPY()
 
-#define A1ENABLE_WARNING_IMPLICIT_FLOAT_CONVERSION() \
-    A1ENABLE_WARNING(A1W_IMPLICIT_FLOAT_CONVERSION)
-#define A1DISABLE_WARNING_IMPLICIT_FLOAT_CONVERSION() \
-    A1DISABLE_WARNING(A1W_IMPLICIT_FLOAT_CONVERSION)
+#define AM_ENABLE_WARNING_IMPLICIT_FLOAT_CONVERSION() \
+    AM_ENABLE_WARNING(AM_W_IMPLICIT_FLOAT_CONVERSION)
+#define AM_DISABLE_WARNING_IMPLICIT_FLOAT_CONVERSION() \
+    AM_DISABLE_WARNING(AM_W_IMPLICIT_FLOAT_CONVERSION)
 
-#define A1ENABLE_WARNING_CONDITIONAL_UNINITIALIZED() \
-    A1ENABLE_WARNING(A1W_CONDITIONAL_UNINITIALIZED)
+#define AM_ENABLE_WARNING_CONDITIONAL_UNINITIALIZED() \
+    AM_ENABLE_WARNING(AM_W_CONDITIONAL_UNINITIALIZED)
 
-#define A1DISABLE_WARNING_CONDITIONAL_UNINITIALIZED() \
-    A1DISABLE_WARNING(A1W_CONDITIONAL_UNINITIALIZED)
+#define AM_DISABLE_WARNING_CONDITIONAL_UNINITIALIZED() \
+    AM_DISABLE_WARNING(AM_W_CONDITIONAL_UNINITIALIZED)
 
-#define A1ENABLE_WARNING_CLASS_MEMACCESS()
-#define A1DISABLE_WARNING_CLASS_MEMACCESS()
+#define AM_ENABLE_WARNING_CLASS_MEMACCESS()
+#define AM_DISABLE_WARNING_CLASS_MEMACCESS()
 
-#endif /* A1COMPILER_ID */
+#endif /* AM_COMPILER_ID */
 
 /** Disable all warnings */
-#define A1A1DISABLE_WARNINGS()                        \
-    A1DISABLE_WARNING(A1W_PEDANTIC)                   \
-    A1DISABLE_WARNING(A1W_SHADOW)                     \
-    A1DISABLE_WARNING(A1W_FORMAT)                     \
-    A1DISABLE_WARNING(A1W_REDUNDANT_DECLS)            \
-    A1DISABLE_WARNING(A1W_MISSING_PROTOTYPES)         \
-    A1DISABLE_WARNING(A1W_CAST_ALIGN)                 \
-    A1DISABLE_WARNING(A1W_CAST_QUAL)                  \
-    A1DISABLE_WARNING(A1W_MISSING_NORETURN)           \
-    A1DISABLE_WARNING_IMPLICIT_FUNCTION_DECLARATION() \
-    A1DISABLE_WARNING(A1W_STRICT_OVERFLOW)            \
-    A1DISABLE_WARNING(A1W_UNDEF)                      \
-    A1DISABLE_WARNING_DISCARDED_QUALIFIERS()          \
-    A1DISABLE_WARNING(A1W_WRITE_STRINGS)              \
-    A1DISABLE_WARNING(A1W_SWITCH_DEFAULT)             \
-    A1DISABLE_WARNING(A1W_SWITCH_ENUM)                \
-    A1DISABLE_WARNING_SUGGEST_ATTRIBUTE_NORETURN()    \
-    A1DISABLE_WARNING(A1W_UNUSED_PARAMETER)           \
-    A1DISABLE_WARNING(A1W_UNUSED_FUNCTION)            \
-    A1DISABLE_WARNING(A1W_MISSING_FIELD_INITIALIZERS) \
-    A1DISABLE_WARNING(A1W_CONVERSION)                 \
-    A1DISABLE_WARNING(A1W_SIGN_CONVERSION)            \
-    A1DISABLE_WARNING(A1W_FLOAT_CONVERSION)           \
-    A1DISABLE_WARNING(A1W_FLOAT_EQUAL)                \
-    A1DISABLE_WARNING(A1W_UNUSED_MACROS)              \
-    A1DISABLE_WARNING(A1W_IMPLICIT_FALLTHROUGH)       \
-    A1DISABLE_WARNING(A1W_STRICT_PROTOTYPES)          \
-    A1DISABLE_WARNING(A1W_EXPANSION_TO_DEFINED)       \
-    A1DISABLE_WARNING(A1W_DOUBLE_PROMOTION)           \
-    A1DISABLE_WARNING_MISSING_VARIABLE_DECLARATIONS() \
-    A1DISABLE_WARNING_RESERVED_ID_MACRO()             \
-    A1DISABLE_WARNING(A1W_PADDED)                     \
-    A1DISABLE_WARNING(A1W_INLINE)                     \
-    A1DISABLE_WARNING(A1W_OLD_STYLE_DEFINITION)       \
-    A1DISABLE_WARNING(A1W_NESTED_EXTERNS)             \
-    A1DISABLE_WARNING(A1W_ATTRIBUTES)                 \
-    A1DISABLE_WARNING(A1W_PACKED)                     \
-    A1DISABLE_WARNING(A1W_DATE_TIME)                  \
-    A1DISABLE_WARNING(A1W_NULL_DEREFERENCE)
+#define AM_AM_DISABLE_WARNINGS()                        \
+    AM_DISABLE_WARNING(AM_W_PEDANTIC)                   \
+    AM_DISABLE_WARNING(AM_W_SHADOW)                     \
+    AM_DISABLE_WARNING(AM_W_FORMAT)                     \
+    AM_DISABLE_WARNING(AM_W_REDUNDANT_DECLS)            \
+    AM_DISABLE_WARNING(AM_W_MISSING_PROTOTYPES)         \
+    AM_DISABLE_WARNING(AM_W_CAST_ALIGN)                 \
+    AM_DISABLE_WARNING(AM_W_CAST_QUAL)                  \
+    AM_DISABLE_WARNING(AM_W_MISSING_NORETURN)           \
+    AM_DISABLE_WARNING_IMPLICIT_FUNCTION_DECLARATION()  \
+    AM_DISABLE_WARNING(AM_W_STRICT_OVERFLOW)            \
+    AM_DISABLE_WARNING(AM_W_UNDEF)                      \
+    AM_DISABLE_WARNING_DISCARDED_QUALIFIERS()           \
+    AM_DISABLE_WARNING(AM_W_WRITE_STRINGS)              \
+    AM_DISABLE_WARNING(AM_W_SWITCH_DEFAULT)             \
+    AM_DISABLE_WARNING(AM_W_SWITCH_ENUM)                \
+    AM_DISABLE_WARNING_SUGGEST_ATTRIBUTE_NORETURN()     \
+    AM_DISABLE_WARNING(AM_W_UNUSED_PARAMETER)           \
+    AM_DISABLE_WARNING(AM_W_UNUSED_FUNCTION)            \
+    AM_DISABLE_WARNING(AM_W_MISSING_FIELD_INITIALIZERS) \
+    AM_DISABLE_WARNING(AM_W_CONVERSION)                 \
+    AM_DISABLE_WARNING(AM_W_SIGN_CONVERSION)            \
+    AM_DISABLE_WARNING(AM_W_FLOAT_CONVERSION)           \
+    AM_DISABLE_WARNING(AM_W_FLOAT_EQUAL)                \
+    AM_DISABLE_WARNING(AM_W_UNUSED_MACROS)              \
+    AM_DISABLE_WARNING(AM_W_IMPLICIT_FALLTHROUGH)       \
+    AM_DISABLE_WARNING(AM_W_STRICT_PROTOTYPES)          \
+    AM_DISABLE_WARNING(AM_W_EXPANSION_TO_DEFINED)       \
+    AM_DISABLE_WARNING(AM_W_DOUBLE_PROMOTION)           \
+    AM_DISABLE_WARNING_MISSING_VARIABLE_DECLARATIONS()  \
+    AM_DISABLE_WARNING_RESERVED_ID_MACRO()              \
+    AM_DISABLE_WARNING(AM_W_PADDED)                     \
+    AM_DISABLE_WARNING(AM_W_INLINE)                     \
+    AM_DISABLE_WARNING(AM_W_OLD_STYLE_DEFINITION)       \
+    AM_DISABLE_WARNING(AM_W_NESTED_EXTERNS)             \
+    AM_DISABLE_WARNING(AM_W_ATTRIBUTES)                 \
+    AM_DISABLE_WARNING(AM_W_PACKED)                     \
+    AM_DISABLE_WARNING(AM_W_DATE_TIME)                  \
+    AM_DISABLE_WARNING(AM_W_NULL_DEREFERENCE)
 
-/** Re-enable warnings disabled by A1A1DISABLE_WARNINGS() */
-#define A1ENABLE_WARNINGS()                          \
-    A1ENABLE_WARNING(A1W_PEDANTIC)                   \
-    A1ENABLE_WARNING(A1W_SHADOW)                     \
-    A1ENABLE_WARNING(A1W_FORMAT)                     \
-    A1ENABLE_WARNING(A1W_REDUNDANT_DECLS)            \
-    A1ENABLE_WARNING(A1W_MISSING_PROTOTYPES)         \
-    A1ENABLE_WARNING(A1W_CAST_ALIGN)                 \
-    A1ENABLE_WARNING(A1W_CAST_QUAL)                  \
-    A1ENABLE_WARNING(A1W_MISSING_NORETURN)           \
-    A1ENABLE_WARNING_IMPLICIT_FUNCTION_DECLARATION() \
-    A1ENABLE_WARNING(A1W_STRICT_OVERFLOW)            \
-    A1ENABLE_WARNING(A1W_UNDEF)                      \
-    A1ENABLE_WARNING_DISCARDED_QUALIFIERS()          \
-    A1ENABLE_WARNING(A1W_WRITE_STRINGS)              \
-    A1ENABLE_WARNING(A1W_SWITCH_DEFAULT)             \
-    A1ENABLE_WARNING(A1W_SWITCH_ENUM)                \
-    A1ENABLE_WARNING_SUGGEST_ATTRIBUTE_NORETURN()    \
-    A1ENABLE_WARNING(A1W_UNUSED_PARAMETER)           \
-    A1ENABLE_WARNING(A1W_UNUSED_FUNCTION)            \
-    A1ENABLE_WARNING(A1W_MISSING_FIELD_INITIALIZERS) \
-    A1ENABLE_WARNING(A1W_CONVERSION)                 \
-    A1ENABLE_WARNING(A1W_SIGN_CONVERSION)            \
-    A1ENABLE_WARNING(A1W_FLOAT_CONVERSION)           \
-    A1ENABLE_WARNING(A1W_FLOAT_EQUAL)                \
-    A1ENABLE_WARNING(A1W_UNUSED_MACROS)              \
-    A1ENABLE_WARNING(A1W_IMPLICIT_FALLTHROUGH)       \
-    A1ENABLE_WARNING(A1W_STRICT_PROTOTYPES)          \
-    A1ENABLE_WARNING(A1W_EXPANSION_TO_DEFINED)       \
-    A1ENABLE_WARNING(A1W_DOUBLE_PROMOTION)           \
-    A1ENABLE_WARNING_MISSING_VARIABLE_DECLARATIONS() \
-    A1ENABLE_WARNING_RESERVED_ID_MACRO()             \
-    A1ENABLE_WARNING(A1W_PADDED)                     \
-    A1ENABLE_WARNING(A1W_INLINE)                     \
-    A1ENABLE_WARNING(A1W_NESTED_EXTERNS)             \
-    A1ENABLE_WARNING(A1W_ATTRIBUTES)                 \
-    A1ENABLE_WARNING(A1W_PACKED)                     \
-    A1ENABLE_WARNING(A1W_DATE_TIME)                  \
-    A1ENABLE_WARNING(A1W_NULL_DEREFERENCE)
+/** Re-enable warnings disabled by AM_AM_DISABLE_WARNINGS() */
+#define AM_ENABLE_WARNINGS()                           \
+    AM_ENABLE_WARNING(AM_W_PEDANTIC)                   \
+    AM_ENABLE_WARNING(AM_W_SHADOW)                     \
+    AM_ENABLE_WARNING(AM_W_FORMAT)                     \
+    AM_ENABLE_WARNING(AM_W_REDUNDANT_DECLS)            \
+    AM_ENABLE_WARNING(AM_W_MISSING_PROTOTYPES)         \
+    AM_ENABLE_WARNING(AM_W_CAST_ALIGN)                 \
+    AM_ENABLE_WARNING(AM_W_CAST_QUAL)                  \
+    AM_ENABLE_WARNING(AM_W_MISSING_NORETURN)           \
+    AM_ENABLE_WARNING_IMPLICIT_FUNCTION_DECLARATION()  \
+    AM_ENABLE_WARNING(AM_W_STRICT_OVERFLOW)            \
+    AM_ENABLE_WARNING(AM_W_UNDEF)                      \
+    AM_ENABLE_WARNING_DISCARDED_QUALIFIERS()           \
+    AM_ENABLE_WARNING(AM_W_WRITE_STRINGS)              \
+    AM_ENABLE_WARNING(AM_W_SWITCH_DEFAULT)             \
+    AM_ENABLE_WARNING(AM_W_SWITCH_ENUM)                \
+    AM_ENABLE_WARNING_SUGGEST_ATTRIBUTE_NORETURN()     \
+    AM_ENABLE_WARNING(AM_W_UNUSED_PARAMETER)           \
+    AM_ENABLE_WARNING(AM_W_UNUSED_FUNCTION)            \
+    AM_ENABLE_WARNING(AM_W_MISSING_FIELD_INITIALIZERS) \
+    AM_ENABLE_WARNING(AM_W_CONVERSION)                 \
+    AM_ENABLE_WARNING(AM_W_SIGN_CONVERSION)            \
+    AM_ENABLE_WARNING(AM_W_FLOAT_CONVERSION)           \
+    AM_ENABLE_WARNING(AM_W_FLOAT_EQUAL)                \
+    AM_ENABLE_WARNING(AM_W_UNUSED_MACROS)              \
+    AM_ENABLE_WARNING(AM_W_IMPLICIT_FALLTHROUGH)       \
+    AM_ENABLE_WARNING(AM_W_STRICT_PROTOTYPES)          \
+    AM_ENABLE_WARNING(AM_W_EXPANSION_TO_DEFINED)       \
+    AM_ENABLE_WARNING(AM_W_DOUBLE_PROMOTION)           \
+    AM_ENABLE_WARNING_MISSING_VARIABLE_DECLARATIONS()  \
+    AM_ENABLE_WARNING_RESERVED_ID_MACRO()              \
+    AM_ENABLE_WARNING(AM_W_PADDED)                     \
+    AM_ENABLE_WARNING(AM_W_INLINE)                     \
+    AM_ENABLE_WARNING(AM_W_NESTED_EXTERNS)             \
+    AM_ENABLE_WARNING(AM_W_ATTRIBUTES)                 \
+    AM_ENABLE_WARNING(AM_W_PACKED)                     \
+    AM_ENABLE_WARNING(AM_W_DATE_TIME)                  \
+    AM_ENABLE_WARNING(AM_W_NULL_DEREFERENCE)
 
-#if (A1COMPILER_ID == A1COMPILER_CLANG)
-#define A1DISABLE_WARNING(warning) \
-    A1DIAG_PRAGMA(clang, push)     \
-    A1DIAG_PRAGMA(clang, ignored A1JOINSTR_(-W, warning))
-#define A1ENABLE_WARNING(warning) A1DIAG_PRAGMA(clang, pop)
+#if (AM_COMPILER_ID == AM_COMPILER_CLANG)
+#define AM_DISABLE_WARNING(warning) \
+    AM_DIAG_PRAGMA(clang, push)     \
+    AM_DIAG_PRAGMA(clang, ignored AM_JOINSTR_(-W, warning))
+#define AM_ENABLE_WARNING(warning) AM_DIAG_PRAGMA(clang, pop)
 #elif defined(_MSC_VER)
-#define A1DISABLE_WARNING(warning) \
-    A1DIAG_PRAGMA(msvc, push)      \
-    A1DIAG_DO_PRAGMA(warning(disable :##warning))
-#define A1ENABLE_WARNING(warning) A1DIAG_PRAGMA(msvc, pop)
-#elif (A1COMPILER_ID == A1COMPILER_GCC)
+#define AM_DISABLE_WARNING(warning) \
+    AM_DIAG_PRAGMA(msvc, push)      \
+    AM_DIAG_DO_PRAGMA(warning(disable :##warning))
+#define AM_ENABLE_WARNING(warning) AM_DIAG_PRAGMA(msvc, pop)
+#elif (AM_COMPILER_ID == AM_COMPILER_GCC)
 #if ((__GNUC__ * 100) + __GNUC_MINOR__) >= 406
-#define A1DISABLE_WARNING(warning) \
-    A1DIAG_PRAGMA(GCC, push)       \
-    A1DIAG_PRAGMA(GCC, ignored A1JOINSTR_(-W, warning))
-#define A1ENABLE_WARNING(warning) A1DIAG_PRAGMA(GCC, pop)
+#define AM_DISABLE_WARNING(warning) \
+    AM_DIAG_PRAGMA(GCC, push)       \
+    AM_DIAG_PRAGMA(GCC, ignored AM_JOINSTR_(-W, warning))
+#define AM_ENABLE_WARNING(warning) AM_DIAG_PRAGMA(GCC, pop)
 #else
-#define A1DISABLE_WARNING(warning) \
-    A1DIAG_PRAGMA(GCC, ignored A1JOINSTR_(-W, warning))
-#define A1ENABLE_WARNING(warning) \
-    A1DIAG_PRAGMA(GCC, warning A1JOINSTR_(-W, warning))
+#define AM_DISABLE_WARNING(warning) \
+    AM_DIAG_PRAGMA(GCC, ignored AM_JOINSTR_(-W, warning))
+#define AM_ENABLE_WARNING(warning) \
+    AM_DIAG_PRAGMA(GCC, warning AM_JOINSTR_(-W, warning))
 #endif /* __GNUC__ */
-#endif /* A1COMPILER_ID */
+#endif /* AM_COMPILER_ID */
 
 /* taken from https://github.com/sustrik/libdill */
 /*! @cond Doxygen_Suppress */
@@ -460,7 +463,7 @@ typedef int ssize_t;
 /* Taken from https://github.com/sustrik/libdill */
 /* Workaround missing __rdtsc in Clang < 3.5 (or Clang < 6.0 on Xcode) */
 #if defined(__x86_64__) || defined(__i386__)
-#if (A1COMPILER_ID == A1COMPILER_CLANG)
+#if (AM_COMPILER_ID == AM_COMPILER_CLANG)
 #if (!defined(__apple_build_version__) &&                    \
      ((__clang_major__ < 3) ||                               \
       ((__clang_major__ == 3) && (__clang_minor__ < 5)))) || \
@@ -480,13 +483,13 @@ static inline unsigned long long __rdtsc() {
 #endif /* #if defined __clang__ */
 #endif /* #if defined(__x86_64__) || defined(__i386__) */
 
-#if A1COMPILER_ID == A1COMPILER_GCC
+#if AM_COMPILER_ID == AM_COMPILER_GCC
 /** Disables compiler reordering.
     See
     http://stackoverflow.com/questions/13540810/compile-time-barriers-compiler-code-reordering-gcc-and-pthreads#13544831
     for details */
-#define A1COMPILER_BARRIER() asm volatile("" : : : "memory")
-#endif /* A1COMPILER_ID */
+#define AM_COMPILER_BARRIER() asm volatile("" : : : "memory")
+#endif /* AM_COMPILER_ID */
 
 /* static assert */
 /* clang-format off */
@@ -494,30 +497,30 @@ static inline unsigned long long __rdtsc() {
    http://stackoverflow.com/questions/3385515/static-assert-in-c */
 
 /** Compile time assert helper */
-#define A1COMPILE_TIME_ASSERT3(cond, msg) \
+#define AM_COMPILE_TIME_ASSERT3(cond, msg) \
     typedef char static_assertion_##msg[(!!(cond)) * 2 - 1]
 /** Compile time assert helper */
-#define A1COMPILE_TIME_ASSERT2(x, l) \
-    A1COMPILE_TIME_ASSERT3(x, static_assertion_at_line_##l)
+#define AM_COMPILE_TIME_ASSERT2(x, l) \
+    AM_COMPILE_TIME_ASSERT3(x, static_assertion_at_line_##l)
 /** Compile time assert helper */
-#define A1COMPILE_TIME_ASSERT(x, l) A1COMPILE_TIME_ASSERT2(x, l)
+#define AM_COMPILE_TIME_ASSERT(x, l) AM_COMPILE_TIME_ASSERT2(x, l)
 
 /** Compile time assert */
-#define A1ASSERT_STATIC(x) A1COMPILE_TIME_ASSERT(x, __LINE__)
+#define AM_ASSERT_STATIC(x) AM_COMPILE_TIME_ASSERT(x, __LINE__)
 /* clang-format on */
 
 /*! @cond Doxygen_Suppress */
-A1ASSERT_STATIC(INT_MAX == ((1ULL << (unsigned)(INT_BITS - 1)) - 1));
-A1ASSERT_STATIC(LONG_MAX == ((1ULL << (unsigned)(LONG_BITS - 1)) - 1));
+AM_ASSERT_STATIC(INT_MAX == ((1ULL << (unsigned)(INT_BITS - 1)) - 1));
+AM_ASSERT_STATIC(LONG_MAX == ((1ULL << (unsigned)(LONG_BITS - 1)) - 1));
 /*! @endcond */
 
-#if (A1COMPILER_ID == A1COMPILER_GCC) || (A1COMPILER_ID == A1COMPILER_CLANG)
-#define A1ADD_INT_OVERFLOWED(a, b, res) __builtin_sadd_overflow(a, b, &(res))
-#define A1MUL_INT_OVERFLOWED(a, b, res) __builtin_smul_overflow(a, b, &(res))
+#if (AM_COMPILER_ID == AM_COMPILER_GCC) || (AM_COMPILER_ID == AM_COMPILER_CLANG)
+#define AM_ADD_INT_OVERFLOWED(a, b, res) __builtin_sadd_overflow(a, b, &(res))
+#define AM_MUL_INT_OVERFLOWED(a, b, res) __builtin_smul_overflow(a, b, &(res))
 #else
 /** Check if integer addition overflows */
-#define A1ADD_INT_OVERFLOWED(a, b, c)                           \
-    A1EXTENSION({                                               \
+#define AM_ADD_INT_OVERFLOWED(a, b, c)                          \
+    AM_EXTENSION({                                              \
         unsigned res_ = (unsigned)(a) + (unsigned)(b);          \
         bool ovf_ = (res_ < (unsigned)(a)) || (res_ > INT_MAX); \
         if (!ovf_) {                                            \
@@ -527,8 +530,8 @@ A1ASSERT_STATIC(LONG_MAX == ((1ULL << (unsigned)(LONG_BITS - 1)) - 1));
     })
 
 /** Check if integer multiplication overflows */
-#define A1MUL_INT_OVERFLOWED(a, b, c)                           \
-    A1EXTENSION({                                               \
+#define AM_MUL_INT_OVERFLOWED(a, b, c)                          \
+    AM_EXTENSION({                                              \
         unsigned res_ = (unsigned)(a) * (unsigned)(b);          \
         bool ovf_ = (res_ < (unsigned)(a)) || (res_ > INT_MAX); \
         if (!ovf_) {                                            \
@@ -536,28 +539,28 @@ A1ASSERT_STATIC(LONG_MAX == ((1ULL << (unsigned)(LONG_BITS - 1)) - 1));
         }                                                       \
         ovf_;                                                   \
     })
-#endif /*A1COMPILER_ID*/
+#endif /*AM_COMPILER_ID*/
 
 /** Add integers and assert if it overflows */
-#define A1ADD_INT(a, b)                             \
-    A1EXTENSION({                                   \
-        int add_res_;                               \
-        if (A1ADD_INT_OVERFLOWED(a, b, add_res_)) { \
-            ASSERT(0); /* NOLINT */                 \
-        }                                           \
-        add_res_;                                   \
+#define AM_ADD_INT(a, b)                             \
+    AM_EXTENSION({                                   \
+        int add_res_;                                \
+        if (AM_ADD_INT_OVERFLOWED(a, b, add_res_)) { \
+            ASSERT(0); /* NOLINT */                  \
+        }                                            \
+        add_res_;                                    \
     })
 
 /** Multiply integers and assert if it overflows */
-#define A1MUL_INT(a, b)                             \
-    A1EXTENSION({                                   \
-        int mul_res_;                               \
-        if (A1MUL_INT_OVERFLOWED(a, b, mul_res_)) { \
-            ASSERT(0); /* NOLINT */                 \
-        }                                           \
-        mul_res_;                                   \
+#define AM_MUL_INT(a, b)                             \
+    AM_EXTENSION({                                   \
+        int mul_res_;                                \
+        if (AM_MUL_INT_OVERFLOWED(a, b, mul_res_)) { \
+            ASSERT(0); /* NOLINT */                  \
+        }                                            \
+        mul_res_;                                    \
     })
 
-int a1compiler_alignment(void);
+int am_compiler_alignment(void);
 
 #endif /* COMPILER_H_INCLUDED */

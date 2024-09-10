@@ -17,17 +17,17 @@ GLOSSARY
        a unique ID plus optionally some data associated with it
 
    entry event
-       an event sent to a state when the state is entered (**HSM_EVT_ENTRY**)
+       an event sent to a state when the state is entered (**AM_HSM_EVT_ENTRY**)
 
    exit event
-       an event sent to a state when the state is exited (**HSM_EVT_EXIT**)
+       an event sent to a state when the state is exited (**AM_HSM_EVT_EXIT**)
 
    init event
        an event sent to a target state when the state is entered
-       (**HSM_EVT_INIT**). It immediately follows the entry event.
+       (**AM_HSM_EVT_INIT**). It immediately follows the entry event.
 
    state
-       an event handler. A,B,C,D,E,F,hsm_top are all states
+       an event handler. A,B,C,D,E,F,am_hsm_top are all states
 
    current state
        the state which currently gets the incoming events
@@ -51,10 +51,10 @@ GLOSSARY
 
    superstate
        an HSM state that is a parent (ancestor) of one or more other states
-       (children, substates). A,B,D,hsm_top are all superstates.
+       (children, substates). A,B,D,am_hsm_top are all superstates.
 
    top (super)state
-       the ultimate root of the state hierarchy (**hsm_top()**)
+       the ultimate root of the state hierarchy (**am_hsm_top()**)
 
    substate
        a state that has a superstate as its parent (ancestor).
@@ -72,13 +72,13 @@ GLOSSARY
 
    ancestor chain
        the parent-child relation chain from a state to the top level superstate.
-       B-A-hsm_top is an ancestor chain. Same is F-hsm_top etc.
+       B-A-am_hsm_top is an ancestor chain. Same is F-am_hsm_top etc.
 
    nearest common ancestor (NCA)
        the first common ancestor in two ancestor chains.
-       For B-A-hsm_top and F-hsm_top the NCA is hsm_top.
-       For C-B-A-hsm_top and D-A-hsm_top the NCA is A.
-       For C-B-A-hsm_top and B-A-hsm_top the NCA is B.
+       For B-A-am_hsm_top and F-am_hsm_top the NCA is am_hsm_top.
+       For C-B-A-am_hsm_top and D-A-am_hsm_top the NCA is A.
+       For C-B-A-am_hsm_top and B-A-am_hsm_top the NCA is B.
 
    topology
        HSM topology is the architecture of HSM - the set of all parent -
@@ -93,7 +93,7 @@ inheritance - behavioral inheritance. The parent-child relationship between
 states impacts both event handling and transitions.
 
 The HSM is a combination of one or more state-handler functions of
-type **hsm_state_fn**.
+type **am_hsm_state_fn**.
 
 EXAMPLE HSM
 ===========
@@ -105,8 +105,8 @@ consider the below state machine:
 
        +----------------------------------------------+
        |                                              |
-       |                hsm_top                       |
-       |      (HSM top superstate hsm_top())          |
+       |                am_hsm_top                    |
+       |      (HSM top superstate am_hsm_top())       |
        |                                              |
        |  +---------------------------------+  +---+  |
        |  |  A                              |  | F |  |
@@ -128,7 +128,7 @@ STATE RELATIONS
 
 States B and D are children of A. States C and E are children of B and D,
 respectively.  State F has no children. Both A and F have the default parent
-hsm_top provided by the framework (**hsm_top()**).
+am_hsm_top provided by the framework (**am_hsm_top()**).
 
 EVENT PROPAGATION
 =================
@@ -139,19 +139,19 @@ chooses to consume the event then event handling ends with the state. If,
 however, the state chooses to pass, then the event will be sent to the state's
 parent. At this point the parent must make the same decision. Event handling
 ends when the state or one of its ancestors consumes the event or the event
-reaches the default superstate **hsm_top()**. The default top level
-superstate **hsm_top()** always returns **HSM_RC_HANDLED** for all events.
+reaches the default superstate **am_hsm_top()**. The default top level
+superstate **am_hsm_top()** always returns **AM_HSM_RC_HANDLED** for all events.
 
 Assume that the state C shown above is active and an event is sent to the
 state machine. State C will be the first state to receive this event. If it
 chooses to pass then, the event will be sent to state B, its direct parent. If
 state B also chooses to pass then the event will finally be sent to state
-A. If A chooses to pass then event is consumed by **hsm_top()**.
+A. If A chooses to pass then event is consumed by **am_hsm_top()**.
 
 To inform the framework that an event is handled the event handler function
-must return **HSM_HANDLED()**.
+must return **AM_HSM_HANDLED()**.
 To inform the framework that an event is passed to a superstate the event
-handler function must return **HSM_SUPER(superstate)**.
+handler function must return **AM_HSM_SUPER(superstate)**.
 
 STATE TRANSITION
 ================
@@ -177,7 +177,7 @@ and B and then entry events are sent to D and E. Then the init event is sent
 to E.
 
 If B is the current state and F is the target state, then the NCA
-is the default top level state hsm_top, so exit events are sent to B and A
+is the default top level state am_hsm_top, so exit events are sent to B and A
 and then an entry event is sent to F. Then the init event is sent to F.
 
 If C is the current state and the target state, this exercises the special
@@ -194,9 +194,9 @@ init event is sent to A. Please note that the state A is not exited in
 this case.
 
 To initiate a transition the state handler function must return
-**HSM_TRAN(target_state)** or **HSM_TRAN_REDISPATCH(target_state)**.
+**AM_HSM_TRAN(target_state)** or **AM_HSM_TRAN_REDISPATCH(target_state)**.
 
-If state handler function returns **HSM_TRAN_REDISPATCH(target_state)**,
+If state handler function returns **AM_HSM_TRAN_REDISPATCH(target_state)**,
 then the transition is executed first and then the same event is
 dispatched to the new current state. This is a convenience feature,
 that allows HSM to handle the event in the state that expects it.
@@ -232,15 +232,15 @@ HSM INITIALIZATION
 HSM initialization is divided into the following two steps for increased
 flexibility and better control of the initialization timeline:
 
-1. the state machine constructor (**hsm_ctor()**)
-2. the top-most initial transition (**hsm_init()**).
+1. the state machine constructor (**am_hsm_ctor()**)
+2. the top-most initial transition (**am_hsm_init()**).
 
 HSM TOPOLOGY
 ============
 
-HSM framework discovers the HSM topology by sending **HSM_EVT_EMPTY** event
+HSM framework discovers the HSM topology by sending **AM_HSM_EVT_EMPTY** event
 to state event handlers. The state event handlers should explicitly process
-the event and always return **HSM_SUPER(superstate)** in response.
+the event and always return **AM_HSM_SUPER(superstate)** in response.
 
 TRANSITION TO HISTORY
 =====================
@@ -251,25 +251,25 @@ certain use cases. It does not require to use any dedicated HSM API.
 Given the example HSM above the transition to history technique can be
 demonstrated as follows. Assume that the HSM is in the state B.
 The user code stores the current state in a local variable of type
-**struct hsm_state**. This is done with:
+**struct am_hsm_state**. This is done with:
 
 .. code-block:: C
 
    struct foo {
        struct hsm hsm;
        ...
-       struct hsm_state history;
+       struct am_hsm_state history;
        ...
    };
    ...
-   static enum hsm_rc B(struct oven *me, const struct event *event) {
+   static enum am_hsm_rc B(struct oven *me, const struct event *event) {
        switch (event->id) {
-       case HSM_EVT_ENTRY:
-           me->history  = HSM_STATE(B);
-           return HSM_HANLDED();
+       case AM_HSM_EVT_ENTRY:
+           me->history  = AM_HSM_STATE(B);
+           return AM_HSM_HANLDED();
        ...
        }
-       return HSM_SUPER(A);
+       return AM_HSM_SUPER(A);
    }
 
 Then the transition to state F happens, which is then followed by a request
@@ -278,13 +278,13 @@ in **me->history** it can be achieved by doing this:
 
 .. code-block:: C
 
-   static enum hsm_rc F(struct oven *me, const struct event *event) {
+   static enum am_hsm_rc F(struct oven *me, const struct event *event) {
        switch (event->id) {
        case HSM_EVT_FOO:
-           return HSM_TRAN(me->history.fn, me->history.instance);
+           return AM_HSM_TRAN(me->history.fn, me->history.instance);
        ...
        }
-       return HSM_SUPER(hsm_top);
+       return AM_HSM_SUPER(am_hsm_top);
    }
 
 So, that is essentially all about it.
@@ -307,8 +307,8 @@ It shows two instances of S1 called S1/0 and S1/1.
 
             *
        +----|----------------------------------+
-       |    |          hsm_top                 |
-       |    | (HSM top superstate hsm_top())   |
+       |    |          am_hsm_top              |
+       |    | (HSM top superstate am_hsm_top())|
        |    |                                  |
        |  +-v-------------------------------+  |
        |  |               s                 |  |
@@ -334,49 +334,49 @@ Here is how it is coded in pseudocode:
    #define S1_0 0
    #define S1_1 1
 
-   static enum hsm_rc s(struct oven *me, const struct event *event) {
+   static enum am_hsm_rc s(struct oven *me, const struct event *event) {
        switch (event->id) {
        case FOO:
-           return HSM_TRAN(s1, /*instance=*/S1_0);
+           return AM_HSM_TRAN(s1, /*instance=*/S1_0);
        case BAR:
-           return HSM_TRAN(s1, /*instance=*/S1_1);
+           return AM_HSM_TRAN(s1, /*instance=*/S1_1);
        case BAZ:
-           return HSM_TRAN(s);
+           return AM_HSM_TRAN(s);
        ...
        }
-       return HSM_SUPER(hsm_top);
+       return AM_HSM_SUPER(am_hsm_top);
    }
 
-   static enum hsm_rc s1(struct oven *me, const struct event *event) {
+   static enum am_hsm_rc s1(struct oven *me, const struct event *event) {
        switch (event->id) {
-       case HSM_EVT_INIT: {
-           static const struct hsm_state tt[] = {
-               [S1_0] = {.fn = HSM_STATE_FN(s2)},
-               [S1_1] = {.fn = HSM_STATE_FN(s3)}
+       case AM_HSM_EVT_INIT: {
+           static const struct am_hsm_state tt[] = {
+               [S1_0] = {.fn = AM_HSM_STATE_FN(s2)},
+               [S1_1] = {.fn = AM_HSM_STATE_FN(s3)}
            };
-           int instance = hsm_get_state_instance(&me->hsm);
-           ASSERT(instance < ARRAY_SIZE(tt));
-           return HSM_TRAN(tt[instance].fn);
+           int instance = am_hsm_get_state_instance(&me->hsm);
+           ASSERT(instance < AM_COUNTOF(tt));
+           return AM_HSM_TRAN(tt[instance].fn);
        }
        ...
        }
-       return HSM_SUPER(s);
+       return AM_HSM_SUPER(s);
    }
 
-   static enum hsm_rc s2(struct oven *me, const struct event *event) {
+   static enum am_hsm_rc s2(struct oven *me, const struct event *event) {
        ...
-       return HSM_SUPER(s1, S1_0);
+       return AM_HSM_SUPER(s1, S1_0);
    }
 
-   static enum hsm_rc s3(struct oven *me, const struct event *event) {
+   static enum am_hsm_rc s3(struct oven *me, const struct event *event) {
        ...
-       return HSM_SUPER(s1, S1_1);
+       return AM_HSM_SUPER(s1, S1_1);
    }
 
 Please note that any transitions between states within submachines as well as
-all references to any submachine state via **HSM_SUPER()**  must be done
+all references to any submachine state via **AM_HSM_SUPER()**  must be done
 with explicit specification of state instance, which can be retrieved by
-calling **hsm_get_state_instance()** API.
+calling **am_hsm_get_state_instance()** API.
 
 The complete implementation of the given submachine example can be found
 in **test/submachine/basic/test.c**

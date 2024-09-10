@@ -25,7 +25,7 @@
 #ifndef SUBMACHINE_H_INCLUDED
 #define SUBMACHINE_H_INCLUDED
 
-extern struct a1hsm *g_submachine;
+extern struct am_hsm *g_submachine;
 void submachine_ctor(void (*log)(char *fmt, ...));
 
 #endif /* SUBMACHINE_H_INCLUDED */

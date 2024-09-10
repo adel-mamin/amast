@@ -56,12 +56,12 @@ void test_log(char *fmt, ...) {
 static void test_hsm(void) {
     regular_ctor(test_log);
 
-    a1hsm_init(g_regular, /*init_event=*/NULL);
+    am_hsm_init(g_regular, /*init_event=*/NULL);
 
     {
         const char *out =
             "top-INIT;s-ENTRY;s2-ENTRY;s2-INIT;s21-ENTRY;s211-ENTRY;";
-        ASSERT(0 == strncmp(m_log_buf, out, strlen(out)));
+        AM_ASSERT(0 == strncmp(m_log_buf, out, strlen(out)));
         m_log_buf[0] = '\0';
     }
 
@@ -99,18 +99,18 @@ static void test_hsm(void) {
         /* clang-format on */
     };
 
-    for (int i = 0; i < COUNTOF(in); i++) {
+    for (int i = 0; i < AM_COUNTOF(in); i++) {
         struct event e = {.id = in[i].evt};
-        a1hsm_dispatch(g_regular, &e);
-        ASSERT(0 == strncmp(m_log_buf, in[i].out, strlen(in[i].out)));
+        am_hsm_dispatch(g_regular, &e);
+        AM_ASSERT(0 == strncmp(m_log_buf, in[i].out, strlen(in[i].out)));
         m_log_buf[0] = '\0';
     }
 
-    a1hsm_dtor(g_regular);
+    am_hsm_dtor(g_regular);
 
     {
         static const char *destruction = "s211-EXIT;s21-EXIT;s2-EXIT;s-EXIT;";
-        ASSERT(0 == strncmp(m_log_buf, destruction, strlen(destruction)));
+        AM_ASSERT(0 == strncmp(m_log_buf, destruction, strlen(destruction)));
         m_log_buf[0] = '\0';
     }
 }

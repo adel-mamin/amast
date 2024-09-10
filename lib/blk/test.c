@@ -39,7 +39,7 @@ int main(void) {
         struct blk a = {&adata, sizeof(adata)};
         unsigned long bdata = 1;
         struct blk b = {&bdata, sizeof(bdata)};
-        ASSERT(0 == blk_cmp(&a, &b));
+        AM_ASSERT(0 == blk_cmp(&a, &b));
     }
 
     {
@@ -47,7 +47,7 @@ int main(void) {
         struct blk a = {&adata, sizeof(adata)};
         unsigned long bdata = 2;
         struct blk b = {&bdata, sizeof(bdata)};
-        ASSERT(blk_cmp(&a, &b) < 0);
+        AM_ASSERT(blk_cmp(&a, &b) < 0);
     }
 
     {
@@ -55,7 +55,7 @@ int main(void) {
         struct blk a = {&adata, sizeof(adata)};
         unsigned long bdata = 1;
         struct blk b = {&bdata, sizeof(bdata)};
-        ASSERT(blk_cmp(&a, &b) > 0);
+        AM_ASSERT(blk_cmp(&a, &b) > 0);
     }
 
     {
@@ -63,7 +63,7 @@ int main(void) {
         struct blk a = {&adata, sizeof(adata)};
         unsigned long bdata = 1;
         struct blk b = {&bdata, sizeof(bdata)};
-        ASSERT(blk_cmp(&a, &b) < 0);
+        AM_ASSERT(blk_cmp(&a, &b) < 0);
     }
 
     return 0;

@@ -41,19 +41,19 @@
 static void string_is_true(const char *str) {
     bool val = false;
     bool isbool = str_is_bool(str, &val);
-    ASSERT(isbool && (true == val));
+    AM_ASSERT(isbool && (true == val));
 }
 
 static void string_is_false(const char *str) {
     bool val = true;
     bool isbool = str_is_bool(str, &val);
-    ASSERT(isbool && (false == val));
+    AM_ASSERT(isbool && (false == val));
 }
 
 static void string_is_not_bool(const char *str) {
     bool val = true;
     bool isbool = str_is_bool(str, &val);
-    ASSERT(!isbool);
+    AM_ASSERT(!isbool);
 }
 
 static void test_str_is_bool(void) {
@@ -71,9 +71,11 @@ static void test_str_is_bool(void) {
     string_is_not_bool("tru");
 }
 
-static void string_is_null(const char *str) { ASSERT(str_is_null(str)); }
+static void string_is_null(const char *str) { AM_ASSERT(str_is_null(str)); }
 
-static void string_is_not_null(const char *str) { ASSERT(!str_is_null(str)); }
+static void string_is_not_null(const char *str) {
+    AM_ASSERT(!str_is_null(str));
+}
 
 static void test_str_is_null(void) {
     string_is_null("null");
@@ -89,13 +91,13 @@ static void test_str_is_null(void) {
 static void string_is_int(const char *str, intmax_t expected_val) {
     intmax_t val = 0;
     bool is_int = str_is_decimal(str, &val);
-    ASSERT(is_int && (val == expected_val));
+    AM_ASSERT(is_int && (val == expected_val));
 }
 
 static void string_is_not_int(const char *str) {
     intmax_t val = 0;
     bool is_int = str_is_decimal(str, &val);
-    ASSERT(!is_int);
+    AM_ASSERT(!is_int);
 }
 
 static void test_str_is_int(void) {
@@ -112,22 +114,22 @@ static void test_str_is_int(void) {
 static void string_is_double(const char *str, double expected_val) {
     double val = 0;
     bool is_double = str_is_double(str, &val);
-    ASSERT(is_double);
-    A1DISABLE_WARNING(A1W_DOUBLE_PROMOTION)
-    if (isnan((float)val)) {                /* NOLINT */
-        ASSERT(isnan((float)expected_val)); /* NOLINT */
-    } else if (isinf((float)val)) {         /* NOLINT */
-        ASSERT(isinf((float)expected_val)); /* NOLINT */
+    AM_ASSERT(is_double);
+    AM_DISABLE_WARNING(AM_W_DOUBLE_PROMOTION)
+    if (isnan((float)val)) {                   /* NOLINT */
+        AM_ASSERT(isnan((float)expected_val)); /* NOLINT */
+    } else if (isinf((float)val)) {            /* NOLINT */
+        AM_ASSERT(isinf((float)expected_val)); /* NOLINT */
     } else {
-        /* ASSERT(is_double && SAME_ALMOST(val, expected_val)); */
+        /* AM_ASSERT(is_double && SAME_ALMOST(val, expected_val)); */
     }
-    A1ENABLE_WARNING(A1W_DOUBLE_PROMOTION)
+    AM_ENABLE_WARNING(AM_W_DOUBLE_PROMOTION)
 }
 
 static void string_is_not_double(const char *str) {
     double val = 0;
     bool is_double = str_is_double(str, &val);
-    ASSERT(!is_double);
+    AM_ASSERT(!is_double);
 }
 
 static void test_str_is_double(void) {
@@ -149,13 +151,13 @@ static void test_str_is_double(void) {
 static void string_is_hex(const char *str, intmax_t expected_val) {
     intmax_t val = 0;
     bool is_hex = str_is_hex(str, &val);
-    ASSERT(is_hex && (val == expected_val));
+    AM_ASSERT(is_hex && (val == expected_val));
 }
 
 static void string_is_not_hex(const char *str) {
     intmax_t val = 0;
     bool is_hex = str_is_hex(str, &val);
-    ASSERT(!is_hex);
+    AM_ASSERT(!is_hex);
 }
 
 static void test_str_is_hex(void) {
@@ -172,13 +174,13 @@ static void test_str_is_hex(void) {
 static void string_is_binary(const char *str, intmax_t expected_val) {
     intmax_t val = 0;
     bool is_binary = str_is_binary(str, &val);
-    ASSERT(is_binary && (val == expected_val));
+    AM_ASSERT(is_binary && (val == expected_val));
 }
 
 static void string_is_not_binary(const char *str) {
     intmax_t val = 0;
     bool is_binary = str_is_binary(str, &val);
-    ASSERT(!is_binary);
+    AM_ASSERT(!is_binary);
 }
 
 static void test_str_is_binary(void) {
@@ -199,13 +201,13 @@ static void test_str_is_binary(void) {
 static void string_is_octal(const char *str, intmax_t expected_val) {
     intmax_t val = 0;
     bool is_octal = str_is_octal(str, &val);
-    ASSERT(is_octal && (val == expected_val));
+    AM_ASSERT(is_octal && (val == expected_val));
 }
 
 static void string_is_not_octal(const char *str) {
     intmax_t val = 0;
     bool is_octal = str_is_octal(str, &val);
-    ASSERT(!is_octal);
+    AM_ASSERT(!is_octal);
 }
 
 static void test_str_is_octal(void) {
@@ -225,8 +227,8 @@ static void test_str_is_octal(void) {
 static void binstr_for_is(const char *str, uintmax_t uintmax) {
     char buf[128];
     int written = uintmax_to_binstr(buf, sizeof(buf), uintmax);
-    ASSERT(written == (int)strlen(str));
-    ASSERT(0 == strcmp(str, buf));
+    AM_ASSERT(written == (int)strlen(str));
+    AM_ASSERT(0 == strcmp(str, buf));
 }
 
 static void test_uintmax_to_binstr(void) {
@@ -241,34 +243,34 @@ static void test_str_sep(void) {
     const char delim[] = ":";
     char *ctx = &str[0];
     char *res = str_sep(&ctx, delim);
-    ASSERT(res == NULL);
+    AM_ASSERT(res == NULL);
 }
 
 static void test_str_has_prefix(void) {
-    ASSERT(str_has_prefix("string", ""));
-    ASSERT(str_has_prefix("string", "s"));
-    ASSERT(!str_has_prefix("string", "S"));
-    ASSERT(str_has_prefix("string", "string"));
-    ASSERT(!str_has_prefix("string", "stringg"));
+    AM_ASSERT(str_has_prefix("string", ""));
+    AM_ASSERT(str_has_prefix("string", "s"));
+    AM_ASSERT(!str_has_prefix("string", "S"));
+    AM_ASSERT(str_has_prefix("string", "string"));
+    AM_ASSERT(!str_has_prefix("string", "stringg"));
 }
 
 static void test_str_skip_prefix(void) {
     {
         const char *str = str_skip_prefix("string", "");
-        ASSERT(str);
-        ASSERT(0 == strcmp("string", str));
+        AM_ASSERT(str);
+        AM_ASSERT(0 == strcmp("string", str));
     }
 
     {
         const char *str = str_skip_prefix("string", "s");
-        ASSERT(str);
-        ASSERT(0 == strcmp("tring", str));
+        AM_ASSERT(str);
+        AM_ASSERT(0 == strcmp("tring", str));
     }
 
     {
         const char *str = str_skip_prefix("string", "string");
-        ASSERT(str);
-        ASSERT(0 == strlen(str));
+        AM_ASSERT(str);
+        AM_ASSERT(0 == strlen(str));
     }
 }
 
@@ -276,17 +278,17 @@ static void test_str_add_prefix(void) {
     {
         char out[3];
         char *res = str_add_prefix(out, 3, "s", "p");
-        ASSERT('p' == res[0]);
-        ASSERT('s' == res[1]);
-        ASSERT(0 == res[2]);
+        AM_ASSERT('p' == res[0]);
+        AM_ASSERT('s' == res[1]);
+        AM_ASSERT(0 == res[2]);
     }
 
     {
         char out[3];
         char *res = str_add_prefix(out, 3, "s", "prefix");
-        ASSERT('p' == res[0]);
-        ASSERT('r' == res[1]);
-        ASSERT(0 == res[2]);
+        AM_ASSERT('p' == res[0]);
+        AM_ASSERT('r' == res[1]);
+        AM_ASSERT(0 == res[2]);
     }
 }
 
@@ -316,14 +318,14 @@ static void test_split_path(void) {
         {{-1, -1}, { 0,  4}, ".d.."},
         /* clang-format on */
     };
-    for (int i = 0; i < COUNTOF(t); i++) {
+    for (int i = 0; i < AM_COUNTOF(t); i++) {
         struct str_token head;
         struct str_token tail;
         str_split_path(t[i].path, &head, &tail, delim);
-        ASSERT(t[i].head.start == head.start);
-        ASSERT(t[i].head.end == head.end);
-        ASSERT(t[i].tail.start == tail.start);
-        ASSERT(t[i].tail.end == tail.end);
+        AM_ASSERT(t[i].head.start == head.start);
+        AM_ASSERT(t[i].head.end == head.end);
+        AM_ASSERT(t[i].tail.start == tail.start);
+        AM_ASSERT(t[i].tail.end == tail.end);
     }
 }
 
@@ -332,15 +334,15 @@ static void test_lcat_path(void) {
         char head[16] = "/a";
         char tail[16] = "b";
         int rc = str_lcat_path(head, tail, sizeof(head), '/');
-        ASSERT(4 == rc);
-        ASSERT(0 == strncmp(head, "/a/b", 4));
+        AM_ASSERT(4 == rc);
+        AM_ASSERT(0 == strncmp(head, "/a/b", 4));
     }
     {
         char head[16] = "/a/";
         char tail[16] = "b";
         int rc = str_lcat_path(head, tail, sizeof(head), '/');
-        ASSERT(4 == rc);
-        ASSERT(0 == strncmp(head, "/a/b", 4));
+        AM_ASSERT(4 == rc);
+        AM_ASSERT(0 == strncmp(head, "/a/b", 4));
     }
 }
 

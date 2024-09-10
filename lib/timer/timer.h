@@ -56,7 +56,7 @@ struct event_timer {
     /** event descriptor */
     struct event event;
     /** to link time events together */
-    struct a1dlist_item item;
+    struct am_dlist_item item;
     /** the object, who receives the event */
     void *owner;
     /** the event is sent after this many ticks */
@@ -70,7 +70,7 @@ struct event_timer {
 #define TICK_DOMAIN_MAX 1
 #endif
 
-A1ASSERT_STATIC(TICK_DOMAIN_MAX < (1U << EVENT_TICK_DOMAIN_BITS));
+AM_ASSERT_STATIC(TICK_DOMAIN_MAX < (1U << EVENT_TICK_DOMAIN_BITS));
 
 /** Timer module descriptor. */
 struct timer {
@@ -79,7 +79,7 @@ struct timer {
      * Each domain comprises a list of the timer events,
      * which belong to this domain.
      */
-    struct a1dlist domains[TICK_DOMAIN_MAX];
+    struct am_dlist domains[TICK_DOMAIN_MAX];
     /** timer module configuration */
     struct timer_cfg cfg;
 };

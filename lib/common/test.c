@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017,2018,2020,2021 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,32 +49,36 @@ struct test_align {
     unsigned long long d;
 };
 
-A1ASSERT_STATIC(A1_ALIGNOF(struct test_align) >= sizeof(unsigned long long));
-A1ASSERT_STATIC(16 == A1_ALIGN_SIZE(1u, 16u));
-A1ASSERT_STATIC(16 == A1_ALIGN_SIZE(16u, 16u));
+AM_ASSERT_STATIC(AM_ALIGNOF(struct test_align) >= sizeof(unsigned long long));
+AM_ASSERT_STATIC(16 == AM_ALIGN_SIZE(1u, 16u));
+AM_ASSERT_STATIC(16 == AM_ALIGN_SIZE(16u, 16u));
 
 int main(void) {
     unsigned long data = 0;
-    ASSERT(A1_ALIGNOF_PTR(&data) >= 4);
+    AM_ASSERT(AM_ALIGNOF_PTR(&data) >= 4);
 
     {
         uintptr_t ptr = 0x10;
-        ASSERT(0x10 == A1CAST(uintptr_t, A1_ALIGN_PTR_UP((void *)ptr, 16)));
+        AM_ASSERT(0x10 == AM_CAST(uintptr_t, AM_ALIGN_PTR_UP((void *)ptr, 16)));
     }
 
     {
         uintptr_t ptr = 0x1F;
-        ASSERT(0x20 == A1CAST(uintptr_t, A1_ALIGN_PTR_UP((void *)ptr, 16)));
+        AM_ASSERT(0x20 == AM_CAST(uintptr_t, AM_ALIGN_PTR_UP((void *)ptr, 16)));
     }
 
     {
         uintptr_t ptr = 0x10;
-        ASSERT(0x10 == A1CAST(uintptr_t, A1_ALIGN_PTR_DOWN((void *)ptr, 16)));
+        AM_ASSERT(
+            0x10 == AM_CAST(uintptr_t, AM_ALIGN_PTR_DOWN((void *)ptr, 16))
+        );
     }
 
     {
         uintptr_t ptr = 0x1F;
-        ASSERT(0x10 == A1CAST(uintptr_t, A1_ALIGN_PTR_DOWN((void *)ptr, 16)));
+        AM_ASSERT(
+            0x10 == AM_CAST(uintptr_t, AM_ALIGN_PTR_DOWN((void *)ptr, 16))
+        );
     }
 
     return 0;

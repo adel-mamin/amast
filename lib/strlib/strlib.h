@@ -242,7 +242,7 @@ int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap);
  * @return the total length of the string they tried to create
  *         It means the initial length of dst plus the length of src.
  */
-A1PRINTF(3, 4) int str_lcatf(char *dst, int lim, const char *fmt, ...);
+AM_PRINTF(3, 4) int str_lcatf(char *dst, int lim, const char *fmt, ...);
 
 /**
  * String tokenizer.

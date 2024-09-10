@@ -32,13 +32,13 @@
 
 #if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L))
 #include <stddef.h>
-#define A1_ALIGN_MAX A1_ALIGNOF(max_align_t)
+#define AM_ALIGN_MAX AM_ALIGNOF(max_align_t)
 #else
-#define A1_ALIGN_MAX 16
+#define AM_ALIGN_MAX 16
 #endif
 
 /** Alignment of a type */
-#define A1_ALIGNOF(type)     \
+#define AM_ALIGNOF(type)     \
     ((int)offsetof(          \
         struct {             \
             unsigned char c; \
@@ -47,17 +47,17 @@
         d                    \
     ))
 
-#define A1_ALIGNOF_PTR(ptr) (1U << (unsigned)__builtin_ctz((uintptr_t)ptr))
+#define AM_ALIGNOF_PTR(ptr) (1U << (unsigned)__builtin_ctz((uintptr_t)ptr))
 
-#define A1_ALIGN_PTR_UP(ptr, align)                           \
+#define AM_ALIGN_PTR_UP(ptr, align)                           \
     ((void *)(((uintptr_t)(ptr) + (uintptr_t)((align) - 1)) & \
               ~(uintptr_t)((align) - 1)))
 
-#define A1_ALIGN_PTR_DOWN(ptr, align) \
+#define AM_ALIGN_PTR_DOWN(ptr, align) \
     ((void *)((uintptr_t)(ptr) & ~(uintptr_t)((align) - 1)))
 
 /** The byte difference between aligned and unaligned size */
-#define A1_ALIGN_SIZE(size, align)                       \
+#define AM_ALIGN_SIZE(size, align)                       \
     ((int)(((unsigned)(size) + (unsigned)(align) - 1u) & \
            (unsigned)~(unsigned)((unsigned)(align) - 1u)))
 

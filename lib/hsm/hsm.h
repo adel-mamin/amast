@@ -72,7 +72,7 @@ extern "C" {
 /** HSM event with maximum value. */
 #define AM_HSM_EVT_MAX AM_HSM_EVT_EXIT
 
-A1ASSERT_STATIC(EVT_USER > AM_HSM_EVT_MAX);
+AM_ASSERT_STATIC(EVT_USER > AM_HSM_EVT_MAX);
 
 /**
  * HSM state handler return codes.
@@ -128,16 +128,16 @@ struct am_hsm_state {
  * Get HSM state from event handler and optionally the event handler instance.
  *
  * AM_HSM_STATE(fn)    is converted to
- *                    (struct am_hsm_state){.fn = fn, .instance = 0}
+ *                     (struct am_hsm_state){.fn = fn, .instance = 0}
  * AM_HSM_STATE(fn, i) is converted to
- *                    (struct am_hsm_state){.fn = fn, .instance = i}
+ *                     (struct am_hsm_state){.fn = fn, .instance = i}
  *
  * @param fn  HSM event handler
  * @param i   HSM event handler instance. Used by submachines. Default is 0.
  * @return HSM state structure
  */
 #define AM_HSM_STATE(...) \
-    A1GET_MACRO_2_(__VA_ARGS__, AM_STATE2_, AM_STATE1_, _)(__VA_ARGS__)
+    AM_GET_MACRO_2_(__VA_ARGS__, AM_STATE2_, AM_STATE1_, _)(__VA_ARGS__)
 
 /** HSM state */
 struct am_hsm {
@@ -180,12 +180,12 @@ struct am_hsm {
  * @param i  the new state submachine instance (optional, default is 0)
  */
 #define AM_HSM_TRAN(...) \
-    A1GET_MACRO_2_(__VA_ARGS__, AM_TRAN2_, AM_TRAN1_, _)(__VA_ARGS__)
+    AM_GET_MACRO_2_(__VA_ARGS__, AM_TRAN2_, AM_TRAN1_, _)(__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
 #define AM_TRAN_REDISP1_(s) (AM_SET_TEMP_(s, 0), AM_HSM_RC_TRAN_REDISPATCH)
 /** Helper macro. Not to be used directly. */
-#define AM_TRAN_REDIS2_(s, i) (AM_SET_TEMP_(s, i), AM_HSM_RC_TRAN_REDISPATCH)
+#define AM_TRAN_REDISP2_(s, i) (AM_SET_TEMP_(s, i), AM_HSM_RC_TRAN_REDISPATCH)
 
 /**
  * Event redispatch is requested. Transition is taken.
@@ -194,8 +194,8 @@ struct am_hsm {
  * @param s  the new state of type #am_hsm_state_fn (mandatory)
  * @param i  the new state submachine instance (optional, default is 0)
  */
-#define AM_HSM_TRAN_REDISPATCH(...)                                    \
-    A1GET_MACRO_2_(__VA_ARGS__, AM_TRAN_REDISP2_, AM_TRAN_REDISP1_, _) \
+#define AM_HSM_TRAN_REDISPATCH(...)                                     \
+    AM_GET_MACRO_2_(__VA_ARGS__, AM_TRAN_REDISP2_, AM_TRAN_REDISP1_, _) \
     (__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
@@ -211,7 +211,7 @@ struct am_hsm {
  * @param i  the superstate submachine instance (optional, default is 0)
  */
 #define AM_HSM_SUPER(...) \
-    A1GET_MACRO_2_(__VA_ARGS__, AM_SUPER2_, AM_SUPER1_, _)(__VA_ARGS__)
+    AM_GET_MACRO_2_(__VA_ARGS__, AM_SUPER2_, AM_SUPER1_, _)(__VA_ARGS__)
 
 /**
  * Synchronous dispatch of event to the given HSM.

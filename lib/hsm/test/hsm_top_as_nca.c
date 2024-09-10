@@ -32,60 +32,60 @@
 #include "common.h"
 
 struct test {
-    struct a1hsm hsm;
+    struct am_hsm hsm;
 };
 
 static struct test m_test;
 
-/* Test a1hsm_top() as NCA. */
+/* Test am_hsm_top() as NCA. */
 
-static enum a1hsmrc s11(struct test *me, const struct event *event);
-static enum a1hsmrc s2(struct test *me, const struct event *event);
+static enum am_hsm_rc s11(struct test *me, const struct event *event);
+static enum am_hsm_rc s2(struct test *me, const struct event *event);
 
-static enum a1hsmrc s1(struct test *me, const struct event *event) {
+static enum am_hsm_rc s1(struct test *me, const struct event *event) {
     switch (event->id) {
-    case A1HSM_EVT_INIT:
-        return A1HSM_TRAN(s11);
+    case AM_HSM_EVT_INIT:
+        return AM_HSM_TRAN(s11);
     default:
         break;
     }
-    return A1HSM_SUPER(a1hsm_top);
+    return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum a1hsmrc s11(struct test *me, const struct event *event) {
+static enum am_hsm_rc s11(struct test *me, const struct event *event) {
     switch (event->id) {
     case HSM_EVT_A:
-        return A1HSM_TRAN(s2);
+        return AM_HSM_TRAN(s2);
     default:
         break;
     }
-    return A1HSM_SUPER(s1);
+    return AM_HSM_SUPER(s1);
 }
 
-static enum a1hsmrc s2(struct test *me, const struct event *event) {
+static enum am_hsm_rc s2(struct test *me, const struct event *event) {
     (void)event;
-    return A1HSM_SUPER(a1hsm_top);
+    return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum a1hsmrc sinit(struct test *me, const struct event *event) {
+static enum am_hsm_rc sinit(struct test *me, const struct event *event) {
     (void)event;
-    return A1HSM_TRAN(s1);
+    return AM_HSM_TRAN(s1);
 }
 
-static void test_a1hsm_top_as_nca(void) {
+static void test_am_hsm_top_as_nca(void) {
     struct test *me = &m_test;
-    a1hsm_ctor(&me->hsm, &A1HSM_STATE(sinit));
+    am_hsm_ctor(&me->hsm, &AM_HSM_STATE(sinit));
 
-    a1hsm_init(&me->hsm, /*init_event=*/NULL);
-    ASSERT(a1hsm_is_in(&me->hsm, &A1HSM_STATE(s11)));
+    am_hsm_init(&me->hsm, /*init_event=*/NULL);
+    AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s11)));
 
     static const struct event E = {.id = HSM_EVT_A};
-    a1hsm_dispatch(&me->hsm, &E);
-    ASSERT(a1hsm_is_in(&me->hsm, &A1HSM_STATE(s2)));
+    am_hsm_dispatch(&me->hsm, &E);
+    AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s2)));
 }
 
 int main(void) {
-    test_a1hsm_top_as_nca();
+    test_am_hsm_top_as_nca();
 
     return 0;
 }

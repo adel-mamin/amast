@@ -25,7 +25,7 @@
 #ifndef REGULAR_H_INCLUDED
 #define REGULAR_H_INCLUDED
 
-extern struct a1hsm *g_regular;
+extern struct am_hsm *g_regular;
 void regular_ctor(void (*log)(char *fmt, ...));
 
 #endif /* REGULAR_H_INCLUDED */

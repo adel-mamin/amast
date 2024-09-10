@@ -61,7 +61,7 @@ int main(void) {
     printf(ANSI_COLOR_RESET);
 
     m_log_buf[0] = '\0';
-    a1hsm_init(g_regular, /*init_event=*/NULL);
+    am_hsm_init(g_regular, /*init_event=*/NULL);
     test_print('*');
 
     static const char *blank = "        ";
@@ -97,22 +97,22 @@ int main(void) {
         c = toupper(c);
         int terminate = 'T' == c;
         int index = c - 'A';
-        int valid = (0 <= index) && (index < COUNTOF(e));
+        int valid = (0 <= index) && (index < AM_COUNTOF(e));
         if (!valid && !terminate) {
             continue;
         }
         m_log_buf[0] = '\0';
 
         if (terminate) {
-            a1hsm_dispatch(g_regular, &(struct event){.id = HSM_EVT_TERM});
+            am_hsm_dispatch(g_regular, &(struct event){.id = HSM_EVT_TERM});
             test_print(c);
             break;
         }
-        a1hsm_dispatch(g_regular, &(struct event){.id = e[index]});
+        am_hsm_dispatch(g_regular, &(struct event){.id = e[index]});
         test_print(c);
     }
     m_log_buf[0] = '\0';
-    a1hsm_dtor(g_regular);
+    am_hsm_dtor(g_regular);
     test_print('*');
 
     return 0;

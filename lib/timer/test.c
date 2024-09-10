@@ -44,8 +44,8 @@ static struct timer m_timer;
 
 static void post_cb(void *owner, const struct event *event) {
     (void)event;
-    ASSERT(owner == &m_owner);
-    ASSERT(EVT_USER == event->id);
+    AM_ASSERT(owner == &m_owner);
+    AM_ASSERT(EVT_USER == event->id);
     m_owner.npost++;
 }
 
@@ -58,7 +58,7 @@ static void test_post(void) {
     timer_event_ctor(&event, /*id=*/EVT_TEST, /*domain=*/0);
     timer_post_in_ticks(&m_timer, &event, &m_owner, 1);
     timer_tick(&m_timer, /*domain=*/0);
-    ASSERT(1 == m_owner.npost);
+    AM_ASSERT(1 == m_owner.npost);
 }
 
 int main(void) {

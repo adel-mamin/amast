@@ -51,13 +51,13 @@ static void test_submachine(void) {
 
     m_log_buf[0] = '\0';
 
-    a1hsm_init(g_submachine, /*init_event=*/NULL);
+    am_hsm_init(g_submachine, /*init_event=*/NULL);
 
     {
         const char *out =
             "top/0-INIT;s/0-ENTRY;s1/0-ENTRY;s1/1-ENTRY;s1/1-INIT;s11/"
             "1-ENTRY;s111/1-ENTRY;s111/1-INIT;";
-        ASSERT(0 == strncmp(m_log_buf, out, strlen(out)));
+        AM_ASSERT(0 == strncmp(m_log_buf, out, strlen(out)));
         m_log_buf[0] = '\0';
     }
 
@@ -100,17 +100,17 @@ static void test_submachine(void) {
         /* clang-format on */
     };
 
-    for (int i = 0; i < COUNTOF(in); i++) {
+    for (int i = 0; i < AM_COUNTOF(in); i++) {
         struct event e = {.id = in[i].evt};
-        a1hsm_dispatch(g_submachine, &e);
-        ASSERT(0 == strncmp(m_log_buf, in[i].out, strlen(in[i].out)));
+        am_hsm_dispatch(g_submachine, &e);
+        AM_ASSERT(0 == strncmp(m_log_buf, in[i].out, strlen(in[i].out)));
         m_log_buf[0] = '\0';
     }
 
     {
         static const char *dest = "s111/2-EXIT;s11/2-EXIT;s1/2-EXIT;s/0-EXIT;";
-        a1hsm_dtor(g_submachine);
-        ASSERT(0 == strncmp(m_log_buf, dest, strlen(dest)));
+        am_hsm_dtor(g_submachine);
+        AM_ASSERT(0 == strncmp(m_log_buf, dest, strlen(dest)));
         m_log_buf[0] = '\0';
     }
 }

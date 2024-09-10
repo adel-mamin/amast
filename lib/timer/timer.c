@@ -35,23 +35,23 @@
 #include "timer/timer.h"
 
 void timer_ctor(struct timer *hnd, const struct timer_cfg *cfg) {
-    ASSERT(cfg);
-    ASSERT(cfg->post);
+    AM_ASSERT(cfg);
+    AM_ASSERT(cfg->post);
 
     memset(hnd, 0, sizeof(*hnd));
-    for (int i = 0; i < COUNTOF(hnd->domains); ++i) {
-        a1dlist_init(&hnd->domains[i]);
+    for (int i = 0; i < AM_COUNTOF(hnd->domains); ++i) {
+        am_dlist_init(&hnd->domains[i]);
     }
     hnd->cfg = *cfg;
 }
 
 void timer_event_ctor(struct event_timer *event, int id, int domain) {
-    ASSERT(event);
-    ASSERT(id >= EVT_USER);
-    ASSERT(domain < TICK_DOMAIN_MAX);
+    AM_ASSERT(event);
+    AM_ASSERT(id >= EVT_USER);
+    AM_ASSERT(domain < TICK_DOMAIN_MAX);
 
     memset(event, 0, sizeof(*event));
-    a1dlist_item_init(&event->item);
+    am_dlist_item_init(&event->item);
     event->event.id = id;
     event->event.tick_domain = domain;
 }
@@ -63,19 +63,19 @@ static void timer_arm(
     int ticks,
     int interval
 ) {
-    ASSERT(hnd);
-    ASSERT(event);
+    AM_ASSERT(hnd);
+    AM_ASSERT(event);
     /* make sure it wasn't already armed */
-    ASSERT(!a1dlist_item_is_linked(&event->item));
-    ASSERT(EVENT_HAS_USER_ID(event));
-    ASSERT(event->event.tick_domain < COUNTOF(hnd->domains));
-    ASSERT(ticks >= 0);
+    AM_ASSERT(!am_dlist_item_is_linked(&event->item));
+    AM_ASSERT(EVENT_HAS_USER_ID(event));
+    AM_ASSERT(event->event.tick_domain < AM_COUNTOF(hnd->domains));
+    AM_ASSERT(ticks >= 0);
 
     event->owner = owner;
     event->shot_in_ticks = ticks;
     event->interval_ticks = interval;
     event->event.pubsub_time = owner ? false : true;
-    a1dlist_push_back(&hnd->domains[event->event.tick_domain], &event->item);
+    am_dlist_push_back(&hnd->domains[event->event.tick_domain], &event->item);
 }
 
 void timer_post_in_ticks(
@@ -103,31 +103,31 @@ void timer_publish_every_ticks(
 }
 
 bool onc_timer_disarm(struct event_timer *event) {
-    ASSERT(event);
-    ASSERT(EVENT_HAS_USER_ID(event));
+    AM_ASSERT(event);
+    AM_ASSERT(EVENT_HAS_USER_ID(event));
 
-    bool was_armed = a1dlist_pop(&event->item);
+    bool was_armed = am_dlist_pop(&event->item);
     event->shot_in_ticks = event->interval_ticks = 0;
 
     return was_armed;
 }
 
 bool timer_is_armed(const struct event_timer *event) {
-    ASSERT(event);
-    ASSERT(EVENT_HAS_USER_ID(event));
-    return a1dlist_item_is_linked(&event->item);
+    AM_ASSERT(event);
+    AM_ASSERT(EVENT_HAS_USER_ID(event));
+    return am_dlist_item_is_linked(&event->item);
 }
 
 bool timer_any_armed(const struct timer *hnd, int domain) {
-    ASSERT(hnd);
-    ASSERT(domain >= 0);
-    ASSERT(domain <= TICK_DOMAIN_MAX);
+    AM_ASSERT(hnd);
+    AM_ASSERT(domain >= 0);
+    AM_ASSERT(domain <= TICK_DOMAIN_MAX);
 
     if (domain < TICK_DOMAIN_MAX) {
-        return !a1dlist_is_empty(&hnd->domains[domain]);
+        return !am_dlist_is_empty(&hnd->domains[domain]);
     }
-    for (int i = 0; i < COUNTOF(hnd->domains); ++i) {
-        if (!a1dlist_is_empty(&hnd->domains[i])) {
+    for (int i = 0; i < AM_COUNTOF(hnd->domains); ++i) {
+        if (!am_dlist_is_empty(&hnd->domains[i])) {
             return true;
         }
     }
@@ -135,18 +135,19 @@ bool timer_any_armed(const struct timer *hnd, int domain) {
 }
 
 void timer_tick(struct timer *hnd, int domain) {
-    ASSERT(domain < COUNTOF(hnd->domains));
+    AM_ASSERT(domain < AM_COUNTOF(hnd->domains));
 
-    struct a1dlist_iterator it;
-    a1dlist_iterator_init(
-        &hnd->domains[domain], &it, /*direction=*/A1DLIST_FORWARD
+    struct am_dlist_iterator it;
+    am_dlist_iterator_init(
+        &hnd->domains[domain], &it, /*direction=*/AM_DLIST_FORWARD
     );
 
-    struct a1dlist_item *p = NULL;
-    while ((p = a1dlist_iterator_next(&it)) != NULL) {
-        struct event_timer *timer = CONTAINER_OF(p, struct event_timer, item);
+    struct am_dlist_item *p = NULL;
+    while ((p = am_dlist_iterator_next(&it)) != NULL) {
+        struct event_timer *timer =
+            AM_CONTAINER_OF(p, struct event_timer, item);
 
-        ASSERT(timer->shot_in_ticks);
+        AM_ASSERT(timer->shot_in_ticks);
         --timer->shot_in_ticks;
         if (timer->shot_in_ticks) {
             continue;
@@ -158,13 +159,13 @@ void timer_tick(struct timer *hnd, int domain) {
         if (t->interval_ticks) {
             t->shot_in_ticks = t->interval_ticks;
         } else {
-            a1dlist_iterator_pop(&it);
+            am_dlist_iterator_pop(&it);
         }
         if (t->event.pubsub_time) {
-            ASSERT(hnd->cfg.publish);
+            AM_ASSERT(hnd->cfg.publish);
             hnd->cfg.publish(&t->event);
         } else {
-            ASSERT(hnd->cfg.post);
+            AM_ASSERT(hnd->cfg.post);
             hnd->cfg.post(t->owner, &t->event);
         }
     }

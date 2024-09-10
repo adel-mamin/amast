@@ -157,7 +157,7 @@ static const unsigned long crc32_lookup[CRC32_LOOKUP_SIZE] = {
 };
 
 unsigned int crc16(const unsigned char *data, int size, unsigned int crc) {
-    ASSERT(!size || (size && (NULL != data)));
+    AM_ASSERT(!size || (size && (NULL != data)));
 
     for (int i = 0; i < size; i++) {
         int idx = 0xFFu & ((crc >> 8u) ^ *data++);
@@ -168,7 +168,7 @@ unsigned int crc16(const unsigned char *data, int size, unsigned int crc) {
 }
 
 unsigned long crc24(const unsigned char *data, int size, unsigned long crc) {
-    ASSERT(!size || (size && (NULL != data)));
+    AM_ASSERT(!size || (size && (NULL != data)));
 
     for (int i = 0; i < size; i++) {
         unsigned char index = (unsigned char)((crc >> 16u) ^ *data++);
@@ -179,12 +179,12 @@ unsigned long crc24(const unsigned char *data, int size, unsigned long crc) {
 }
 
 unsigned long crc32(const unsigned char *data, int size, unsigned long crc) {
-    ASSERT(!size || (size && (NULL != data)));
+    AM_ASSERT(!size || (size && (NULL != data)));
 
     for (int i = 0; i < size; i++) {
         unsigned int idx = (unsigned int)((crc >> 24U) ^ *data++);
         idx &= (CRC32_LOOKUP_SIZE - 1);
-        ASSERT(idx < COUNTOF(crc32_lookup));
+        AM_ASSERT(idx < AM_COUNTOF(crc32_lookup));
         crc = (crc << 8U) ^ crc32_lookup[idx];
     }
 
@@ -197,10 +197,10 @@ void crc_fletcher8(
     unsigned char *ck_a,
     unsigned char *ck_b
 ) {
-    ASSERT(data);
-    ASSERT(size > 0);
-    ASSERT(ck_a);
-    ASSERT(ck_b);
+    AM_ASSERT(data);
+    AM_ASSERT(size > 0);
+    AM_ASSERT(ck_a);
+    AM_ASSERT(ck_b);
 
     for (int i = 0; i < size; i++) {
         *ck_a = (unsigned char)(*ck_a + data[i]);

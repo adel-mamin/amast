@@ -45,99 +45,99 @@
 #define BAZ (EVT_USER + 2)
 
 struct basic {
-    struct a1hsm hsm;
+    struct am_hsm hsm;
 };
 
 static struct basic m_basic;
 
-static enum a1hsmrc s(struct basic *me, const struct event *event);
-static enum a1hsmrc s1(struct basic *me, const struct event *event);
-static enum a1hsmrc s2(struct basic *me, const struct event *event);
-static enum a1hsmrc s3(struct basic *me, const struct event *event);
+static enum am_hsm_rc s(struct basic *me, const struct event *event);
+static enum am_hsm_rc s1(struct basic *me, const struct event *event);
+static enum am_hsm_rc s2(struct basic *me, const struct event *event);
+static enum am_hsm_rc s3(struct basic *me, const struct event *event);
 
-static enum a1hsmrc s(struct basic *me, const struct event *event) {
-    ASSERT(0 == a1hsm_get_state_instance(&me->hsm));
+static enum am_hsm_rc s(struct basic *me, const struct event *event) {
+    AM_ASSERT(0 == am_hsm_get_state_instance(&me->hsm));
     switch (event->id) {
     case FOO:
-        return A1HSM_TRAN(s1, /*instance=*/S1_0);
+        return AM_HSM_TRAN(s1, /*instance=*/S1_0);
     case BAR:
-        return A1HSM_TRAN(s1, /*instance=*/S1_1);
+        return AM_HSM_TRAN(s1, /*instance=*/S1_1);
     case BAZ:
-        return A1HSM_TRAN(s);
+        return AM_HSM_TRAN(s);
     default:
         break;
     }
-    return A1HSM_SUPER(a1hsm_top);
+    return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum a1hsmrc s1(struct basic *me, const struct event *event) {
+static enum am_hsm_rc s1(struct basic *me, const struct event *event) {
     switch (event->id) {
-    case A1HSM_EVT_INIT: {
-        static const struct a1hsm_state tt[] = {
-            [S1_0] = {.fn = (a1hsm_state_fn)s2},
-            [S1_1] = {.fn = (a1hsm_state_fn)s3}
+    case AM_HSM_EVT_INIT: {
+        static const struct am_hsm_state tt[] = {
+            [S1_0] = {.fn = (am_hsm_state_fn)s2},
+            [S1_1] = {.fn = (am_hsm_state_fn)s3}
         };
-        int instance = a1hsm_get_state_instance(&me->hsm);
-        ASSERT(instance < COUNTOF(tt));
-        return A1HSM_TRAN(tt[instance].fn);
+        int instance = am_hsm_get_state_instance(&me->hsm);
+        AM_ASSERT(instance < AM_COUNTOF(tt));
+        return AM_HSM_TRAN(tt[instance].fn);
     }
     default:
         break;
     }
-    return A1HSM_SUPER(s);
+    return AM_HSM_SUPER(s);
 }
 
-static enum a1hsmrc s2(struct basic *me, const struct event *event) {
+static enum am_hsm_rc s2(struct basic *me, const struct event *event) {
     (void)event;
-    ASSERT(0 == a1hsm_get_state_instance(&me->hsm));
-    return A1HSM_SUPER(s1, S1_0);
+    AM_ASSERT(0 == am_hsm_get_state_instance(&me->hsm));
+    return AM_HSM_SUPER(s1, S1_0);
 }
 
-static enum a1hsmrc s3(struct basic *me, const struct event *event) {
+static enum am_hsm_rc s3(struct basic *me, const struct event *event) {
     (void)event;
-    ASSERT(0 == a1hsm_get_state_instance(&me->hsm));
-    return A1HSM_SUPER(s1, S1_1);
+    AM_ASSERT(0 == am_hsm_get_state_instance(&me->hsm));
+    return AM_HSM_SUPER(s1, S1_1);
 }
 
-static enum a1hsmrc sinit(struct basic *me, const struct event *event) {
+static enum am_hsm_rc sinit(struct basic *me, const struct event *event) {
     (void)event;
-    return A1HSM_TRAN(s);
+    return AM_HSM_TRAN(s);
 }
 
 static void test_basic(void) {
     struct basic *me = &m_basic;
-    a1hsm_ctor(&me->hsm, &A1HSM_STATE(sinit));
+    am_hsm_ctor(&me->hsm, &AM_HSM_STATE(sinit));
 
-    a1hsm_init(&me->hsm, /*init_event=*/NULL);
-    ASSERT(a1hsm_state_is_eq(&me->hsm, &A1HSM_STATE(s)));
+    am_hsm_init(&me->hsm, /*init_event=*/NULL);
+    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(s)));
 
     {
         struct event e = {.id = FOO};
-        a1hsm_dispatch(&me->hsm, &e);
-        ASSERT(a1hsm_is_in(&me->hsm, &A1HSM_STATE(s1, S1_0)));
-        ASSERT(!a1hsm_is_in(&me->hsm, &A1HSM_STATE(s1, S1_1)));
-        ASSERT(a1hsm_state_is_eq(&me->hsm, &A1HSM_STATE(s2)));
+        am_hsm_dispatch(&me->hsm, &e);
+        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s1, S1_0)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s1, S1_1)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(s2)));
     }
     {
         struct event e = {.id = BAZ};
-        a1hsm_dispatch(&me->hsm, &e);
-        ASSERT(!a1hsm_is_in(&me->hsm, &A1HSM_STATE(s1, S1_0)));
-        ASSERT(!a1hsm_is_in(&me->hsm, &A1HSM_STATE(s1, S1_1)));
-        ASSERT(a1hsm_state_is_eq(&me->hsm, &A1HSM_STATE(s)));
+        am_hsm_dispatch(&me->hsm, &e);
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s1, S1_0)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s1, S1_1)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(s)));
     }
     {
         struct event e = {.id = BAR};
-        a1hsm_dispatch(&me->hsm, &e);
-        ASSERT(!a1hsm_is_in(&me->hsm, &A1HSM_STATE(s1, S1_0)));
-        ASSERT(a1hsm_is_in(&me->hsm, &A1HSM_STATE(s1, S1_1)));
-        ASSERT(a1hsm_state_is_eq(&me->hsm, &A1HSM_STATE(s3)));
+        am_hsm_dispatch(&me->hsm, &e);
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s1, S1_0)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s1, S1_1)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(s3)));
     }
     {
         struct event e = {.id = BAZ};
-        a1hsm_dispatch(&me->hsm, &e);
-        ASSERT(!a1hsm_is_in(&me->hsm, &A1HSM_STATE(s1, S1_0)));
-        ASSERT(!a1hsm_is_in(&me->hsm, &A1HSM_STATE(s1, S1_1)));
-        ASSERT(a1hsm_state_is_eq(&me->hsm, &A1HSM_STATE(s)));
+        am_hsm_dispatch(&me->hsm, &e);
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s1, S1_0)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s1, S1_1)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(s)));
     }
 }
 
