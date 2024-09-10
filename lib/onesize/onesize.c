@@ -45,14 +45,16 @@
  * @param subtract  the number of allocated blocks
  * @param add the number of blocks to add to statistics
  */
-static void a1onesize_run_stats(struct a1onesize *hnd, int subtract, int add) {
+static void am_onesize_run_stats(
+    struct am_onesize *hnd, int subtract, int add
+) {
     ASSERT(hnd->nfree >= subtract);
     hnd->nfree -= subtract;
     hnd->nfree += add;
     hnd->minfree = MIN(hnd->minfree, hnd->nfree);
 }
 
-void *a1onesize_allocate(struct a1onesize *hnd, int size) {
+void *am_onesize_allocate(struct am_onesize *hnd, int size) {
     ASSERT(hnd);
     ASSERT(size >= 0);
 
@@ -60,19 +62,19 @@ void *a1onesize_allocate(struct a1onesize *hnd, int size) {
         return NULL;
     }
 
-    if (a1slist_is_empty(&hnd->fl)) {
+    if (am_slist_is_empty(&hnd->fl)) {
         return NULL;
     }
 
-    struct a1slist_item *elem = a1slist_pop_front(&hnd->fl);
+    struct am_slist_item *elem = am_slist_pop_front(&hnd->fl);
     ASSERT(elem);
 
-    a1onesize_run_stats(hnd, 1, 0);
+    am_onesize_run_stats(hnd, 1, 0);
 
     return elem;
 }
 
-void a1onesize_free(struct a1onesize *hnd, const void *ptr) {
+void am_onesize_free(struct am_onesize *hnd, const void *ptr) {
     ASSERT(hnd);
     ASSERT(ptr);
 
@@ -80,47 +82,47 @@ void a1onesize_free(struct a1onesize *hnd, const void *ptr) {
     ASSERT(ptr >= hnd->pool.ptr);
     ASSERT(ptr < (void *)((char *)hnd->pool.ptr + hnd->pool.size));
 
-    struct a1slist_item *p = A1CAST(struct a1slist_item *, ptr);
+    struct am_slist_item *p = A1CAST(struct am_slist_item *, ptr);
 
-    a1slist_push_front(&hnd->fl, p);
-    a1onesize_run_stats(hnd, 0, 1);
+    am_slist_push_front(&hnd->fl, p);
+    am_onesize_run_stats(hnd, 0, 1);
 }
 
 /**
  * Internal initialization routine.
  * @param hnd  the allocator
  */
-static void a1onesize_init_internal(struct a1onesize *hnd) {
-    a1slist_init(&hnd->fl);
+static void am_onesize_init_internal(struct am_onesize *hnd) {
+    am_slist_init(&hnd->fl);
 
     char *ptr = (char *)hnd->pool.ptr;
     int num = hnd->pool.size / hnd->block_size;
     for (int i = 0; i < num; i++) {
-        struct a1slist_item *item = A1CAST(struct a1slist_item *, ptr);
-        a1slist_push_front(&hnd->fl, item);
+        struct am_slist_item *item = A1CAST(struct am_slist_item *, ptr);
+        am_slist_push_front(&hnd->fl, item);
         ptr += hnd->block_size;
     }
     hnd->ntotal = hnd->nfree = hnd->minfree = num;
 }
 
-void a1onesize_free_all(struct a1onesize *hnd) {
+void am_onesize_free_all(struct am_onesize *hnd) {
     ASSERT(hnd);
 
-    struct a1onesize *s = (struct a1onesize *)hnd;
+    struct am_onesize *s = (struct am_onesize *)hnd;
 
     int minfree = hnd->minfree;
-    a1onesize_init_internal(s);
+    am_onesize_init_internal(s);
     hnd->minfree = minfree;
 }
 
-void a1onesize_iterate_over_allocated(
-    struct a1onesize *hnd, int num, void *ctx, a1onesize_iterate_func cb
+void am_onesize_iterate_over_allocated(
+    struct am_onesize *hnd, int num, void *ctx, am_onesize_iterate_func cb
 ) {
     ASSERT(hnd);
     ASSERT(cb);
     ASSERT(num != 0);
 
-    struct a1onesize *impl = (struct a1onesize *)hnd;
+    struct am_onesize *impl = (struct am_onesize *)hnd;
     char *ptr = (char *)impl->pool.ptr;
     int total = impl->pool.size / impl->block_size;
     if (num < 0) {
@@ -129,9 +131,9 @@ void a1onesize_iterate_over_allocated(
     int iterated = 0;
     num = MIN(num, total);
     for (int i = 0; (i < total) && (iterated < num); i++) {
-        ASSERT(A1_ALIGNOF_PTR(ptr) >= A1_ALIGNOF(struct a1slist_item));
-        struct a1slist_item *item = A1CAST(struct a1slist_item *, ptr);
-        if (a1slist_owns(&impl->fl, item)) {
+        ASSERT(A1_ALIGNOF_PTR(ptr) >= A1_ALIGNOF(struct am_slist_item));
+        struct am_slist_item *item = A1CAST(struct am_slist_item *, ptr);
+        if (am_slist_owns(&impl->fl, item)) {
             continue; /* the item is free */
         }
         /* the item is allocated */
@@ -141,35 +143,35 @@ void a1onesize_iterate_over_allocated(
     }
 }
 
-int a1onesize_get_nfree(struct a1onesize *hnd) {
+int am_onesize_get_nfree(struct am_onesize *hnd) {
     ASSERT(hnd);
     return hnd->nfree;
 }
 
-int a1onesize_get_min_nfree(struct a1onesize *hnd) {
+int am_onesize_get_min_nfree(struct am_onesize *hnd) {
     ASSERT(hnd);
     return hnd->minfree;
 }
 
-int a1onesize_get_block_size(struct a1onesize *hnd) {
+int am_onesize_get_block_size(struct am_onesize *hnd) {
     ASSERT(hnd);
     return hnd->block_size;
 }
 
-int a1onesize_get_nblocks(struct a1onesize *hnd) {
+int am_onesize_get_nblocks(struct am_onesize *hnd) {
     ASSERT(hnd);
     return hnd->ntotal;
 }
 
-void a1onesize_init(
-    struct a1onesize *hnd, struct blk *pool, int block_size, int alignment
+void am_onesize_init(
+    struct am_onesize *hnd, struct blk *pool, int block_size, int alignment
 ) {
     ASSERT(hnd);
     ASSERT(pool);
     ASSERT(pool->ptr);
     ASSERT(pool->size > 0);
     ASSERT(pool->size >= block_size);
-    ASSERT(alignment >= A1_ALIGNOF(struct a1slist_item));
+    ASSERT(alignment >= A1_ALIGNOF(struct am_slist_item));
 
     memset(hnd, 0, sizeof(*hnd));
 
@@ -179,7 +181,7 @@ void a1onesize_init(
     pool->size -= affix;
     pool->ptr = alignedptr;
 
-    block_size = MAX(block_size, (int)sizeof(struct a1slist_item));
+    block_size = MAX(block_size, (int)sizeof(struct am_slist_item));
     block_size = MAX(block_size, alignment);
 
     ASSERT(pool->size >= block_size);
@@ -187,5 +189,5 @@ void a1onesize_init(
     hnd->pool = *pool;
     hnd->block_size = block_size;
 
-    a1onesize_init_internal(hnd);
+    am_onesize_init_internal(hnd);
 }

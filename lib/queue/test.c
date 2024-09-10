@@ -38,33 +38,33 @@
 #include "blk/blk.h"
 #include "queue/queue.h"
 
-static void test_a1queue(const int capacity, const int rdwr_num) {
+static void test_am_queue(const int capacity, const int rdwr_num) {
     int pool[capacity + 1];
     struct blk blk = {.ptr = pool, .size = (int)sizeof(pool)};
 
-    struct a1queue q;
-    a1queue_init(
+    struct am_queue q;
+    am_queue_init(
         &q,
         /*isize=*/sizeof(pool[0]),
         /*alignment=*/sizeof(int),
         &blk
     );
-    ASSERT(a1queue_is_empty(&q));
+    ASSERT(am_queue_is_empty(&q));
 
     if (!rdwr_num) {
         return;
     }
 
     for (int i = 0; i < rdwr_num; i++) {
-        bool rc = a1queue_push_back(&q, &i, (int)sizeof(int));
+        bool rc = am_queue_push_back(&q, &i, (int)sizeof(int));
         ASSERT(true == rc);
-        ASSERT(a1queue_length(&q) == (i + 1));
-        ASSERT(a1queue_capacity(&q) >= a1queue_length(&q));
-        ASSERT(!a1queue_is_empty(&q));
+        ASSERT(am_queue_length(&q) == (i + 1));
+        ASSERT(am_queue_capacity(&q) >= am_queue_length(&q));
+        ASSERT(!am_queue_is_empty(&q));
     }
 
     for (int i = 0; i < rdwr_num; i++) {
-        void *ptr = a1queue_pop_front(&q);
+        void *ptr = am_queue_pop_front(&q);
         ASSERT(ptr);
         A1DISABLE_WARNING(A1W_NULL_DEREFERENCE)
         ASSERT(i == *(int *)ptr);
@@ -72,28 +72,28 @@ static void test_a1queue(const int capacity, const int rdwr_num) {
     }
 
     for (int i = 0; i < rdwr_num; i++) {
-        bool rc = a1queue_push_front(&q, &i, (int)sizeof(i));
+        bool rc = am_queue_push_front(&q, &i, (int)sizeof(i));
         ASSERT(true == rc);
-        ASSERT(a1queue_length(&q) == (i + 1));
-        ASSERT(a1queue_capacity(&q) >= a1queue_length(&q));
-        ASSERT(!a1queue_is_empty(&q));
+        ASSERT(am_queue_length(&q) == (i + 1));
+        ASSERT(am_queue_capacity(&q) >= am_queue_length(&q));
+        ASSERT(!am_queue_is_empty(&q));
     }
 
     for (int i = rdwr_num - 1; i >= 0; i--) {
-        void *ptr = a1queue_pop_front(&q);
+        void *ptr = am_queue_pop_front(&q);
         ASSERT(ptr);
         A1DISABLE_WARNING(A1W_NULL_DEREFERENCE)
         ASSERT(i == *(int *)ptr);
         A1ENABLE_WARNING(A1W_NULL_DEREFERENCE)
     }
 
-    ASSERT(a1queue_length(&q) == 0);
-    ASSERT(a1queue_is_empty(&q));
+    ASSERT(am_queue_length(&q) == 0);
+    ASSERT(am_queue_is_empty(&q));
 }
 
 int main(void) {
-    test_a1queue(/*capacity=*/1, /*rdwr_num=*/0);
-    test_a1queue(/*capacity=*/2, /*rdwr_num=*/1);
-    test_a1queue(/*capacity=*/3, /*rdwr_num=*/3);
+    test_am_queue(/*capacity=*/1, /*rdwr_num=*/0);
+    test_am_queue(/*capacity=*/2, /*rdwr_num=*/1);
+    test_am_queue(/*capacity=*/3, /*rdwr_num=*/3);
     return 0;
 }

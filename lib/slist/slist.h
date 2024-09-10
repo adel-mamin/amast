@@ -36,7 +36,7 @@
 extern "C" {
 #endif
 
-struct a1slist_item;
+struct am_slist_item;
 
 /**
  * Singly linked item.
@@ -44,38 +44,38 @@ struct a1slist_item;
  * a singly linked list item:
  *
  * [1]
- * struct foo {int bar; struct a1slist_item list;}
+ * struct foo {int bar; struct am_slist_item list;}
  *
  * [2]
  * struct foo {int bar; }
- * struct foo_item {struct foo foo; struct a1slist_item list}
+ * struct foo_item {struct foo foo; struct am_slist_item list}
  *
  * Also `struct foo` can be part of several independent lists.
  * For example,
  *
- * struct foo {int bar; struct a1slist_item list1; struct a1slist_item list2;}
+ * struct foo {int bar; struct am_slist_item list1; struct am_slist_item list2;}
  */
-struct a1slist_item {
-    struct a1slist_item *next; /**< the next item in the list */
+struct am_slist_item {
+    struct am_slist_item *next; /**< the next item in the list */
 };
 
 /** Singly linked list handler */
-struct a1slist {
-    struct a1slist_item sentinel; /**< the beginning of the list */
-    struct a1slist_item *back;    /**< the end of the list */
+struct am_slist {
+    struct am_slist_item sentinel; /**< the beginning of the list */
+    struct am_slist_item *back;    /**< the end of the list */
 };
 
 /** Singly linked list iterator handler */
-struct a1slist_iterator {
-    struct a1slist *hnd;      /**< list handler */
-    struct a1slist_item *cur; /**< current item of the list */
+struct am_slist_iterator {
+    struct am_slist *hnd;      /**< list handler */
+    struct am_slist_item *cur; /**< current item of the list */
 };
 
 /**
  * Singly linked list initialization.
  * @param hnd  the list handler
  */
-void a1slist_init(struct a1slist *hnd);
+void am_slist_init(struct am_slist *hnd);
 
 /**
  * Tell if list is empty.
@@ -83,7 +83,7 @@ void a1slist_init(struct a1slist *hnd);
  * @retval true   the list is empty
  * @retval false  the list is not empty
  */
-bool a1slist_is_empty(const struct a1slist *hnd);
+bool am_slist_is_empty(const struct am_slist *hnd);
 
 /**
  * Push a new item after the item, which is already in the list.
@@ -91,8 +91,10 @@ bool a1slist_is_empty(const struct a1slist *hnd);
  * @param item     the new item is pushed after this item
  * @param newitem  the new item to be pushed to the list
  */
-void a1slist_push_after(
-    struct a1slist *hnd, struct a1slist_item *item, struct a1slist_item *newitem
+void am_slist_push_after(
+    struct am_slist *hnd,
+    struct am_slist_item *item,
+    struct am_slist_item *newitem
 );
 
 /**
@@ -103,8 +105,8 @@ void a1slist_push_after(
  * @param item  the item after this item is popped
  * @return The popped item or NULL if nothing to remove
  */
-struct a1slist_item *a1slist_pop_after(
-    struct a1slist *hnd, struct a1slist_item *item
+struct am_slist_item *am_slist_pop_after(
+    struct am_slist *hnd, struct am_slist_item *item
 );
 
 /**
@@ -113,8 +115,8 @@ struct a1slist_item *a1slist_pop_after(
  * @param item  the next item after this one is returned
  * @return the next item or NULL if the \a item is the last item
  */
-struct a1slist_item *a1slist_next(
-    const struct a1slist *hnd, const struct a1slist_item *item
+struct am_slist_item *am_slist_next(
+    const struct am_slist *hnd, const struct am_slist_item *item
 );
 
 /**
@@ -124,8 +126,8 @@ struct a1slist_item *a1slist_next(
  * @retval true    item was found
  * @retval false   item was not found
  */
-typedef bool (*a1slist_item_found_cb_t)(
-    void *context, struct a1slist_item *item
+typedef bool (*am_slist_item_found_cb_t)(
+    void *context, struct am_slist_item *item
 );
 
 /**
@@ -137,9 +139,9 @@ typedef bool (*a1slist_item_found_cb_t)(
  *         NULL, if nothing was found. The found item is not popped
  *         from the list.
  */
-struct a1slist_item *a1slist_find(
-    const struct a1slist *hnd,
-    a1slist_item_found_cb_t is_found_cb,
+struct am_slist_item *am_slist_find(
+    const struct am_slist *hnd,
+    am_slist_item_found_cb_t is_found_cb,
     void *context
 );
 
@@ -150,7 +152,7 @@ struct a1slist_item *a1slist_find(
  * @return The item at the front of the list or NULL, if no
  *         item exists at the given index.
  */
-struct a1slist_item *a1slist_peek_front(const struct a1slist *hnd);
+struct am_slist_item *am_slist_peek_front(const struct am_slist *hnd);
 
 /**
  * Return the list item at the back (tail) of the list.
@@ -159,28 +161,28 @@ struct a1slist_item *a1slist_peek_front(const struct a1slist *hnd);
  * @return The item at the back of the list or NULL, if no
  *         item exists at the given index.
  */
-struct a1slist_item *a1slist_peek_back(const struct a1slist *hnd);
+struct am_slist_item *am_slist_peek_back(const struct am_slist *hnd);
 
 /**
  * Push an item to the front (head) of the list.
  * @param hnd   the list handler
  * @param item  the item to be pushed
  */
-void a1slist_push_front(struct a1slist *hnd, struct a1slist_item *item);
+void am_slist_push_front(struct am_slist *hnd, struct am_slist_item *item);
 
 /**
  * Pop an item in front (head) of the list.
  * @param hnd  the list handler
  * @return the popped item or NULL, if the list was empty
  */
-struct a1slist_item *a1slist_pop_front(struct a1slist *hnd);
+struct am_slist_item *am_slist_pop_front(struct am_slist *hnd);
 
 /**
  * Add a new item at the back (tail) of the list.
  * @param hnd   the list handler
  * @param item  the item to be added
  */
-void a1slist_push_back(struct a1slist *hnd, struct a1slist_item *item);
+void am_slist_push_back(struct am_slist *hnd, struct am_slist_item *item);
 
 /**
  * Check if the given item is part of the list.
@@ -189,7 +191,9 @@ void a1slist_push_back(struct a1slist *hnd, struct a1slist_item *item);
  * @retval true   the given item belongs to the list
  * @retval false  the given item is not part of the list
  */
-bool a1slist_owns(const struct a1slist *hnd, const struct a1slist_item *item);
+bool am_slist_owns(
+    const struct am_slist *hnd, const struct am_slist_item *item
+);
 
 #if defined __cplusplus
 }

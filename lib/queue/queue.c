@@ -40,12 +40,12 @@
 #include "queue/queue.h"
 
 /** Magic number to detect properly initialized queue */
-#define A1QUEUE_MAGIC1 0xCAFEABBA
-/** Magic number to detect properly initialized a1queue */
-#define A1QUEUE_MAGIC2 0xDEADBEEF
+#define AM_QUEUE_MAGIC1 0xCAFEABBA
+/** Magic number to detect properly initialized am_queue */
+#define AM_QUEUE_MAGIC2 0xDEADBEEF
 
-void a1queue_init(
-    struct a1queue *hnd, int isize, int alignment, struct blk *blk
+void am_queue_init(
+    struct am_queue *hnd, int isize, int alignment, struct blk *blk
 ) {
     ASSERT(hnd);
     ASSERT(isize > 0);
@@ -68,21 +68,21 @@ void a1queue_init(
     ASSERT(blk->size >= (2 * hnd->isize));
 
     hnd->blk = *blk;
-    hnd->magic1 = A1QUEUE_MAGIC1;
-    hnd->magic2 = A1QUEUE_MAGIC2;
+    hnd->magic1 = AM_QUEUE_MAGIC1;
+    hnd->magic2 = AM_QUEUE_MAGIC2;
 }
 
-bool a1queue_is_empty(struct a1queue *hnd) {
+bool am_queue_is_empty(struct am_queue *hnd) {
     ASSERT(hnd);
     return hnd->rd == hnd->wr;
 }
 
-bool a1queue_is_full(struct a1queue *hnd) {
+bool am_queue_is_full(struct am_queue *hnd) {
     ASSERT(hnd);
     return ((hnd->wr + 1) % (hnd->blk.size / hnd->isize)) == hnd->rd;
 }
 
-int a1queue_length(struct a1queue *hnd) {
+int am_queue_length(struct am_queue *hnd) {
     ASSERT(hnd);
     if (hnd->wr >= hnd->rd) {
         return hnd->wr - hnd->rd;
@@ -91,17 +91,17 @@ int a1queue_length(struct a1queue *hnd) {
     return hnd->wr ? (len + hnd->wr) : len;
 }
 
-int a1queue_capacity(struct a1queue *hnd) {
+int am_queue_capacity(struct am_queue *hnd) {
     ASSERT(hnd);
     return (hnd->blk.size / hnd->isize) - 1;
 }
 
-int a1queue_isize(struct a1queue *hnd) {
+int am_queue_isize(struct am_queue *hnd) {
     ASSERT(hnd);
     return hnd->isize;
 }
 
-void *a1queue_peek_front(struct a1queue *hnd) {
+void *am_queue_peek_front(struct am_queue *hnd) {
     ASSERT(hnd);
 
     if (hnd->rd == hnd->wr) {
@@ -110,7 +110,7 @@ void *a1queue_peek_front(struct a1queue *hnd) {
     return (char *)hnd->blk.ptr + hnd->rd * hnd->isize;
 }
 
-void *a1queue_peek_back(struct a1queue *hnd) {
+void *am_queue_peek_back(struct am_queue *hnd) {
     ASSERT(hnd);
 
     if (hnd->rd == hnd->wr) {
@@ -120,7 +120,7 @@ void *a1queue_peek_back(struct a1queue *hnd) {
     return (char *)hnd->blk.ptr + ind * hnd->isize;
 }
 
-void *a1queue_pop_front(struct a1queue *hnd) {
+void *am_queue_pop_front(struct am_queue *hnd) {
     ASSERT(hnd);
 
     if (hnd->rd == hnd->wr) {
@@ -132,7 +132,7 @@ void *a1queue_pop_front(struct a1queue *hnd) {
     return ptr;
 }
 
-void *a1queue_pop_front_and_copy(struct a1queue *hnd, void *buf, int size) {
+void *am_queue_pop_front_and_copy(struct am_queue *hnd, void *buf, int size) {
     ASSERT(hnd);
     ASSERT(buf);
     ASSERT(size >= hnd->isize);
@@ -140,19 +140,19 @@ void *a1queue_pop_front_and_copy(struct a1queue *hnd, void *buf, int size) {
     if (hnd->rd == hnd->wr) {
         return NULL;
     }
-    void *popped = a1queue_pop_front(hnd);
+    void *popped = am_queue_pop_front(hnd);
     memcpy(buf, popped, (size_t)hnd->isize);
 
     return popped;
 }
 
-bool a1queue_push_back(struct a1queue *hnd, const void *ptr, int size) {
+bool am_queue_push_back(struct am_queue *hnd, const void *ptr, int size) {
     ASSERT(hnd);
     ASSERT(ptr);
     ASSERT(size > 0);
     ASSERT(size <= hnd->isize);
 
-    if (a1queue_is_full(hnd)) {
+    if (am_queue_is_full(hnd)) {
         return false;
     }
     void *dst = (char *)hnd->blk.ptr + hnd->wr * hnd->isize;
@@ -162,13 +162,13 @@ bool a1queue_push_back(struct a1queue *hnd, const void *ptr, int size) {
     return true;
 }
 
-bool a1queue_push_front(struct a1queue *hnd, const void *ptr, int size) {
+bool am_queue_push_front(struct am_queue *hnd, const void *ptr, int size) {
     ASSERT(hnd);
     ASSERT(ptr);
     ASSERT(size > 0);
     ASSERT(size <= hnd->isize);
 
-    if (a1queue_is_full(hnd)) {
+    if (am_queue_is_full(hnd)) {
         return false;
     }
     hnd->rd = (0 == hnd->rd) ? (hnd->blk.size / hnd->isize - 1) : (hnd->rd - 1);
@@ -178,7 +178,7 @@ bool a1queue_push_front(struct a1queue *hnd, const void *ptr, int size) {
     return true;
 }
 
-bool a1queue_is_valid(struct a1queue *hnd) {
+bool am_queue_is_valid(struct am_queue *hnd) {
     ASSERT(hnd);
-    return (A1QUEUE_MAGIC1 == hnd->magic1) && (A1QUEUE_MAGIC2 == hnd->magic2);
+    return (AM_QUEUE_MAGIC1 == hnd->magic1) && (AM_QUEUE_MAGIC2 == hnd->magic2);
 }

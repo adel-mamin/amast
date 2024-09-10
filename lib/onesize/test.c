@@ -45,40 +45,40 @@ struct test {
 };
 
 int main(void) {
-    struct a1onesize ma;
+    struct am_onesize ma;
     struct test test[3];
     struct blk blk = {.ptr = test, .size = sizeof(test)};
 
-    a1onesize_init(&ma, &blk, sizeof(struct test), A1_ALIGN_MAX);
+    am_onesize_init(&ma, &blk, sizeof(struct test), A1_ALIGN_MAX);
 
-    ASSERT(a1onesize_get_nfree(&ma) == 2);
+    ASSERT(am_onesize_get_nfree(&ma) == 2);
 
-    void *ptr1 = a1onesize_allocate(&ma, 1);
+    void *ptr1 = am_onesize_allocate(&ma, 1);
     ASSERT(ptr1);
-    ASSERT(a1onesize_get_nfree(&ma) == 1);
+    ASSERT(am_onesize_get_nfree(&ma) == 1);
 
-    void *ptr2 = a1onesize_allocate(&ma, 1);
+    void *ptr2 = am_onesize_allocate(&ma, 1);
     ASSERT(ptr2);
-    ASSERT(a1onesize_get_nfree(&ma) == 0);
+    ASSERT(am_onesize_get_nfree(&ma) == 0);
 
-    void *ptr3 = a1onesize_allocate(&ma, 1);
+    void *ptr3 = am_onesize_allocate(&ma, 1);
     ASSERT(!ptr3);
-    ASSERT(a1onesize_get_nfree(&ma) == 0);
+    ASSERT(am_onesize_get_nfree(&ma) == 0);
 
-    a1onesize_free(&ma, ptr1);
-    ASSERT(a1onesize_get_nfree(&ma) == 1);
+    am_onesize_free(&ma, ptr1);
+    ASSERT(am_onesize_get_nfree(&ma) == 1);
 
-    a1onesize_free(&ma, ptr2);
-    ASSERT(a1onesize_get_nfree(&ma) == 2);
+    am_onesize_free(&ma, ptr2);
+    ASSERT(am_onesize_get_nfree(&ma) == 2);
 
-    ptr1 = a1onesize_allocate(&ma, 1);
+    ptr1 = am_onesize_allocate(&ma, 1);
     ASSERT(ptr1);
-    ASSERT(a1onesize_get_nfree(&ma) == 1);
+    ASSERT(am_onesize_get_nfree(&ma) == 1);
 
-    a1onesize_free_all(&ma);
-    ASSERT(a1onesize_get_nfree(&ma) == 2);
+    am_onesize_free_all(&ma);
+    ASSERT(am_onesize_get_nfree(&ma) == 2);
 
-    ASSERT(0 == a1onesize_get_min_nfree(&ma));
+    ASSERT(0 == am_onesize_get_min_nfree(&ma));
 
     return 0;
 }

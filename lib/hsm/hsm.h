@@ -42,37 +42,37 @@ extern "C" {
 /**
  * Empty event.
  * Should not cause any side effects in event handlers.
- * The event handlers must always return the A1HSM_SUPER() in response
+ * The event handlers must always return the AM_HSM_SUPER() in response
  * to this event.
  */
-#define A1HSM_EVT_EMPTY 0
+#define AM_HSM_EVT_EMPTY 0
 
 /**
  * Init event.
  * Run initial transition from a given state.
- * Always follows the #A1HSM_EVT_ENTRY event.
+ * Always follows the #AM_HSM_EVT_ENTRY event.
  */
-#define A1HSM_EVT_INIT 1
+#define AM_HSM_EVT_INIT 1
 
 /**
  * Entry event.
  * Run entry action(s) for a given state.
- * Always precedes the #A1HSM_EVT_INIT event.
+ * Always precedes the #AM_HSM_EVT_INIT event.
  * No state transition is allowed in response to this event.
  */
-#define A1HSM_EVT_ENTRY 2
+#define AM_HSM_EVT_ENTRY 2
 
 /**
  * Exit event.
  * Run exit action(s) for a given state.
  * No state transition is allowed in response to this event.
  */
-#define A1HSM_EVT_EXIT 3
+#define AM_HSM_EVT_EXIT 3
 
 /** HSM event with maximum value. */
-#define A1HSM_EVT_MAX A1HSM_EVT_EXIT
+#define AM_HSM_EVT_MAX AM_HSM_EVT_EXIT
 
-A1ASSERT_STATIC(EVT_USER > A1HSM_EVT_MAX);
+A1ASSERT_STATIC(EVT_USER > AM_HSM_EVT_MAX);
 
 /**
  * HSM state handler return codes.
@@ -80,19 +80,19 @@ A1ASSERT_STATIC(EVT_USER > A1HSM_EVT_MAX);
  * Instead user code is expected to use as return values the macros
  * listed in descriptions to each of the constants.
  */
-enum a1hsmrc {
-    /* Returned by A1HSM_HANDLED() */
-    A1HSM_RC_HANDLED = 0,
-    /* Returned by A1HSM_TRAN() */
-    A1HSM_RC_TRAN,
-    /* Returned by A1HSM_TRAN_REDISPATCH() */
-    A1HSM_RC_TRAN_REDISPATCH,
-    /* Returned by A1HSM_SUPER() */
-    A1HSM_RC_SUPER
+enum am_hsm_rc {
+    /* Returned by AM_HSM_HANDLED() */
+    AM_HSM_RC_HANDLED = 0,
+    /* Returned by AM_HSM_TRAN() */
+    AM_HSM_RC_TRAN,
+    /* Returned by AM_HSM_TRAN_REDISPATCH() */
+    AM_HSM_RC_TRAN_REDISPATCH,
+    /* Returned by AM_HSM_SUPER() */
+    AM_HSM_RC_SUPER
 };
 
 /** forward declaration */
-struct a1hsm;
+struct am_hsm;
 
 /**
  * A state handler.
@@ -102,49 +102,49 @@ struct a1hsm;
  * of the switch statement, especially code that has side effects.
  * @param hsm    the state machine
  * @param event  the event to handle
- * @return One of A1HSM_RC_... constants.
+ * @return One of AM_HSM_RC_... constants.
  */
-typedef enum a1hsmrc (*a1hsm_state_fn)(
-    struct a1hsm *hsm, const struct event *evt
+typedef enum am_hsm_rc (*am_hsm_state_fn)(
+    struct am_hsm *hsm, const struct event *evt
 );
 
 /** HSM state */
-struct a1hsm_state {
+struct am_hsm_state {
     /** HSM state function  */
-    a1hsm_state_fn fn;
+    am_hsm_state_fn fn;
     /** HSM state function instance. Used for submachines. Default is 0. */
     unsigned char instance;
 };
 
 /** Helper macro. Not to be used directly. */
-#define A1STATE1_(f) \
-    (struct a1hsm_state) { .fn = (a1hsm_state_fn)f, .instance = 0 }
+#define AM_STATE1_(f) \
+    (struct am_hsm_state) { .fn = (am_hsm_state_fn)f, .instance = 0 }
 
 /** Helper macro. Not to be used directly. */
-#define A1STATE2_(f, i) \
-    (struct a1hsm_state) { .fn = (a1hsm_state_fn)f, .instance = i }
+#define AM_STATE2_(f, i) \
+    (struct am_hsm_state) { .fn = (am_hsm_state_fn)f, .instance = i }
 
 /**
  * Get HSM state from event handler and optionally the event handler instance.
  *
- * A1HSM_STATE(fn)    is converted to
- *                    (struct a1hsm_state){.fn = fn, .instance = 0}
- * A1HSM_STATE(fn, i) is converted to
- *                    (struct a1hsm_state){.fn = fn, .instance = i}
+ * AM_HSM_STATE(fn)    is converted to
+ *                    (struct am_hsm_state){.fn = fn, .instance = 0}
+ * AM_HSM_STATE(fn, i) is converted to
+ *                    (struct am_hsm_state){.fn = fn, .instance = i}
  *
  * @param fn  HSM event handler
  * @param i   HSM event handler instance. Used by submachines. Default is 0.
  * @return HSM state structure
  */
-#define A1HSM_STATE(...) \
-    A1GET_MACRO_2_(__VA_ARGS__, A1STATE2_, A1STATE1_, _)(__VA_ARGS__)
+#define AM_HSM_STATE(...) \
+    A1GET_MACRO_2_(__VA_ARGS__, AM_STATE2_, AM_STATE1_, _)(__VA_ARGS__)
 
 /** HSM state */
-struct a1hsm {
+struct am_hsm {
     /** current state */
-    a1hsm_state_fn state;
+    am_hsm_state_fn state;
     /** temp state during transitions and event processing */
-    a1hsm_state_fn temp;
+    am_hsm_state_fn temp;
     /** instance of current state */
     unsigned istate : 8;
     /** instance of temporary state during transitions & event processing */
@@ -157,17 +157,17 @@ struct a1hsm {
  * an event and wants to prevent the event propagation to
  * superstate(s).
  */
-#define A1HSM_HANDLED() A1HSM_RC_HANDLED
+#define AM_HSM_HANDLED() AM_HSM_RC_HANDLED
 
 /** Helper macro. Not to be used directly. */
-#define A1SET_TEMP_(s, i)                              \
-    (((struct a1hsm *)me)->temp = (a1hsm_state_fn)(s), \
-     ((struct a1hsm *)me)->itemp = (i))
+#define AM_SET_TEMP_(s, i)                               \
+    (((struct am_hsm *)me)->temp = (am_hsm_state_fn)(s), \
+     ((struct am_hsm *)me)->itemp = (i))
 
 /** Helper macro. Not to be used directly. */
-#define A1TRAN1_(s) (A1SET_TEMP_(s, 0), A1HSM_RC_TRAN)
+#define AM_TRAN1_(s) (AM_SET_TEMP_(s, 0), AM_HSM_RC_TRAN)
 /** Helper macro. Not to be used directly. */
-#define A1TRAN2_(s, i) (A1SET_TEMP_(s, i), A1HSM_RC_TRAN)
+#define AM_TRAN2_(s, i) (AM_SET_TEMP_(s, i), AM_HSM_RC_TRAN)
 
 /**
  * Event processing is over. Transition is taken.
@@ -176,49 +176,49 @@ struct a1hsm {
  * this macro as a return value to designate transition to
  * the provided state. The target state in this case must be
  * a substate of the current state.
- * @param s  the new state of type #a1hsm_state_fn (mandatory)
+ * @param s  the new state of type #am_hsm_state_fn (mandatory)
  * @param i  the new state submachine instance (optional, default is 0)
  */
-#define A1HSM_TRAN(...) \
-    A1GET_MACRO_2_(__VA_ARGS__, A1TRAN2_, A1TRAN1_, _)(__VA_ARGS__)
+#define AM_HSM_TRAN(...) \
+    A1GET_MACRO_2_(__VA_ARGS__, AM_TRAN2_, AM_TRAN1_, _)(__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
-#define A1TRAN_REDISPATCH1_(s) (A1SET_TEMP_(s, 0), A1HSM_RC_TRAN_REDISPATCH)
+#define AM_TRAN_REDISP1_(s) (AM_SET_TEMP_(s, 0), AM_HSM_RC_TRAN_REDISPATCH)
 /** Helper macro. Not to be used directly. */
-#define A1TRAN_REDISPATCH2_(s, i) (A1SET_TEMP_(s, i), A1HSM_RC_TRAN_REDISPATCH)
+#define AM_TRAN_REDIS2_(s, i) (AM_SET_TEMP_(s, i), AM_HSM_RC_TRAN_REDISPATCH)
 
 /**
  * Event redispatch is requested. Transition is taken.
  * It should never be returned for entry, exit or init events.
  * Do not redispatch the same event more than once.
- * @param s  the new state of type #a1hsm_state_fn (mandatory)
+ * @param s  the new state of type #am_hsm_state_fn (mandatory)
  * @param i  the new state submachine instance (optional, default is 0)
  */
-#define A1HSM_TRAN_REDISPATCH(...)                                           \
-    A1GET_MACRO_2_(__VA_ARGS__, A1TRAN_REDISPATCH2_, A1TRAN_REDISPATCH1_, _) \
+#define AM_HSM_TRAN_REDISPATCH(...)                                    \
+    A1GET_MACRO_2_(__VA_ARGS__, AM_TRAN_REDISP2_, AM_TRAN_REDISP1_, _) \
     (__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
-#define A1SUPER1_(s) (A1SET_TEMP_(s, 0), A1HSM_RC_SUPER)
+#define AM_SUPER1_(s) (AM_SET_TEMP_(s, 0), AM_HSM_RC_SUPER)
 /** Helper macro. Not to be used directly. */
-#define A1SUPER2_(s, i) (A1SET_TEMP_(s, i), A1HSM_RC_SUPER)
+#define AM_SUPER2_(s, i) (AM_SET_TEMP_(s, i), AM_HSM_RC_SUPER)
 
 /**
  * Event processing is passed to superstate. No transition was taken.
- * If no explicit superstate exists, then the top (super)state a1hsm_top()
+ * If no explicit superstate exists, then the top (super)state am_hsm_top()
  * must be used.
- * @param s  the superstate of type #a1hsm_state_fn (mandatory)
+ * @param s  the superstate of type #am_hsm_state_fn (mandatory)
  * @param i  the superstate submachine instance (optional, default is 0)
  */
-#define A1HSM_SUPER(...) \
-    A1GET_MACRO_2_(__VA_ARGS__, A1SUPER2_, A1SUPER1_, _)(__VA_ARGS__)
+#define AM_HSM_SUPER(...) \
+    A1GET_MACRO_2_(__VA_ARGS__, AM_SUPER2_, AM_SUPER1_, _)(__VA_ARGS__)
 
 /**
  * Synchronous dispatch of event to the given HSM.
  * @param hsm    the HSM handler
  * @param event  the event to dispatch
  */
-void a1hsm_dispatch(struct a1hsm *hsm, const struct event *event);
+void am_hsm_dispatch(struct am_hsm *hsm, const struct event *event);
 
 /**
  * Test whether HSM is in a given state.
@@ -230,21 +230,21 @@ void a1hsm_dispatch(struct a1hsm *hsm, const struct event *event);
  * @retval false  not in the state in the hierarchical sense
  * @retval true   in the state
  */
-bool a1hsm_is_in(struct a1hsm *hsm, const struct a1hsm_state *state);
+bool am_hsm_is_in(struct am_hsm *hsm, const struct am_hsm_state *state);
 
 /**
  * Check if current state equals to #state (not in hierarchical sense).
  *
  * If current state of hsm is A, which is substate of B, then
- * a1hsm_state_is_eq(hsm, &A1HSM_STATE(A)) is true, but
- * a1hsm_state_is_eq(hsm, &A1HSM_STATE(B)) is false.
+ * am_hsm_state_is_eq(hsm, &AM_HSM_STATE(A)) is true, but
+ * am_hsm_state_is_eq(hsm, &AM_HSM_STATE(B)) is false.
  *
  * @param hsm     the HSM handler
  * @param state   the state to compare against
  * @retval true   the current HSM state equals #state
  * @retval false  the current HSM state DOES NOT equal #state
  */
-bool a1hsm_state_is_eq(struct a1hsm *hsm, const struct a1hsm_state *state);
+bool am_hsm_state_is_eq(struct am_hsm *hsm, const struct am_hsm_state *state);
 
 /**
  * Get state instance.
@@ -254,39 +254,39 @@ bool a1hsm_state_is_eq(struct a1hsm *hsm, const struct a1hsm_state *state);
  * @param hsm  the HSM handler
  * @return the instance
  */
-int a1hsm_get_state_instance(const struct a1hsm *hsm);
+int am_hsm_get_state_instance(const struct am_hsm *hsm);
 
-/* const struct a1hsm_state *a1hsm_get_child_state(struct a1hsm *hsm); */
-/* const struct a1hsm_state *a1hsm_get_super_state(struct a1hsm *hsm); */
+/* const struct am_hsm_state *am_hsm_get_child_state(struct am_hsm *hsm); */
+/* const struct am_hsm_state *am_hsm_get_super_state(struct am_hsm *hsm); */
 
 /**
  * HSM constructor.
  * @param hsm    the HSM to construct
  * @param state  the initial state of the HSM object
  *               The initial state must return
- *               A1HSM_TRAN(s) or A1HSM_TRAN(s, i)
+ *               AM_HSM_TRAN(s) or AM_HSM_TRAN(s, i)
  */
-void a1hsm_ctor(struct a1hsm *hsm, const struct a1hsm_state *state);
+void am_hsm_ctor(struct am_hsm *hsm, const struct am_hsm_state *state);
 
 /**
  * HSM destructor.
  * @param hsm  the HSM to destruct
  */
-void a1hsm_dtor(struct a1hsm *hsm);
+void am_hsm_dtor(struct am_hsm *hsm);
 
 /**
  * Perform HSM initial transition.
  * @param hsm         the HSM handler
  * @param init_event  the init event. Can be NULL. The event is not recycled.
  */
-void a1hsm_init(struct a1hsm *hsm, const struct event *init_event);
+void am_hsm_init(struct am_hsm *hsm, const struct event *init_event);
 
 /**
  * Every HSM has implicit top state, which surrounds all other elements
  * of the entire state machine.
  * One should never target top state in a state transition.
  */
-enum a1hsmrc a1hsm_top(struct a1hsm *hsm, const struct event *event);
+enum am_hsm_rc am_hsm_top(struct am_hsm *hsm, const struct event *event);
 
 #ifdef __cplusplus
 }
