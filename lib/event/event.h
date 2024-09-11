@@ -36,7 +36,7 @@
  * The event IDs below this value are reserved
  * and should not be used for user events.
  */
-#define EVT_USER 5
+#define EVT_USER 7
 
 /**
  * Check if event has a valid user event ID
