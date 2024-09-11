@@ -45,7 +45,7 @@ struct am_hsm_path {
 };
 
 /** canned events */
-static const struct event m_hsm_evt[] = {
+static const struct am_event m_hsm_evt[] = {
     {.id = AM_HSM_EVT_EMPTY},
     {.id = AM_HSM_EVT_INIT},
     {.id = AM_HSM_EVT_ENTRY},
@@ -162,7 +162,7 @@ static void hsm_enter_and_init(struct am_hsm *hsm, struct am_hsm_path *path) {
 }
 
 static enum am_hsm_rc hsm_dispatch(
-    struct am_hsm *hsm, const struct event *evt
+    struct am_hsm *hsm, const struct am_event *evt
 ) {
     AM_ASSERT(hsm);
     AM_ASSERT(hsm->state);
@@ -245,7 +245,7 @@ static enum am_hsm_rc hsm_dispatch(
     return rc;
 }
 
-void am_hsm_dispatch(struct am_hsm *hsm, const struct event *evt) {
+void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *evt) {
     enum am_hsm_rc rc = hsm_dispatch(hsm, evt);
     if (AM_HSM_RC_TRAN_REDISPATCH == rc) {
         rc = hsm_dispatch(hsm, evt);
@@ -290,7 +290,7 @@ void am_hsm_dtor(struct am_hsm *hsm) {
     hsm_set_current(hsm, &AM_HSM_STATE(NULL));
 }
 
-void am_hsm_init(struct am_hsm *hsm, const struct event *init_event) {
+void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event) {
     AM_ASSERT(hsm);
     AM_ASSERT(hsm->state == am_hsm_top); /* was am_hsm_ctor() called? */
     AM_ASSERT(hsm->istate == 0);
@@ -307,7 +307,7 @@ void am_hsm_init(struct am_hsm *hsm, const struct event *init_event) {
     hsm_enter_and_init(hsm, &path);
 }
 
-enum am_hsm_rc am_hsm_top(struct am_hsm *hsm, const struct event *event) {
+enum am_hsm_rc am_hsm_top(struct am_hsm *hsm, const struct am_event *event) {
     (void)hsm;
     (void)event;
     return AM_HSM_RC_HANDLED;

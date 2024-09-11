@@ -44,14 +44,14 @@
  * @retval true   the event has user event ID
  * @retval false  the event does not have user event ID
  */
-#define EVENT_HAS_USER_ID(event) (((struct event*)(event))->id >= EVT_USER)
+#define EVENT_HAS_USER_ID(event) (((struct am_event*)(event))->id >= EVT_USER)
 
 #define EVENT_TICK_DOMAIN_BITS 3
 
-#define AM_EVT_CTOR(id_) ((struct event){.id = (id_)})
+#define AM_EVT_CTOR(id_) ((struct am_event){.id = (id_)})
 
 /** Event descriptor */
-struct event {
+struct am_event {
     /** event ID */
     int id;
 

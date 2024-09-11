@@ -100,7 +100,7 @@ static void test_hsm(void) {
     };
 
     for (int i = 0; i < AM_COUNTOF(in); i++) {
-        struct event e = {.id = in[i].evt};
+        struct am_event e = {.id = in[i].evt};
         am_hsm_dispatch(g_regular, &e);
         AM_ASSERT(0 == strncmp(m_log_buf, in[i].out, strlen(in[i].out)));
         m_log_buf[0] = '\0';

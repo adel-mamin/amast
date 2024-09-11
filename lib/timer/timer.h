@@ -41,20 +41,20 @@ struct timer_cfg {
      * Expired events are posted using this callback.
      * Posting is one-to-one event delivery mechanism.
      */
-    void (*post)(void *owner, const struct event *event);
+    void (*post)(void *owner, const struct am_event *event);
     /**
      * Expired events are published using this callback.
      * Publishing is one-to-many event delivery mechanism.
      */
-    void (*publish)(const struct event *event);
+    void (*publish)(const struct am_event *event);
     /* optional, can be NULL */
-    struct event_timer *(*update)(struct event_timer *event);
+    struct am_event_timer *(*update)(struct am_event_timer *event);
 };
 
 /** Timer event. */
-struct event_timer {
+struct am_event_timer {
     /** event descriptor */
-    struct event event;
+    struct am_event event;
     /** to link time events together */
     struct am_dlist_item item;
     /** the object, who receives the event */
@@ -97,7 +97,7 @@ void timer_ctor(struct timer *hnd, const struct timer_cfg *cfg);
  * @param id      the timer event identifier
  * @param domain  tick domain the event belongs to
  */
-void timer_event_ctor(struct event_timer *event, int id, int domain);
+void timer_event_ctor(struct am_event_timer *event, int id, int domain);
 
 /**
  * Tick timers.
@@ -115,7 +115,7 @@ void timer_tick(struct timer *hnd, int domain);
  * @param ticks  the timer event is to be posted in these many ticks
  */
 void timer_post_in_ticks(
-    struct timer *hnd, struct event_timer *event, void *owner, int ticks
+    struct timer *hnd, struct am_event_timer *event, void *owner, int ticks
 );
 
 /**
@@ -127,7 +127,7 @@ void timer_post_in_ticks(
  *               and then re-published every ticks
  */
 void timer_publish_in_ticks(
-    struct timer *hnd, struct event_timer *event, int ticks
+    struct timer *hnd, struct am_event_timer *event, int ticks
 );
 
 /**
@@ -140,7 +140,7 @@ void timer_publish_in_ticks(
  *               and then re-posted every ticks
  */
 void timer_post_every_ticks(
-    struct timer *hnd, struct event_timer *event, void *owner, int ticks
+    struct timer *hnd, struct am_event_timer *event, void *owner, int ticks
 );
 
 /**
@@ -152,7 +152,7 @@ void timer_post_every_ticks(
  *               and then re-published every ticks
  */
 void timer_publish_every_ticks(
-    struct timer *hnd, struct event_timer *event, int ticks
+    struct timer *hnd, struct am_event_timer *event, int ticks
 );
 
 /**
@@ -161,7 +161,7 @@ void timer_publish_every_ticks(
  * @retval true   the timer was armed
  * @retval false  the timer was not armed
  */
-bool timer_disarm(struct event_timer *event);
+bool timer_disarm(struct am_event_timer *event);
 
 /**
  * Check if timer is armed.
@@ -169,7 +169,7 @@ bool timer_disarm(struct event_timer *event);
  * @retval true   the timer is armed
  * @retval false  the timer is not armed
  */
-bool timer_is_armed(const struct event_timer *event);
+bool timer_is_armed(const struct am_event_timer *event);
 
 /**
  * Check if any timer is armed.

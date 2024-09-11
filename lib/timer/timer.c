@@ -45,7 +45,7 @@ void timer_ctor(struct timer *hnd, const struct timer_cfg *cfg) {
     hnd->cfg = *cfg;
 }
 
-void timer_event_ctor(struct event_timer *event, int id, int domain) {
+void timer_event_ctor(struct am_event_timer *event, int id, int domain) {
     AM_ASSERT(event);
     AM_ASSERT(id >= EVT_USER);
     AM_ASSERT(domain < TICK_DOMAIN_MAX);
@@ -58,7 +58,7 @@ void timer_event_ctor(struct event_timer *event, int id, int domain) {
 
 static void timer_arm(
     struct timer *hnd,
-    struct event_timer *event,
+    struct am_event_timer *event,
     void *owner,
     int ticks,
     int interval
@@ -79,30 +79,30 @@ static void timer_arm(
 }
 
 void timer_post_in_ticks(
-    struct timer *hnd, struct event_timer *event, void *owner, int ticks
+    struct timer *hnd, struct am_event_timer *event, void *owner, int ticks
 ) {
     timer_arm(hnd, event, owner, ticks, /*interval=*/0);
 }
 
 void timer_publish_in_ticks(
-    struct timer *hnd, struct event_timer *event, int ticks
+    struct timer *hnd, struct am_event_timer *event, int ticks
 ) {
     timer_arm(hnd, event, /*owner=*/NULL, ticks, /*interval=*/0);
 }
 
 void timer_post_every_ticks(
-    struct timer *hnd, struct event_timer *event, void *owner, int ticks
+    struct timer *hnd, struct am_event_timer *event, void *owner, int ticks
 ) {
     timer_arm(hnd, event, owner, ticks, /*interval=*/ticks);
 }
 
 void timer_publish_every_ticks(
-    struct timer *hnd, struct event_timer *event, int ticks
+    struct timer *hnd, struct am_event_timer *event, int ticks
 ) {
     timer_arm(hnd, event, /*owner=*/NULL, ticks, /*interval=*/ticks);
 }
 
-bool onc_timer_disarm(struct event_timer *event) {
+bool onc_timer_disarm(struct am_event_timer *event) {
     AM_ASSERT(event);
     AM_ASSERT(EVENT_HAS_USER_ID(event));
 
@@ -112,7 +112,7 @@ bool onc_timer_disarm(struct event_timer *event) {
     return was_armed;
 }
 
-bool timer_is_armed(const struct event_timer *event) {
+bool timer_is_armed(const struct am_event_timer *event) {
     AM_ASSERT(event);
     AM_ASSERT(EVENT_HAS_USER_ID(event));
     return am_dlist_item_is_linked(&event->item);
@@ -144,15 +144,15 @@ void timer_tick(struct timer *hnd, int domain) {
 
     struct am_dlist_item *p = NULL;
     while ((p = am_dlist_iterator_next(&it)) != NULL) {
-        struct event_timer *timer =
-            AM_CONTAINER_OF(p, struct event_timer, item);
+        struct am_event_timer *timer =
+            AM_CONTAINER_OF(p, struct am_event_timer, item);
 
         AM_ASSERT(timer->shot_in_ticks);
         --timer->shot_in_ticks;
         if (timer->shot_in_ticks) {
             continue;
         }
-        struct event_timer *t = timer;
+        struct am_event_timer *t = timer;
         if (hnd->cfg.update) {
             t = hnd->cfg.update(timer);
         }

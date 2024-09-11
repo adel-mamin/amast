@@ -42,7 +42,7 @@ static struct owner {
 
 static struct timer m_timer;
 
-static void post_cb(void *owner, const struct event *event) {
+static void post_cb(void *owner, const struct am_event *event) {
     (void)event;
     AM_ASSERT(owner == &m_owner);
     AM_ASSERT(EVT_USER == event->id);
@@ -54,7 +54,7 @@ static void test_post(void) {
     struct timer_cfg cfg = {.post = post_cb, .publish = NULL, .update = NULL};
     timer_ctor(&m_timer, &cfg);
 
-    struct event_timer event;
+    struct am_event_timer event;
     timer_event_ctor(&event, /*id=*/EVT_TEST, /*domain=*/0);
     timer_post_in_ticks(&m_timer, &event, &m_owner, 1);
     timer_tick(&m_timer, /*domain=*/0);

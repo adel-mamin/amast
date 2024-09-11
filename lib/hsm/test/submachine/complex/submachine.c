@@ -102,14 +102,14 @@ struct am_hsm *g_submachine = &m_test.hsm;
 #define SM_1 1
 #define SM_2 2
 
-static enum am_hsm_rc s(struct test *me, const struct event *event);
-static enum am_hsm_rc s1(struct test *me, const struct event *event);
-static enum am_hsm_rc s11(struct test *me, const struct event *event);
-static enum am_hsm_rc s111(struct test *me, const struct event *event);
-static enum am_hsm_rc s12(struct test *me, const struct event *event);
-static enum am_hsm_rc s121(struct test *me, const struct event *event);
+static enum am_hsm_rc s(struct test *me, const struct am_event *event);
+static enum am_hsm_rc s1(struct test *me, const struct am_event *event);
+static enum am_hsm_rc s11(struct test *me, const struct am_event *event);
+static enum am_hsm_rc s111(struct test *me, const struct am_event *event);
+static enum am_hsm_rc s12(struct test *me, const struct am_event *event);
+static enum am_hsm_rc s121(struct test *me, const struct am_event *event);
 
-static enum am_hsm_rc s(struct test *me, const struct event *event) {
+static enum am_hsm_rc s(struct test *me, const struct am_event *event) {
     const int instance = am_hsm_get_state_instance(&me->hsm);
     AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s)));
     switch (event->id) {
@@ -131,7 +131,7 @@ static enum am_hsm_rc s(struct test *me, const struct event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc s1(struct test *me, const struct event *event) {
+static enum am_hsm_rc s1(struct test *me, const struct am_event *event) {
     const int instance = am_hsm_get_state_instance(&me->hsm);
     AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s1, instance)));
     switch (event->id) {
@@ -176,7 +176,7 @@ static enum am_hsm_rc s1(struct test *me, const struct event *event) {
     return AM_HSM_SUPER(super->fn, super->ifn);
 }
 
-static enum am_hsm_rc s11(struct test *me, const struct event *event) {
+static enum am_hsm_rc s11(struct test *me, const struct am_event *event) {
     const int instance = am_hsm_get_state_instance(&me->hsm);
     AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s11, instance)));
     switch (event->id) {
@@ -210,7 +210,7 @@ static enum am_hsm_rc s11(struct test *me, const struct event *event) {
     return AM_HSM_SUPER(s1, instance);
 }
 
-static enum am_hsm_rc s111(struct test *me, const struct event *event) {
+static enum am_hsm_rc s111(struct test *me, const struct am_event *event) {
     const int instance = am_hsm_get_state_instance(&me->hsm);
     AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s111, instance)));
     switch (event->id) {
@@ -236,7 +236,7 @@ static enum am_hsm_rc s111(struct test *me, const struct event *event) {
     return AM_HSM_SUPER(s11, instance);
 }
 
-static enum am_hsm_rc s12(struct test *me, const struct event *event) {
+static enum am_hsm_rc s12(struct test *me, const struct am_event *event) {
     const int instance = am_hsm_get_state_instance(&me->hsm);
     AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s12, instance)));
     switch (event->id) {
@@ -270,7 +270,7 @@ static enum am_hsm_rc s12(struct test *me, const struct event *event) {
     return AM_HSM_SUPER(s1, instance);
 }
 
-static enum am_hsm_rc s121(struct test *me, const struct event *event) {
+static enum am_hsm_rc s121(struct test *me, const struct am_event *event) {
     const int instance = am_hsm_get_state_instance(&me->hsm);
     AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s121, instance)));
     switch (event->id) {
@@ -296,7 +296,7 @@ static enum am_hsm_rc s121(struct test *me, const struct event *event) {
     return AM_HSM_SUPER(s12, instance);
 }
 
-static enum am_hsm_rc sinit(struct test *me, const struct event *event) {
+static enum am_hsm_rc sinit(struct test *me, const struct am_event *event) {
     (void)event;
 
     me->log("top/%d-INIT;", am_hsm_get_state_instance(&me->hsm));

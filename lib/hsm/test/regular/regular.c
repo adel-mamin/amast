@@ -50,13 +50,13 @@ static struct test m_test;
 
 struct am_hsm *g_regular = &m_test.hsm;
 
-static enum am_hsm_rc s2(struct test *me, const struct event *event);
-static enum am_hsm_rc s21(struct test *me, const struct event *event);
-static enum am_hsm_rc s211(struct test *me, const struct event *event);
-static enum am_hsm_rc s1(struct test *me, const struct event *event);
-static enum am_hsm_rc s11(struct test *me, const struct event *event);
+static enum am_hsm_rc s2(struct test *me, const struct am_event *event);
+static enum am_hsm_rc s21(struct test *me, const struct am_event *event);
+static enum am_hsm_rc s211(struct test *me, const struct am_event *event);
+static enum am_hsm_rc s1(struct test *me, const struct am_event *event);
+static enum am_hsm_rc s11(struct test *me, const struct am_event *event);
 
-static enum am_hsm_rc test_init(struct test *me, const struct event *event) {
+static enum am_hsm_rc test_init(struct test *me, const struct am_event *event) {
     (void)event;
 
     me->foo = 0;
@@ -64,7 +64,7 @@ static enum am_hsm_rc test_init(struct test *me, const struct event *event) {
     return AM_HSM_TRAN(s2);
 }
 
-static enum am_hsm_rc s(struct test *me, const struct event *event) {
+static enum am_hsm_rc s(struct test *me, const struct am_event *event) {
     AM_ASSERT(am_hsm_get_state_instance(&me->hsm) == 0);
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:
@@ -112,7 +112,7 @@ static enum am_hsm_rc s(struct test *me, const struct event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc s1(struct test *me, const struct event *event) {
+static enum am_hsm_rc s1(struct test *me, const struct am_event *event) {
     AM_ASSERT(am_hsm_get_state_instance(&me->hsm) == 0);
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:
@@ -171,7 +171,7 @@ static enum am_hsm_rc s1(struct test *me, const struct event *event) {
     return AM_HSM_SUPER(s);
 }
 
-static enum am_hsm_rc s11(struct test *me, const struct event *event) {
+static enum am_hsm_rc s11(struct test *me, const struct am_event *event) {
     AM_ASSERT(am_hsm_get_state_instance(&me->hsm) == 0);
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:
@@ -217,7 +217,7 @@ static enum am_hsm_rc s11(struct test *me, const struct event *event) {
     return AM_HSM_SUPER(s1);
 }
 
-static enum am_hsm_rc s2(struct test *me, const struct event *event) {
+static enum am_hsm_rc s2(struct test *me, const struct am_event *event) {
     AM_ASSERT(am_hsm_get_state_instance(&me->hsm) == 0);
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:
@@ -263,7 +263,7 @@ static enum am_hsm_rc s2(struct test *me, const struct event *event) {
     return AM_HSM_SUPER(s);
 }
 
-static enum am_hsm_rc s21(struct test *me, const struct event *event) {
+static enum am_hsm_rc s21(struct test *me, const struct am_event *event) {
     AM_ASSERT(am_hsm_get_state_instance(&me->hsm) == 0);
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:
@@ -311,7 +311,7 @@ static enum am_hsm_rc s21(struct test *me, const struct event *event) {
     return AM_HSM_SUPER(s2);
 }
 
-static enum am_hsm_rc s211(struct test *me, const struct event *event) {
+static enum am_hsm_rc s211(struct test *me, const struct am_event *event) {
     AM_ASSERT(am_hsm_get_state_instance(&me->hsm) == 0);
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:

@@ -103,11 +103,13 @@ int main(void) {
         m_log_buf[0] = '\0';
 
         if (terminate) {
-            am_hsm_dispatch(g_submachine, &(struct event){.id = HSM_EVT_TERM});
+            am_hsm_dispatch(
+                g_submachine, &(struct am_event){.id = HSM_EVT_TERM}
+            );
             test_print(c);
             break;
         }
-        am_hsm_dispatch(g_submachine, &(struct event){.id = e[index]});
+        am_hsm_dispatch(g_submachine, &(struct am_event){.id = e[index]});
         test_print(c);
     }
     m_log_buf[0] = '\0';

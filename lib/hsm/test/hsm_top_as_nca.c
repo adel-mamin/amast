@@ -39,10 +39,10 @@ static struct test m_test;
 
 /* Test am_hsm_top() as NCA. */
 
-static enum am_hsm_rc s11(struct test *me, const struct event *event);
-static enum am_hsm_rc s2(struct test *me, const struct event *event);
+static enum am_hsm_rc s11(struct test *me, const struct am_event *event);
+static enum am_hsm_rc s2(struct test *me, const struct am_event *event);
 
-static enum am_hsm_rc s1(struct test *me, const struct event *event) {
+static enum am_hsm_rc s1(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_INIT:
         return AM_HSM_TRAN(s11);
@@ -52,7 +52,7 @@ static enum am_hsm_rc s1(struct test *me, const struct event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc s11(struct test *me, const struct event *event) {
+static enum am_hsm_rc s11(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case HSM_EVT_A:
         return AM_HSM_TRAN(s2);
@@ -62,12 +62,12 @@ static enum am_hsm_rc s11(struct test *me, const struct event *event) {
     return AM_HSM_SUPER(s1);
 }
 
-static enum am_hsm_rc s2(struct test *me, const struct event *event) {
+static enum am_hsm_rc s2(struct test *me, const struct am_event *event) {
     (void)event;
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc sinit(struct test *me, const struct event *event) {
+static enum am_hsm_rc sinit(struct test *me, const struct am_event *event) {
     (void)event;
     return AM_HSM_TRAN(s1);
 }
@@ -79,7 +79,7 @@ static void test_am_hsm_top_as_nca(void) {
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
     AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s11)));
 
-    static const struct event E = {.id = HSM_EVT_A};
+    static const struct am_event E = {.id = HSM_EVT_A};
     am_hsm_dispatch(&me->hsm, &E);
     AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(s2)));
 }

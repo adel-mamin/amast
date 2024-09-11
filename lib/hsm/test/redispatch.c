@@ -40,10 +40,10 @@ static struct redispatch m_redispatch;
 
 /* test AM_HSM_TRAN_REDISPATCH() */
 
-static enum am_hsm_rc s1(struct redispatch *me, const struct event *event);
-static enum am_hsm_rc s2(struct redispatch *me, const struct event *event);
+static enum am_hsm_rc s1(struct redispatch *me, const struct am_event *event);
+static enum am_hsm_rc s2(struct redispatch *me, const struct am_event *event);
 
-static enum am_hsm_rc s1(struct redispatch *me, const struct event *event) {
+static enum am_hsm_rc s1(struct redispatch *me, const struct am_event *event) {
     switch (event->id) {
     case HSM_EVT_A:
         return AM_HSM_TRAN_REDISPATCH(s2);
@@ -56,7 +56,7 @@ static enum am_hsm_rc s1(struct redispatch *me, const struct event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc s2(struct redispatch *me, const struct event *event) {
+static enum am_hsm_rc s2(struct redispatch *me, const struct am_event *event) {
     switch (event->id) {
     case HSM_EVT_A:
         me->foo = 1;
@@ -69,7 +69,9 @@ static enum am_hsm_rc s2(struct redispatch *me, const struct event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc sinit(struct redispatch *me, const struct event *event) {
+static enum am_hsm_rc sinit(
+    struct redispatch *me, const struct am_event *event
+) {
     (void)event;
     me->foo = 0;
     me->foo2 = 0;
@@ -84,13 +86,13 @@ static void test_redispatch(void) {
     AM_ASSERT(0 == me->foo);
 
     {
-        static const struct event e = {.id = HSM_EVT_A};
+        static const struct am_event e = {.id = HSM_EVT_A};
         am_hsm_dispatch(&me->hsm, &e);
         AM_ASSERT(1 == me->foo);
         AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(s2)));
     }
     {
-        static const struct event e = {.id = HSM_EVT_B};
+        static const struct am_event e = {.id = HSM_EVT_B};
         am_hsm_dispatch(&me->hsm, &e);
         AM_ASSERT(2 == me->foo2);
         AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(s1)));

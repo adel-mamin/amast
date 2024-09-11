@@ -105,7 +105,7 @@ struct am_hsm;
  * @return One of AM_HSM_RC_... constants.
  */
 typedef enum am_hsm_rc (*am_hsm_state_fn)(
-    struct am_hsm *hsm, const struct event *evt
+    struct am_hsm *hsm, const struct am_event *evt
 );
 
 /** HSM state */
@@ -218,7 +218,7 @@ struct am_hsm {
  * @param hsm    the HSM handler
  * @param event  the event to dispatch
  */
-void am_hsm_dispatch(struct am_hsm *hsm, const struct event *event);
+void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event);
 
 /**
  * Test whether HSM is in a given state.
@@ -279,14 +279,14 @@ void am_hsm_dtor(struct am_hsm *hsm);
  * @param hsm         the HSM handler
  * @param init_event  the init event. Can be NULL. The event is not recycled.
  */
-void am_hsm_init(struct am_hsm *hsm, const struct event *init_event);
+void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event);
 
 /**
  * Every HSM has implicit top state, which surrounds all other elements
  * of the entire state machine.
  * One should never target top state in a state transition.
  */
-enum am_hsm_rc am_hsm_top(struct am_hsm *hsm, const struct event *event);
+enum am_hsm_rc am_hsm_top(struct am_hsm *hsm, const struct am_event *event);
 
 #ifdef __cplusplus
 }
