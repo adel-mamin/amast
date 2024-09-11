@@ -1,7 +1,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2024 Adel Mamin
+# Copyright (c) Adel Mamin
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,17 +22,8 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
-src = []
+bt_src = [files('bt.c')]
+src += [bt_src]
 
-subdir('blk')
-subdir('common')
-subdir('crc')
-subdir('dlist')
-subdir('strlib')
-subdir('hsm')
-subdir('bt')
-subdir('queue')
-subdir('slist')
-subdir('onesize')
-subdir('timer')
+libbt = library('libbt', [bt_src, dlist_src, hsm_src], include_directories: inc)
+libbt_dep = declare_dependency(link_with : libbt, include_directories : inc)
