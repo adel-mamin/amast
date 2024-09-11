@@ -82,7 +82,7 @@ AM_ASSERT_STATIC(EVT_USER > AM_HSM_EVT_MAX);
  */
 enum am_hsm_rc {
     /* Returned by AM_HSM_HANDLED() */
-    AM_HSM_RC_HANDLED = 0,
+    AM_HSM_RC_HANDLED = 1,
     /* Returned by AM_HSM_TRAN() */
     AM_HSM_RC_TRAN,
     /* Returned by AM_HSM_TRAN_REDISPATCH() */
