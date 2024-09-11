@@ -168,12 +168,12 @@ static enum am_hsm_rc s1(struct test *me, const struct event *event) {
     }
     static const struct am_hsm_state ss[] = {
         [SM_0] = {.fn = (am_hsm_state_fn)s},
-        [SM_1] = {.fn = (am_hsm_state_fn)s1, .instance = SM_0},
+        [SM_1] = {.fn = (am_hsm_state_fn)s1, .ifn = SM_0},
         [SM_2] = {.fn = (am_hsm_state_fn)s}
     };
     AM_ASSERT(instance < AM_COUNTOF(ss));
     const struct am_hsm_state *super = &ss[instance];
-    return AM_HSM_SUPER(super->fn, super->instance);
+    return AM_HSM_SUPER(super->fn, super->ifn);
 }
 
 static enum am_hsm_rc s11(struct test *me, const struct event *event) {
@@ -195,14 +195,14 @@ static enum am_hsm_rc s11(struct test *me, const struct event *event) {
     case HSM_EVT_G:
         me->log("s11/%d-G;", instance);
         static const struct am_hsm_state tt[] = {
-            [SM_0] = {.fn = (am_hsm_state_fn)s1, .instance = SM_1},
-            [SM_1] = {.fn = (am_hsm_state_fn)s1, .instance = SM_2},
-            [SM_2] = {.fn = (am_hsm_state_fn)s1, .instance = SM_0}
+            [SM_0] = {.fn = (am_hsm_state_fn)s1, .ifn = SM_1},
+            [SM_1] = {.fn = (am_hsm_state_fn)s1, .ifn = SM_2},
+            [SM_2] = {.fn = (am_hsm_state_fn)s1, .ifn = SM_0}
         };
         AM_ASSERT(instance < AM_COUNTOF(tt));
         const struct am_hsm_state *tran = &tt[instance];
 
-        return AM_HSM_TRAN(tran->fn, tran->instance);
+        return AM_HSM_TRAN(tran->fn, tran->ifn);
 
     default:
         break;
@@ -255,14 +255,14 @@ static enum am_hsm_rc s12(struct test *me, const struct event *event) {
     case HSM_EVT_F:
         me->log("s12/%d-F;", instance);
         static const struct am_hsm_state tt[] = {
-            [SM_0] = {.fn = (am_hsm_state_fn)s12, .instance = SM_1},
-            [SM_1] = {.fn = (am_hsm_state_fn)s12, .instance = SM_2},
-            [SM_2] = {.fn = (am_hsm_state_fn)s12, .instance = SM_0}
+            [SM_0] = {.fn = (am_hsm_state_fn)s12, .ifn = SM_1},
+            [SM_1] = {.fn = (am_hsm_state_fn)s12, .ifn = SM_2},
+            [SM_2] = {.fn = (am_hsm_state_fn)s12, .ifn = SM_0}
         };
         AM_ASSERT(instance < AM_COUNTOF(tt));
         const struct am_hsm_state *tran = &tt[instance];
 
-        return AM_HSM_TRAN(tran->fn, tran->instance);
+        return AM_HSM_TRAN(tran->fn, tran->ifn);
 
     default:
         break;

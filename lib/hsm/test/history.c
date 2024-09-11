@@ -62,7 +62,7 @@ static enum am_hsm_rc oven_open(struct oven *me, const struct event *event) {
         return AM_HSM_HANDLED();
 
     case HSM_EVT_CLOSE:
-        return AM_HSM_TRAN(me->history.fn, me->history.instance);
+        return AM_HSM_TRAN(me->history.fn, me->history.ifn);
 
     default:
         break;

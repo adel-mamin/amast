@@ -113,27 +113,27 @@ struct am_hsm_state {
     /** HSM state function  */
     am_hsm_state_fn fn;
     /** HSM state function instance. Used for submachines. Default is 0. */
-    unsigned char instance;
+    unsigned char ifn;
 };
 
 /** Helper macro. Not to be used directly. */
-#define AM_STATE1_(f) \
-    (struct am_hsm_state) { .fn = (am_hsm_state_fn)f, .instance = 0 }
+#define AM_STATE1_(s) \
+    (struct am_hsm_state) { .fn = (am_hsm_state_fn)s, .ifn = 0 }
 
 /** Helper macro. Not to be used directly. */
-#define AM_STATE2_(f, i) \
-    (struct am_hsm_state) { .fn = (am_hsm_state_fn)f, .instance = i }
+#define AM_STATE2_(s, i) \
+    (struct am_hsm_state) { .fn = (am_hsm_state_fn)s, .ifn = i }
 
 /**
  * Get HSM state from event handler and optionally the event handler instance.
  *
- * AM_HSM_STATE(fn)    is converted to
- *                     (struct am_hsm_state){.fn = fn, .instance = 0}
- * AM_HSM_STATE(fn, i) is converted to
- *                     (struct am_hsm_state){.fn = fn, .instance = i}
+ * AM_HSM_STATE(s)     is converted to
+ *                     (struct am_hsm_state){.fn = s, .ifn = 0}
+ * AM_HSM_STATE(s, i)  is converted to
+ *                     (struct am_hsm_state){.fn = s, .ifn = i}
  *
- * @param fn  HSM event handler
- * @param i   HSM event handler instance. Used by submachines. Default is 0.
+ * @param s  HSM event handler
+ * @param i  HSM event handler instance. Used by submachines. Default is 0.
  * @return HSM state structure
  */
 #define AM_HSM_STATE(...) \
