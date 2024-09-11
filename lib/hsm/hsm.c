@@ -45,12 +45,10 @@ struct am_hsm_path {
 };
 
 /** canned events */
-static const struct am_event m_hsm_evt[] = {
-    {.id = AM_HSM_EVT_EMPTY},
-    {.id = AM_HSM_EVT_INIT},
-    {.id = AM_HSM_EVT_ENTRY},
-    {.id = AM_HSM_EVT_EXIT}
-};
+static const struct am_event m_hsm_evt_empty = {.id = AM_HSM_EVT_EMPTY};
+static const struct am_event m_hsm_evt_init = {.id = AM_HSM_EVT_INIT};
+static const struct am_event m_hsm_evt_entry = {.id = AM_HSM_EVT_ENTRY};
+static const struct am_event m_hsm_evt_exit = {.id = AM_HSM_EVT_EXIT};
 
 static void hsm_set_current(struct am_hsm *hsm, const struct am_hsm_state *s) {
     hsm->state = hsm->temp = s->fn;
@@ -93,14 +91,14 @@ static void hsm_build(
     path->fn[0] = from->fn;
     path->ifn[0] = from->ifn;
     path->len = 1;
-    enum am_hsm_rc rc = hsm->temp(hsm, &m_hsm_evt[AM_HSM_EVT_EMPTY]);
+    enum am_hsm_rc rc = hsm->temp(hsm, &m_hsm_evt_empty);
     AM_ASSERT(AM_HSM_RC_SUPER == rc);
     while (!hsm_temp_is_eq(hsm, until)) {
         AM_ASSERT(path->len < HSM_HIERARCHY_DEPTH_MAX);
         path->fn[path->len] = hsm->temp;
         path->ifn[path->len] = hsm->itemp;
         path->len++;
-        rc = hsm->temp(hsm, &m_hsm_evt[AM_HSM_EVT_EMPTY]);
+        rc = hsm->temp(hsm, &m_hsm_evt_empty);
         AM_ASSERT(AM_HSM_RC_SUPER == rc);
     }
     *hsm = hsm_;
@@ -114,7 +112,7 @@ static void hsm_build(
 static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
     for (int i = path->len - 1; i >= 0; --i) {
         hsm_set_current(hsm, &AM_HSM_STATE(path->fn[i], path->ifn[i]));
-        enum am_hsm_rc rc = hsm->state(hsm, &m_hsm_evt[AM_HSM_EVT_ENTRY]);
+        enum am_hsm_rc rc = hsm->state(hsm, &m_hsm_evt_entry);
         AM_ASSERT((AM_HSM_RC_SUPER == rc) || (AM_HSM_RC_HANDLED == rc));
     }
 }
@@ -128,10 +126,10 @@ static void hsm_exit(struct am_hsm *hsm, struct am_hsm_state *until) {
     while (!hsm_temp_is_eq(hsm, until)) {
         hsm->state = hsm->temp;
         hsm->istate = hsm->itemp;
-        enum am_hsm_rc rc = hsm->temp(hsm, &m_hsm_evt[AM_HSM_EVT_EXIT]);
+        enum am_hsm_rc rc = hsm->temp(hsm, &m_hsm_evt_exit);
         AM_ASSERT(rc != AM_HSM_RC_TRAN);
         if (AM_HSM_RC_HANDLED == rc) {
-            rc = hsm->temp(hsm, &m_hsm_evt[AM_HSM_EVT_EMPTY]);
+            rc = hsm->temp(hsm, &m_hsm_evt_empty);
         }
         AM_ASSERT(AM_HSM_RC_SUPER == rc);
     }
@@ -151,7 +149,7 @@ static void hsm_exit(struct am_hsm *hsm, struct am_hsm_state *until) {
 static void hsm_enter_and_init(struct am_hsm *hsm, struct am_hsm_path *path) {
     hsm_enter(hsm, path);
     hsm_set_current(hsm, &AM_HSM_STATE(path->fn[0], path->ifn[0]));
-    while (hsm->state(hsm, &m_hsm_evt[AM_HSM_EVT_INIT]) == AM_HSM_RC_TRAN) {
+    while (hsm->state(hsm, &m_hsm_evt_init) == AM_HSM_RC_TRAN) {
         struct am_hsm_state from = AM_HSM_STATE(hsm->temp, hsm->itemp);
         struct am_hsm_state until = AM_HSM_STATE(path->fn[0], path->ifn[0]);
         hsm_build(hsm, path, &from, &until);
@@ -209,7 +207,7 @@ static enum am_hsm_rc hsm_dispatch(
         path.fn[0] = dst.fn;
         path.ifn[0] = dst.ifn;
         path.len = 1;
-        enum am_hsm_rc r = src.fn(hsm, &m_hsm_evt[AM_HSM_EVT_EXIT]);
+        enum am_hsm_rc r = src.fn(hsm, &m_hsm_evt_exit);
         AM_ASSERT((AM_HSM_RC_SUPER == r) || (AM_HSM_RC_HANDLED == r));
         hsm_enter_and_init(hsm, &path);
         return rc;
@@ -231,9 +229,9 @@ static enum am_hsm_rc hsm_dispatch(
                 return rc;
             }
         }
-        enum am_hsm_rc r = hsm->temp(hsm, &m_hsm_evt[AM_HSM_EVT_EXIT]);
+        enum am_hsm_rc r = hsm->temp(hsm, &m_hsm_evt_exit);
         if (AM_HSM_RC_HANDLED == r) {
-            r = hsm->temp(hsm, &m_hsm_evt[AM_HSM_EVT_EMPTY]);
+            r = hsm->temp(hsm, &m_hsm_evt_empty);
         }
         AM_ASSERT(AM_HSM_RC_SUPER == r);
         hsm->state = hsm->temp;
@@ -264,7 +262,7 @@ bool am_hsm_is_in(struct am_hsm *hsm, const struct am_hsm_state *state) {
     hsm->itemp = hsm->istate;
 
     while (!hsm_temp_is_eq(hsm, state) && (hsm->temp != am_hsm_top)) {
-        enum am_hsm_rc rc = hsm->temp(hsm, &m_hsm_evt[AM_HSM_EVT_EMPTY]);
+        enum am_hsm_rc rc = hsm->temp(hsm, &m_hsm_evt_empty);
         AM_ASSERT(AM_HSM_RC_SUPER == rc);
     }
     bool in = hsm_temp_is_eq(hsm, state);

@@ -45,14 +45,14 @@ extern "C" {
  * The event handlers must always return the AM_HSM_SUPER() in response
  * to this event.
  */
-#define AM_HSM_EVT_EMPTY 0
+#define AM_HSM_EVT_EMPTY 1
 
 /**
  * Init event.
  * Run initial transition from a given state.
  * Always follows the #AM_HSM_EVT_ENTRY event.
  */
-#define AM_HSM_EVT_INIT 1
+#define AM_HSM_EVT_INIT 2
 
 /**
  * Entry event.
@@ -60,14 +60,14 @@ extern "C" {
  * Always precedes the #AM_HSM_EVT_INIT event.
  * No state transition is allowed in response to this event.
  */
-#define AM_HSM_EVT_ENTRY 2
+#define AM_HSM_EVT_ENTRY 3
 
 /**
  * Exit event.
  * Run exit action(s) for a given state.
  * No state transition is allowed in response to this event.
  */
-#define AM_HSM_EVT_EXIT 3
+#define AM_HSM_EVT_EXIT 4
 
 /** HSM event with maximum value. */
 #define AM_HSM_EVT_MAX AM_HSM_EVT_EXIT
