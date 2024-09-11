@@ -61,7 +61,9 @@ struct am_bt_cfg *am_bt_get_cfg(struct am_hsm *hsm) {
     return cfg;
 }
 
-struct am_hsm_state *am_bt_get_superstate(enum am_bt_type type, struct am_hsm *hsm, int instance) {
+struct am_hsm_state *am_bt_get_superstate(
+    enum am_bt_type type, struct am_hsm *hsm, int instance
+) {
     (void)type;
     (void)hsm;
     (void)instance;

@@ -44,7 +44,7 @@ extern "C" {
  */
 enum am_dlist_direction {
     AM_DLIST_FORWARD = 1, /**< forward list traverse */
-    AM_DLIST_BACKWARD /**< backward list traverse */
+    AM_DLIST_BACKWARD     /**< backward list traverse */
 };
 
 /**

@@ -70,13 +70,19 @@ struct am_bt_repeat {
 };
 
 enum am_hsm_rc am_bt_invert(struct am_hsm *hsm, const struct am_event *event);
-enum am_hsm_rc am_bt_force_success(struct am_hsm *hsm, const struct am_event *event);
-enum am_hsm_rc am_bt_force_failure(struct am_hsm *hsm, const struct am_event *event);
+enum am_hsm_rc am_bt_force_success(
+    struct am_hsm *hsm, const struct am_event *event
+);
+enum am_hsm_rc am_bt_force_failure(
+    struct am_hsm *hsm, const struct am_event *event
+);
 enum am_hsm_rc am_bt_repeat(struct am_hsm *hsm, const struct am_event *event);
 
 void am_bt_add_cfg(struct am_bt_cfg *cfg);
 struct am_bt_cfg *am_bt_get_cfg(struct am_hsm *hsm);
-struct am_hsm_state *am_bt_get_superstate(enum am_bt_type type, struct am_hsm *hsm, int instance);
+struct am_hsm_state *am_bt_get_superstate(
+    enum am_bt_type type, struct am_hsm *hsm, int instance
+);
 void am_bt_ctor(void);
 
 #ifdef __cplusplus
