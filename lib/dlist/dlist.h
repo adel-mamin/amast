@@ -43,7 +43,7 @@ extern "C" {
  * in which doubly linked list iterator traverses the list.
  */
 enum am_dlist_direction {
-    AM_DLIST_FORWARD, /**< forward list traverse */
+    AM_DLIST_FORWARD = 1, /**< forward list traverse */
     AM_DLIST_BACKWARD /**< backward list traverse */
 };
 
@@ -270,8 +270,9 @@ void am_dlist_iterator_init(
  * the list were visited, the next invocation of the function returns NULL.
  * The current visited item can only be popped with
  * am_dlist_iterator_pop().
- * @param it the iterator initialized by am_dlist_iterator_init()
- * @return The visited item. The item is not popped from the list.
+ * @param it  the iterator initialized by am_dlist_iterator_init()
+ * @return The visited item or NULL if the iteration is over.
+ *         The item is not popped from the list.
  */
 struct am_dlist_item *am_dlist_iterator_next(struct am_dlist_iterator *it);
 
@@ -282,7 +283,7 @@ struct am_dlist_item *am_dlist_iterator_next(struct am_dlist_iterator *it);
  * this function is called. Otherwise the behavior is undefined. The only valid
  * operation possible after this call is am_dlist_iterator_next(); Otherwise the
  * behavior is undefined.
- * @param it The iterator.
+ * @param it  the iterator
  * @retval The popped item.
  */
 struct am_dlist_item *am_dlist_iterator_pop(struct am_dlist_iterator *it);
