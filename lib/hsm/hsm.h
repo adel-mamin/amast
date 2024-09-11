@@ -105,7 +105,7 @@ struct am_hsm;
  * @return One of AM_HSM_RC_... constants.
  */
 typedef enum am_hsm_rc (*am_hsm_state_fn)(
-    struct am_hsm *hsm, const struct am_event *evt
+    struct am_hsm *hsm, const struct am_event *event
 );
 
 /** HSM state */
@@ -248,7 +248,7 @@ bool am_hsm_state_is_eq(struct am_hsm *hsm, const struct am_hsm_state *state);
 
 /**
  * Get state instance.
- * Always returns the instance of the state that calls the API.
+ * Always returns the instance of the calling state function.
  * Calling the function in a state that is not part of any submachine
  * will always return 0.
  * @param hsm  the HSM handler

@@ -160,13 +160,13 @@ static void hsm_enter_and_init(struct am_hsm *hsm, struct am_hsm_path *path) {
 }
 
 static enum am_hsm_rc hsm_dispatch(
-    struct am_hsm *hsm, const struct am_event *evt
+    struct am_hsm *hsm, const struct am_event *event
 ) {
     AM_ASSERT(hsm);
     AM_ASSERT(hsm->state);
     AM_ASSERT(hsm->state == hsm->temp);
     AM_ASSERT(hsm->istate == hsm->itemp);
-    AM_ASSERT(evt);
+    AM_ASSERT(event);
 
     struct am_hsm_state src = {.fn = NULL, .ifn = 0};
     enum am_hsm_rc rc = AM_HSM_RC_HANDLED;
@@ -177,7 +177,7 @@ static enum am_hsm_rc hsm_dispatch(
     do {
         src.fn = hsm->temp;
         src.ifn = hsm->itemp;
-        rc = hsm->temp(hsm, evt);
+        rc = hsm->temp(hsm, event);
     } while (AM_HSM_RC_SUPER == rc);
 
     {
@@ -243,10 +243,10 @@ static enum am_hsm_rc hsm_dispatch(
     return rc;
 }
 
-void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *evt) {
-    enum am_hsm_rc rc = hsm_dispatch(hsm, evt);
+void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event) {
+    enum am_hsm_rc rc = hsm_dispatch(hsm, event);
     if (AM_HSM_RC_TRAN_REDISPATCH == rc) {
-        rc = hsm_dispatch(hsm, evt);
+        rc = hsm_dispatch(hsm, event);
         AM_ASSERT(AM_HSM_RC_TRAN_REDISPATCH != rc);
     }
 }

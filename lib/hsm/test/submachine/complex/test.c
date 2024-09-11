@@ -62,7 +62,7 @@ static void test_submachine(void) {
     }
 
     struct test2 {
-        int evt;
+        int event;
         const char *out;
     };
     static const struct test2 in[] = {
@@ -101,7 +101,7 @@ static void test_submachine(void) {
     };
 
     for (int i = 0; i < AM_COUNTOF(in); i++) {
-        struct am_event e = {.id = in[i].evt};
+        struct am_event e = {.id = in[i].event};
         am_hsm_dispatch(g_submachine, &e);
         AM_ASSERT(0 == strncmp(m_log_buf, in[i].out, strlen(in[i].out)));
         m_log_buf[0] = '\0';

@@ -66,7 +66,7 @@ static void test_hsm(void) {
     }
 
     struct test2 {
-        int evt;
+        int event;
         const char *out;
     };
     static const struct test2 in[] = {
@@ -100,7 +100,7 @@ static void test_hsm(void) {
     };
 
     for (int i = 0; i < AM_COUNTOF(in); i++) {
-        struct am_event e = {.id = in[i].evt};
+        struct am_event e = {.id = in[i].event};
         am_hsm_dispatch(g_regular, &e);
         AM_ASSERT(0 == strncmp(m_log_buf, in[i].out, strlen(in[i].out)));
         m_log_buf[0] = '\0';
