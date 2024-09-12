@@ -22,7 +22,8 @@
 # SOFTWARE.
 #
 
-src += [files('timer.c')]
+timer_src = [files('timer.c')]
+src += timer_src
 
 if unit_test
     e = executable(

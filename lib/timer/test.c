@@ -40,8 +40,6 @@ static struct owner {
     int npost;
 } m_owner;
 
-static struct timer m_timer;
-
 static void post_cb(void *owner, const struct am_event *event) {
     (void)event;
     AM_ASSERT(owner == &m_owner);
@@ -49,19 +47,21 @@ static void post_cb(void *owner, const struct am_event *event) {
     m_owner.npost++;
 }
 
-static void test_post(void) {
+static void test_arm(void) {
     memset(&m_owner, 0, sizeof(m_owner));
-    struct timer_cfg cfg = {.post = post_cb, .publish = NULL, .update = NULL};
-    timer_ctor(&m_timer, &cfg);
+    struct am_timer_cfg cfg = {
+        .post = post_cb, .publish = NULL, .update = NULL
+    };
+    am_timer_ctor(&cfg);
 
     struct am_event_timer event;
-    timer_event_ctor(&event, /*id=*/EVT_TEST, /*domain=*/0);
-    timer_post_in_ticks(&m_timer, &event, &m_owner, 1);
-    timer_tick(&m_timer, /*domain=*/0);
+    am_timer_event_ctor(&event, /*id=*/EVT_TEST, /*domain=*/0);
+    am_timer_arm(&event, &m_owner, /*ticks=*/1, /*interval=*/0);
+    am_timer_tick(/*domain=*/0);
     AM_ASSERT(1 == m_owner.npost);
 }
 
 int main(void) {
-    test_post();
+    test_arm();
     return 0;
 }

@@ -35,7 +35,8 @@ extern "C" {
 #include "dlist/dlist.h"
 
 /** Timer module configuration. */
-struct timer_cfg {
+struct am_timer_cfg {
+    int (*ticks_to_ms)(int ticks);
     /** either post or publish callback must be non-NULL */
     /**
      * Expired events are posted using this callback.
@@ -72,24 +73,11 @@ struct am_event_timer {
 
 AM_ASSERT_STATIC(TICK_DOMAIN_MAX < (1U << EVENT_TICK_DOMAIN_BITS));
 
-/** Timer module descriptor. */
-struct timer {
-    /**
-     * Timer event domains.
-     * Each domain comprises a list of the timer events,
-     * which belong to this domain.
-     */
-    struct am_dlist domains[TICK_DOMAIN_MAX];
-    /** timer module configuration */
-    struct timer_cfg cfg;
-};
-
 /**
  * Timer constructor.
- * @param hnd  the timer module
  * @param cfg  timer module configuration
  */
-void timer_ctor(struct timer *hnd, const struct timer_cfg *cfg);
+void am_timer_ctor(const struct am_timer_cfg *cfg);
 
 /**
  * Timer event constructor.
@@ -97,62 +85,27 @@ void timer_ctor(struct timer *hnd, const struct timer_cfg *cfg);
  * @param id      the timer event identifier
  * @param domain  tick domain the event belongs to
  */
-void timer_event_ctor(struct am_event_timer *event, int id, int domain);
+void am_timer_event_ctor(struct am_event_timer *event, int id, int domain);
 
 /**
- * Tick timers.
+ * Tick timer.
  * Update all armed timers and fire expired timer events.
- * @param hnd    the timer module
  * @param domain only tick timers in this tick domain
  */
-void timer_tick(struct timer *hnd, int domain);
+void am_timer_tick(int domain);
 
 /**
- * Post timer event to owner in specified number of ticks.
- * @param hnd    the timer module
- * @param event  the timer event to post
- * @param owner  the timer event's owner that gets the posted event
- * @param ticks  the timer event is to be posted in these many ticks
+ * Send timer event to owner in specified number of ticks.
+ * @param event     the timer event to arm
+ * @param owner     the timer event's owner that gets the posted event.
+ *                  Can be NULL, in which case the time event is published.
+ * @param ticks     the timer event is to be sent in these many ticks
+ * @param interval  the timer event is to be re-sent in these many ticks
+ *                  after the event is sent for the fist time.
+ *                  Can be 0, in which case the event is one shot.
  */
-void timer_post_in_ticks(
-    struct timer *hnd, struct am_event_timer *event, void *owner, int ticks
-);
-
-/**
- * Publish timer event in specified number of ticks.
- * The timer event is then re-published every ticks time period.
- * @param hnd    the timer module
- * @param event  the timer event to publish
- * @param ticks  the timer event is to be published in these many ticks
- *               and then re-published every ticks
- */
-void timer_publish_in_ticks(
-    struct timer *hnd, struct am_event_timer *event, int ticks
-);
-
-/**
- * Post timer event to owner in specified number of ticks.
- * The timer event is then re-posted to owner every ticks time period.
- * @param hnd    the timer module
- * @param event  the timer event to post
- * @param owner  the timer event's owner that gets the posted event
- * @param ticks  the timer event is to be posted in these many ticks
- *               and then re-posted every ticks
- */
-void timer_post_every_ticks(
-    struct timer *hnd, struct am_event_timer *event, void *owner, int ticks
-);
-
-/**
- * Publish timer event in specified number of ticks.
- * The timer event is then re-published every ticks time period.
- * @param hnd    the timer module
- * @param event  the timer event to publish
- * @param ticks  the timer event is to be published in these many ticks
- *               and then re-published every ticks
- */
-void timer_publish_every_ticks(
-    struct timer *hnd, struct am_event_timer *event, int ticks
+void am_timer_arm(
+    struct am_event_timer *event, void *owner, int ticks, int interval
 );
 
 /**
@@ -161,7 +114,7 @@ void timer_publish_every_ticks(
  * @retval true   the timer was armed
  * @retval false  the timer was not armed
  */
-bool timer_disarm(struct am_event_timer *event);
+bool am_timer_disarm(struct am_event_timer *event);
 
 /**
  * Check if timer is armed.
@@ -169,18 +122,24 @@ bool timer_disarm(struct am_event_timer *event);
  * @retval true   the timer is armed
  * @retval false  the timer is not armed
  */
-bool timer_is_armed(const struct am_event_timer *event);
+bool am_timer_is_armed(const struct am_event_timer *event);
 
 /**
  * Check if any timer is armed.
- * @param hnd     the timer module
  * @param domain  check if any timer is armed in this tick domain
  *                If set to TICK_DOMAIN_MAX, then check if any timer
  *                is armed in any tick domain.
  * @retval true   there are armed timers
  * @retval false  there are no armed timers
  */
-bool timer_any_armed(const struct timer *hnd, int domain);
+bool am_timer_any_armed(int domain);
+
+/**
+ * Convert ticks to milliseconds.
+ * @param ticks  the ticks
+ * @return the milliseconds
+ */
+int am_timer_ticks_to_ms(int ticks);
 
 #ifdef __cplusplus
 }
