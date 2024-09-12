@@ -25,5 +25,13 @@
 bt_src = [files('bt.c')]
 src += [bt_src]
 
-libbt = library('libbt', [bt_src, dlist_src, hsm_src], include_directories: inc)
+libbt = library(
+    'libbt',
+    [
+        bt_src,
+        dlist_src,
+        hsm_src,
+        timer_src,
+    ],
+    include_directories: inc)
 libbt_dep = declare_dependency(link_with : libbt, include_directories : inc)

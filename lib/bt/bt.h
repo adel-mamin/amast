@@ -35,6 +35,7 @@
 #include "dlist/dlist.h"
 #include "event/event.h"
 #include "hsm/hsm.h"
+#include "timer/timer.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,14 +43,22 @@ extern "C" {
 
 #define AM_BT_EVT_SUCCESS (AM_HSM_EVT_MAX + 1)
 #define AM_BT_EVT_FAILURE (AM_HSM_EVT_MAX + 2)
+#define AM_BT_EVT_DELAY (AM_HSM_EVT_MAX + 3)
 #define AM_BT_EVT_MAX AM_BT_EVT_FAILURE
 AM_ASSERT_STATIC(EVT_USER > AM_BT_EVT_MAX);
 
 enum am_bt_type {
-    AM_BT_INVERT = 1,
+    AM_BT_TYPES_MIN = 0,
+    AM_BT_INVERT = AM_BT_TYPES_MIN,
     AM_BT_FORCE_SUCCESS,
     AM_BT_FORCE_FAILURE,
-    AM_BT_REPEAT
+    AM_BT_REPEAT,
+    AM_BT_RETRY_UNTIL_SUCCESS,
+    AM_BT_RUN_UNTIL_FAILURE,
+    AM_BT_DELAY,
+    AM_BT_FALLBACK,
+    AM_BT_SEQUENCE,
+    AM_BT_TYPES_NUM
 };
 
 struct am_bt_cfg {
@@ -63,10 +72,61 @@ struct am_bt_node {
     struct am_hsm_state super;
 };
 
+struct am_bt_invert {
+    struct am_bt_node node;
+    struct am_hsm_state substate;
+};
+
+struct am_bt_force_success {
+    struct am_bt_node node;
+    struct am_hsm_state substate;
+};
+
+struct am_bt_force_failure {
+    struct am_bt_node node;
+    struct am_hsm_state substate;
+};
+
 struct am_bt_repeat {
     struct am_bt_node node;
-    struct am_hsm_state child;
-    int num;
+    struct am_hsm_state substate;
+    int total;
+    int done;
+};
+
+struct am_bt_retry_until_success {
+    struct am_bt_node node;
+    struct am_hsm_state substate;
+    int attempts_total;
+    int attempts_done;
+};
+
+struct am_bt_run_until_failure {
+    struct am_bt_node node;
+    struct am_hsm_state substate;
+};
+
+struct am_bt_delay {
+    struct am_bt_node node;
+    struct am_hsm_state substate;
+    struct am_event_timer delay;
+    int delay_ms;
+};
+
+struct am_bt_fallback {
+    struct am_bt_node node;
+    struct am_hsm_state *substates;
+    int nsubstates;
+    int isubstate;
+    unsigned init_done : 1;
+};
+
+struct am_bt_sequence {
+    struct am_bt_node node;
+    struct am_hsm_state *substates;
+    int nsubstates;
+    int isubstate;
+    unsigned init_done : 1;
 };
 
 enum am_hsm_rc am_bt_invert(struct am_hsm *hsm, const struct am_event *event);
@@ -78,11 +138,21 @@ enum am_hsm_rc am_bt_force_failure(
 );
 enum am_hsm_rc am_bt_repeat(struct am_hsm *hsm, const struct am_event *event);
 
-void am_bt_add_cfg(struct am_bt_cfg *cfg);
-struct am_bt_cfg *am_bt_get_cfg(struct am_hsm *hsm);
-struct am_hsm_state *am_bt_get_superstate(
-    enum am_bt_type type, struct am_hsm *hsm, int instance
+enum am_hsm_rc am_bt_retry_until_success(
+    struct am_hsm *me, const struct am_event *event
 );
+
+enum am_hsm_rc am_bt_run_until_failure(
+    struct am_hsm *me, const struct am_event *event
+);
+
+enum am_hsm_rc am_bt_delay(struct am_hsm *me, const struct am_event *event);
+enum am_hsm_rc am_bt_fallback(struct am_hsm *me, const struct am_event *event);
+
+void am_bt_add_cfg(struct am_bt_cfg *cfg);
+void am_bt_add_type(enum am_bt_type type, struct am_bt_node *node, int num);
+struct am_bt_cfg *am_bt_get_cfg(struct am_hsm *hsm);
+struct am_bt_node *am_bt_get_node(enum am_bt_type type, int instance);
 void am_bt_ctor(void);
 
 #ifdef __cplusplus
