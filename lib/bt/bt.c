@@ -239,7 +239,7 @@ enum am_hsm_rc am_bt_force_success(
     struct am_hsm *me, const struct am_event *event
 ) {
     int i = am_hsm_get_state_instance(me);
-    struct am_bt_node *node = am_bt_get_node(AM_BT_FORCE_FAILURE, i);
+    struct am_bt_node *node = am_bt_get_node(AM_BT_FORCE_SUCCESS, i);
     switch (event->id) {
     case AM_HSM_EVT_INIT: {
         struct am_bt_force_success *p = (struct am_bt_force_success *)node;

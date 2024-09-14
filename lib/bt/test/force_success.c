@@ -33,7 +33,7 @@
  *  | |     *            s1                    | |
  *  | |     |                                  | |
  *  | | +---v------------+  +----------------+ | |
- *  | | | am_bt_invert/0 |  | am_bt_invert/1 | | |
+ *  | | | am_bt_force_success/0 |  | am_bt_force_success/1 | | |
  *  | | |                |  |                | | |
  *  | | |   +--------+   |  |   +--------+   | | |
  *  | | |   |  s11   |   |  |   |  s12   |   | | |
@@ -42,13 +42,14 @@
  *  | +----------------------------------------+ |
  *  +--------------------------------------------+
  *
- * The am_bt_invert() unit testing is done with the
+ * The am_bt_force_success() unit testing is done with the
  * help of 3 user states: s1, s11 and s12.
  */
 
 #include <stddef.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "common/compiler.h"
 #include "common/macros.h"
@@ -68,13 +69,13 @@ static enum am_hsm_rc s1(struct test *me, const struct am_event *event);
 static enum am_hsm_rc s11(struct test *me, const struct am_event *event);
 static enum am_hsm_rc s12(struct test *me, const struct am_event *event);
 
-#define BT_INVERT_0 0
-#define BT_INVERT_1 1
-static struct am_bt_invert m_invert[] = {
-    [BT_INVERT_0] =
+#define BT_FORCE_SUCCESS_0 0
+#define BT_FORCE_SUCCESS_1 1
+static struct am_bt_force_success m_force_success[] = {
+    [BT_FORCE_SUCCESS_0] =
         {.node = {.super = {.fn = (am_hsm_state_fn)s1}},
          .substate = {.fn = (am_hsm_state_fn)s11}},
-    [BT_INVERT_1] =
+    [BT_FORCE_SUCCESS_1] =
         {.node = {.super = {.fn = (am_hsm_state_fn)s1}},
          .substate = {.fn = (am_hsm_state_fn)s12}}
 };
@@ -83,15 +84,20 @@ static enum am_hsm_rc s1(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_INIT: {
         LOG("s1-INIT;");
-        return AM_HSM_TRAN(am_bt_invert, BT_INVERT_0);
+        return AM_HSM_TRAN(am_bt_force_success, BT_FORCE_SUCCESS_0);
     }
     case AM_BT_EVT_SUCCESS: {
         LOG("s1-BT_SUCCESS;");
-        return AM_HSM_HANDLED();
+        if (am_hsm_is_in(
+                &me->hsm, &AM_HSM_STATE(am_bt_force_success, BT_FORCE_SUCCESS_0)
+            )) {
+            return AM_HSM_TRAN(am_bt_force_success, BT_FORCE_SUCCESS_1);
+        }
+        break;
     }
     case AM_BT_EVT_FAILURE: {
-        LOG("s1-BT_FAILURE;");
-        return AM_HSM_TRAN(am_bt_invert, BT_INVERT_1);
+        AM_ASSERT(0);
+        break;
     }
     default:
         break;
@@ -113,7 +119,7 @@ static enum am_hsm_rc s11(struct test *me, const struct am_event *event) {
     default:
         break;
     }
-    return AM_HSM_SUPER(am_bt_invert, BT_INVERT_0);
+    return AM_HSM_SUPER(am_bt_force_success, BT_FORCE_SUCCESS_0);
 }
 
 static enum am_hsm_rc s12(struct test *me, const struct am_event *event) {
@@ -130,7 +136,7 @@ static enum am_hsm_rc s12(struct test *me, const struct am_event *event) {
     default:
         break;
     }
-    return AM_HSM_SUPER(am_bt_invert, BT_INVERT_1);
+    return AM_HSM_SUPER(am_bt_force_success, BT_FORCE_SUCCESS_1);
 }
 
 static enum am_hsm_rc sinit(struct test *me, const struct am_event *event) {
@@ -148,7 +154,7 @@ int main(void) {
     am_bt_ctor();
 
     struct test *me = &m_test;
-    am_bt_add_invert(m_invert, /*num=*/2);
+    am_bt_add_force_success(m_force_success, /*num=*/2);
     struct am_bt_cfg cfg = {.hsm = &me->hsm, .post = test_post};
     am_bt_add_cfg(&cfg);
 
@@ -163,9 +169,10 @@ int main(void) {
         am_hsm_dispatch(&me->hsm, event);
     }
     static const char *out = {
-        "sinit-INIT;s1-INIT;s11-ENTRY;s11-EXIT;s1-BT_FAILURE;"
-        "s12-ENTRY;s12-EXIT;s1-BT_SUCCESS;"
+        "sinit-INIT;s1-INIT;s11-ENTRY;s1-BT_SUCCESS;"
+        "s11-EXIT;s12-ENTRY;s1-BT_SUCCESS;"
     };
     AM_ASSERT(0 == strncmp(log_get(), out, strlen(out)));
+
     return 0;
 }

@@ -46,4 +46,14 @@ if unit_test
         dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
     test('invert', e, suite: 'bt')
+
+    e = executable(
+        'force_success',
+        [
+            'test' / 'force_success.c',
+            'test' / 'log.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
+        include_directories: [include_directories('test')])
+    test('force_success', e, suite: 'bt')
 endif
