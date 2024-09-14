@@ -38,15 +38,26 @@
 struct am_bt {
     struct am_dlist cfg;
     struct {
-        struct am_bt_node *node;
+        union {
+            struct am_bt_invert *invert;
+            struct am_bt_force_success *force_success;
+            struct am_bt_force_failure *force_failure;
+            struct am_bt_repeat *repeat;
+            struct am_bt_retry_until_success *retry_until_success;
+            struct am_bt_run_until_failure *run_until_failure;
+            struct am_bt_delay *delay;
+            struct am_bt_fallback *fallback;
+            struct am_bt_sequence *sequence;
+            struct am_bt_node *node;
+        } nodes;
         int num;
     } types[AM_BT_TYPES_NUM];
 };
 
 static struct am_bt m_bt;
 
-static const struct am_event am_bt_evt_success = {.id = AM_BT_EVT_SUCCESS};
-static const struct am_event am_bt_evt_failure = {.id = AM_BT_EVT_FAILURE};
+const struct am_event am_bt_evt_success = {.id = AM_BT_EVT_SUCCESS};
+const struct am_event am_bt_evt_failure = {.id = AM_BT_EVT_FAILURE};
 
 void am_bt_add_cfg(struct am_bt_cfg *cfg) {
     AM_ASSERT(cfg);
@@ -55,13 +66,124 @@ void am_bt_add_cfg(struct am_bt_cfg *cfg) {
     am_dlist_push_front(&m_bt.cfg, &cfg->item);
 }
 
-void am_bt_add_type(enum am_bt_type type, struct am_bt_node *node, int num) {
-    AM_ASSERT(type >= AM_BT_TYPES_MIN);
-    AM_ASSERT(type < AM_COUNTOF(m_bt.types));
-    AM_ASSERT(node);
+void am_bt_add_invert(struct am_bt_invert *nodes, int num) {
+    AM_ASSERT(nodes);
     AM_ASSERT(num > 0);
-    m_bt.types[type].node = node;
-    m_bt.types[type].num = num;
+    m_bt.types[AM_BT_INVERT].nodes.invert = nodes;
+    m_bt.types[AM_BT_INVERT].num = num;
+}
+
+void am_bt_add_force_success(struct am_bt_force_success *nodes, int num) {
+    AM_ASSERT(nodes);
+    AM_ASSERT(num > 0);
+    m_bt.types[AM_BT_FORCE_SUCCESS].nodes.force_success = nodes;
+    m_bt.types[AM_BT_FORCE_SUCCESS].num = num;
+}
+
+void am_bt_add_force_failure(struct am_bt_force_failure *nodes, int num) {
+    AM_ASSERT(nodes);
+    AM_ASSERT(num > 0);
+    m_bt.types[AM_BT_FORCE_FAILURE].nodes.force_failure = nodes;
+    m_bt.types[AM_BT_FORCE_FAILURE].num = num;
+}
+
+void am_bt_add_repeat(struct am_bt_repeat *nodes, int num) {
+    AM_ASSERT(nodes);
+    AM_ASSERT(num > 0);
+    m_bt.types[AM_BT_REPEAT].nodes.repeat = nodes;
+    m_bt.types[AM_BT_REPEAT].num = num;
+}
+
+void am_bt_add_retry_until_success(
+    struct am_bt_retry_until_success *nodes, int num
+) {
+    AM_ASSERT(nodes);
+    AM_ASSERT(num > 0);
+    m_bt.types[AM_BT_RETRY_UNTIL_SUCCESS].nodes.retry_until_success = nodes;
+    m_bt.types[AM_BT_RETRY_UNTIL_SUCCESS].num = num;
+}
+
+void am_bt_add_run_until_failure(
+    struct am_bt_run_until_failure *nodes, int num
+) {
+    AM_ASSERT(nodes);
+    AM_ASSERT(num > 0);
+    m_bt.types[AM_BT_RUN_UNTIL_FAILURE].nodes.run_until_failure = nodes;
+    m_bt.types[AM_BT_RUN_UNTIL_FAILURE].num = num;
+}
+
+void am_bt_add_delay(struct am_bt_delay *nodes, int num) {
+    AM_ASSERT(nodes);
+    AM_ASSERT(num > 0);
+    m_bt.types[AM_BT_DELAY].nodes.delay = nodes;
+    m_bt.types[AM_BT_DELAY].num = num;
+}
+
+void am_bt_add_fallback(struct am_bt_fallback *nodes, int num) {
+    AM_ASSERT(nodes);
+    AM_ASSERT(num > 0);
+    m_bt.types[AM_BT_FALLBACK].nodes.fallback = nodes;
+    m_bt.types[AM_BT_FALLBACK].num = num;
+}
+
+void am_bt_add_sequence(struct am_bt_sequence *nodes, int num) {
+    AM_ASSERT(nodes);
+    AM_ASSERT(num > 0);
+    m_bt.types[AM_BT_SEQUENCE].nodes.sequence = nodes;
+    m_bt.types[AM_BT_SEQUENCE].num = num;
+}
+
+static struct am_bt_node *am_bt_get_node(enum am_bt_type type, int instance) {
+    AM_ASSERT(type >= AM_BT_TYPES_MIN);
+    AM_ASSERT(type < AM_BT_TYPES_NUM);
+    AM_ASSERT(m_bt.types[type].nodes.node);
+    AM_ASSERT(m_bt.types[type].num > 0);
+    AM_ASSERT(instance >= 0);
+    AM_ASSERT(instance < m_bt.types[type].num);
+
+    struct am_bt_node *node = NULL;
+    switch (type) {
+    case AM_BT_INVERT: {
+        node = &m_bt.types[type].nodes.invert[instance].node;
+        break;
+    }
+    case AM_BT_FORCE_SUCCESS: {
+        node = &m_bt.types[type].nodes.force_success[instance].node;
+        break;
+    }
+    case AM_BT_FORCE_FAILURE: {
+        node = &m_bt.types[type].nodes.force_failure[instance].node;
+        break;
+    }
+    case AM_BT_REPEAT: {
+        node = &m_bt.types[type].nodes.repeat[instance].node;
+        break;
+    }
+    case AM_BT_RETRY_UNTIL_SUCCESS: {
+        node = &m_bt.types[type].nodes.retry_until_success[instance].node;
+        break;
+    }
+    case AM_BT_RUN_UNTIL_FAILURE: {
+        node = &m_bt.types[type].nodes.run_until_failure[instance].node;
+        break;
+    }
+    case AM_BT_DELAY: {
+        node = &m_bt.types[type].nodes.delay[instance].node;
+        break;
+    }
+    case AM_BT_FALLBACK: {
+        node = &m_bt.types[type].nodes.fallback[instance].node;
+        break;
+    }
+    case AM_BT_SEQUENCE: {
+        node = &m_bt.types[type].nodes.sequence[instance].node;
+        break;
+    }
+    default:
+        AM_ASSERT(0);
+        break;
+    }
+    return node;
 }
 
 struct am_bt_cfg *am_bt_get_cfg(struct am_hsm *hsm) {
@@ -80,11 +202,13 @@ struct am_bt_cfg *am_bt_get_cfg(struct am_hsm *hsm) {
     return cfg;
 }
 
-struct am_bt_node *am_bt_get_node(enum am_bt_type type, int instance) {
-    AM_ASSERT(type >= AM_BT_TYPES_MIN);
-    AM_ASSERT(type < AM_COUNTOF(m_bt.types));
-    AM_ASSERT(instance < m_bt.types[type].num);
-    return m_bt.types[type].node;
+static enum am_hsm_rc am_bt_invert_done(
+    struct am_hsm *me, const struct am_event *event
+) {
+    (void)event;
+    int i = am_hsm_get_state_instance(me);
+    struct am_bt_node *node = am_bt_get_node(AM_BT_INVERT, i);
+    return AM_HSM_SUPER(node->super.fn, node->super.ifn);
 }
 
 enum am_hsm_rc am_bt_invert(struct am_hsm *me, const struct am_event *event) {
@@ -98,12 +222,12 @@ enum am_hsm_rc am_bt_invert(struct am_hsm *me, const struct am_event *event) {
     case AM_BT_EVT_SUCCESS: {
         struct am_bt_cfg *cfg = am_bt_get_cfg(me);
         cfg->post(me, &am_bt_evt_failure);
-        return AM_HSM_HANDLED();
+        return AM_HSM_TRAN(am_bt_invert_done, i);
     }
     case AM_BT_EVT_FAILURE: {
         struct am_bt_cfg *cfg = am_bt_get_cfg(me);
         cfg->post(me, &am_bt_evt_success);
-        return AM_HSM_HANDLED();
+        return AM_HSM_TRAN(am_bt_invert_done, i);
     }
     default:
         break;

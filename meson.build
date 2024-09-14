@@ -22,7 +22,7 @@
 # SOFTWARE.
 #
 
-project('tikli', 'c',
+project('amast', 'c',
         default_options : [
             'c_std=c99',
             'warning_level=3',

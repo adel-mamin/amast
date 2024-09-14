@@ -35,3 +35,15 @@ libbt = library(
     ],
     include_directories: inc)
 libbt_dep = declare_dependency(link_with : libbt, include_directories : inc)
+
+if unit_test
+    e = executable(
+        'invert',
+        [
+            'test' / 'invert.c',
+            'test' / 'log.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
+        include_directories: [include_directories('test')])
+    test('invert', e, suite: 'bt')
+endif

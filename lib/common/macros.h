@@ -28,6 +28,7 @@
  */
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <assert.h>
 
 #ifndef COMMON_MACROS_H_INCLUDED

@@ -25,7 +25,7 @@
 /**
  * @file
  *
- * Behavioral tree framework API declaration.
+ * Behavioral tree API declaration.
  */
 
 #ifndef BT_H_INCLUDED
@@ -41,10 +41,13 @@
 extern "C" {
 #endif
 
-#define AM_BT_EVT_SUCCESS (AM_HSM_EVT_MAX + 1)
-#define AM_BT_EVT_FAILURE (AM_HSM_EVT_MAX + 2)
-#define AM_BT_EVT_DELAY (AM_HSM_EVT_MAX + 3)
-#define AM_BT_EVT_MAX AM_BT_EVT_FAILURE
+AM_ASSERT_STATIC(AM_HSM_EVT_MAX == 4);
+
+#define AM_BT_EVT_SUCCESS 5
+#define AM_BT_EVT_FAILURE 6
+#define AM_BT_EVT_DELAY 7
+#define AM_BT_EVT_MAX AM_BT_EVT_DELAY
+
 AM_ASSERT_STATIC(EVT_USER > AM_BT_EVT_MAX);
 
 enum am_bt_type {
@@ -68,7 +71,6 @@ struct am_bt_cfg {
 };
 
 struct am_bt_node {
-    enum am_bt_type type;
     struct am_hsm_state super;
 };
 
@@ -129,6 +131,9 @@ struct am_bt_sequence {
     unsigned init_done : 1;
 };
 
+extern const struct am_event am_bt_evt_success;
+extern const struct am_event am_bt_evt_failure;
+
 enum am_hsm_rc am_bt_invert(struct am_hsm *hsm, const struct am_event *event);
 enum am_hsm_rc am_bt_force_success(
     struct am_hsm *hsm, const struct am_event *event
@@ -150,9 +155,22 @@ enum am_hsm_rc am_bt_delay(struct am_hsm *me, const struct am_event *event);
 enum am_hsm_rc am_bt_fallback(struct am_hsm *me, const struct am_event *event);
 
 void am_bt_add_cfg(struct am_bt_cfg *cfg);
-void am_bt_add_type(enum am_bt_type type, struct am_bt_node *node, int num);
+
+void am_bt_add_invert(struct am_bt_invert *nodes, int num);
+void am_bt_add_force_success(struct am_bt_force_success *nodes, int num);
+void am_bt_add_force_failure(struct am_bt_force_failure *nodes, int num);
+void am_bt_add_repeat(struct am_bt_repeat *nodes, int num);
+void am_bt_add_retry_until_success(
+    struct am_bt_retry_until_success *nodes, int num
+);
+void am_bt_add_run_until_failure(
+    struct am_bt_run_until_failure *nodes, int num
+);
+void am_bt_add_delay(struct am_bt_delay *nodes, int num);
+void am_bt_add_fallback(struct am_bt_fallback *nodes, int num);
+void am_bt_add_sequence(struct am_bt_sequence *nodes, int num);
+
 struct am_bt_cfg *am_bt_get_cfg(struct am_hsm *hsm);
-struct am_bt_node *am_bt_get_node(enum am_bt_type type, int instance);
 void am_bt_ctor(void);
 
 #ifdef __cplusplus
