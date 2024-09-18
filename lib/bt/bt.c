@@ -203,7 +203,8 @@ struct am_bt_cfg *am_bt_get_cfg(struct am_hsm *hsm) {
 }
 
 static enum am_hsm_rc am_bt_invert_done(
-    struct am_hsm *me, const struct am_event *event);
+    struct am_hsm *me, const struct am_event *event
+);
 
 enum am_hsm_rc am_bt_invert(struct am_hsm *me, const struct am_event *event) {
     int instance = am_hsm_get_state_instance(me);
@@ -215,7 +216,7 @@ enum am_hsm_rc am_bt_invert(struct am_hsm *me, const struct am_event *event) {
     }
     case AM_BT_EVT_SUCCESS:
     case AM_BT_EVT_FAILURE: {
-       if (am_hsm_is_in(me, &AM_HSM_STATE(am_bt_invert_done, instance))) {
+        if (am_hsm_is_in(me, &AM_HSM_STATE(am_bt_invert_done, instance))) {
             break;
         }
         struct am_bt_cfg *cfg = am_bt_get_cfg(me);
