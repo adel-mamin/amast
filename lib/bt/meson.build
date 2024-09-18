@@ -52,9 +52,21 @@ if unit_test
         'force_success',
         [
             'test' / 'force_success.c',
-            'test' / 'log.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
         ],
         dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
     test('force_success', e, suite: 'bt')
+
+    e = executable(
+        'force_failure',
+        [
+            'test' / 'force_failure.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
+        include_directories: [include_directories('test')])
+    test('force_failure', e, suite: 'bt')
 endif
