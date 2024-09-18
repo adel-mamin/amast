@@ -41,7 +41,8 @@ if unit_test
         'invert',
         [
             'test' / 'invert.c',
-            'test' / 'log.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
         ],
         dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])

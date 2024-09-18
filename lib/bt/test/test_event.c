@@ -28,20 +28,28 @@
 #include <stdbool.h>
 
 #include "common/compiler.h"
-#include "strlib/strlib.h"
-#include "log.h"
+#include "common/macros.h"
+#include "hsm/hsm.h"
+#include "event/event.h"
+#include "test_event.h"
 
-#define TEST_LOG_SIZE 256 /* [bytes] */
+static const struct am_event *m_events[16] = {0};
+static int m_events_num = 0;
 
-static char m_log_buf[TEST_LOG_SIZE];
-
-void log_printf(char *fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    str_vlcatf(m_log_buf, (int)sizeof(m_log_buf), fmt, ap);
-    va_end(ap);
+void test_event_post(struct am_hsm *hsm, const struct am_event *event) {
+    (void)hsm;
+    AM_ASSERT((m_events_num + 1) < AM_COUNTOF(m_events));
+    m_events[m_events_num++] = event;
 }
 
-const char *log_get(void) { return m_log_buf; }
-
-void log_clear(void) { m_log_buf[0] = '\0'; }
+const struct am_event *test_event_get(void) {
+    if (0 == m_events_num) {
+        return NULL;
+    }
+    const struct am_event *event = m_events[0];
+    --m_events_num;
+    for (int i = 0; i < m_events_num; ++i) {
+        m_events[i] = m_events[i + 1];
+    }
+    return event;
+}

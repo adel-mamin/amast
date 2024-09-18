@@ -22,21 +22,26 @@
  * SOFTWARE.
  */
 
-#ifndef TEST_LOG_H_INCLUDED
-#define TEST_LOG_H_INCLUDED
+#include <stddef.h>
+#include <stdarg.h>
+#include <string.h>
+#include <stdbool.h>
 
-#define LOG(...) log_printf(__VA_ARGS__)
+#include "common/compiler.h"
+#include "strlib/strlib.h"
+#include "test_log.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define TEST_LOG_SIZE 256 /* [bytes] */
 
-void log_printf(char *fmt, ...);
-const char *log_get(void);
-void log_clear(void);
+static char m_log_buf[TEST_LOG_SIZE];
 
-#ifdef __cplusplus
+void test_log_printf(char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    str_vlcatf(m_log_buf, (int)sizeof(m_log_buf), fmt, ap);
+    va_end(ap);
 }
-#endif
 
-#endif /* TEST_LOG_H_INCLUDED */
+const char *test_log_get(void) { return m_log_buf; }
+
+void test_log_clear(void) { m_log_buf[0] = '\0'; }
