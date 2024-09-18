@@ -203,36 +203,37 @@ struct am_bt_cfg *am_bt_get_cfg(struct am_hsm *hsm) {
 }
 
 static enum am_hsm_rc am_bt_invert_done(
-    struct am_hsm *me, const struct am_event *event
-) {
-    (void)event;
-    int i = am_hsm_get_state_instance(me);
-    struct am_bt_node *node = am_bt_get_node(AM_BT_INVERT, i);
-    return AM_HSM_SUPER(node->super.fn, node->super.ifn);
-}
+    struct am_hsm *me, const struct am_event *event);
 
 enum am_hsm_rc am_bt_invert(struct am_hsm *me, const struct am_event *event) {
-    int i = am_hsm_get_state_instance(me);
-    struct am_bt_node *node = am_bt_get_node(AM_BT_INVERT, i);
+    int instance = am_hsm_get_state_instance(me);
+    struct am_bt_node *node = am_bt_get_node(AM_BT_INVERT, instance);
     switch (event->id) {
     case AM_HSM_EVT_INIT: {
         struct am_bt_invert *p = (struct am_bt_invert *)node;
         return AM_HSM_TRAN(p->substate.fn, p->substate.ifn);
     }
-    case AM_BT_EVT_SUCCESS: {
-        struct am_bt_cfg *cfg = am_bt_get_cfg(me);
-        cfg->post(me, &am_bt_evt_failure);
-        return AM_HSM_TRAN(am_bt_invert_done, i);
-    }
+    case AM_BT_EVT_SUCCESS:
     case AM_BT_EVT_FAILURE: {
+       if (am_hsm_is_in(me, &AM_HSM_STATE(am_bt_invert_done, instance))) {
+            break;
+        }
         struct am_bt_cfg *cfg = am_bt_get_cfg(me);
-        cfg->post(me, &am_bt_evt_success);
-        return AM_HSM_TRAN(am_bt_invert_done, i);
+        bool success = AM_BT_EVT_SUCCESS == event->id;
+        cfg->post(me, success ? &am_bt_evt_failure : &am_bt_evt_success);
+        return AM_HSM_TRAN(am_bt_invert_done, instance);
     }
     default:
         break;
     }
     return AM_HSM_SUPER(node->super.fn, node->super.ifn);
+}
+
+static enum am_hsm_rc am_bt_invert_done(
+    struct am_hsm *me, const struct am_event *event
+) {
+    (void)event;
+    return AM_HSM_SUPER(am_bt_invert, am_hsm_get_state_instance(me));
 }
 
 enum am_hsm_rc am_bt_force_success(

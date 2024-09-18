@@ -23,7 +23,7 @@
  */
 
 /**
- *  The unit-tested topology:
+ * The unit-tested topology:
  *
  *  +--------------------------------------------+
  *  |                 hsm_top                    |
@@ -55,11 +55,11 @@
 #include "common/types.h"
 #include "hsm/hsm.h"
 #include "bt/bt.h"
-#include "log.h"
+#include "test_log.h"
+#include "test_event.h"
 
 struct test {
     struct am_hsm hsm;
-    const struct am_event *event;
 };
 
 static struct test m_test;
@@ -82,15 +82,18 @@ static struct am_bt_invert m_invert[] = {
 static enum am_hsm_rc s1(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_INIT: {
-        LOG("s1-INIT;");
+        TLOG("s1-INIT;");
         return AM_HSM_TRAN(am_bt_invert, BT_INVERT_0);
     }
     case AM_BT_EVT_SUCCESS: {
-        LOG("s1-BT_SUCCESS;");
+        TLOG("s1-BT_SUCCESS;");
         return AM_HSM_HANDLED();
     }
     case AM_BT_EVT_FAILURE: {
-        LOG("s1-BT_FAILURE;");
+        TLOG("s1-BT_FAILURE;");
+        if (am_hsm_is_in(&me->hsm, &AM_HSM_STATE(am_bt_invert, BT_INVERT_1))) {
+            return AM_HSM_HANDLED();
+        }
         return AM_HSM_TRAN(am_bt_invert, BT_INVERT_1);
     }
     default:
@@ -102,12 +105,12 @@ static enum am_hsm_rc s1(struct test *me, const struct am_event *event) {
 static enum am_hsm_rc s11(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY: {
-        LOG("s11-ENTRY;");
-        me->event = &am_bt_evt_success;
+        TLOG("s11-ENTRY;");
+        test_event_post(&me->hsm, &am_bt_evt_success);
         return AM_HSM_HANDLED();
     }
     case AM_HSM_EVT_EXIT: {
-        LOG("s11-EXIT;");
+        TLOG("s11-EXIT;");
         return AM_HSM_HANDLED();
     }
     default:
@@ -119,12 +122,13 @@ static enum am_hsm_rc s11(struct test *me, const struct am_event *event) {
 static enum am_hsm_rc s12(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY: {
-        LOG("s12-ENTRY;");
-        me->event = &am_bt_evt_failure;
+        TLOG("s12-ENTRY;");
+        test_event_post(&me->hsm, &am_bt_evt_failure);
         return AM_HSM_HANDLED();
     }
     case AM_HSM_EVT_EXIT: {
-        LOG("s12-EXIT;");
+        TLOG("s12-EXIT;");
+        test_event_post(&me->hsm, &am_bt_evt_failure);
         return AM_HSM_HANDLED();
     }
     default:
@@ -135,13 +139,8 @@ static enum am_hsm_rc s12(struct test *me, const struct am_event *event) {
 
 static enum am_hsm_rc sinit(struct test *me, const struct am_event *event) {
     (void)event;
-    LOG("sinit-INIT;");
+    TLOG("sinit-INIT;");
     return AM_HSM_TRAN(s1);
-}
-
-static void test_post(struct am_hsm *hsm, const struct am_event *event) {
-    struct test *me = AM_CONTAINER_OF(hsm, struct test, hsm);
-    me->event = event;
 }
 
 int main(void) {
@@ -149,23 +148,22 @@ int main(void) {
 
     struct test *me = &m_test;
     am_bt_add_invert(m_invert, /*num=*/2);
-    struct am_bt_cfg cfg = {.hsm = &me->hsm, .post = test_post};
+    struct am_bt_cfg cfg = {.hsm = &me->hsm, .post = test_event_post};
     am_bt_add_cfg(&cfg);
 
-    log_clear();
+    test_log_clear();
 
     am_hsm_ctor(&me->hsm, &AM_HSM_STATE(sinit));
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
 
-    while (me->event) {
-        const struct am_event *event = me->event;
-        me->event = NULL;
+    const struct am_event *event;
+    while ((event = test_event_get()) != NULL) {
         am_hsm_dispatch(&me->hsm, event);
     }
     static const char *out = {
         "sinit-INIT;s1-INIT;s11-ENTRY;s11-EXIT;s1-BT_FAILURE;"
         "s12-ENTRY;s12-EXIT;s1-BT_SUCCESS;"
     };
-    AM_ASSERT(0 == strncmp(log_get(), out, strlen(out)));
+    AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
     return 0;
 }

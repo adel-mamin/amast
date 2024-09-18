@@ -134,6 +134,12 @@ struct am_bt_sequence {
 extern const struct am_event am_bt_evt_success;
 extern const struct am_event am_bt_evt_failure;
 
+/**
+ * Invert the result of substate operation and send it to superstate.
+ * The substate is expected to return AM_BT_EVT_SUCCESS or AM_BT_EVT_FAILURE
+ * only once. Otherwise behavior is undefined.
+ * Complies to am_hsm_state_fn type.
+ */
 enum am_hsm_rc am_bt_invert(struct am_hsm *hsm, const struct am_event *event);
 enum am_hsm_rc am_bt_force_success(
     struct am_hsm *hsm, const struct am_event *event
