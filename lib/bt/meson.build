@@ -69,4 +69,15 @@ if unit_test
         dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
     test('force_failure', e, suite: 'bt')
+
+    e = executable(
+        'repeat',
+        [
+            'test' / 'repeat.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
+        include_directories: [include_directories('test')])
+    test('repeat', e, suite: 'bt')
 endif

@@ -138,6 +138,8 @@ extern const struct am_event am_bt_evt_failure;
  * Invert the result of substate operation and send it to superstate.
  * The substate is expected to return AM_BT_EVT_SUCCESS or AM_BT_EVT_FAILURE
  * only once. Otherwise behavior is undefined.
+ * Configured with `struct am_bt_invert` instance.
+ * It is a decorator node.
  * Complies to am_hsm_state_fn type.
  */
 enum am_hsm_rc am_bt_invert(struct am_hsm *hsm, const struct am_event *event);
@@ -146,6 +148,8 @@ enum am_hsm_rc am_bt_invert(struct am_hsm *hsm, const struct am_event *event);
  * Force AM_BT_EVT_SUCCESS of substate operation and send it to superstate.
  * The substate is expected to return AM_BT_EVT_SUCCESS or AM_BT_EVT_FAILURE
  * only once. Otherwise behavior is undefined.
+ * Configured with `struct am_bt_force_success` instance.
+ * It is a decorator node.
  * Complies to am_hsm_state_fn type.
  */
 enum am_hsm_rc am_bt_force_success(
@@ -156,11 +160,26 @@ enum am_hsm_rc am_bt_force_success(
  * Force AM_BT_EVT_FAILURE of substate operation and send it to superstate.
  * The substate is expected to return AM_BT_EVT_SUCCESS or AM_BT_EVT_FAILURE
  * only once. Otherwise behavior is undefined.
+ * Configured with `struct am_bt_force_failure` instance.
+ * It is a decorator node.
  * Complies to am_hsm_state_fn type.
  */
 enum am_hsm_rc am_bt_force_failure(
     struct am_hsm *hsm, const struct am_event *event
 );
+
+/**
+ * Run substate up to `struct am_bt_repeat::total` times as long
+ * as the substate returns AM_BT_EVT_SUCCESS.
+ * Interrupt the repetition if substate returns AM_BT_EVT_FAILURE.
+ * Return AM_BT_EVT_SUCCESS if all repetitions were successful.
+ * Otherwise return AM_BT_EVT_FAILURE.
+ * The substate is expected to return AM_BT_EVT_SUCCESS or AM_BT_EVT_FAILURE
+ * only once for each repetition. Otherwise behavior is undefined.
+ * Configured with `struct am_bt_repeat` instance.
+ * It is a decorator node.
+ * Complies to am_hsm_state_fn type.
+ */
 enum am_hsm_rc am_bt_repeat(struct am_hsm *hsm, const struct am_event *event);
 
 enum am_hsm_rc am_bt_retry_until_success(
