@@ -44,7 +44,9 @@
  *  +----------------------+
  *
  * The am_bt_repeat() unit testing is done with the
- * help of 2 user states: s1 and s11
+ * help of 2 user states: s1 and s11.
+ * s11 runs two times. It returns success for the 1st run
+ * and failure for the second run.
  */
 
 #include <stddef.h>
@@ -98,7 +100,7 @@ static enum am_hsm_rc s11(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY: {
         TLOG("s11-ENTRY;");
-        test_event_post(&me->hsm, &am_bt_evt_success);
+        test_event_post(&me->hsm, &am_bt_evt_failure);
         return AM_HSM_HANDLED();
     }
     case AM_HSM_EVT_EXIT: {
@@ -134,9 +136,7 @@ int main(void) {
     while ((event = test_event_get()) != NULL) {
         am_hsm_dispatch(&me->hsm, event);
     }
-    static const char *out = {
-        "sinit-INIT;s1-INIT;s11-ENTRY;s11-EXIT;s11-ENTRY;s1-BT_SUCCESS;"
-    };
+    static const char *out = {"sinit-INIT;s1-INIT;s11-ENTRY;s1-BT_FAILURE;"};
     AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
     return 0;
 }

@@ -71,13 +71,24 @@ if unit_test
     test('force_failure', e, suite: 'bt')
 
     e = executable(
-        'repeat',
+        'repeat_success',
         [
-            'test' / 'repeat.c',
+            'test' / 'repeat' / 'success.c',
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
         dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
-    test('repeat', e, suite: 'bt')
+    test('repeat_success', e, suite: 'bt')
+
+    e = executable(
+        'repeat_failure',
+        [
+            'test' / 'repeat' / 'failure.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
+        include_directories: [include_directories('test')])
+    test('repeat_failure', e, suite: 'bt')
 endif
