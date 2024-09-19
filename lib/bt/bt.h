@@ -48,7 +48,7 @@ AM_ASSERT_STATIC(AM_HSM_EVT_MAX == 4);
 #define AM_BT_EVT_DELAY 7
 #define AM_BT_EVT_MAX AM_BT_EVT_DELAY
 
-AM_ASSERT_STATIC(EVT_USER > AM_BT_EVT_MAX);
+AM_ASSERT_STATIC(AM_EVT_USER > AM_BT_EVT_MAX);
 
 enum am_bt_type {
     AM_BT_TYPES_MIN = 0,
@@ -96,11 +96,12 @@ struct am_bt_repeat {
     int done;
 };
 
+/** retry_until_success BT node state */
 struct am_bt_retry_until_success {
-    struct am_bt_node node;
-    struct am_hsm_state substate;
-    int attempts_total;
-    int attempts_done;
+    struct am_bt_node node;     /** super state */
+    struct am_hsm_state substate; /** substate */
+    int attempts_total; /** set to -1 for infinite number of attempts */
+    int attempts_done;  /** number of attempts done so far */
 };
 
 struct am_bt_run_until_failure {
@@ -182,6 +183,19 @@ enum am_hsm_rc am_bt_force_failure(
  */
 enum am_hsm_rc am_bt_repeat(struct am_hsm *hsm, const struct am_event *event);
 
+/**
+ * Run substate up to `struct am_bt_retry_until_success::attempts_total` times
+ * until the substate returns AM_BT_EVT_SUCCESS.
+ * If `struct am_bt_retry_until_success::attempts_total` is -1, then
+ * the number of attempts is unlimited.
+ * Interrupt the retries if substate returns AM_BT_EVT_SUCCESS.
+ * Return AM_BT_EVT_SUCCESS in this case.
+ * The substate is expected to return AM_BT_EVT_SUCCESS or AM_BT_EVT_FAILURE
+ * only once for each repetition. Otherwise behavior is undefined.
+ * Configured with `struct am_bt_retry_until_success` instance.
+ * It is a decorator node.
+ * Complies to am_hsm_state_fn type.
+ */
 enum am_hsm_rc am_bt_retry_until_success(
     struct am_hsm *me, const struct am_event *event
 );
@@ -191,7 +205,9 @@ enum am_hsm_rc am_bt_run_until_failure(
 );
 
 enum am_hsm_rc am_bt_delay(struct am_hsm *me, const struct am_event *event);
+
 enum am_hsm_rc am_bt_fallback(struct am_hsm *me, const struct am_event *event);
+enum am_hsm_rc am_bt_sequence(struct am_hsm *me, const struct am_event *event);
 
 void am_bt_add_cfg(struct am_bt_cfg *cfg);
 

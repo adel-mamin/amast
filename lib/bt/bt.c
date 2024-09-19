@@ -319,11 +319,15 @@ enum am_hsm_rc am_bt_retry_until_success(
         return AM_HSM_HANDLED();
     }
     case AM_HSM_EVT_INIT: {
+        AM_ASSERT(p->attempts_total != 0); /* no proper initialization? */
+        AM_ASSERT(0 == p->attempts_done);  /* no proper initialization? */
         return AM_HSM_TRAN(p->substate.fn, p->substate.ifn);
     }
     case AM_BT_EVT_FAILURE: {
-        ++p->attempts_done;
-        if (p->attempts_done < p->attempts_total) {
+        if (p->attempts_total > 0) {
+            ++p->attempts_done;
+        }
+        if ((p->attempts_done < p->attempts_total) || (p->attempts_total < 0)) {
             return AM_HSM_TRAN(p->substate.fn, p->substate.ifn);
         }
         break;
