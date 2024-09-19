@@ -96,17 +96,18 @@ struct am_bt_repeat {
     int done;
 };
 
-/** retry_until_success BT node state */
+/** am_bt_retry_until_success BT node state */
 struct am_bt_retry_until_success {
-    struct am_bt_node node;     /** super state */
+    struct am_bt_node node;       /** super state */
     struct am_hsm_state substate; /** substate */
     int attempts_total; /** set to -1 for infinite number of attempts */
     int attempts_done;  /** number of attempts done so far */
 };
 
+/** am_bt_run_until_failure BT node state */
 struct am_bt_run_until_failure {
-    struct am_bt_node node;
-    struct am_hsm_state substate;
+    struct am_bt_node node;     /** super state */
+    struct am_hsm_state substate; /** substate */
 };
 
 struct am_bt_delay {
@@ -200,6 +201,16 @@ enum am_hsm_rc am_bt_retry_until_success(
     struct am_hsm *me, const struct am_event *event
 );
 
+/**
+ * Keep running (re-entering) the substate while it returns AM_BT_EVT_SUCCESS.
+ * Stop once it returns AM_BT_EVT_FAILURE.
+ * Return AM_BT_EVT_FAILURE in this case.
+ * The substate is expected to return AM_BT_EVT_SUCCESS or AM_BT_EVT_FAILURE
+ * only once for each repetition. Otherwise behavior is undefined.
+ * Configured with `struct am_bt_run_until_failure` instance.
+ * It is a decorator node.
+ * Complies to am_hsm_state_fn type.
+ */
 enum am_hsm_rc am_bt_run_until_failure(
     struct am_hsm *me, const struct am_event *event
 );

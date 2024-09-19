@@ -113,4 +113,26 @@ if unit_test
         dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
     test('retry_until_success_infinite', e, suite: 'bt')
+
+    e = executable(
+        'run_until_failure_first',
+        [
+            'test' / 'run_until_failure' / 'fail_first.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
+        include_directories: [include_directories('test')])
+    test('run_until_failure_first', e, suite: 'bt')
+
+    e = executable(
+        'run_until_failure_second',
+        [
+            'test' / 'run_until_failure' / 'fail_second.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
+        include_directories: [include_directories('test')])
+    test('run_until_failure_second', e, suite: 'bt')
 endif
