@@ -66,12 +66,12 @@ struct am_event_timer {
     int interval_ticks;
 };
 
-#ifndef TICK_DOMAIN_MAX
+#ifndef AM_TICK_DOMAIN_MAX
 /** total number of tick domains */
-#define TICK_DOMAIN_MAX 1
+#define AM_TICK_DOMAIN_MAX 1
 #endif
 
-AM_ASSERT_STATIC(TICK_DOMAIN_MAX < (1U << EVENT_TICK_DOMAIN_BITS));
+AM_ASSERT_STATIC(AM_TICK_DOMAIN_MAX < (1U << AM_EVENT_TICK_DOMAIN_BITS));
 
 /**
  * Timer constructor.

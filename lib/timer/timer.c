@@ -41,7 +41,7 @@ struct timer {
      * Each domain comprises a list of the timer events,
      * which belong to this domain.
      */
-    struct am_dlist domains[TICK_DOMAIN_MAX];
+    struct am_dlist domains[AM_TICK_DOMAIN_MAX];
     /** timer module configuration */
     struct am_timer_cfg cfg;
 };
@@ -61,8 +61,8 @@ void am_timer_ctor(const struct am_timer_cfg *cfg) {
 
 void am_timer_event_ctor(struct am_event_timer *event, int id, int domain) {
     AM_ASSERT(event);
-    AM_ASSERT(id >= EVT_USER);
-    AM_ASSERT(domain < TICK_DOMAIN_MAX);
+    AM_ASSERT(id >= AM_EVT_USER);
+    AM_ASSERT(domain < AM_TICK_DOMAIN_MAX);
 
     memset(event, 0, sizeof(*event));
     am_dlist_item_init(&event->item);
@@ -78,7 +78,7 @@ void am_timer_arm(
     AM_ASSERT(event);
     /* make sure it wasn't already armed */
     AM_ASSERT(!am_dlist_item_is_linked(&event->item));
-    AM_ASSERT(EVENT_HAS_USER_ID(event));
+    AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
     AM_ASSERT(event->event.tick_domain < AM_COUNTOF(me->domains));
     AM_ASSERT(ticks >= 0);
 
@@ -91,7 +91,7 @@ void am_timer_arm(
 
 bool am_timer_disarm(struct am_event_timer *event) {
     AM_ASSERT(event);
-    AM_ASSERT(EVENT_HAS_USER_ID(event));
+    AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
 
     bool was_armed = am_dlist_pop(&event->item);
     event->shot_in_ticks = event->interval_ticks = 0;
@@ -101,16 +101,16 @@ bool am_timer_disarm(struct am_event_timer *event) {
 
 bool am_timer_is_armed(const struct am_event_timer *event) {
     AM_ASSERT(event);
-    AM_ASSERT(EVENT_HAS_USER_ID(event));
+    AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
     return am_dlist_item_is_linked(&event->item);
 }
 
 bool am_timer_any_armed(int domain) {
     AM_ASSERT(domain >= 0);
-    AM_ASSERT(domain <= TICK_DOMAIN_MAX);
+    AM_ASSERT(domain <= AM_TICK_DOMAIN_MAX);
 
     struct timer *me = &m_timer;
-    if (domain < TICK_DOMAIN_MAX) {
+    if (domain < AM_TICK_DOMAIN_MAX) {
         return !am_dlist_is_empty(&me->domains[domain]);
     }
     for (int i = 0; i < AM_COUNTOF(me->domains); ++i) {

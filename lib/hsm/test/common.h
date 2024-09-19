@@ -27,15 +27,15 @@
 
 #include <stdarg.h>
 
-#define HSM_EVT_A (EVT_USER)
-#define HSM_EVT_B (EVT_USER + 1)
-#define HSM_EVT_C (EVT_USER + 2)
-#define HSM_EVT_D (EVT_USER + 3)
-#define HSM_EVT_E (EVT_USER + 4)
-#define HSM_EVT_F (EVT_USER + 5)
-#define HSM_EVT_G (EVT_USER + 6)
-#define HSM_EVT_H (EVT_USER + 7)
-#define HSM_EVT_I (EVT_USER + 8)
-#define HSM_EVT_TERM (EVT_USER + 9)
+#define HSM_EVT_A (AM_EVT_USER)
+#define HSM_EVT_B (AM_EVT_USER + 1)
+#define HSM_EVT_C (AM_EVT_USER + 2)
+#define HSM_EVT_D (AM_EVT_USER + 3)
+#define HSM_EVT_E (AM_EVT_USER + 4)
+#define HSM_EVT_F (AM_EVT_USER + 5)
+#define HSM_EVT_G (AM_EVT_USER + 6)
+#define HSM_EVT_H (AM_EVT_USER + 7)
+#define HSM_EVT_I (AM_EVT_USER + 8)
+#define HSM_EVT_TERM (AM_EVT_USER + 9)
 
 #endif /* COMMON_H_INCLUDED */

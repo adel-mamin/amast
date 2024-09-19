@@ -72,7 +72,7 @@ extern "C" {
 /** HSM event with maximum value. */
 #define AM_HSM_EVT_MAX AM_HSM_EVT_EXIT
 
-AM_ASSERT_STATIC(EVT_USER > AM_HSM_EVT_MAX);
+AM_ASSERT_STATIC(AM_EVT_USER > AM_HSM_EVT_MAX);
 
 /**
  * HSM state handler return codes.

@@ -30,10 +30,10 @@
 #include "hsm/hsm.h"
 #include "common.h"
 
-#define HSM_EVT_ON (EVT_USER)
-#define HSM_EVT_OFF (EVT_USER + 1)
-#define HSM_EVT_OPEN (EVT_USER + 2)
-#define HSM_EVT_CLOSE (EVT_USER + 3)
+#define HSM_EVT_ON (AM_EVT_USER)
+#define HSM_EVT_OFF (AM_EVT_USER + 1)
+#define HSM_EVT_OPEN (AM_EVT_USER + 2)
+#define HSM_EVT_CLOSE (AM_EVT_USER + 3)
 
 struct oven {
     struct am_hsm hsm;

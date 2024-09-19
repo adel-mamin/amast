@@ -34,7 +34,7 @@
 #include "common/macros.h"
 #include "timer/timer.h"
 
-#define EVT_TEST EVT_USER
+#define EVT_TEST AM_EVT_USER
 
 static struct owner {
     int npost;
@@ -43,7 +43,7 @@ static struct owner {
 static void post_cb(void *owner, const struct am_event *event) {
     (void)event;
     AM_ASSERT(owner == &m_owner);
-    AM_ASSERT(EVT_USER == event->id);
+    AM_ASSERT(AM_EVT_USER == event->id);
     m_owner.npost++;
 }
 
