@@ -25,6 +25,10 @@
 dlist_src = files('dlist.c')
 src += [dlist_src]
 
+libdlist = library('dlist', [dlist_src], include_directories: inc)
+libdlist_dep = declare_dependency(
+    link_with : libdlist, include_directories : inc)
+
 if unit_test
     e = executable('dlist', ['dlist.c', 'test.c'], include_directories: inc)
     test('dlist', e)

@@ -36,7 +36,6 @@ extern "C" {
 
 /** Timer module configuration. */
 struct am_timer_cfg {
-    int (*ticks_to_ms)(int ticks);
     /** either post or publish callback must be non-NULL */
     /**
      * Expired events are posted using this callback.
@@ -133,13 +132,6 @@ bool am_timer_is_armed(const struct am_event_timer *event);
  * @retval false  there are no armed timers
  */
 bool am_timer_any_armed(int domain);
-
-/**
- * Convert ticks to milliseconds.
- * @param ticks  the ticks
- * @return the milliseconds
- */
-int am_timer_ticks_to_ms(int ticks);
 
 #ifdef __cplusplus
 }

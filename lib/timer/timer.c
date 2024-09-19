@@ -1,3 +1,4 @@
+
 /*
  * The MIT License (MIT)
  *
@@ -61,7 +62,7 @@ void am_timer_ctor(const struct am_timer_cfg *cfg) {
 
 void am_timer_event_ctor(struct am_event_timer *event, int id, int domain) {
     AM_ASSERT(event);
-    AM_ASSERT(id >= AM_EVT_USER);
+    AM_ASSERT(id > 0);
     AM_ASSERT(domain < AM_TICK_DOMAIN_MAX);
 
     memset(event, 0, sizeof(*event));
@@ -78,7 +79,7 @@ void am_timer_arm(
     AM_ASSERT(event);
     /* make sure it wasn't already armed */
     AM_ASSERT(!am_dlist_item_is_linked(&event->item));
-    AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
+    AM_ASSERT(event->event.id > 0);
     AM_ASSERT(event->event.tick_domain < AM_COUNTOF(me->domains));
     AM_ASSERT(ticks >= 0);
 
@@ -158,10 +159,4 @@ void am_timer_tick(int domain) {
             me->cfg.post(t->owner, &t->event);
         }
     }
-}
-
-int am_timer_ticks_to_ms(int ticks) {
-    struct timer *me = &m_timer;
-    AM_ASSERT(me->cfg.ticks_to_ms);
-    return me->cfg.ticks_to_ms(ticks);
 }

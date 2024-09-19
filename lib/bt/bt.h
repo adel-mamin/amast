@@ -106,15 +106,17 @@ struct am_bt_retry_until_success {
 
 /** am_bt_run_until_failure BT node state */
 struct am_bt_run_until_failure {
-    struct am_bt_node node;     /** super state */
+    struct am_bt_node node;       /** super state */
     struct am_hsm_state substate; /** substate */
 };
 
+/** am_bt_delay BT node state */
 struct am_bt_delay {
     struct am_bt_node node;
     struct am_hsm_state substate;
-    struct am_event_timer delay;
-    int delay_ms;
+    struct am_event_timer delay; /** the delay timeout timer event */
+    int delay_ticks;             /** the delay [ticks] */
+    int domain;                  /** the delay timer tick domain */
 };
 
 struct am_bt_fallback {
@@ -202,7 +204,7 @@ enum am_hsm_rc am_bt_retry_until_success(
 );
 
 /**
- * Keep running (re-entering) the substate while it returns AM_BT_EVT_SUCCESS.
+ * Keep running (re-entering) substate while it returns AM_BT_EVT_SUCCESS.
  * Stop once it returns AM_BT_EVT_FAILURE.
  * Return AM_BT_EVT_FAILURE in this case.
  * The substate is expected to return AM_BT_EVT_SUCCESS or AM_BT_EVT_FAILURE
@@ -215,6 +217,14 @@ enum am_hsm_rc am_bt_run_until_failure(
     struct am_hsm *me, const struct am_event *event
 );
 
+/**
+ * Run substate once after a delay timeout.
+ * The substate is expected to return AM_BT_EVT_SUCCESS or AM_BT_EVT_FAILURE
+ * only once. Otherwise behavior is undefined.
+ * Configured with `struct am_bt_delay` instance.
+ * It is a decorator node.
+ * Complies to am_hsm_state_fn type.
+ */
 enum am_hsm_rc am_bt_delay(struct am_hsm *me, const struct am_event *event);
 
 enum am_hsm_rc am_bt_fallback(struct am_hsm *me, const struct am_event *event);

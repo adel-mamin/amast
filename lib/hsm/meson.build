@@ -25,7 +25,7 @@
 hsm_src = [files('hsm.c')]
 src += [hsm_src]
 
-libhsm = library('libhsm', [hsm_src], include_directories: inc)
+libhsm = library('hsm', [hsm_src], include_directories: inc)
 libhsm_dep = declare_dependency(link_with : libhsm, include_directories : inc)
 
 if unit_test

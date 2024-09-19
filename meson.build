@@ -26,7 +26,8 @@ project('amast', 'c',
         default_options : [
             'c_std=c99',
             'warning_level=3',
-            'werror=true'
+            'werror=true',
+            'default_library=static',
         ],
         meson_version: '>= 1.0.1')
 

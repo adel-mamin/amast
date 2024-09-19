@@ -364,11 +364,11 @@ enum am_hsm_rc am_bt_delay(struct am_hsm *me, const struct am_event *event) {
 
     switch (event->id) {
     case AM_HSM_EVT_ENTRY: {
-        am_timer_event_ctor(&p->delay, AM_BT_EVT_DELAY, /*domain=*/0);
+        am_timer_event_ctor(&p->delay, AM_BT_EVT_DELAY, p->domain);
         am_timer_arm(
             &p->delay,
             me,
-            /*ticks=*/am_timer_ticks_to_ms(p->delay_ms),
+            /*ticks=*/p->delay_ticks,
             /*interval=*/0
         );
         return AM_HSM_HANDLED();
@@ -380,7 +380,7 @@ enum am_hsm_rc am_bt_delay(struct am_hsm *me, const struct am_event *event) {
     case AM_BT_EVT_DELAY: {
         if (am_hsm_is_in(me, &AM_HSM_STATE(p->substate.fn, p->substate.ifn))) {
             /*
-             * the substate is active because someone activated
+             * the substate is active because someone activated it
              * from outside of the behavior tree
              */
             return AM_HSM_HANDLED();

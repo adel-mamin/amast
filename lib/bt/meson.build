@@ -26,7 +26,7 @@ bt_src = [files('bt.c')]
 src += [bt_src]
 
 libbt = library(
-    'libbt',
+    'bt',
     [
         bt_src,
         dlist_src,
@@ -135,4 +135,26 @@ if unit_test
         dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
     test('run_until_failure_second', e, suite: 'bt')
+
+    e = executable(
+        'delay_success',
+        [
+            'test' / 'delay' / 'success.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        include_directories: [include_directories('test')])
+    test('delay_success', e, suite: 'bt')
+
+    e = executable(
+        'delay_failure',
+        [
+            'test' / 'delay' / 'failure.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        include_directories: [include_directories('test')])
+    test('delay_failure', e, suite: 'bt')
 endif
