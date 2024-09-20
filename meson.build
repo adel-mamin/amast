@@ -33,6 +33,7 @@ project('amast', 'c',
 
 CLANG_FORMAT = find_program('clang-format', required: false, disabler: true)
 CLANG_TIDY = find_program('clang-tidy', required: false, disabler: true)
+RUN_CLANG_TIDY = find_program('run-clang-tidy', required: false, disabler: true)
 CPPCHECK = find_program('cppcheck', required: false, disabler: true)
 FIND = find_program('find', required: false, disabler: true)
 PYTHON = find_program('python3')
@@ -77,8 +78,7 @@ run_target(
 run_target(
     'tidy',
     command: [
-        PYTHON,
-        meson.project_source_root() / 'tools' / 'python' / 'run-clang-tidy.py',
+        RUN_CLANG_TIDY,
         '-clang-tidy-binary',
         CLANG_TIDY,
         '-quiet',

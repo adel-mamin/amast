@@ -435,7 +435,7 @@ enum am_hsm_rc am_bt_fallback(struct am_hsm *me, const struct am_event *event) {
         if (p->isubstate >= p->nsubstates) {
             break;
         }
-        struct am_hsm_state *substate = &p->substates[p->isubstate];
+        const struct am_hsm_state *substate = &p->substates[p->isubstate];
         return AM_HSM_TRAN(substate->fn, substate->ifn);
     }
     default:
@@ -486,7 +486,7 @@ enum am_hsm_rc am_bt_sequence(struct am_hsm *me, const struct am_event *event) {
         if (p->isubstate >= p->nsubstates) {
             break;
         }
-        struct am_hsm_state *substate = &p->substates[p->isubstate];
+        const struct am_hsm_state *substate = &p->substates[p->isubstate];
         return AM_HSM_TRAN(substate->fn, substate->ifn);
     }
     default:

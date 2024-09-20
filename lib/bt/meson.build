@@ -157,4 +157,48 @@ if unit_test
         dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
         include_directories: [include_directories('test')])
     test('delay_failure', e, suite: 'bt')
+
+    e = executable(
+        'fallback_success_first',
+        [
+            'test' / 'fallback' / 'success_first.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        include_directories: [include_directories('test')])
+    test('fallback_success_first', e, suite: 'bt')
+
+    e = executable(
+        'fallback_success_second',
+        [
+            'test' / 'fallback' / 'success_second.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        include_directories: [include_directories('test')])
+    test('fallback_success_second', e, suite: 'bt')
+
+    e = executable(
+        'fallback_failure',
+        [
+            'test' / 'fallback' / 'failure.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        include_directories: [include_directories('test')])
+    test('fallback_failure', e, suite: 'bt')
+
+    e = executable(
+        'fallback_jump_second',
+        [
+            'test' / 'fallback' / 'jump_second.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        include_directories: [include_directories('test')])
+    test('fallback_jump_second', e, suite: 'bt')
 endif

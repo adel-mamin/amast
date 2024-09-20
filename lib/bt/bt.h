@@ -121,7 +121,7 @@ struct am_bt_delay {
 
 struct am_bt_fallback {
     struct am_bt_node node;
-    struct am_hsm_state *substates;
+    const struct am_hsm_state *substates;
     int nsubstates;
     int isubstate;
     unsigned init_done : 1;
@@ -129,7 +129,7 @@ struct am_bt_fallback {
 
 struct am_bt_sequence {
     struct am_bt_node node;
-    struct am_hsm_state *substates;
+    const struct am_hsm_state *substates;
     int nsubstates;
     int isubstate;
     unsigned init_done : 1;
