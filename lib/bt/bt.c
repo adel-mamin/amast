@@ -35,6 +35,21 @@
 #include "bt/bt.h"
 #include "timer/timer.h"
 
+enum am_bt_type {
+    AM_BT_TYPES_MIN = 0,
+    AM_BT_INVERT = AM_BT_TYPES_MIN,
+    AM_BT_FORCE_SUCCESS,
+    AM_BT_FORCE_FAILURE,
+    AM_BT_REPEAT,
+    AM_BT_RETRY_UNTIL_SUCCESS,
+    AM_BT_RUN_UNTIL_FAILURE,
+    AM_BT_DELAY,
+    AM_BT_FALLBACK,
+    AM_BT_SEQUENCE,
+    AM_BT_PARALLEL,
+    AM_BT_TYPES_NUM
+};
+
 struct am_bt {
     struct am_dlist cfg;
     struct {
@@ -199,7 +214,7 @@ static struct am_bt_node *am_bt_get_node(enum am_bt_type type, int instance) {
     return node;
 }
 
-struct am_bt_cfg *am_bt_get_cfg(struct am_hsm *hsm) {
+static struct am_bt_cfg *am_bt_get_cfg(struct am_hsm *hsm) {
     struct am_dlist_iterator it;
     am_dlist_iterator_init(&m_bt.cfg, &it, AM_DLIST_FORWARD);
     struct am_dlist_item *item;

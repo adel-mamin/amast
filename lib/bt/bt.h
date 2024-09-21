@@ -37,12 +37,9 @@
 #include "hsm/hsm.h"
 #include "timer/timer.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 AM_ASSERT_STATIC(AM_HSM_EVT_MAX == 4);
 
+/** BT events */
 #define AM_BT_EVT_SUCCESS 5
 #define AM_BT_EVT_FAILURE 6
 #define AM_BT_EVT_DELAY 7
@@ -51,46 +48,40 @@ AM_ASSERT_STATIC(AM_HSM_EVT_MAX == 4);
 
 AM_ASSERT_STATIC(AM_EVT_USER > AM_BT_EVT_MAX);
 
-enum am_bt_type {
-    AM_BT_TYPES_MIN = 0,
-    AM_BT_INVERT = AM_BT_TYPES_MIN,
-    AM_BT_FORCE_SUCCESS,
-    AM_BT_FORCE_FAILURE,
-    AM_BT_REPEAT,
-    AM_BT_RETRY_UNTIL_SUCCESS,
-    AM_BT_RUN_UNTIL_FAILURE,
-    AM_BT_DELAY,
-    AM_BT_FALLBACK,
-    AM_BT_SEQUENCE,
-    AM_BT_PARALLEL,
-    AM_BT_TYPES_NUM
-};
-
+/**
+ * BT configuration.
+ * BTs used by different HSMs may have different configurations.
+ */
 struct am_bt_cfg {
     struct am_dlist_item item;
     struct am_hsm *hsm;
     void (*post)(struct am_hsm *hsm, const struct am_event *event);
 };
 
+/** BT node */
 struct am_bt_node {
     struct am_hsm_state super;
 };
 
+/** BT invert node state */
 struct am_bt_invert {
     struct am_bt_node node;
     struct am_hsm_state substate;
 };
 
+/** BT force success node state */
 struct am_bt_force_success {
     struct am_bt_node node;
     struct am_hsm_state substate;
 };
 
+/** BT force failure node state */
 struct am_bt_force_failure {
     struct am_bt_node node;
     struct am_hsm_state substate;
 };
 
+/** BT repeat node state */
 struct am_bt_repeat {
     struct am_bt_node node;
     struct am_hsm_state substate;
@@ -130,6 +121,7 @@ struct am_bt_fallback {
     unsigned init_done : 1; /** the fallback initialization status */
 };
 
+/** BT sequence node state */
 struct am_bt_sequence {
     struct am_bt_node node;
     const struct am_hsm_state *substates;
@@ -138,11 +130,13 @@ struct am_bt_sequence {
     unsigned init_done : 1; /** the sequence initialization status */
 };
 
+/** BT sub-HSM. Used by BT parallel node. */
 struct am_bt_subhsm {
     void (*ctor)(struct am_hsm *hsm, struct am_hsm *super);
     struct am_hsm *hsm;
 };
 
+/** BT parallel node state */
 struct am_bt_parallel {
     struct am_bt_node node;
     const struct am_bt_subhsm *subhsms;
@@ -152,10 +146,15 @@ struct am_bt_parallel {
      * before completing the parallel node
      */
     int success_min;
-    int success_cnt;
-    int failure_cnt;
+    int success_cnt;            /** how many sub-HSMs completed with success */
+    int failure_cnt;            /** how many sub-HSMs completed with failure */
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/** canned events */
 extern const struct am_event am_bt_evt_success;
 extern const struct am_event am_bt_evt_failure;
 
@@ -284,8 +283,7 @@ enum am_hsm_rc am_bt_sequence(struct am_hsm *me, const struct am_event *event);
  */
 enum am_hsm_rc am_bt_parallel(struct am_hsm *me, const struct am_event *event);
 
-void am_bt_add_cfg(struct am_bt_cfg *cfg);
-
+/** Add BT nodes */
 void am_bt_add_invert(struct am_bt_invert *nodes, int num);
 void am_bt_add_force_success(struct am_bt_force_success *nodes, int num);
 void am_bt_add_force_failure(struct am_bt_force_failure *nodes, int num);
@@ -301,7 +299,10 @@ void am_bt_add_fallback(struct am_bt_fallback *nodes, int num);
 void am_bt_add_sequence(struct am_bt_sequence *nodes, int num);
 void am_bt_add_parallel(struct am_bt_parallel *nodes, int num);
 
-struct am_bt_cfg *am_bt_get_cfg(struct am_hsm *hsm);
+/** Add BT configuration */
+void am_bt_add_cfg(struct am_bt_cfg *cfg);
+
+/** Construct BT module */
 void am_bt_ctor(void);
 
 #ifdef __cplusplus
