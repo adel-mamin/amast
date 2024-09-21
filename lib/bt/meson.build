@@ -165,7 +165,7 @@ if unit_test
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
     test('fallback_success_first', e, suite: 'bt')
 
@@ -176,7 +176,7 @@ if unit_test
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
     test('fallback_success_second', e, suite: 'bt')
 
@@ -187,7 +187,7 @@ if unit_test
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
     test('fallback_failure', e, suite: 'bt')
 
@@ -198,7 +198,7 @@ if unit_test
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
     test('fallback_jump_second', e, suite: 'bt')
 
@@ -210,7 +210,7 @@ if unit_test
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
     test('sequence_success', e, suite: 'bt')
 
@@ -221,7 +221,7 @@ if unit_test
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
     test('sequence_failure_first', e, suite: 'bt')
 
@@ -232,7 +232,7 @@ if unit_test
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
     test('sequence_failure_second', e, suite: 'bt')
 
@@ -243,7 +243,29 @@ if unit_test
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
     test('sequence_jump_second', e, suite: 'bt')
+
+    e = executable(
+        'parallel_success',
+        [
+            'test' / 'parallel' / 'success.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
+        include_directories: [include_directories('test')])
+    test('parallel_success', e, suite: 'bt')
+
+    e = executable(
+        'parallel_failure',
+        [
+            'test' / 'parallel' / 'failure.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
+        include_directories: [include_directories('test')])
+    test('parallel_failure', e, suite: 'bt')
 endif

@@ -46,6 +46,7 @@ AM_ASSERT_STATIC(AM_HSM_EVT_MAX == 4);
 #define AM_BT_EVT_SUCCESS 5
 #define AM_BT_EVT_FAILURE 6
 #define AM_BT_EVT_DELAY 7
+#define AM_BT_EVT_PARALLEL 8
 #define AM_BT_EVT_MAX AM_BT_EVT_DELAY
 
 AM_ASSERT_STATIC(AM_EVT_USER > AM_BT_EVT_MAX);
@@ -61,6 +62,7 @@ enum am_bt_type {
     AM_BT_DELAY,
     AM_BT_FALLBACK,
     AM_BT_SEQUENCE,
+    AM_BT_PARALLEL,
     AM_BT_TYPES_NUM
 };
 
@@ -134,6 +136,24 @@ struct am_bt_sequence {
     int nsubstates;         /** number of substates */
     int isubstate;          /** currently running substate */
     unsigned init_done : 1; /** the sequence initialization status */
+};
+
+struct am_bt_subhsm {
+    void (*ctor)(struct am_hsm *hsm, struct am_hsm *super);
+    struct am_hsm *hsm;
+};
+
+struct am_bt_parallel {
+    struct am_bt_node node;
+    const struct am_bt_subhsm *subhsms;
+    int nsubhsms; /** number of substates */
+    /**
+     * wait for AM_BT_EVT_SUCCESS from at least this many sub-HSMs
+     * before completing the parallel node
+     */
+    int success_min;
+    int success_cnt;
+    int failure_cnt;
 };
 
 extern const struct am_event am_bt_evt_success;
@@ -252,6 +272,18 @@ enum am_hsm_rc am_bt_fallback(struct am_hsm *me, const struct am_event *event);
  */
 enum am_hsm_rc am_bt_sequence(struct am_hsm *me, const struct am_event *event);
 
+/**
+ * Run all sub-HSMs once in parallel and wait until a specified
+ * number of them complete with AM_BT_EVT_SUCCESS,
+ * In this case AM_BT_EVT_SUCCESS is returned.
+ * If all sub-HSMs return AM_BT_EVT_FAILURE, then AM_BT_EVT_FAILURE is returned.
+ * Each sub-HSM, once activated is expected to return AM_BT_EVT_SUCCESS or
+ * AM_BT_EVT_FAILURE only once. Otherwise behavior is undefined.
+ * Configured with `struct am_bt_parallel` instance.
+ * Complies to am_hsm_state_fn type.
+ */
+enum am_hsm_rc am_bt_parallel(struct am_hsm *me, const struct am_event *event);
+
 void am_bt_add_cfg(struct am_bt_cfg *cfg);
 
 void am_bt_add_invert(struct am_bt_invert *nodes, int num);
@@ -267,6 +299,7 @@ void am_bt_add_run_until_failure(
 void am_bt_add_delay(struct am_bt_delay *nodes, int num);
 void am_bt_add_fallback(struct am_bt_fallback *nodes, int num);
 void am_bt_add_sequence(struct am_bt_sequence *nodes, int num);
+void am_bt_add_parallel(struct am_bt_parallel *nodes, int num);
 
 struct am_bt_cfg *am_bt_get_cfg(struct am_hsm *hsm);
 void am_bt_ctor(void);

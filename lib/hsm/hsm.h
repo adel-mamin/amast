@@ -256,9 +256,6 @@ bool am_hsm_state_is_eq(struct am_hsm *hsm, const struct am_hsm_state *state);
  */
 int am_hsm_get_state_instance(const struct am_hsm *hsm);
 
-/* const struct am_hsm_state *am_hsm_get_child_state(struct am_hsm *hsm); */
-/* const struct am_hsm_state *am_hsm_get_super_state(struct am_hsm *hsm); */
-
 /**
  * HSM constructor.
  * @param hsm    the HSM to construct

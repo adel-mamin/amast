@@ -48,6 +48,7 @@ struct am_bt {
             struct am_bt_delay *delay;
             struct am_bt_fallback *fallback;
             struct am_bt_sequence *sequence;
+            struct am_bt_parallel *parallel;
             struct am_bt_node *node;
         } nodes;
         int num;
@@ -58,6 +59,7 @@ static struct am_bt m_bt;
 
 const struct am_event am_bt_evt_success = {.id = AM_BT_EVT_SUCCESS};
 const struct am_event am_bt_evt_failure = {.id = AM_BT_EVT_FAILURE};
+const struct am_event am_bt_evt_parallel = {.id = AM_BT_EVT_PARALLEL};
 
 void am_bt_add_cfg(struct am_bt_cfg *cfg) {
     AM_ASSERT(cfg);
@@ -133,6 +135,13 @@ void am_bt_add_sequence(struct am_bt_sequence *nodes, int num) {
     m_bt.types[AM_BT_SEQUENCE].num = num;
 }
 
+void am_bt_add_parallel(struct am_bt_parallel *nodes, int num) {
+    AM_ASSERT(nodes);
+    AM_ASSERT(num > 0);
+    m_bt.types[AM_BT_PARALLEL].nodes.parallel = nodes;
+    m_bt.types[AM_BT_PARALLEL].num = num;
+}
+
 static struct am_bt_node *am_bt_get_node(enum am_bt_type type, int instance) {
     AM_ASSERT(type >= AM_BT_TYPES_MIN);
     AM_ASSERT(type < AM_BT_TYPES_NUM);
@@ -177,6 +186,10 @@ static struct am_bt_node *am_bt_get_node(enum am_bt_type type, int instance) {
     }
     case AM_BT_SEQUENCE: {
         node = &m_bt.types[type].nodes.sequence[instance].node;
+        break;
+    }
+    case AM_BT_PARALLEL: {
+        node = &m_bt.types[type].nodes.parallel[instance].node;
         break;
     }
     default:
@@ -493,6 +506,106 @@ enum am_hsm_rc am_bt_sequence(struct am_hsm *me, const struct am_event *event) {
         break;
     }
     return AM_HSM_SUPER(node->super.fn, node->super.ifn);
+}
+
+static enum am_hsm_rc am_bt_parallel_done_wait(
+    struct am_hsm *me, const struct am_event *event
+);
+static enum am_hsm_rc am_bt_parallel_done(
+    struct am_hsm *me, const struct am_event *event
+);
+
+enum am_hsm_rc am_bt_parallel(struct am_hsm *me, const struct am_event *event) {
+    int instance = am_hsm_get_state_instance(me);
+    struct am_bt_node *node = am_bt_get_node(AM_BT_PARALLEL, instance);
+    struct am_bt_parallel *p = (struct am_bt_parallel *)node;
+
+    switch (event->id) {
+    case AM_HSM_EVT_ENTRY: {
+        AM_ASSERT(p->subhsms);
+        AM_ASSERT(p->nsubhsms > 0);
+        AM_ASSERT(p->success_min > 0);
+        p->success_cnt = 0;
+        for (int i = 0; i < p->nsubhsms; ++i) {
+            const struct am_bt_subhsm *sh = &p->subhsms[i];
+            AM_ASSERT(sh->ctor);
+            sh->ctor(sh->hsm, me);
+            am_hsm_init(sh->hsm, /*init_event=*/NULL);
+        }
+        return AM_HSM_HANDLED();
+    }
+    case AM_BT_EVT_SUCCESS: {
+        if (am_hsm_is_in(me, &AM_HSM_STATE(am_bt_parallel_done, instance))) {
+            break;
+        }
+        ++p->success_cnt;
+        if (p->success_cnt < p->success_min) {
+            return AM_HSM_HANDLED();
+        }
+        /**
+         * Destroy all sub-HSMs and post itself
+         * a reminder event AM_BT_EVT_PARALLEL.
+         * This way we make sure that no sub-HSM
+         * success/failure completion events
+         * leak into superstate of the parallel BT node
+         * after the parallel BT node declares success.
+         */
+        for (int i = 0; i < p->nsubhsms; ++i) {
+            const struct am_bt_subhsm *sh = &p->subhsms[i];
+            am_hsm_dtor(sh->hsm);
+        }
+        struct am_bt_cfg *cfg = am_bt_get_cfg(me);
+        cfg->post(me, &am_bt_evt_parallel);
+        return AM_HSM_TRAN(am_bt_parallel_done_wait, instance);
+    }
+    case AM_BT_EVT_FAILURE: {
+        ++p->failure_cnt;
+        if (p->failure_cnt < p->nsubhsms) {
+            return AM_HSM_HANDLED();
+        }
+        /*
+         * all sub-HSMs failed. Destroy all sub-HSMs and pass the failure
+         * to the superstate
+         */
+        for (int i = 0; i < p->nsubhsms; ++i) {
+            const struct am_bt_subhsm *sh = &p->subhsms[i];
+            am_hsm_dtor(sh->hsm);
+        }
+        break;
+    }
+    default:
+        break;
+    }
+    return AM_HSM_SUPER(node->super.fn, node->super.ifn);
+}
+
+static enum am_hsm_rc am_bt_parallel_done_wait(
+    struct am_hsm *me, const struct am_event *event
+) {
+    int instance = am_hsm_get_state_instance(me);
+
+    switch (event->id) {
+    case AM_BT_EVT_SUCCESS:
+    case AM_BT_EVT_FAILURE: {
+        return AM_HSM_HANDLED();
+    }
+    case AM_BT_EVT_PARALLEL: {
+        struct am_bt_cfg *cfg = am_bt_get_cfg(me);
+        cfg->post(me, &am_bt_evt_success);
+        return AM_HSM_TRAN(am_bt_parallel_done, instance);
+    }
+    default:
+        break;
+    }
+    return AM_HSM_SUPER(am_bt_parallel, instance);
+}
+
+static enum am_hsm_rc am_bt_parallel_done(
+    struct am_hsm *me, const struct am_event *event
+) {
+    (void)event;
+    int instance = am_hsm_get_state_instance(me);
+    return AM_HSM_SUPER(am_bt_parallel, instance);
 }
 
 void am_bt_ctor(void) { am_dlist_init(&m_bt.cfg); }
