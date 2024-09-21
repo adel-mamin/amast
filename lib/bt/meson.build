@@ -201,4 +201,49 @@ if unit_test
         dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
         include_directories: [include_directories('test')])
     test('fallback_jump_second', e, suite: 'bt')
+
+
+    e = executable(
+        'sequence_success',
+        [
+            'test' / 'sequence' / 'success.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        include_directories: [include_directories('test')])
+    test('sequence_success', e, suite: 'bt')
+
+    e = executable(
+        'sequence_failure',
+        [
+            'test' / 'sequence' / 'failure_first.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        include_directories: [include_directories('test')])
+    test('sequence_failure_first', e, suite: 'bt')
+
+    e = executable(
+        'sequence_failure_second',
+        [
+            'test' / 'sequence' / 'failure_second.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        include_directories: [include_directories('test')])
+    test('sequence_failure_second', e, suite: 'bt')
+
+    e = executable(
+        'sequence_jump_second',
+        [
+            'test' / 'sequence' / 'jump_second.c',
+            'test' / 'test_log.c',
+            'test' / 'test_event.c',
+        ],
+        dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
+        include_directories: [include_directories('test')])
+    test('sequence_jump_second', e, suite: 'bt')
 endif

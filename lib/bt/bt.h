@@ -119,20 +119,21 @@ struct am_bt_delay {
     int domain;                  /** the delay timer tick domain */
 };
 
+/** am_bt_fallback BT node state */
 struct am_bt_fallback {
     struct am_bt_node node;
     const struct am_hsm_state *substates;
-    int nsubstates;
-    int isubstate;
-    unsigned init_done : 1;
+    int nsubstates;         /** number of substates */
+    int isubstate;          /** currently running substate */
+    unsigned init_done : 1; /** the fallback initialization status */
 };
 
 struct am_bt_sequence {
     struct am_bt_node node;
     const struct am_hsm_state *substates;
-    int nsubstates;
-    int isubstate;
-    unsigned init_done : 1;
+    int nsubstates;         /** number of substates */
+    int isubstate;          /** currently running substate */
+    unsigned init_done : 1; /** the sequence initialization status */
 };
 
 extern const struct am_event am_bt_evt_success;
@@ -227,7 +228,28 @@ enum am_hsm_rc am_bt_run_until_failure(
  */
 enum am_hsm_rc am_bt_delay(struct am_hsm *me, const struct am_event *event);
 
+/**
+ * Run each substate once until a substate returns AM_BT_EVT_SUCCESS,
+ * in which case AM_BT_EVT_SUCCESS is returned.
+ * If all substates return AM_BT_EVT_FAILURE, then AM_BT_EVT_FAILURE
+ * is returned.
+ * Each substate, once activated is expected to return AM_BT_EVT_SUCCESS or
+ * AM_BT_EVT_FAILURE only once. Otherwise behavior is undefined.
+ * Configured with `struct am_bt_fallback` instance.
+ * Complies to am_hsm_state_fn type.
+ */
 enum am_hsm_rc am_bt_fallback(struct am_hsm *me, const struct am_event *event);
+
+/**
+ * Run each substate once until a substate returns AM_BT_EVT_FAILURE,
+ * in which case AM_BT_EVT_FAILURE is returned.
+ * If all substates return AM_BT_EVT_SUCCESS, then AM_BT_EVT_SUCCESS
+ * is returned.
+ * Each substate, once activated is expected to return AM_BT_EVT_SUCCESS or
+ * AM_BT_EVT_FAILURE only once. Otherwise behavior is undefined.
+ * Configured with `struct am_bt_sequence` instance.
+ * Complies to am_hsm_state_fn type.
+ */
 enum am_hsm_rc am_bt_sequence(struct am_hsm *me, const struct am_event *event);
 
 void am_bt_add_cfg(struct am_bt_cfg *cfg);

@@ -33,7 +33,7 @@
  *  | |     *         s1               | |
  *  | |     |                          | |
  *  | | +---v------------------------+ | |
- *  | | |       am_bt_fallback       | | |
+ *  | | |       am_bt_sequence       | | |
  *  | | |                            | | |
  *  | | |   +--------+  +--------+   | | |
  *  | | |   |  s11   |  |  s12   |   | | |
@@ -42,8 +42,9 @@
  *  | +--------------------------------+ |
  *  +------------------------------------+
  *
- * The am_bt_fallback() unit testing is done with the
+ * The am_bt_sequence() unit testing is done with the
  * help of 3 user states: s1, s11 and s12.
+ * Both s11 and s12 return AM_BT_EVT_FAILURE.
  */
 
 #include <stddef.h>
@@ -72,7 +73,7 @@ static const struct am_hsm_state substates[] = {
     {.fn = (am_hsm_state_fn)s11}, {.fn = (am_hsm_state_fn)s12}
 };
 
-static struct am_bt_fallback m_fallback = {
+static struct am_bt_sequence m_sequence = {
     .node = {.super = {.fn = (am_hsm_state_fn)s1}},
     .substates = substates,
     .nsubstates = 2,
@@ -84,7 +85,7 @@ static enum am_hsm_rc s1(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_INIT: {
         TLOG("s1-INIT;");
-        return AM_HSM_TRAN(am_bt_fallback, 0);
+        return AM_HSM_TRAN(am_bt_sequence, 0);
     }
     case AM_BT_EVT_SUCCESS: {
         TLOG("s1-BT_SUCCESS;");
@@ -104,7 +105,7 @@ static enum am_hsm_rc s11(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY: {
         TLOG("s11-ENTRY;");
-        test_event_post(&me->hsm, &am_bt_evt_success);
+        test_event_post(&me->hsm, &am_bt_evt_failure);
         return AM_HSM_HANDLED();
     }
     case AM_HSM_EVT_EXIT: {
@@ -114,7 +115,7 @@ static enum am_hsm_rc s11(struct test *me, const struct am_event *event) {
     default:
         break;
     }
-    return AM_HSM_SUPER(am_bt_fallback);
+    return AM_HSM_SUPER(am_bt_sequence);
 }
 
 static enum am_hsm_rc s12(struct test *me, const struct am_event *event) {
@@ -131,7 +132,7 @@ static enum am_hsm_rc s12(struct test *me, const struct am_event *event) {
     default:
         break;
     }
-    return AM_HSM_SUPER(am_bt_fallback);
+    return AM_HSM_SUPER(am_bt_sequence);
 }
 
 static enum am_hsm_rc sinit(struct test *me, const struct am_event *event) {
@@ -144,7 +145,7 @@ int main(void) {
     am_bt_ctor();
 
     struct test *me = &m_test;
-    am_bt_add_fallback(&m_fallback, /*num=*/1);
+    am_bt_add_sequence(&m_sequence, /*num=*/1);
     struct am_bt_cfg cfg = {.hsm = &me->hsm, .post = test_event_post};
     am_bt_add_cfg(&cfg);
 
@@ -157,7 +158,7 @@ int main(void) {
     while ((event = test_event_get()) != NULL) {
         am_hsm_dispatch(&me->hsm, event);
     }
-    static const char *out = {"sinit-INIT;s1-INIT;s11-ENTRY;s1-BT_SUCCESS;"};
+    static const char *out = {"sinit-INIT;s1-INIT;s11-ENTRY;s1-BT_FAILURE;"};
     AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
     return 0;
 }

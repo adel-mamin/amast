@@ -33,7 +33,7 @@
  *  | |     *         s1               | |
  *  | |     |                          | |
  *  | | +---v------------------------+ | |
- *  | | |       am_bt_fallback       | | |
+ *  | | |        am_bt_sequence      | | |
  *  | | |                            | | |
  *  | | |   +--------+  +--------+   | | |
  *  | | |   |  s11   |  |  s12   |   | | |
@@ -104,7 +104,7 @@ static enum am_hsm_rc s11(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY: {
         TLOG("s11-ENTRY;");
-        test_event_post(&me->hsm, &am_bt_evt_success);
+        test_event_post(&me->hsm, &am_bt_evt_failure);
         return AM_HSM_HANDLED();
     }
     case AM_HSM_EVT_EXIT: {
@@ -121,7 +121,7 @@ static enum am_hsm_rc s12(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY: {
         TLOG("s12-ENTRY;");
-        test_event_post(&me->hsm, &am_bt_evt_failure);
+        test_event_post(&me->hsm, &am_bt_evt_success);
         return AM_HSM_HANDLED();
     }
     case AM_HSM_EVT_EXIT: {
@@ -157,7 +157,9 @@ int main(void) {
     while ((event = test_event_get()) != NULL) {
         am_hsm_dispatch(&me->hsm, event);
     }
-    static const char *out = {"sinit-INIT;s1-INIT;s11-ENTRY;s1-BT_SUCCESS;"};
+    static const char *out = {
+        "sinit-INIT;s1-INIT;s11-ENTRY;s11-EXIT;s12-ENTRY;s1-BT_SUCCESS;"
+    };
     AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
     return 0;
 }
