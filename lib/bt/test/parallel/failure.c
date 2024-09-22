@@ -63,6 +63,12 @@
 #include "test_log.h"
 #include "test_event.h"
 
+#define AM_TEST_EVT_S2_FAILURE AM_EVT_USER
+#define AM_TEST_EVT_S3_FAILURE (AM_EVT_USER + 1)
+
+const struct am_event am_test_evt_s2_failure = {.id = AM_TEST_EVT_S2_FAILURE};
+const struct am_event am_test_evt_s3_failure = {.id = AM_TEST_EVT_S3_FAILURE};
+
 struct test {
     struct am_hsm hsm;
 };
@@ -143,13 +149,15 @@ static enum am_hsm_rc s2(struct s2_state *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY: {
         TLOG("s2-ENTRY;");
-        test_event_post(&me->hsm, &am_bt_evt_failure);
         return AM_HSM_HANDLED();
     }
     case AM_HSM_EVT_EXIT: {
         TLOG("s2-EXIT;");
         return AM_HSM_HANDLED();
     }
+    case AM_TEST_EVT_S2_FAILURE:
+        test_event_post(&me->hsm, &am_bt_evt_failure);
+        return AM_HSM_HANDLED();
     default:
         break;
     }
@@ -167,13 +175,15 @@ static enum am_hsm_rc s3(struct s3_state *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY: {
         TLOG("s3-ENTRY;");
-        test_event_post(&me->hsm, &am_bt_evt_failure);
         return AM_HSM_HANDLED();
     }
     case AM_HSM_EVT_EXIT: {
         TLOG("s3-EXIT;");
         return AM_HSM_HANDLED();
     }
+    case AM_TEST_EVT_S3_FAILURE:
+        test_event_post(&me->hsm, &am_bt_evt_failure);
+        return AM_HSM_HANDLED();
     default:
         break;
     }
@@ -205,6 +215,9 @@ int main(void) {
 
     am_hsm_ctor(&me->hsm, &AM_HSM_STATE(sinit));
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
+
+    test_event_post(&me->hsm, &am_test_evt_s2_failure);
+    test_event_post(&me->hsm, &am_test_evt_s3_failure);
 
     const struct am_event *event;
     while ((event = test_event_get()) != NULL) {

@@ -589,6 +589,12 @@ enum am_hsm_rc am_bt_parallel(struct am_hsm *me, const struct am_event *event) {
         break;
     }
     default:
+        if (AM_EVENT_HAS_USER_ID(event)) {
+            for (int i = 0; i < p->nsubhsms; ++i) {
+                const struct am_bt_subhsm *sh = &p->subhsms[i];
+                am_hsm_dispatch(sh->hsm, event);
+            }
+        }
         break;
     }
     return AM_HSM_SUPER(node->super.fn, node->super.ifn);
