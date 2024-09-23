@@ -71,201 +71,90 @@ if unit_test
     test('force_failure', e, suite: 'bt')
 
     e = executable(
-        'repeat_success',
+        'repeat',
         [
-            'test' / 'repeat' / 'success.c',
+            'test' / 'repeat.c',
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
         dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
-    test('repeat_success', e, suite: 'bt')
+    test('repeat', e, suite: 'bt')
 
     e = executable(
-        'repeat_failure',
+        'retry_until_success',
         [
-            'test' / 'repeat' / 'failure.c',
+            'test' / 'retry_until_success.c',
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
         dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
-    test('repeat_failure', e, suite: 'bt')
+    test('retry_until_success', e, suite: 'bt')
 
     e = executable(
-        'retry_until_success_limited',
+        'run_until_failure',
         [
-            'test' / 'retry_until_success' / 'limited.c',
+            'test' / 'run_until_failure.c',
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
         dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
-    test('retry_until_success_limited', e, suite: 'bt')
+    test('run_until_failure', e, suite: 'bt')
 
     e = executable(
-        'retry_until_success_infinite',
+        'delay',
         [
-            'test' / 'retry_until_success' / 'infinite.c',
-            'test' / 'test_log.c',
-            'test' / 'test_event.c',
-        ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
-        include_directories: [include_directories('test')])
-    test('retry_until_success_infinite', e, suite: 'bt')
-
-    e = executable(
-        'run_until_failure_first',
-        [
-            'test' / 'run_until_failure' / 'fail_first.c',
-            'test' / 'test_log.c',
-            'test' / 'test_event.c',
-        ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
-        include_directories: [include_directories('test')])
-    test('run_until_failure_first', e, suite: 'bt')
-
-    e = executable(
-        'run_until_failure_second',
-        [
-            'test' / 'run_until_failure' / 'fail_second.c',
-            'test' / 'test_log.c',
-            'test' / 'test_event.c',
-        ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
-        include_directories: [include_directories('test')])
-    test('run_until_failure_second', e, suite: 'bt')
-
-    e = executable(
-        'delay_success',
-        [
-            'test' / 'delay' / 'success.c',
+            'test' / 'delay.c',
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
         dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
         include_directories: [include_directories('test')])
-    test('delay_success', e, suite: 'bt')
+    test('delay', e, suite: 'bt')
 
     e = executable(
-        'delay_failure',
+        'count',
         [
-            'test' / 'delay' / 'failure.c',
+            'test' / 'count.c',
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
         dependencies: [libhsm_dep, libbt_dep, libstr_dep, libtimer_dep],
         include_directories: [include_directories('test')])
-    test('delay_failure', e, suite: 'bt')
+    test('count', e, suite: 'bt')
 
     e = executable(
-        'fallback_success_first',
+        'fallback',
         [
-            'test' / 'fallback' / 'success_first.c',
+            'test' / 'fallback.c',
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
         dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
-    test('fallback_success_first', e, suite: 'bt')
+    test('fallback', e, suite: 'bt')
 
     e = executable(
-        'fallback_success_second',
+        'sequence',
         [
-            'test' / 'fallback' / 'success_second.c',
+            'test' / 'sequence.c',
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
         dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
-    test('fallback_success_second', e, suite: 'bt')
+    test('sequence', e, suite: 'bt')
 
     e = executable(
-        'fallback_failure',
+        'parallel',
         [
-            'test' / 'fallback' / 'failure.c',
+            'test' / 'parallel.c',
             'test' / 'test_log.c',
             'test' / 'test_event.c',
         ],
         dependencies: [libhsm_dep, libbt_dep, libstr_dep],
         include_directories: [include_directories('test')])
-    test('fallback_failure', e, suite: 'bt')
-
-    e = executable(
-        'fallback_jump_second',
-        [
-            'test' / 'fallback' / 'jump_second.c',
-            'test' / 'test_log.c',
-            'test' / 'test_event.c',
-        ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
-        include_directories: [include_directories('test')])
-    test('fallback_jump_second', e, suite: 'bt')
-
-
-    e = executable(
-        'sequence_success',
-        [
-            'test' / 'sequence' / 'success.c',
-            'test' / 'test_log.c',
-            'test' / 'test_event.c',
-        ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
-        include_directories: [include_directories('test')])
-    test('sequence_success', e, suite: 'bt')
-
-    e = executable(
-        'sequence_failure',
-        [
-            'test' / 'sequence' / 'failure_first.c',
-            'test' / 'test_log.c',
-            'test' / 'test_event.c',
-        ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
-        include_directories: [include_directories('test')])
-    test('sequence_failure_first', e, suite: 'bt')
-
-    e = executable(
-        'sequence_failure_second',
-        [
-            'test' / 'sequence' / 'failure_second.c',
-            'test' / 'test_log.c',
-            'test' / 'test_event.c',
-        ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
-        include_directories: [include_directories('test')])
-    test('sequence_failure_second', e, suite: 'bt')
-
-    e = executable(
-        'sequence_jump_second',
-        [
-            'test' / 'sequence' / 'jump_second.c',
-            'test' / 'test_log.c',
-            'test' / 'test_event.c',
-        ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
-        include_directories: [include_directories('test')])
-    test('sequence_jump_second', e, suite: 'bt')
-
-    e = executable(
-        'parallel_success',
-        [
-            'test' / 'parallel' / 'success.c',
-            'test' / 'test_log.c',
-            'test' / 'test_event.c',
-        ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
-        include_directories: [include_directories('test')])
-    test('parallel_success', e, suite: 'bt')
-
-    e = executable(
-        'parallel_failure',
-        [
-            'test' / 'parallel' / 'failure.c',
-            'test' / 'test_log.c',
-            'test' / 'test_event.c',
-        ],
-        dependencies: [libhsm_dep, libbt_dep, libstr_dep],
-        include_directories: [include_directories('test')])
-    test('parallel_failure', e, suite: 'bt')
+    test('parallel', e, suite: 'bt')
 endif

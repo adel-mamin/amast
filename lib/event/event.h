@@ -36,7 +36,7 @@
  * The event IDs below this value are reserved
  * and should not be used for user events.
  */
-#define AM_EVT_USER 9
+#define AM_EVT_USER 10
 
 /**
  * Check if event has a valid user event ID

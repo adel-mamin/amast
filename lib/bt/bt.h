@@ -44,7 +44,8 @@ AM_ASSERT_STATIC(AM_HSM_EVT_MAX == 4);
 #define AM_BT_EVT_FAILURE 6
 #define AM_BT_EVT_DELAY 7
 #define AM_BT_EVT_PARALLEL 8
-#define AM_BT_EVT_MAX AM_BT_EVT_DELAY
+#define AM_BT_EVT_COUNT 9
+#define AM_BT_EVT_MAX AM_BT_EVT_COUNT
 
 AM_ASSERT_STATIC(AM_EVT_USER > AM_BT_EVT_MAX);
 
@@ -112,6 +113,24 @@ struct am_bt_delay {
     int domain;                  /** the delay timer tick domain */
 };
 
+/** BT count node state */
+struct am_bt_count {
+    struct am_bt_node node;
+    struct am_hsm_state substate;
+    /**
+     * the total number of AM_BT_EVT_SUCCESS and AM_BT_EVT_FAILURE events
+     * expected from substate
+     */
+    int ntotal;
+    /**
+     * wait for AM_BT_EVT_SUCCESS from at least this many times
+     * before completing the count node
+     */
+    int success_min;
+    int success_cnt; /** how many times substate reported success */
+    int failure_cnt; /** how many times substate reported failure */
+};
+
 /** am_bt_fallback BT node state */
 struct am_bt_fallback {
     struct am_bt_node node;
@@ -146,8 +165,8 @@ struct am_bt_parallel {
      * before completing the parallel node
      */
     int success_min;
-    int success_cnt;            /** how many sub-HSMs completed with success */
-    int failure_cnt;            /** how many sub-HSMs completed with failure */
+    int success_cnt; /** how many sub-HSMs completed with success */
+    int failure_cnt; /** how many sub-HSMs completed with failure */
 };
 
 #ifdef __cplusplus
@@ -248,6 +267,20 @@ enum am_hsm_rc am_bt_run_until_failure(
 enum am_hsm_rc am_bt_delay(struct am_hsm *me, const struct am_event *event);
 
 /**
+ * Run substate once and wait for a configured number of AM_BT_EVT_SUCCESS
+ * events from it.
+ * The total number of AM_BT_EVT_SUCCESS or AM_BT_EVT_FAILURE events
+ * from substate is limited to a configured number. Otherwise the behavior is
+ * undefined.
+ * Configured with `struct am_bt_count` instance.
+ * Returns AM_BT_EVT_SUCCESS if at least `struct am_bt_count::success_min`
+ * is received. Otherwise AM_BT_EVT_FAILURE is returned.
+ * It is a decorator node.
+ * Complies to am_hsm_state_fn type.
+ */
+enum am_hsm_rc am_bt_count(struct am_hsm *me, const struct am_event *event);
+
+/**
  * Run each substate once until a substate returns AM_BT_EVT_SUCCESS,
  * in which case AM_BT_EVT_SUCCESS is returned.
  * If all substates return AM_BT_EVT_FAILURE, then AM_BT_EVT_FAILURE
@@ -295,11 +328,17 @@ void am_bt_add_run_until_failure(
     struct am_bt_run_until_failure *nodes, int num
 );
 void am_bt_add_delay(struct am_bt_delay *nodes, int num);
+void am_bt_add_count(struct am_bt_count *nodes, int num);
 void am_bt_add_fallback(struct am_bt_fallback *nodes, int num);
 void am_bt_add_sequence(struct am_bt_sequence *nodes, int num);
 void am_bt_add_parallel(struct am_bt_parallel *nodes, int num);
 
-/** Add BT configuration */
+/**
+ * Add BT configuration.
+ * BT does not make a copy of the configuration.
+ * So the caller must ensure the validity of the configuration
+ * after the call.
+ */
 void am_bt_add_cfg(struct am_bt_cfg *cfg);
 
 /** Construct BT module */

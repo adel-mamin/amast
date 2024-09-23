@@ -48,7 +48,6 @@
  *
  * The am_bt_parallel() unit testing is done with the
  * help of 3 user HSMs: s1, s2 and s3.
- * Both s2 and s3 sub-HSMs return failure.
  */
 
 #include <stddef.h>
@@ -65,9 +64,13 @@
 
 #define AM_TEST_EVT_S2_FAILURE AM_EVT_USER
 #define AM_TEST_EVT_S3_FAILURE (AM_EVT_USER + 1)
+#define AM_TEST_EVT_S2_SUCCESS (AM_EVT_USER + 2)
+#define AM_TEST_EVT_S3_SUCCESS (AM_EVT_USER + 3)
 
 const struct am_event am_test_evt_s2_failure = {.id = AM_TEST_EVT_S2_FAILURE};
+const struct am_event am_test_evt_s2_success = {.id = AM_TEST_EVT_S2_SUCCESS};
 const struct am_event am_test_evt_s3_failure = {.id = AM_TEST_EVT_S3_FAILURE};
+const struct am_event am_test_evt_s3_success = {.id = AM_TEST_EVT_S3_SUCCESS};
 
 struct test {
     struct am_hsm hsm;
@@ -155,9 +158,14 @@ static enum am_hsm_rc s2(struct s2_state *me, const struct am_event *event) {
         TLOG("s2-EXIT;");
         return AM_HSM_HANDLED();
     }
-    case AM_TEST_EVT_S2_FAILURE:
+    case AM_TEST_EVT_S2_FAILURE: {
         test_event_post(&me->hsm, &am_bt_evt_failure);
         return AM_HSM_HANDLED();
+    }
+    case AM_TEST_EVT_S2_SUCCESS: {
+        test_event_post(&me->hsm, &am_bt_evt_success);
+        return AM_HSM_HANDLED();
+    }
     default:
         break;
     }
@@ -181,9 +189,14 @@ static enum am_hsm_rc s3(struct s3_state *me, const struct am_event *event) {
         TLOG("s3-EXIT;");
         return AM_HSM_HANDLED();
     }
-    case AM_TEST_EVT_S3_FAILURE:
+    case AM_TEST_EVT_S3_FAILURE: {
         test_event_post(&me->hsm, &am_bt_evt_failure);
         return AM_HSM_HANDLED();
+    }
+    case AM_TEST_EVT_S3_SUCCESS: {
+        test_event_post(&me->hsm, &am_bt_evt_success);
+        return AM_HSM_HANDLED();
+    }
     default:
         break;
     }
@@ -203,18 +216,28 @@ static enum am_hsm_rc sinit(struct test *me, const struct am_event *event) {
     return AM_HSM_TRAN(s1);
 }
 
-int main(void) {
+static void test_ctor(int success_min) {
     am_bt_ctor();
 
     struct test *me = &m_test;
+    m_parallel.success_min = success_min;
     am_bt_add_parallel(&m_parallel, /*num=*/1);
-    struct am_bt_cfg cfg = {.hsm = &me->hsm, .post = test_event_post};
+    static struct am_bt_cfg cfg;
+    cfg.hsm = &me->hsm;
+    cfg.post = test_event_post;
     am_bt_add_cfg(&cfg);
 
     test_log_clear();
 
     am_hsm_ctor(&me->hsm, &AM_HSM_STATE(sinit));
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
+}
+
+/* both s2 and s3 sub-HSMs return failure */
+static void test_failure(void) {
+    test_ctor(/*success_min=*/1);
+
+    struct test *me = &m_test;
 
     test_event_post(&me->hsm, &am_test_evt_s2_failure);
     test_event_post(&me->hsm, &am_test_evt_s3_failure);
@@ -227,5 +250,53 @@ int main(void) {
         "sinit-INIT;s1-INIT;s2-ENTRY;s3-ENTRY;s2-EXIT;s3-EXIT;s1-BT_FAILURE;"
     };
     AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
+}
+
+/*
+ * Only s2 sub-HSM returns failure and BT parallel node
+ * recognizes the failure as it expects 2 sub-HSMs to succeed.
+ * If one sub-HSM already failed, then the parallel node should
+ * report failure.
+ */
+static void test_failure_early(void) {
+    test_ctor(/*success_min=*/2);
+
+    struct test *me = &m_test;
+
+    test_event_post(&me->hsm, &am_test_evt_s2_failure);
+
+    const struct am_event *event;
+    while ((event = test_event_get()) != NULL) {
+        am_hsm_dispatch(&me->hsm, event);
+    }
+    static const char *out = {
+        "sinit-INIT;s1-INIT;s2-ENTRY;s3-ENTRY;s2-EXIT;s3-EXIT;s1-BT_FAILURE;"
+    };
+    AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
+}
+
+/* the parallel node waits for at least 1 sub-HSM to succeed */
+static void test_success(void) {
+    test_ctor(/*success_min=*/1);
+
+    struct test *me = &m_test;
+
+    test_event_post(&me->hsm, &am_test_evt_s2_success);
+    test_event_post(&me->hsm, &am_test_evt_s3_success);
+
+    const struct am_event *event;
+    while ((event = test_event_get()) != NULL) {
+        am_hsm_dispatch(&me->hsm, event);
+    }
+    static const char *out = {
+        "sinit-INIT;s1-INIT;s2-ENTRY;s3-ENTRY;s2-EXIT;s3-EXIT;s1-BT_SUCCESS;"
+    };
+    AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
+}
+
+int main(void) {
+    test_failure();
+    test_failure_early();
+    test_success();
     return 0;
 }

@@ -75,6 +75,7 @@ AM_ASSERT_STATIC(AM_TICK_DOMAIN_MAX < (1U << AM_EVENT_TICK_DOMAIN_BITS));
 /**
  * Timer constructor.
  * @param cfg  timer module configuration
+ *             The timer module makes an internal copy of the configuration.
  */
 void am_timer_ctor(const struct am_timer_cfg *cfg);
 

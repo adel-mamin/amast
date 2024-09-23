@@ -34,7 +34,7 @@
  *  | |     *  s1        | |
  *  | |     |            | |
  *  | | +---v----------+ | |
- *  | | | am_bt_repeat | | |
+ *  | | | am_bt_count  | | |
  *  | | |              | | |
  *  | | |  +--------+  | | |
  *  | | |  |  s11   |  | | |
@@ -43,10 +43,8 @@
  *  | +------------------+ |
  *  +----------------------+
  *
- * The am_bt_repeat() unit testing is done with the
+ * The am_bt_count() unit testing is done with the
  * help of 2 user states: s1 and s11.
- * s11 runs two times. It returns success for the 1st run
- * and failure for the second run.
  */
 
 #include <stddef.h>
@@ -61,6 +59,16 @@
 #include "test_log.h"
 #include "test_event.h"
 
+#define AM_TEST_EVT_U1_FAILURE AM_EVT_USER
+#define AM_TEST_EVT_U1_SUCCESS (AM_EVT_USER + 1)
+#define AM_TEST_EVT_U2_FAILURE (AM_EVT_USER + 2)
+#define AM_TEST_EVT_U2_SUCCESS (AM_EVT_USER + 3)
+
+const struct am_event am_test_evt_u1_failure = {.id = AM_TEST_EVT_U1_FAILURE};
+const struct am_event am_test_evt_u1_success = {.id = AM_TEST_EVT_U1_SUCCESS};
+const struct am_event am_test_evt_u2_failure = {.id = AM_TEST_EVT_U2_FAILURE};
+const struct am_event am_test_evt_u2_success = {.id = AM_TEST_EVT_U2_SUCCESS};
+
 struct test {
     struct am_hsm hsm;
 };
@@ -70,17 +78,18 @@ static struct test m_test;
 static enum am_hsm_rc s1(struct test *me, const struct am_event *event);
 static enum am_hsm_rc s11(struct test *me, const struct am_event *event);
 
-static struct am_bt_repeat m_repeat = {
+static struct am_bt_count m_count = {
     .node = {.super = {.fn = (am_hsm_state_fn)s1}},
     .substate = {.fn = (am_hsm_state_fn)s11},
-    .total = 2
+    .ntotal = 2,
+    .success_min = 1
 };
 
 static enum am_hsm_rc s1(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_INIT: {
         TLOG("s1-INIT;");
-        return AM_HSM_TRAN(am_bt_repeat);
+        return AM_HSM_TRAN(am_bt_count, 0);
     }
     case AM_BT_EVT_SUCCESS: {
         TLOG("s1-BT_SUCCESS;");
@@ -100,17 +109,26 @@ static enum am_hsm_rc s11(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY: {
         TLOG("s11-ENTRY;");
-        test_event_post(&me->hsm, &am_bt_evt_failure);
         return AM_HSM_HANDLED();
     }
     case AM_HSM_EVT_EXIT: {
         TLOG("s11-EXIT;");
         return AM_HSM_HANDLED();
     }
+    case AM_TEST_EVT_U1_FAILURE:
+    case AM_TEST_EVT_U2_FAILURE: {
+        test_event_post(&me->hsm, &am_bt_evt_failure);
+        return AM_HSM_HANDLED();
+    }
+    case AM_TEST_EVT_U1_SUCCESS:
+    case AM_TEST_EVT_U2_SUCCESS: {
+        test_event_post(&me->hsm, &am_bt_evt_success);
+        return AM_HSM_HANDLED();
+    }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_bt_repeat);
+    return AM_HSM_SUPER(am_bt_count);
 }
 
 static enum am_hsm_rc sinit(struct test *me, const struct am_event *event) {
@@ -119,24 +137,87 @@ static enum am_hsm_rc sinit(struct test *me, const struct am_event *event) {
     return AM_HSM_TRAN(s1);
 }
 
-int main(void) {
+static void test_ctor(int success_min) {
     am_bt_ctor();
 
     struct test *me = &m_test;
-    am_bt_add_repeat(&m_repeat, /*num=*/1);
-    struct am_bt_cfg cfg = {.hsm = &me->hsm, .post = test_event_post};
+    m_count.success_min = success_min;
+    am_bt_add_count(&m_count, /*num=*/1);
+    static struct am_bt_cfg cfg;
+    cfg.hsm = &me->hsm;
+    cfg.post = test_event_post;
     am_bt_add_cfg(&cfg);
 
     test_log_clear();
 
     am_hsm_ctor(&me->hsm, &AM_HSM_STATE(sinit));
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
+}
+
+/* both users return failure */
+static void test_failure(void) {
+    test_ctor(/*success_min=*/1);
+
+    struct test *me = &m_test;
+
+    test_event_post(&me->hsm, &am_test_evt_u1_failure);
+    test_event_post(&me->hsm, &am_test_evt_u2_failure);
 
     const struct am_event *event;
     while ((event = test_event_get()) != NULL) {
         am_hsm_dispatch(&me->hsm, event);
     }
-    static const char *out = {"sinit-INIT;s1-INIT;s11-ENTRY;s1-BT_FAILURE;"};
+    static const char *out = {
+        "sinit-INIT;s1-INIT;s11-ENTRY;s11-EXIT;s1-BT_FAILURE;"
+    };
     AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
+}
+
+/*
+ * Only one user returns failure and BT count node
+ * recognizes the failure as it expects 2 users to succeed.
+ * If one user already failed, then the count node should
+ * report failure.
+ */
+static void test_failure_early(void) {
+    test_ctor(/*success_min=*/2);
+
+    struct test *me = &m_test;
+
+    test_event_post(&me->hsm, &am_test_evt_u1_failure);
+
+    const struct am_event *event;
+    while ((event = test_event_get()) != NULL) {
+        am_hsm_dispatch(&me->hsm, event);
+    }
+    static const char *out = {
+        "sinit-INIT;s1-INIT;s11-ENTRY;s11-EXIT;s1-BT_FAILURE;"
+    };
+    AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
+}
+
+/* the count node waits for at least one user to succeed */
+static void test_success(void) {
+    test_ctor(/*success_min=*/1);
+
+    struct test *me = &m_test;
+
+    test_event_post(&me->hsm, &am_test_evt_u1_success);
+    test_event_post(&me->hsm, &am_test_evt_u2_success);
+
+    const struct am_event *event;
+    while ((event = test_event_get()) != NULL) {
+        am_hsm_dispatch(&me->hsm, event);
+    }
+    static const char *out = {
+        "sinit-INIT;s1-INIT;s11-ENTRY;s11-EXIT;s1-BT_SUCCESS;"
+    };
+    AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
+}
+
+int main(void) {
+    test_failure();
+    test_failure_early();
+    test_success();
     return 0;
 }

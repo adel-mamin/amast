@@ -33,7 +33,7 @@
  *  | |     *         s1               | |
  *  | |     |                          | |
  *  | | +---v------------------------+ | |
- *  | | |       am_bt_sequence       | | |
+ *  | | |     am_bt_fallback()       | | |
  *  | | |                            | | |
  *  | | |   +--------+  +--------+   | | |
  *  | | |   |  s11   |  |  s12   |   | | |
@@ -42,7 +42,7 @@
  *  | +--------------------------------+ |
  *  +------------------------------------+
  *
- * The am_bt_sequence() unit testing is done with the
+ * The am_bt_fallback() unit testing is done with the
  * help of 3 user states: s1, s11 and s12.
  */
 
@@ -72,7 +72,7 @@ static const struct am_hsm_state substates[] = {
     {.fn = (am_hsm_state_fn)s11}, {.fn = (am_hsm_state_fn)s12}
 };
 
-static struct am_bt_sequence m_sequence = {
+static struct am_bt_fallback m_fallback = {
     .node = {.super = {.fn = (am_hsm_state_fn)s1}},
     .substates = substates,
     .nsubstates = 2,
@@ -84,7 +84,11 @@ static enum am_hsm_rc s1(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_INIT: {
         TLOG("s1-INIT;");
-        return AM_HSM_TRAN(s12, 0);
+        return AM_HSM_TRAN(am_bt_fallback, 0);
+    }
+    case AM_HSM_EVT_ENTRY: {
+        TLOG("s1-ENTRY;");
+        return AM_HSM_HANDLED();
     }
     case AM_BT_EVT_SUCCESS: {
         TLOG("s1-BT_SUCCESS;");
@@ -104,7 +108,6 @@ static enum am_hsm_rc s11(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY: {
         TLOG("s11-ENTRY;");
-        test_event_post(&me->hsm, &am_bt_evt_failure);
         return AM_HSM_HANDLED();
     }
     case AM_HSM_EVT_EXIT: {
@@ -114,14 +117,13 @@ static enum am_hsm_rc s11(struct test *me, const struct am_event *event) {
     default:
         break;
     }
-    return AM_HSM_SUPER(am_bt_sequence);
+    return AM_HSM_SUPER(am_bt_fallback);
 }
 
 static enum am_hsm_rc s12(struct test *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY: {
         TLOG("s12-ENTRY;");
-        test_event_post(&me->hsm, &am_bt_evt_failure);
         return AM_HSM_HANDLED();
     }
     case AM_HSM_EVT_EXIT: {
@@ -131,7 +133,7 @@ static enum am_hsm_rc s12(struct test *me, const struct am_event *event) {
     default:
         break;
     }
-    return AM_HSM_SUPER(am_bt_sequence);
+    return AM_HSM_SUPER(am_bt_fallback);
 }
 
 static enum am_hsm_rc sinit(struct test *me, const struct am_event *event) {
@@ -140,24 +142,99 @@ static enum am_hsm_rc sinit(struct test *me, const struct am_event *event) {
     return AM_HSM_TRAN(s1);
 }
 
-int main(void) {
+static enum am_hsm_rc sinit2(struct test *me, const struct am_event *event) {
+    (void)event;
+    TLOG("sinit2-INIT;");
+    return AM_HSM_TRAN(s12);
+}
+
+static void test_ctor(struct am_hsm_state *init) {
     am_bt_ctor();
 
     struct test *me = &m_test;
-    am_bt_add_sequence(&m_sequence, /*num=*/1);
-    struct am_bt_cfg cfg = {.hsm = &me->hsm, .post = test_event_post};
+    m_fallback.init_done = 0;
+    am_bt_add_fallback(&m_fallback, /*num=*/1);
+    static struct am_bt_cfg cfg;
+    cfg.hsm = &me->hsm;
+    cfg.post = test_event_post;
     am_bt_add_cfg(&cfg);
 
     test_log_clear();
 
-    am_hsm_ctor(&me->hsm, &AM_HSM_STATE(sinit));
+    am_hsm_ctor(&me->hsm, init);
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
+}
+
+static void test_failure(void) {
+    test_ctor(&AM_HSM_STATE(sinit));
+
+    struct test *me = &m_test;
+    test_event_post(&me->hsm, &am_bt_evt_failure);
+    test_event_post(&me->hsm, &am_bt_evt_failure);
 
     const struct am_event *event;
     while ((event = test_event_get()) != NULL) {
         am_hsm_dispatch(&me->hsm, event);
     }
-    static const char *out = {"sinit-INIT;s1-INIT;s12-ENTRY;s1-BT_FAILURE;"};
+    static const char *out = {
+        "sinit-INIT;s1-ENTRY;s1-INIT;s11-ENTRY;s11-EXIT;s12-ENTRY;"
+        "s1-BT_FAILURE;"
+    };
     AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
+}
+
+static void test_jump_second(void) {
+    test_ctor(&AM_HSM_STATE(sinit2));
+
+    struct test *me = &m_test;
+    test_event_post(&me->hsm, &am_bt_evt_failure);
+
+    const struct am_event *event;
+    while ((event = test_event_get()) != NULL) {
+        am_hsm_dispatch(&me->hsm, event);
+    }
+    static const char *out = {"sinit2-INIT;s1-ENTRY;s12-ENTRY;s1-BT_FAILURE;"};
+    AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
+}
+
+static void test_success_first(void) {
+    test_ctor(&AM_HSM_STATE(sinit));
+
+    struct test *me = &m_test;
+    test_event_post(&me->hsm, &am_bt_evt_success);
+
+    const struct am_event *event;
+    while ((event = test_event_get()) != NULL) {
+        am_hsm_dispatch(&me->hsm, event);
+    }
+    static const char *out = {
+        "sinit-INIT;s1-ENTRY;s1-INIT;s11-ENTRY;s1-BT_SUCCESS;"
+    };
+    AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
+}
+
+static void test_success_second(void) {
+    test_ctor(&AM_HSM_STATE(sinit));
+
+    struct test *me = &m_test;
+    test_event_post(&me->hsm, &am_bt_evt_failure);
+    test_event_post(&me->hsm, &am_bt_evt_success);
+
+    const struct am_event *event;
+    while ((event = test_event_get()) != NULL) {
+        am_hsm_dispatch(&me->hsm, event);
+    }
+    static const char *out = {
+        "sinit-INIT;s1-ENTRY;s1-INIT;s11-ENTRY;s11-EXIT;s12-ENTRY;"
+        "s1-BT_SUCCESS;"
+    };
+    AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
+}
+
+int main(void) {
+    test_failure();
+    test_jump_second();
+    test_success_first();
+    test_success_second();
     return 0;
 }
