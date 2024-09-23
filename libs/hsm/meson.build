@@ -32,57 +32,57 @@ if unit_test
     e = executable(
         'regular',
         [
-            'test' / 'regular' / 'regular.c',
-            'test' / 'regular' / 'test.c'
+            'tests' / 'regular' / 'regular.c',
+            'tests' / 'regular' / 'test.c'
         ],
         dependencies: [libhsm_dep, libstr_dep],
-        include_directories: [include_directories('test')])
+        include_directories: [include_directories('tests')])
     test('regular', e, suite: 'hsm')
 
     e = executable(
         'hsm_top_as_nca',
         [
-            'test' / 'hsm_top_as_nca.c'
+            'tests' / 'hsm_top_as_nca.c'
         ],
         dependencies: [libhsm_dep, libstr_dep],
-        include_directories: [include_directories('test')])
+        include_directories: [include_directories('tests')])
     test('hsm_top_as_nca', e, suite: 'hsm')
 
     e = executable(
         'redispatch',
         [
-            'test'/ 'redispatch.c'
+            'tests'/ 'redispatch.c'
         ],
         dependencies: [libhsm_dep, libstr_dep],
-        include_directories: [include_directories('test')])
+        include_directories: [include_directories('tests')])
     test('redispatch', e, suite: 'hsm')
 
     e = executable(
         'history',
         [
-            'test' / 'history.c'
+            'tests' / 'history.c'
         ],
         dependencies: [libhsm_dep, libstr_dep],
-        include_directories: [include_directories('test')])
+        include_directories: [include_directories('tests')])
     test('history', e, suite: 'hsm')
 
     e = executable(
         'submachine-basic',
         [
-            'test' / 'submachine' / 'basic' / 'test.c'
+            'tests' / 'submachine' / 'basic' / 'test.c'
         ],
         dependencies: [libhsm_dep, libstr_dep],
-        include_directories: [include_directories('test')])
+        include_directories: [include_directories('tests')])
     test('submachine-basic', e, suite: 'hsm')
 
     e = executable(
         'submachine-complex',
         [
-            'test' / 'submachine' / 'complex' / 'submachine.c',
-            'test' / 'submachine' / 'complex' / 'test.c'
+            'tests' / 'submachine' / 'complex' / 'submachine.c',
+            'tests' / 'submachine' / 'complex' / 'test.c'
         ],
         dependencies: [libhsm_dep, libstr_dep],
-        include_directories: [include_directories('test')])
+        include_directories: [include_directories('tests')])
     test('submachine-complex', e, suite: 'hsm')
 
 endif
@@ -90,22 +90,22 @@ endif
 e = executable(
     'regular-example',
     [
-        'test' / 'regular' / 'regular.c',
+        'tests' / 'regular' / 'regular.c',
         'example' / 'regular' / 'example.c'
     ],
     dependencies: [libhsm_dep, libstr_dep],
-    include_directories: [include_directories('test' / 'regular', 'test')])
+    include_directories: [include_directories('tests' / 'regular', 'tests')])
 
 e = executable(
     'submachine-example',
     [
-        'test' / 'submachine' / 'complex' / 'submachine.c',
+        'tests' / 'submachine' / 'complex' / 'submachine.c',
         'example' / 'submachine' / 'example.c'
     ],
     dependencies: [libhsm_dep, libstr_dep],
     include_directories: [
         include_directories(
-            'test' / 'submachine' / 'complex',
-            'test',
+            'tests' / 'submachine' / 'complex',
+            'tests',
         )
 ])
