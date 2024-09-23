@@ -154,7 +154,7 @@ static void test_ctor(int success_min) {
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
 }
 
-/* both users return failure */
+/* there are two users and both return failure */
 static void test_failure(void) {
     test_ctor(/*success_min=*/1);
 
@@ -174,6 +174,7 @@ static void test_failure(void) {
 }
 
 /*
+ * There are two users.
  * Only one user returns failure and BT count node
  * recognizes the failure as it expects 2 users to succeed.
  * If one user already failed, then the count node should
@@ -185,6 +186,7 @@ static void test_failure_early(void) {
     struct test *me = &m_test;
 
     test_event_post(&me->hsm, &am_test_evt_u1_failure);
+    test_event_post(&me->hsm, &am_test_evt_u1_success);
 
     const struct am_event *event;
     while ((event = test_event_get()) != NULL) {
@@ -196,7 +198,10 @@ static void test_failure_early(void) {
     AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
 }
 
-/* the count node waits for at least one user to succeed */
+/*
+ * there are two users and the count node waits for
+ * at least one user to succeed
+ */
 static void test_success(void) {
     test_ctor(/*success_min=*/1);
 

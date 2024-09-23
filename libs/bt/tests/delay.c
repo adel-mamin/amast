@@ -45,7 +45,6 @@
  *
  * The am_bt_delay() unit testing is done with the
  * help of 2 user states: s1 and s11.
- * s11 runs once after a timeout and returns failure.
  */
 
 #include <stddef.h>
@@ -148,6 +147,7 @@ static void test_ctor(void) {
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
 }
 
+/* s11 runs once after a timeout and returns failure */
 static void test_failure(void) {
     test_ctor();
 
@@ -168,6 +168,7 @@ static void test_failure(void) {
     AM_ASSERT(0 == strncmp(test_log_get(), out, strlen(out)));
 }
 
+/* s11 runs once after a timeout and returns success */
 static void test_success(void) {
     test_ctor();
 
