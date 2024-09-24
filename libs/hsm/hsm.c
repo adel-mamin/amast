@@ -167,6 +167,7 @@ static enum am_hsm_rc hsm_dispatch(
     AM_ASSERT(hsm->state == hsm->temp);
     AM_ASSERT(hsm->istate == hsm->itemp);
     AM_ASSERT(event);
+    AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
 
     struct am_hsm_state src = {.fn = NULL, .ifn = 0};
     enum am_hsm_rc rc = AM_HSM_RC_HANDLED;
