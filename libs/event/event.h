@@ -26,7 +26,7 @@
 /**
  * @file
  *
- * Hierarchical State Machine (HSM) framework API declaration.
+ * Event API declaration.
  */
 
 #ifndef EVENT_H_INCLUDED
