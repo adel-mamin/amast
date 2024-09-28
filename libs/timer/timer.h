@@ -124,16 +124,6 @@ bool am_timer_disarm(struct am_event_timer *event);
  */
 bool am_timer_is_armed(const struct am_event_timer *event);
 
-/**
- * Check if any timer is armed.
- * @param domain  check if any timer is armed in this tick domain
- *                If set to TICK_DOMAIN_MAX, then check if any timer
- *                is armed in any tick domain.
- * @retval true   there are armed timers
- * @retval false  there are no armed timers
- */
-bool am_timer_any_armed(int domain);
-
 #ifdef __cplusplus
 }
 #endif

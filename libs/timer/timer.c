@@ -106,22 +106,6 @@ bool am_timer_is_armed(const struct am_event_timer *event) {
     return am_dlist_item_is_linked(&event->item);
 }
 
-bool am_timer_any_armed(int domain) {
-    AM_ASSERT(domain >= 0);
-    AM_ASSERT(domain <= AM_TICK_DOMAIN_MAX);
-
-    struct timer *me = &m_timer;
-    if (domain < AM_TICK_DOMAIN_MAX) {
-        return !am_dlist_is_empty(&me->domains[domain]);
-    }
-    for (int i = 0; i < AM_COUNTOF(me->domains); ++i) {
-        if (!am_dlist_is_empty(&me->domains[i])) {
-            return true;
-        }
-    }
-    return false;
-}
-
 void am_timer_tick(int domain) {
     struct timer *me = &m_timer;
 
