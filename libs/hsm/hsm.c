@@ -245,6 +245,9 @@ static enum am_hsm_rc hsm_dispatch(
 }
 
 void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event) {
+#ifdef AM_HSM_SPY
+    hsm->spy(hsm, event);
+#endif
     enum am_hsm_rc rc = hsm_dispatch(hsm, event);
     if (AM_HSM_RC_TRAN_REDISPATCH == rc) {
         rc = hsm_dispatch(hsm, event);
@@ -305,6 +308,14 @@ void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event) {
     hsm_build(hsm, &path, /*from=*/&dst, /*until=*/&AM_HSM_STATE(am_hsm_top));
     hsm_enter_and_init(hsm, &path);
 }
+
+#ifdef AM_HSM_SPY
+void am_hsm_set_spy(struct am_hsm *hsm, am_hsm_spy_fn spy) {
+    AM_ASSERT(hsm);
+    AM_ASSERT(hsm->state == am_hsm_top); /* was am_hsm_ctor() called? */
+    hsm->spy = spy;
+}
+#endif
 
 enum am_hsm_rc am_hsm_top(struct am_hsm *hsm, const struct am_event *event) {
     (void)hsm;

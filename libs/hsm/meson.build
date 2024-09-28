@@ -85,6 +85,17 @@ if unit_test
         include_directories: [include_directories('tests')])
     test('submachine-complex', e, suite: 'hsm')
 
+    e = executable(
+        'spy',
+        [
+            'tests' / 'spy.c',
+            hsm_src,
+        ],
+        c_args: ['-DAM_HSM_SPY'],
+        dependencies: [libstr_dep],
+        include_directories: [include_directories('tests')])
+    test('spy', e, suite: 'hsm')
+
 endif
 
 e = executable(

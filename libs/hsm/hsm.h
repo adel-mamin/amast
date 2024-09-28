@@ -27,6 +27,8 @@
  * @file
  *
  * Hierarchical State Machine (HSM) framework API declaration.
+ * Configuration defines:
+ * AM_HSM_SPY - enables HSM spy callback support for debugging
  */
 
 #ifndef HSM_H_INCLUDED
@@ -108,6 +110,18 @@ typedef enum am_hsm_rc (*am_hsm_state_fn)(
     struct am_hsm *hsm, const struct am_event *event
 );
 
+/**
+ * HSM spy callback type.
+ * Used as one place to catch all events for the given HSM.
+ * Called on each user event BEFORE the event is processes by the HSM.
+ * Should only be used for debugging purposes.
+ * Set by am_hsm_set_spy().
+ * Only supported if hsm.c is compiled with #AM_HSM_SPY defined.
+ * @param hsm    the handler of HSM to spy
+ * @param event  the event to spy
+ */
+typedef void (*am_hsm_spy_fn)(struct am_hsm *hsm, const struct am_event *event);
+
 /** HSM state */
 struct am_hsm_state {
     /** HSM state function  */
@@ -145,6 +159,10 @@ struct am_hsm {
     am_hsm_state_fn state;
     /** temp state during transitions and event processing */
     am_hsm_state_fn temp;
+#ifdef AM_HSM_SPY
+    /** HSM spy callack */
+    am_hsm_spy_fn spy;
+#endif
     /** instance of current state */
     unsigned istate : 8;
     /** instance of temporary state during transitions & event processing */
@@ -277,6 +295,17 @@ void am_hsm_dtor(struct am_hsm *hsm);
  * @param init_event  the init event. Can be NULL. The event is not recycled.
  */
 void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event);
+
+/**
+ * Set spy user callback as one place to catch all events for the given HSM.
+ * Is only available if hsm.c is compiled with #AM_HSM_SPY defined.
+ * Should only be used for debugging purposes.
+ * Should only be called after calling am_hsm_ctor() and not during ongoing
+ * HSM event processing.
+ * @param hsm  the handler of HSM to spy
+ * @param spy  the spy callback. Use NULL to unset.
+ */
+void am_hsm_set_spy(struct am_hsm *hsm, am_hsm_spy_fn spy);
 
 /**
  * Every HSM has implicit top state, which surrounds all other elements
