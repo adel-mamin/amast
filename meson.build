@@ -40,11 +40,14 @@ PYTHON = find_program('python3')
 
 unit_test = get_option('unit_test')
 
+libs_inc = include_directories('.')
 subdir('libs')
+subdir('apps' / 'unity')
 
 files_to_check = run_command(
     FIND,
     meson.project_source_root() / 'libs',
+    meson.project_source_root() / 'apps',
     '-name',
     '*.h',
     '-or',

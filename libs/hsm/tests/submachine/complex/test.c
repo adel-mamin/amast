@@ -33,32 +33,32 @@
 #include "common.h"
 #include "submachine.h"
 
-#define TEST_LOG_SIZE 256 /* [bytes] */
+static char m_complex_sm_log_buf[256];
 
-static char m_log_buf[TEST_LOG_SIZE];
-
-void test_log(char *fmt, ...) {
+void cpl_test_log(char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
-    str_vlcatf(m_log_buf, (int)sizeof(m_log_buf), fmt, ap);
+    str_vlcatf(
+        m_complex_sm_log_buf, (int)sizeof(m_complex_sm_log_buf), fmt, ap
+    );
     va_end(ap);
 }
 
 /* Test submachines. */
 
 static void test_submachine(void) {
-    submachine_ctor(test_log);
+    complex_sm_ctor(cpl_test_log);
 
-    m_log_buf[0] = '\0';
+    m_complex_sm_log_buf[0] = '\0';
 
-    am_hsm_init(g_submachine, /*init_event=*/NULL);
+    am_hsm_init(g_complex_sm, /*init_event=*/NULL);
 
     {
         const char *out =
             "top/0-INIT;s/0-ENTRY;s1/0-ENTRY;s1/1-ENTRY;s1/1-INIT;s11/"
             "1-ENTRY;s111/1-ENTRY;s111/1-INIT;";
-        AM_ASSERT(0 == strncmp(m_log_buf, out, strlen(out)));
-        m_log_buf[0] = '\0';
+        AM_ASSERT(0 == strncmp(m_complex_sm_log_buf, out, strlen(out)));
+        m_complex_sm_log_buf[0] = '\0';
     }
 
     struct test2 {
@@ -102,16 +102,18 @@ static void test_submachine(void) {
 
     for (int i = 0; i < AM_COUNTOF(in); i++) {
         struct am_event e = {.id = in[i].event};
-        am_hsm_dispatch(g_submachine, &e);
-        AM_ASSERT(0 == strncmp(m_log_buf, in[i].out, strlen(in[i].out)));
-        m_log_buf[0] = '\0';
+        am_hsm_dispatch(g_complex_sm, &e);
+        AM_ASSERT(
+            0 == strncmp(m_complex_sm_log_buf, in[i].out, strlen(in[i].out))
+        );
+        m_complex_sm_log_buf[0] = '\0';
     }
 
     {
         static const char *dest = "s111/2-EXIT;s11/2-EXIT;s1/2-EXIT;s/0-EXIT;";
-        am_hsm_dtor(g_submachine);
-        AM_ASSERT(0 == strncmp(m_log_buf, dest, strlen(dest)));
-        m_log_buf[0] = '\0';
+        am_hsm_dtor(g_complex_sm);
+        AM_ASSERT(0 == strncmp(m_complex_sm_log_buf, dest, strlen(dest)));
+        m_complex_sm_log_buf[0] = '\0';
     }
 }
 

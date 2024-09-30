@@ -246,7 +246,9 @@ static enum am_hsm_rc hsm_dispatch(
 
 void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event) {
 #ifdef AM_HSM_SPY
-    hsm->spy(hsm, event);
+    if (hsm->spy) {
+        hsm->spy(hsm, event);
+    }
 #endif
     enum am_hsm_rc rc = hsm_dispatch(hsm, event);
     if (AM_HSM_RC_TRAN_REDISPATCH == rc) {

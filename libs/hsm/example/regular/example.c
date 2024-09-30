@@ -35,14 +35,12 @@
 #include "regular.h"
 #include <ctype.h>
 
-#define TEST_LOG_SIZE 256 /* [bytes] */
-
-static char m_log_buf[TEST_LOG_SIZE];
+static char m_regular_log_buf[256];
 
 void test_log(char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
-    str_vlcatf(m_log_buf, (int)sizeof(m_log_buf), fmt, ap);
+    str_vlcatf(m_regular_log_buf, (int)sizeof(m_regular_log_buf), fmt, ap);
     va_end(ap);
 }
 
@@ -50,7 +48,7 @@ static void test_print(char c) {
     printf(ANSI_COLOR_YELLOW_BOLD);
     printf("%c", c);
     printf(ANSI_COLOR_RESET);
-    printf(": %s\n", m_log_buf);
+    printf(": %s\n", m_regular_log_buf);
 }
 
 int main(void) {
@@ -60,7 +58,7 @@ int main(void) {
     printf("Type event [A,B,C,D,E,F,G,H,I] (T to terminate)\n");
     printf(ANSI_COLOR_RESET);
 
-    m_log_buf[0] = '\0';
+    m_regular_log_buf[0] = '\0';
     am_hsm_init(g_regular, /*init_event=*/NULL);
     test_print('*');
 
@@ -101,7 +99,7 @@ int main(void) {
         if (!valid && !terminate) {
             continue;
         }
-        m_log_buf[0] = '\0';
+        m_regular_log_buf[0] = '\0';
 
         if (terminate) {
             am_hsm_dispatch(g_regular, &(struct am_event){.id = HSM_EVT_TERM});
@@ -111,7 +109,7 @@ int main(void) {
         am_hsm_dispatch(g_regular, &(struct am_event){.id = e[index]});
         test_print(c);
     }
-    m_log_buf[0] = '\0';
+    m_regular_log_buf[0] = '\0';
     am_hsm_dtor(g_regular);
     test_print('*');
 

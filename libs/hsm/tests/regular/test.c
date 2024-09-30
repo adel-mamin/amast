@@ -34,14 +34,12 @@
 #include "common.h"
 #include "regular.h"
 
-#define TEST_LOG_SIZE 256 /* [bytes] */
-
-static char m_log_buf[TEST_LOG_SIZE];
+static char m_regular_log_buf[256];
 
 void test_log(char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
-    str_vlcatf(m_log_buf, (int)sizeof(m_log_buf), fmt, ap);
+    str_vlcatf(m_regular_log_buf, (int)sizeof(m_regular_log_buf), fmt, ap);
     va_end(ap);
 }
 
@@ -61,8 +59,8 @@ static void test_hsm(void) {
     {
         const char *out =
             "top-INIT;s-ENTRY;s2-ENTRY;s2-INIT;s21-ENTRY;s211-ENTRY;";
-        AM_ASSERT(0 == strncmp(m_log_buf, out, strlen(out)));
-        m_log_buf[0] = '\0';
+        AM_ASSERT(0 == strncmp(m_regular_log_buf, out, strlen(out)));
+        m_regular_log_buf[0] = '\0';
     }
 
     struct test2 {
@@ -102,16 +100,20 @@ static void test_hsm(void) {
     for (int i = 0; i < AM_COUNTOF(in); i++) {
         struct am_event e = {.id = in[i].event};
         am_hsm_dispatch(g_regular, &e);
-        AM_ASSERT(0 == strncmp(m_log_buf, in[i].out, strlen(in[i].out)));
-        m_log_buf[0] = '\0';
+        AM_ASSERT(
+            0 == strncmp(m_regular_log_buf, in[i].out, strlen(in[i].out))
+        );
+        m_regular_log_buf[0] = '\0';
     }
 
     am_hsm_dtor(g_regular);
 
     {
         static const char *destruction = "s211-EXIT;s21-EXIT;s2-EXIT;s-EXIT;";
-        AM_ASSERT(0 == strncmp(m_log_buf, destruction, strlen(destruction)));
-        m_log_buf[0] = '\0';
+        AM_ASSERT(
+            0 == strncmp(m_regular_log_buf, destruction, strlen(destruction))
+        );
+        m_regular_log_buf[0] = '\0';
     }
 }
 

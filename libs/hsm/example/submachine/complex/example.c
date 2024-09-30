@@ -35,9 +35,7 @@
 #include "common.h"
 #include "submachine.h"
 
-#define TEST_LOG_SIZE 256 /* [bytes] */
-
-static char m_log_buf[TEST_LOG_SIZE];
+static char m_log_buf[256];
 
 static void test_log(char *fmt, ...) {
     va_list ap;
@@ -54,14 +52,14 @@ static void test_print(char c) {
 }
 
 int main(void) {
-    submachine_ctor(test_log);
+    complex_sm_ctor(test_log);
 
     printf(ANSI_COLOR_BLUE_BOLD);
     printf("Type event [A,B,C,D,E,F,G,H] (T to terminate)\n");
     printf(ANSI_COLOR_RESET);
 
     m_log_buf[0] = '\0';
-    am_hsm_init(g_submachine, /*init_event=*/NULL);
+    am_hsm_init(g_complex_sm, /*init_event=*/NULL);
     test_print('*');
 
     static const char *blank = "        ";
@@ -104,16 +102,16 @@ int main(void) {
 
         if (terminate) {
             am_hsm_dispatch(
-                g_submachine, &(struct am_event){.id = HSM_EVT_TERM}
+                g_complex_sm, &(struct am_event){.id = HSM_EVT_TERM}
             );
             test_print(c);
             break;
         }
-        am_hsm_dispatch(g_submachine, &(struct am_event){.id = e[index]});
+        am_hsm_dispatch(g_complex_sm, &(struct am_event){.id = e[index]});
         test_print(c);
     }
     m_log_buf[0] = '\0';
-    am_hsm_dtor(g_submachine);
+    am_hsm_dtor(g_complex_sm);
     test_print('*');
 
     return 0;

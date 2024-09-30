@@ -111,7 +111,7 @@ e = executable(
     'submachine-example',
     [
         'tests' / 'submachine' / 'complex' / 'submachine.c',
-        'example' / 'submachine' / 'example.c'
+        'example' / 'submachine' / 'complex' / 'example.c'
     ],
     dependencies: [libhsm_dep, libstr_dep],
     include_directories: [

@@ -32,16 +32,17 @@
 #include "hsm/hsm.h"
 #include "common.h"
 
-struct test {
+struct test_spy {
     struct am_hsm hsm;
     void (*log)(char *fmt, ...);
+    char log_buf[256];
 };
 
-static struct test m_test;
+static struct test_spy m_test_spy;
 
 /* test HSM spy callback operation */
 
-static enum am_hsm_rc s(struct test *me, const struct am_event *event) {
+static enum am_hsm_rc spy_s(struct test_spy *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_USER:
         me->log("s-AM_EVT_USER;");
@@ -52,46 +53,46 @@ static enum am_hsm_rc s(struct test *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc test_init(struct test *me, const struct am_event *event) {
+static enum am_hsm_rc spy_init(
+    struct test_spy *me, const struct am_event *event
+) {
     (void)event;
-    return AM_HSM_TRAN(s);
+    return AM_HSM_TRAN(spy_s);
 }
 
-static void test_ctor(void (*log)(char *fmt, ...)) {
-    struct test *me = &m_test;
-    am_hsm_ctor(&me->hsm, &AM_HSM_STATE(test_init));
+static void spy_ctor(void (*log)(char *fmt, ...)) {
+    struct test_spy *me = &m_test_spy;
+    am_hsm_ctor(&me->hsm, &AM_HSM_STATE(spy_init));
     me->log = log;
 }
 
 static void spy(struct am_hsm *hsm, const struct am_event *event) {
     if (AM_EVT_USER == event->id) {
-        struct test *me = (struct test *)hsm;
+        struct test_spy *me = (struct test_spy *)hsm;
         me->log("spy-AM_EVT_USER;");
         return;
     }
     AM_ASSERT(0);
 }
 
-static char m_log_buf[256];
-
-static void test_log(char *fmt, ...) {
+static void test_spy_log(char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
-    str_vlcatf(m_log_buf, (int)sizeof(m_log_buf), fmt, ap);
+    str_vlcatf(m_test_spy.log_buf, (int)sizeof(m_test_spy.log_buf), fmt, ap);
     va_end(ap);
 }
 
 static void test_spy(void) {
-    test_ctor(test_log);
+    spy_ctor(test_spy_log);
 
-    struct test *me = &m_test;
+    struct test_spy *me = &m_test_spy;
     am_hsm_set_spy(&me->hsm, spy);
 
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
     am_hsm_dispatch(&me->hsm, &(struct am_event){.id = AM_EVT_USER});
 
     const char *out = "spy-AM_EVT_USER;s-AM_EVT_USER;";
-    AM_ASSERT(0 == strncmp(m_log_buf, out, strlen(out)));
+    AM_ASSERT(0 == strncmp(m_test_spy.log_buf, out, strlen(out)));
 }
 
 int main(void) {

@@ -30,23 +30,29 @@
 #include "hsm/hsm.h"
 #include "common.h"
 
-struct redispatch {
+struct test_redisp {
     struct am_hsm hsm;
     int foo;
     int foo2;
 };
 
-static struct redispatch m_redispatch;
+static struct test_redisp m_test_redisp;
 
 /* test AM_HSM_TRAN_REDISPATCH() */
 
-static enum am_hsm_rc s1(struct redispatch *me, const struct am_event *event);
-static enum am_hsm_rc s2(struct redispatch *me, const struct am_event *event);
+static enum am_hsm_rc redisp_s1(
+    struct test_redisp *me, const struct am_event *event
+);
+static enum am_hsm_rc redisp_s2(
+    struct test_redisp *me, const struct am_event *event
+);
 
-static enum am_hsm_rc s1(struct redispatch *me, const struct am_event *event) {
+static enum am_hsm_rc redisp_s1(
+    struct test_redisp *me, const struct am_event *event
+) {
     switch (event->id) {
     case HSM_EVT_A:
-        return AM_HSM_TRAN_REDISPATCH(s2);
+        return AM_HSM_TRAN_REDISPATCH(redisp_s2);
     case HSM_EVT_B:
         me->foo2 = 2;
         return AM_HSM_HANDLED();
@@ -56,31 +62,33 @@ static enum am_hsm_rc s1(struct redispatch *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc s2(struct redispatch *me, const struct am_event *event) {
+static enum am_hsm_rc redisp_s2(
+    struct test_redisp *me, const struct am_event *event
+) {
     switch (event->id) {
     case HSM_EVT_A:
         me->foo = 1;
         return AM_HSM_HANDLED();
     case HSM_EVT_B:
-        return AM_HSM_TRAN_REDISPATCH(s1, 0);
+        return AM_HSM_TRAN_REDISPATCH(redisp_s1, 0);
     default:
         break;
     }
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc sinit(
-    struct redispatch *me, const struct am_event *event
+static enum am_hsm_rc redisp_sinit(
+    struct test_redisp *me, const struct am_event *event
 ) {
     (void)event;
     me->foo = 0;
     me->foo2 = 0;
-    return AM_HSM_TRAN(s1);
+    return AM_HSM_TRAN(redisp_s1);
 }
 
 static void test_redispatch(void) {
-    struct redispatch *me = &m_redispatch;
-    am_hsm_ctor(&me->hsm, &AM_HSM_STATE(sinit));
+    struct test_redisp *me = &m_test_redisp;
+    am_hsm_ctor(&me->hsm, &AM_HSM_STATE(redisp_sinit));
 
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
     AM_ASSERT(0 == me->foo);
@@ -89,13 +97,13 @@ static void test_redispatch(void) {
         static const struct am_event e = {.id = HSM_EVT_A};
         am_hsm_dispatch(&me->hsm, &e);
         AM_ASSERT(1 == me->foo);
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(s2)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(redisp_s2)));
     }
     {
         static const struct am_event e = {.id = HSM_EVT_B};
         am_hsm_dispatch(&me->hsm, &e);
         AM_ASSERT(2 == me->foo2);
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(s1)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(redisp_s1)));
     }
 }
 
