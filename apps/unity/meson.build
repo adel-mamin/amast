@@ -52,7 +52,7 @@ if unit_test
     e = executable(
         'unity',
         amast_src,
-        c_args: ['-DAMAST_UNIT_TESTS', '-DAM_HSM_SPY']
+        c_args: ['-DAMAST_UNIT_TESTS']
     )
     test('unity', e)
 endif

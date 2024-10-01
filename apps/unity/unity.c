@@ -167,6 +167,11 @@ static void create_amast_files(const struct db *db) {
     fprintf(hdr_file, "#define AMAST_H_INCLUDED\n");
     fprintf(hdr_file, "\n");
 
+    fprintf(hdr_file, "#ifdef AMAST_UNIT_TESTS\n");
+    fprintf(hdr_file, "#undef AM_HSM_SPY\n");
+    fprintf(hdr_file, "#define AM_HSM_SPY\n");
+    fprintf(hdr_file, "#endif /* AMAST_UNIT_TESTS */ \n");
+
     char tests[32][PATH_MAX];
     int ntests = 0;
     /* Copy content of all header files to amast.h */
