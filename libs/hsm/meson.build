@@ -58,6 +58,15 @@ if unit_test
     test('redispatch', e, suite: 'hsm')
 
     e = executable(
+        'dtor',
+        [
+            'tests'/ 'dtor.c'
+        ],
+        dependencies: [libhsm_dep, libstr_dep],
+        include_directories: [include_directories('tests')])
+    test('dtor', e, suite: 'hsm')
+
+    e = executable(
         'history',
         [
             'tests' / 'history.c'
