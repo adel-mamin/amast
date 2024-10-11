@@ -83,13 +83,13 @@ AM_ASSERT_STATIC(AM_EVT_USER > AM_HSM_EVT_MAX);
  * listed in descriptions to each of the constants.
  */
 enum am_hsm_rc {
-    /* Returned by AM_HSM_HANDLED() */
+    /** Returned by AM_HSM_HANDLED() */
     AM_HSM_RC_HANDLED = 1,
-    /* Returned by AM_HSM_TRAN() */
+    /** Returned by AM_HSM_TRAN() */
     AM_HSM_RC_TRAN,
-    /* Returned by AM_HSM_TRAN_REDISPATCH() */
+    /** Returned by AM_HSM_TRAN_REDISPATCH() */
     AM_HSM_RC_TRAN_REDISPATCH,
-    /* Returned by AM_HSM_SUPER() */
+    /** Returned by AM_HSM_SUPER() */
     AM_HSM_RC_SUPER
 };
 
@@ -98,13 +98,15 @@ struct am_hsm;
 
 /**
  * A state handler.
+ *
  * One should not assume that a state handler would be invoked only for
  * processing event IDs enlisted in the case statement of internal
  * switch statement. Event handlers should avoid using any code outside
  * of the switch statement, especially code that has side effects.
+ *
  * @param hsm    the state machine
  * @param event  the event to handle
- * @return One of AM_HSM_RC_... constants.
+ * @return return code
  */
 typedef enum am_hsm_rc (*am_hsm_state_fn)(
     struct am_hsm *hsm, const struct am_event *event
@@ -112,11 +114,13 @@ typedef enum am_hsm_rc (*am_hsm_state_fn)(
 
 /**
  * HSM spy callback type.
+ *
  * Used as one place to catch all events for the given HSM.
  * Called on each user event BEFORE the event is processes by the HSM.
  * Should only be used for debugging purposes.
  * Set by am_hsm_set_spy().
  * Only supported if hsm.c is compiled with #AM_HSM_SPY defined.
+ *
  * @param hsm    the handler of HSM to spy
  * @param event  the event to spy
  */
@@ -155,15 +159,15 @@ struct am_hsm_state {
 
 /** HSM state */
 struct am_hsm {
-    /** current state */
+    /** active state */
     am_hsm_state_fn state;
     /** temp state during transitions and event processing */
     am_hsm_state_fn temp;
 #ifdef AM_HSM_SPY
-    /** HSM spy callack */
+    /** HSM spy callback */
     am_hsm_spy_fn spy;
 #endif
-    /** instance of current state */
+    /** instance of active state */
     unsigned istate : 8;
     /** instance of temporary state during transitions & event processing */
     unsigned itemp : 8;
@@ -189,11 +193,13 @@ struct am_hsm {
 
 /**
  * Event processing is over. Transition is taken.
- * It should never be returned for entry or exit events.
- * Conversely, the response to init event can optionally use
+ *
+ * It should never be returned for #AM_HSM_EVT_ENTRY or #AM_HSM_EVT_EXIT events.
+ * Conversely, the response to #AM_HSM_EVT_INIT event can optionally use
  * this macro as a return value to designate transition to
  * the provided state. The target state in this case must be
  * a substate of the current state.
+ *
  * @param s  the new state of type #am_hsm_state_fn (mandatory)
  * @param i  the new state submachine instance (optional, default is 0)
  */
@@ -207,8 +213,11 @@ struct am_hsm {
 
 /**
  * Event redispatch is requested. Transition is taken.
- * It should never be returned for entry, exit or init events.
+ *
+ * It should never be returned for #AM_HSM_EVT_ENTRY, #AM_HSM_EVT_EXIT or
+ * #AM_HSM_EVT_INIT events.
  * Do not redispatch the same event more than once.
+ *
  * @param s  the new state of type #am_hsm_state_fn (mandatory)
  * @param i  the new state submachine instance (optional, default is 0)
  */
@@ -223,8 +232,10 @@ struct am_hsm {
 
 /**
  * Event processing is passed to superstate. No transition was taken.
+ *
  * If no explicit superstate exists, then the top (super)state am_hsm_top()
  * must be used.
+ *
  * @param s  the superstate of type #am_hsm_state_fn (mandatory)
  * @param i  the superstate submachine instance (optional, default is 0)
  */
@@ -233,6 +244,7 @@ struct am_hsm {
 
 /**
  * Synchronous dispatch of event to the given HSM.
+ *
  * @param hsm    the HSM handler
  * @param event  the event to dispatch
  */
@@ -240,9 +252,11 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event);
 
 /**
  * Test whether HSM is in a given state.
- * Note that an HSM is in all superstates of the currently active state.
- * Use sparingly to test the current state of other state machine as
+ *
+ * Note that an HSM is in all superstates of the active state.
+ * Use sparingly to test the active state of other state machine as
  * it breaks encapsulation.
+ *
  * @param hsm     the HSM handler
  * @param state   the state to check
  * @retval false  not in the state in the hierarchical sense
@@ -251,31 +265,48 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event);
 bool am_hsm_is_in(struct am_hsm *hsm, const struct am_hsm_state *state);
 
 /**
- * Check if current state equals to #state (not in hierarchical sense).
+ * Check if active state equals to #state (not in hierarchical sense).
  *
- * If current state of hsm is A, which is substate of B, then
- * am_hsm_state_is_eq(hsm, &AM_HSM_STATE(A)) is true, but
- * am_hsm_state_is_eq(hsm, &AM_HSM_STATE(B)) is false.
+ * If active state of hsm is S1, which is substate of S, then
+ * am_hsm_state_is_eq(hsm, &AM_HSM_STATE(S1)) is true, but
+ * am_hsm_state_is_eq(hsm, &AM_HSM_STATE(S)) is false.
  *
  * @param hsm     the HSM handler
  * @param state   the state to compare against
- * @retval true   the current HSM state equals #state
- * @retval false  the current HSM state DOES NOT equal #state
+ * @retval true   the active HSM state equals #state
+ * @retval false  the active HSM state DOES NOT equal #state
  */
-bool am_hsm_state_is_eq(struct am_hsm *hsm, const struct am_hsm_state *state);
+bool am_hsm_active_state_is_eq(
+    struct am_hsm *hsm, const struct am_hsm_state *state
+);
 
 /**
  * Get state instance.
+ *
  * Always returns the instance of the calling state function.
- * Calling the function in a state that is not part of any submachine
+ * Calling the function from a state that is not part of any submachine
  * will always return 0.
+ *
  * @param hsm  the HSM handler
  * @return the instance
  */
-int am_hsm_get_state_instance(const struct am_hsm *hsm);
+int am_hsm_get_own_instance(const struct am_hsm *hsm);
+
+/**
+ * Get the active state.
+ *
+ * E.g., assume HSM is in state S11,
+ * which is a substate of S1, which is in turn a substate of S.
+ * In this case this function always returns S11.
+ *
+ * @param hsm  the HSM handler
+ * @return the active state
+ */
+struct am_hsm_state am_hsm_get_active_state(const struct am_hsm *hsm);
 
 /**
  * HSM constructor.
+ *
  * @param hsm    the HSM to construct
  * @param state  the initial state of the HSM object
  *               The initial state must return
@@ -285,12 +316,14 @@ void am_hsm_ctor(struct am_hsm *hsm, const struct am_hsm_state *state);
 
 /**
  * HSM destructor.
+ *
  * @param hsm  the HSM to destruct
  */
 void am_hsm_dtor(struct am_hsm *hsm);
 
 /**
  * Perform HSM initial transition.
+ *
  * @param hsm         the HSM handler
  * @param init_event  the init event. Can be NULL. The event is not recycled.
  */
@@ -298,19 +331,25 @@ void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event);
 
 /**
  * Set spy user callback as one place to catch all events for the given HSM.
+ *
  * Is only available if hsm.c is compiled with #AM_HSM_SPY defined.
  * Should only be used for debugging purposes.
  * Should only be called after calling am_hsm_ctor() and not during ongoing
  * HSM event processing.
+ *
  * @param hsm  the handler of HSM to spy
  * @param spy  the spy callback. Use NULL to unset.
  */
 void am_hsm_set_spy(struct am_hsm *hsm, am_hsm_spy_fn spy);
 
 /**
- * Every HSM has implicit top state, which surrounds all other elements
+ * Ultimate top state of any HSM.
+ *
+ * Every HSM has the same explicit top state, which surrounds all other elements
  * of the entire state machine.
- * One should never target top state in a state transition.
+ * One should never target the top state in a state transition.
+ *
+ * Has the same signature as #am_hsm_state_fn
  */
 enum am_hsm_rc am_hsm_top(struct am_hsm *hsm, const struct am_event *event);
 

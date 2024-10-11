@@ -135,23 +135,19 @@ static void test_oven(void) {
     am_hsm_ctor(&me->hsm, &AM_HSM_STATE(oven_init));
 
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
-    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(oven_off)));
+    AM_ASSERT(am_hsm_active_state_is_eq(&me->hsm, &AM_HSM_STATE(oven_off)));
 
-    {
-        struct am_event e = {.id = HSM_EVT_ON};
-        am_hsm_dispatch(&me->hsm, &e);
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(oven_on)));
-    }
-    {
-        struct am_event e = {.id = HSM_EVT_OPEN};
-        am_hsm_dispatch(&me->hsm, &e);
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(oven_open)));
-    }
-    {
-        struct am_event e = {.id = HSM_EVT_CLOSE};
-        am_hsm_dispatch(&me->hsm, &e);
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE(oven_on)));
-    }
+    struct am_event e1 = {.id = HSM_EVT_ON};
+    am_hsm_dispatch(&me->hsm, &e1);
+    AM_ASSERT(am_hsm_active_state_is_eq(&me->hsm, &AM_HSM_STATE(oven_on)));
+
+    struct am_event e2 = {.id = HSM_EVT_OPEN};
+    am_hsm_dispatch(&me->hsm, &e2);
+    AM_ASSERT(am_hsm_active_state_is_eq(&me->hsm, &AM_HSM_STATE(oven_open)));
+
+    struct am_event e3 = {.id = HSM_EVT_CLOSE};
+    am_hsm_dispatch(&me->hsm, &e3);
+    AM_ASSERT(am_hsm_active_state_is_eq(&me->hsm, &AM_HSM_STATE(oven_on)));
 }
 
 int main(void) {

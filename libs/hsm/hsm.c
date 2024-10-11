@@ -59,7 +59,9 @@ static bool hsm_temp_is_eq(struct am_hsm *hsm, const struct am_hsm_state *s) {
     return (hsm->temp == s->fn) && (hsm->itemp == s->ifn);
 }
 
-bool am_hsm_state_is_eq(struct am_hsm *hsm, const struct am_hsm_state *state) {
+bool am_hsm_active_state_is_eq(
+    struct am_hsm *hsm, const struct am_hsm_state *state
+) {
     AM_ASSERT(hsm);
     AM_ASSERT(hsm->state);
     AM_ASSERT(state);
@@ -67,14 +69,21 @@ bool am_hsm_state_is_eq(struct am_hsm *hsm, const struct am_hsm_state *state) {
     return (hsm->state == state->fn) && (hsm->istate == state->ifn);
 }
 
-int am_hsm_get_state_instance(const struct am_hsm *hsm) {
+int am_hsm_get_own_instance(const struct am_hsm *hsm) {
     AM_ASSERT(hsm);
     return hsm->itemp;
 }
 
+struct am_hsm_state am_hsm_get_active_state(const struct am_hsm *hsm) {
+    AM_ASSERT(hsm);
+    return AM_HSM_STATE(hsm->state, hsm->istate);
+}
+
 /**
  * Build ancestor chain path.
+ *
  * The path starts with 'from' state and ends with substate of #until state.
+ *
  * @param hsm    HSM handler
  * @param path   the path is placed here
  * @param from   placed to path[0]
@@ -106,6 +115,7 @@ static void hsm_build(
 
 /**
  * Enter all states in the path starting from last and finishing with path[0].
+ *
  * @param hsm   the path belongs to this HSM
  * @param path  the path to enter
  */
@@ -119,6 +129,7 @@ static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
 
 /**
  * Exit states starting from current one and finishing with substate of #until.
+ *
  * @param hsm    exit the states of this HSM
  * @param until  stop the exit when reaching this state without exiting it
  */
@@ -137,10 +148,12 @@ static void hsm_exit(struct am_hsm *hsm, struct am_hsm_state *until) {
 
 /**
  * Recursively enter and init destination state.
+ *
  * 1. enter all states in #path[]
  * 2. init destination state stored in #path->fn[0] and #path->ifn[0]
  * 3. if destination state requested an initial transition, then build
  *    new #path[] and go to step 1
+ *
  * @param hsm   enter and init the states of this HSM
  * @param path  the path to enter
  *              Initially it is path from LCA substate to destination state
@@ -196,7 +209,7 @@ static enum am_hsm_rc hsm_dispatch(
     hsm->temp = hsm->state;
     hsm->itemp = hsm->istate;
 
-    if (!am_hsm_state_is_eq(hsm, &src)) {
+    if (!am_hsm_active_state_is_eq(hsm, &src)) {
         hsm_exit(hsm, /*until=*/&src);
         hsm_set_current(hsm, &src);
     }
