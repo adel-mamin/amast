@@ -163,4 +163,7 @@
         }                                         \
     } while (0)
 
+#define AM_DOUBLE_EQ(d1, d2, tolerance) (fabs((d1) - (d2)) <= (tolerance))
+#define AM_FLOAT_EQ(d1, d2, tolerance) (fabsf((d1) - (d2)) <= (tolerance))
+
 #endif /* COMMON_MACROS_H_INCLUDED */
