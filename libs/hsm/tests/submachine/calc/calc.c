@@ -579,6 +579,6 @@ char calc_get_operator(struct am_hsm *me) {
 bool calc_get_result(struct am_hsm *me, double *res) {
     AM_ASSERT(me);
     AM_ASSERT(res);
-    *res = ((struct calc*)me)->result;
+    *res = ((struct calc *)me)->result;
     return ((struct calc *)me)->result_valid;
 }

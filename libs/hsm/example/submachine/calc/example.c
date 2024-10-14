@@ -100,9 +100,7 @@ static bool calc_set_event_id(struct calc_event *e, char c) {
     return true;
 }
 
-static void calc_log(char *fmt, ...) {
-    (void)fmt;
-}
+static void calc_log(char *fmt, ...) { (void)fmt; }
 
 int main(void) {
     calc_ctor(calc_log);
@@ -147,9 +145,7 @@ int main(void) {
             am_hsm_dispatch(g_calc, &(struct am_event){.id = EVT_OFF});
             goto end;
         }
-        struct calc_event e = {
-             .data = c
-        };
+        struct calc_event e = {.data = c};
         bool valid = calc_set_event_id(&e, c);
         if (!valid) {
             continue;

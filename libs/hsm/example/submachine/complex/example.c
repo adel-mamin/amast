@@ -45,18 +45,18 @@ static void test_log(char *fmt, ...) {
 }
 
 static void test_print(char c) {
-    printf(ANSI_COLOR_YELLOW_BOLD);
+    printf(AM_COLOR_YELLOW_BOLD);
     printf("%c", c);
-    printf(ANSI_COLOR_RESET);
+    printf(AM_COLOR_RESET);
     printf(": %s\n", m_log_buf);
 }
 
 int main(void) {
     complex_sm_ctor(test_log);
 
-    printf(ANSI_COLOR_BLUE_BOLD);
+    printf(AM_COLOR_BLUE_BOLD);
     printf("Type event [A,B,C,D,E,F,G,H] (T to terminate)\n");
-    printf(ANSI_COLOR_RESET);
+    printf(AM_COLOR_RESET);
 
     m_log_buf[0] = '\0';
     am_hsm_init(g_complex_sm, /*init_event=*/NULL);
