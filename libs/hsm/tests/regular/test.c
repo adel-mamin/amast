@@ -51,7 +51,7 @@ void test_log(char *fmt, ...) {
  * Systems 2nd Edition" by Miro Samek <https://www.state-machine.com/psicc2>
  */
 
-static void test_hsm(void) {
+static void test_regular(void) {
     regular_ctor(test_log);
 
     am_hsm_init(g_regular, /*init_event=*/NULL);
@@ -109,16 +109,14 @@ static void test_hsm(void) {
     am_hsm_dtor(g_regular);
 
     {
-        static const char *destruction = "s211-EXIT;s21-EXIT;s2-EXIT;s-EXIT;";
-        AM_ASSERT(
-            0 == strncmp(m_regular_log_buf, destruction, strlen(destruction))
-        );
+        static const char *out = "s211-EXIT;s21-EXIT;s2-EXIT;s-EXIT;";
+        AM_ASSERT(0 == strncmp(m_regular_log_buf, out, strlen(out)));
         m_regular_log_buf[0] = '\0';
     }
 }
 
 int main(void) {
-    test_hsm();
+    test_regular();
 
     return 0;
 }

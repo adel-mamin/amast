@@ -95,6 +95,16 @@ if unit_test
     test('submachine-complex', e, suite: 'hsm')
 
     e = executable(
+        'submachine-calc',
+        [
+            'tests' / 'submachine' / 'calc' / 'calc.c',
+            'tests' / 'submachine' / 'calc' / 'test.c'
+        ],
+        dependencies: [libhsm_dep, libstr_dep],
+        include_directories: [include_directories('tests')])
+    test('submachine-calc', e, suite: 'hsm')
+
+    e = executable(
         'spy',
         [
             'tests' / 'spy.c',
@@ -126,6 +136,20 @@ e = executable(
     include_directories: [
         include_directories(
             'tests' / 'submachine' / 'complex',
+            'tests',
+        )
+])
+
+e = executable(
+    'calc-example',
+    [
+        'tests' / 'submachine' / 'calc' / 'calc.c',
+        'example' / 'submachine' / 'calc' / 'example.c'
+    ],
+    dependencies: [libhsm_dep, libstr_dep],
+    include_directories: [
+        include_directories(
+            'tests' / 'submachine' / 'calc',
             'tests',
         )
 ])

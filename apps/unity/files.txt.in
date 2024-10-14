@@ -30,6 +30,9 @@
 @SRC_ROOT@/libs/hsm/tests/submachine/complex/submachine.h
 @SRC_ROOT@/libs/hsm/tests/submachine/complex/test.c
 @SRC_ROOT@/libs/hsm/tests/submachine/complex/submachine.c
+@SRC_ROOT@/libs/hsm/tests/submachine/calc/calc.h
+@SRC_ROOT@/libs/hsm/tests/submachine/calc/calc.c
+@SRC_ROOT@/libs/hsm/tests/submachine/calc/test.c
 @SRC_ROOT@/libs/hsm/tests/history.c
 @SRC_ROOT@/libs/hsm/tests/spy.c
 @SRC_ROOT@/libs/hsm/tests/redispatch.c

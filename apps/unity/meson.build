@@ -45,6 +45,7 @@ amast_src = custom_target(
         amast_exe, '-f', '@INPUT@', '-o', '@OUTDIR@' , '&&',
         CLANG_FORMAT, '--style=file', '-i', '@OUTPUT@'
     ],
+    build_always_stale: true,
     depends: amast_exe
 )
 
