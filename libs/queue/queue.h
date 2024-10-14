@@ -38,12 +38,12 @@ extern "C" {
 
 /** queue handler */
 struct am_queue {
-    int isize;       /**< item size [bytes] */
-    int rd;          /**< read index */
-    int wr;          /**< write index */
-    struct blk blk;  /**< queue memory block */
-    unsigned magic1; /**< magic number1 */
-    unsigned magic2; /**< magic number2 */
+    int isize;         /**< item size [bytes] */
+    int rd;            /**< read index */
+    int wr;            /**< write index */
+    struct am_blk blk; /**< queue memory block */
+    unsigned magic1;   /**< magic number1 */
+    unsigned magic2;   /**< magic number2 */
 };
 
 /**
@@ -93,7 +93,7 @@ int am_queue_item_size(struct am_queue *hnd);
  * @param blk        the memory block
  */
 void am_queue_init(
-    struct am_queue *hnd, int isize, int alignment, struct blk *blk
+    struct am_queue *hnd, int isize, int alignment, struct am_blk *blk
 );
 
 /**

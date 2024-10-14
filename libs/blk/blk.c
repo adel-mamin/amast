@@ -33,20 +33,22 @@
 #include "common/macros.h"
 #include "blk/blk.h"
 
-struct blk blk_ctor(void *ptr, int size) {
-    struct blk blk;
+struct am_blk am_blk_ctor(void *ptr, int size) {
+    struct am_blk blk;
     blk.ptr = ptr;
     blk.size = size;
     return blk;
 }
 
-struct blk blk_ctor_empty(void) { return blk_ctor(/*ptr=*/NULL, /*size=*/0); }
+struct am_blk am_blk_ctor_empty(void) {
+    return am_blk_ctor(/*ptr=*/NULL, /*size=*/0);
+}
 
-bool blk_is_empty(const struct blk *blk) {
+bool am_blk_is_empty(const struct am_blk *blk) {
     return (NULL == blk) || (NULL == blk->ptr) || (0 == blk->size);
 }
 
-int blk_cmp(const struct blk *a, const struct blk *b) {
+int am_blk_cmp(const struct am_blk *a, const struct am_blk *b) {
     AM_ASSERT(a);
     AM_ASSERT(a->ptr);
     AM_ASSERT(a->size > 0);
@@ -68,14 +70,14 @@ int blk_cmp(const struct blk *a, const struct blk *b) {
     return 0;
 }
 
-void blk_zero(struct blk *blk) {
+void am_blk_zero(struct am_blk *blk) {
     AM_ASSERT(blk);
     AM_ASSERT(blk->ptr);
     AM_ASSERT(blk->size > 0);
     memset(blk->ptr, 0, (size_t)blk->size);
 }
 
-void *blk_cpy(struct blk *dst, const struct blk *src) {
+void *am_blk_cpy(struct am_blk *dst, const struct am_blk *src) {
     AM_ASSERT(dst);
     AM_ASSERT(dst->ptr);
     AM_ASSERT(src);

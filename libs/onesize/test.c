@@ -47,7 +47,7 @@ struct test {
 int main(void) {
     struct am_onesize ma;
     struct test test[3];
-    struct blk blk = {.ptr = test, .size = sizeof(test)};
+    struct am_blk blk = {.ptr = test, .size = sizeof(test)};
 
     am_onesize_init(&ma, &blk, sizeof(struct test), AM_ALIGN_MAX);
 

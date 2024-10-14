@@ -45,7 +45,7 @@
 #define AM_QUEUE_MAGIC2 0xDEADBEEF
 
 void am_queue_init(
-    struct am_queue *hnd, int isize, int alignment, struct blk *blk
+    struct am_queue *hnd, int isize, int alignment, struct am_blk *blk
 ) {
     AM_ASSERT(hnd);
     AM_ASSERT(isize > 0);

@@ -164,7 +164,7 @@ int am_onesize_get_nblocks(struct am_onesize *hnd) {
 }
 
 void am_onesize_init(
-    struct am_onesize *hnd, struct blk *pool, int block_size, int alignment
+    struct am_onesize *hnd, struct am_blk *pool, int block_size, int alignment
 ) {
     AM_ASSERT(hnd);
     AM_ASSERT(pool);

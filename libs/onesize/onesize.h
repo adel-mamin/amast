@@ -36,7 +36,7 @@ extern "C" {
 
 /** onesize memory allocator descriptor */
 struct am_onesize {
-    struct blk pool;    /**< the pool */
+    struct am_blk pool; /**< the pool */
     int block_size;     /**< maximum size of allocated block [bytes] */
     struct am_slist fl; /**< list of non-allocated memory blocks (free list) */
     int nfree;          /**< current number of blocks in free list */
@@ -59,7 +59,7 @@ struct am_onesize {
  * @param alignment   the alignment of allocated memory blocks [bytes]
  */
 void am_onesize_init(
-    struct am_onesize *hnd, struct blk *pool, int block_size, int alignment
+    struct am_onesize *hnd, struct am_blk *pool, int block_size, int alignment
 );
 
 /**

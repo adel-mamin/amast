@@ -40,7 +40,7 @@
 
 static void test_am_queue(const int capacity, const int rdwr_num) {
     int pool[capacity + 1];
-    struct blk blk = {.ptr = pool, .size = (int)sizeof(pool)};
+    struct am_blk blk = {.ptr = pool, .size = (int)sizeof(pool)};
 
     struct am_queue q;
     am_queue_init(

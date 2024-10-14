@@ -32,17 +32,17 @@ extern "C" {
 #endif
 
 /** Memory block descriptor */
-struct blk {
+struct am_blk {
     void *ptr; /**< memory */
     int size;  /**< memory size [bytes] */
 };
 
-struct blk blk_ctor(void *ptr, int size);
-struct blk blk_ctor_empty(void);
-bool blk_is_empty(const struct blk *blk);
-int blk_cmp(const struct blk *a, const struct blk *b);
-void blk_zero(struct blk *blk);
-void *blk_copy(struct blk *dst, const struct blk *src);
+struct am_blk am_blk_ctor(void *ptr, int size);
+struct am_blk am_blk_ctor_empty(void);
+bool am_blk_is_empty(const struct am_blk *blk);
+int am_blk_cmp(const struct am_blk *a, const struct am_blk *b);
+void am_blk_zero(struct am_blk *blk);
+void *am_blk_copy(struct am_blk *dst, const struct am_blk *src);
 
 #ifdef __cplusplus
 }

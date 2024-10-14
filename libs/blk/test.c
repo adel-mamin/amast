@@ -36,34 +36,34 @@
 int main(void) {
     {
         unsigned long adata = 1;
-        struct blk a = {&adata, sizeof(adata)};
+        struct am_blk a = {&adata, sizeof(adata)};
         unsigned long bdata = 1;
-        struct blk b = {&bdata, sizeof(bdata)};
-        AM_ASSERT(0 == blk_cmp(&a, &b));
+        struct am_blk b = {&bdata, sizeof(bdata)};
+        AM_ASSERT(0 == am_blk_cmp(&a, &b));
     }
 
     {
         unsigned long adata = 1;
-        struct blk a = {&adata, sizeof(adata)};
+        struct am_blk a = {&adata, sizeof(adata)};
         unsigned long bdata = 2;
-        struct blk b = {&bdata, sizeof(bdata)};
-        AM_ASSERT(blk_cmp(&a, &b) < 0);
+        struct am_blk b = {&bdata, sizeof(bdata)};
+        AM_ASSERT(am_blk_cmp(&a, &b) < 0);
     }
 
     {
         unsigned long adata = 2;
-        struct blk a = {&adata, sizeof(adata)};
+        struct am_blk a = {&adata, sizeof(adata)};
         unsigned long bdata = 1;
-        struct blk b = {&bdata, sizeof(bdata)};
-        AM_ASSERT(blk_cmp(&a, &b) > 0);
+        struct am_blk b = {&bdata, sizeof(bdata)};
+        AM_ASSERT(am_blk_cmp(&a, &b) > 0);
     }
 
     {
         unsigned char adata = 1;
-        struct blk a = {&adata, sizeof(adata)};
+        struct am_blk a = {&adata, sizeof(adata)};
         unsigned long bdata = 1;
-        struct blk b = {&bdata, sizeof(bdata)};
-        AM_ASSERT(blk_cmp(&a, &b) < 0);
+        struct am_blk b = {&bdata, sizeof(bdata)};
+        AM_ASSERT(am_blk_cmp(&a, &b) < 0);
     }
 
     return 0;
