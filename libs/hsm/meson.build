@@ -22,17 +22,30 @@
 # SOFTWARE.
 #
 
-hsm_src = [files('hsm.c')]
+hsm_src = [files(
+    'hsm.c',
+    'tests' / 'regular' / 'regular.c',
+    'tests' / 'submachine' / 'calc' / 'calc.c',
+    'tests' / 'submachine' / 'complex' / 'submachine.c',
+)]
+hsm_inc = include_directories(
+    'tests' / 'submachine' / 'complex',
+    'tests' / 'submachine' / 'calc',
+    'tests' / 'regular',
+    'tests',
+)
 src += [hsm_src]
 
-libhsm = library('hsm', [hsm_src], include_directories: inc)
-libhsm_dep = declare_dependency(link_with : libhsm, include_directories : inc)
+libhsm = library('hsm', [hsm_src], include_directories: [inc, hsm_inc])
+libhsm_dep = declare_dependency(
+    link_with : libhsm,
+    include_directories : [inc, hsm_inc]
+)
 
 if unit_test
     e = executable(
         'regular',
         [
-            'tests' / 'regular' / 'regular.c',
             'tests' / 'regular' / 'test.c'
         ],
         dependencies: [libhsm_dep, libstr_dep],
@@ -87,7 +100,6 @@ if unit_test
     e = executable(
         'submachine-complex',
         [
-            'tests' / 'submachine' / 'complex' / 'submachine.c',
             'tests' / 'submachine' / 'complex' / 'test.c'
         ],
         dependencies: [libhsm_dep, libstr_dep],
@@ -97,7 +109,6 @@ if unit_test
     e = executable(
         'submachine-calc',
         [
-            'tests' / 'submachine' / 'calc' / 'calc.c',
             'tests' / 'submachine' / 'calc' / 'test.c'
         ],
         dependencies: [libhsm_dep, libstr_dep],
@@ -116,40 +127,3 @@ if unit_test
     test('spy', e, suite: 'hsm')
 
 endif
-
-e = executable(
-    'regular-example',
-    [
-        'tests' / 'regular' / 'regular.c',
-        'example' / 'regular' / 'example.c'
-    ],
-    dependencies: [libhsm_dep, libstr_dep],
-    include_directories: [include_directories('tests' / 'regular', 'tests')])
-
-e = executable(
-    'submachine-example',
-    [
-        'tests' / 'submachine' / 'complex' / 'submachine.c',
-        'example' / 'submachine' / 'complex' / 'example.c'
-    ],
-    dependencies: [libhsm_dep, libstr_dep],
-    include_directories: [
-        include_directories(
-            'tests' / 'submachine' / 'complex',
-            'tests',
-        )
-])
-
-e = executable(
-    'calc-example',
-    [
-        'tests' / 'submachine' / 'calc' / 'calc.c',
-        'example' / 'submachine' / 'calc' / 'example.c'
-    ],
-    dependencies: [libhsm_dep, libstr_dep],
-    include_directories: [
-        include_directories(
-            'tests' / 'submachine' / 'calc',
-            'tests',
-        )
-])

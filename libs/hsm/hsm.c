@@ -82,7 +82,7 @@ struct am_hsm_state am_hsm_get_active_state(const struct am_hsm *hsm) {
 /**
  * Build ancestor chain path.
  *
- * The path starts with 'from' state and ends with substate of #until state.
+ * The path starts with #from state and ends with substate of #until state.
  *
  * @param hsm    HSM handler
  * @param path   the path is placed here
@@ -128,7 +128,9 @@ static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
 }
 
 /**
- * Exit states starting from current one and finishing with substate of #until.
+ * Exit states.
+ *
+ * Start with current and end with immediate substate of #until.
  *
  * @param hsm    exit the states of this HSM
  * @param until  stop the exit when reaching this state without exiting it

@@ -43,6 +43,7 @@ unit_test = get_option('unit_test')
 libs_inc = include_directories('.')
 subdir('libs')
 subdir('apps' / 'unity')
+subdir('apps' / 'examples')
 
 files_to_check = run_command(
     FIND,
