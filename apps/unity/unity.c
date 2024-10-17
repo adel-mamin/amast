@@ -35,15 +35,14 @@
 
 #define DB_FILES_MAX 256
 
+struct files {
+    char names[DB_FILES_MAX][PATH_MAX];
+    int len;
+};
+
 struct db {
-    struct src {
-        char names[DB_FILES_MAX][PATH_MAX];
-        int len;
-    } src;
-    struct hdr {
-        char names[DB_FILES_MAX][PATH_MAX];
-        int len;
-    } hdr;
+    struct files src;
+    struct files hdr;
     const char *odir; /* amast.h and amast.c are placed here */
 };
 
@@ -146,6 +145,39 @@ const char *get_full_src_fname(const char *fname) {
     return src + 1;
 }
 
+static const char *get_file_name_in_repo(const char *full_name) {
+    static const char *keyword = "amast/";
+
+    /* Find the position of "amast/" in the full name */
+    char *result = strstr(full_name, keyword);
+    assert(result);
+    /* Move the pointer forward to point to the character after "amast/" */
+    result += strlen(keyword);
+
+    return result;
+}
+
+static void add_amast_description(
+    FILE *f, const char *name, const struct files *files
+) {
+    fprintf(f, "/*\n");
+    fprintf(f, " * This file was auto-generated as a copy-paste\n");
+    fprintf(f, " * combination of AMAST project %s files taken from\n", name);
+    fprintf(f, " * GitHub repo https://github.com/adel-mamin/amast\n");
+    fprintf(f, " * Version %s\n", AMAST_VERSION);
+    fprintf(f, " */\n");
+    fprintf(f, "\n");
+
+    fprintf(f, "/*\n");
+    fprintf(f, " * The complete list of the copy-pasted %s files:\n", name);
+    fprintf(f, " *\n");
+    for (int i = 0; i < files->len; ++i) {
+        fprintf(f, " * %s\n", get_file_name_in_repo(files->names[i]));
+    }
+    fprintf(f, " */\n");
+    fprintf(f, "\n");
+}
+
 static void create_amast_files(const struct db *db) {
     char amast_h[PATH_MAX];
     snprintf(amast_h, sizeof(amast_h), "%s/amast.h", db->odir);
@@ -166,6 +198,8 @@ static void create_amast_files(const struct db *db) {
     fprintf(hdr_file, "#ifndef AMAST_H_INCLUDED\n");
     fprintf(hdr_file, "#define AMAST_H_INCLUDED\n");
     fprintf(hdr_file, "\n");
+
+    add_amast_description(hdr_file, "header", &m_db.hdr);
 
     fprintf(hdr_file, "#ifdef AMAST_UNIT_TESTS\n");
     fprintf(hdr_file, "#undef AM_HSM_SPY\n");
@@ -189,6 +223,8 @@ static void create_amast_files(const struct db *db) {
 
     fprintf(hdr_file, "\n");
     fprintf(hdr_file, "#endif /* AMAST_H_INCLUDED */\n");
+
+    add_amast_description(src_file, "source", &m_db.src);
 
     fprintf(src_file, "#include \"amast.h\"\n");
     fprintf(src_file, "\n");
