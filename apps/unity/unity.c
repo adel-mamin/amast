@@ -35,15 +35,14 @@
 
 #define DB_FILES_MAX 256
 
+struct files {
+    char names[DB_FILES_MAX][PATH_MAX];
+    int len;
+};
+
 struct db {
-    struct src {
-        char names[DB_FILES_MAX][PATH_MAX];
-        int len;
-    } src;
-    struct hdr {
-        char names[DB_FILES_MAX][PATH_MAX];
-        int len;
-    } hdr;
+    struct files src;
+    struct files hdr;
     const char *odir; /* amast.h and amast.c are placed here */
 };
 
@@ -80,14 +79,17 @@ static void db_init(struct db *db, const char *fname, const char *odir) {
     db->odir = odir;
 }
 
-void convert_fpath_to_name(const char *fpath, char name[static PATH_MAX]) {
+/* generate a function name fn_name from file path */
+static void convert_fpath_to_fn_name(
+    const char *fpath, char fn_name[static PATH_MAX]
+) {
     const char *src = fpath;
-    char *dst = name;
+    char *dst = fn_name;
 
     /* Skip the leading part until after "/amast/" */
     src = strstr(src, "/amast/");
     if (!src) {
-        name[0] = '\0';
+        fn_name[0] = '\0';
         return;
     }
     /* Move the pointer to start with "amast/" */
@@ -126,10 +128,10 @@ int file_append(
         char *main_func = strstr(buffer, "int main(void) {");
 
         if (main_func) {
-            char test_name[PATH_MAX];
-            convert_fpath_to_name(src, test_name);
-            snprintf(buffer, sizeof(buffer), "int %s(void) {\n", test_name);
-            strcpy(tests[*ntests], test_name);
+            char fn_name[PATH_MAX];
+            convert_fpath_to_fn_name(src, fn_name);
+            snprintf(buffer, sizeof(buffer), "int %s(void) {\n", fn_name);
+            strcpy(tests[*ntests], fn_name);
             (*ntests)++;
         }
 
@@ -140,10 +142,31 @@ int file_append(
     return 0;
 }
 
-const char *get_full_src_fname(const char *fname) {
+const char *get_repo_fname(const char *fname) {
     const char *src = strstr(fname, "/amast/");
     assert(src);
     return src + 1;
+}
+
+static void add_amast_description(
+    FILE *f, const char *note, const struct files *files
+) {
+    fprintf(f, "/*\n");
+    fprintf(f, " * This file was auto-generated as a copy-paste\n");
+    fprintf(f, " * combination of AMAST project %s files taken from\n", note);
+    fprintf(f, " * GitHub repo https://github.com/adel-mamin/amast\n");
+    fprintf(f, " * Version %s\n", AMAST_VERSION);
+    fprintf(f, " */\n");
+    fprintf(f, "\n");
+
+    fprintf(f, "/*\n");
+    fprintf(f, " * The complete list of the copy-pasted %s files:\n", note);
+    fprintf(f, " *\n");
+    for (int i = 0; i < files->len; ++i) {
+        fprintf(f, " * %s\n", get_repo_fname(files->names[i]));
+    }
+    fprintf(f, " */\n");
+    fprintf(f, "\n");
 }
 
 static void create_amast_files(const struct db *db) {
@@ -167,6 +190,8 @@ static void create_amast_files(const struct db *db) {
     fprintf(hdr_file, "#define AMAST_H_INCLUDED\n");
     fprintf(hdr_file, "\n");
 
+    add_amast_description(hdr_file, "header", &m_db.hdr);
+
     fprintf(hdr_file, "#ifdef AMAST_UNIT_TESTS\n");
     fprintf(hdr_file, "#undef AM_HSM_SPY\n");
     fprintf(hdr_file, "#define AM_HSM_SPY\n");
@@ -177,9 +202,7 @@ static void create_amast_files(const struct db *db) {
     /* Copy content of all header files to amast.h */
     for (int i = 0; i < db->hdr.len; i++) {
         assert(ntests < (AM_COUNTOF(tests) - 1));
-        fprintf(
-            hdr_file, "\n/* %s */\n\n", get_full_src_fname(db->hdr.names[i])
-        );
+        fprintf(hdr_file, "\n/* %s */\n\n", get_repo_fname(db->hdr.names[i]));
         if (file_append(db->hdr.names[i], hdr_file, &ntests, tests) != 0) {
             fclose(hdr_file);
             fclose(src_file);
@@ -190,12 +213,14 @@ static void create_amast_files(const struct db *db) {
     fprintf(hdr_file, "\n");
     fprintf(hdr_file, "#endif /* AMAST_H_INCLUDED */\n");
 
+    add_amast_description(src_file, "source", &m_db.src);
+
     fprintf(src_file, "#include \"amast.h\"\n");
     fprintf(src_file, "\n");
 
     /* Copy content of all source files to amast.c */
     for (int i = 0; i < db->src.len; i++) {
-        fprintf(src_file, "/* %s */\n", get_full_src_fname(db->src.names[i]));
+        fprintf(src_file, "/* %s */\n", get_repo_fname(db->src.names[i]));
         assert(ntests < (AM_COUNTOF(tests) - 1));
         if (strstr(db->src.names[i], "test") != NULL) {
             fprintf(src_file, "\n");

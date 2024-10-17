@@ -23,6 +23,7 @@
 #
 
 project('amast', 'c',
+        version : run_command(['python3', '-m', 'setuptools_scm'], check: true).stdout().strip(),
         default_options : [
             'c_std=c99',
             'warning_level=3',
@@ -30,6 +31,8 @@ project('amast', 'c',
             'default_library=static',
         ],
         meson_version: '>= 1.0.1')
+
+add_project_arguments('-DAMAST_VERSION="@0@"'.format(meson.project_version()), language : 'c')
 
 CLANG_FORMAT = find_program('clang-format', required: false, disabler: true)
 CLANG_TIDY = find_program('clang-tidy', required: false, disabler: true)
