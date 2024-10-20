@@ -1,7 +1,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2024 Adel Mamin
+# Copyright (c) Adel Mamin
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,42 +22,16 @@
 # SOFTWARE.
 #
 
-files_txt = configure_file(
-    input: 'files.txt.in',
-    output: 'files.txt',
-    configuration: {
-        'SRC_ROOT': meson.project_source_root(),
-    }
-)
-
-amast_exe = executable(
-    'am-unity',
-    'unity.c',
-    c_args: '-std=gnu99',
-    include_directories: libs_inc
-)
-
-amast_src = custom_target(
-    'amast_src',
-    input : [files_txt],
-    output : ['amast.c', 'amast.h'],
-    command : [
-        amast_exe, '-f', '@INPUT@', '-o', '@OUTDIR@' , '&&',
-        CLANG_FORMAT, '--style=file', '-i', '@OUTPUT@'
-    ],
-    build_always_stale: true,
-    depends: amast_exe
+libasync_dep = declare_dependency(
+    include_directories : [inc, include_directories('.')]
 )
 
 if unit_test
     e = executable(
-        'unity',
-        amast_src,
-        c_args: [
-            '-DAMAST_UNIT_TESTS',
-            '-ffunction-sections', '-fdata-sections'
+        'async',
+        [
+            'test.c'
         ],
-        link_args: ['-Wl,--gc-sections'],
-    )
-    test('unity', e)
+        dependencies: [libasync_dep])
+    test('async', e, suite: 'async')
 endif

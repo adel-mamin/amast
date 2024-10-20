@@ -27,6 +27,8 @@ project('amast', 'c',
         default_options : [
             'c_std=c99',
             'warning_level=3',
+            'buildtype=minsize',
+            'b_lto=true',
             'werror=true',
             'default_library=static',
         ],
