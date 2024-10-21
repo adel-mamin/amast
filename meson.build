@@ -45,7 +45,7 @@ PYTHON = find_program('python3')
 
 unit_test = get_option('unit_test')
 
-libs_inc = include_directories('.')
+libs_inc = include_directories(['libs', '.'])
 subdir('libs')
 subdir('apps' / 'unity')
 subdir('apps' / 'examples')

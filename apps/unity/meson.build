@@ -31,9 +31,9 @@ files_txt = configure_file(
 )
 
 amast_exe = executable(
-    'am-unity',
+    'amast-unity',
     'unity.c',
-    c_args: '-std=gnu99',
+    c_args: ['-std=gnu99', '-ggdb', '-fno-lto'],
     include_directories: libs_inc
 )
 
@@ -53,6 +53,7 @@ if unit_test
     e = executable(
         'unity',
         amast_src,
+        include_directories: libs_inc,
         c_args: [
             '-DAMAST_UNIT_TESTS',
             '-ffunction-sections', '-fdata-sections'
