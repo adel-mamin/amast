@@ -28,6 +28,7 @@ if unit_test
     e = executable(
         'onesize',
         ['onesize.c', 'test.c', blk_src, slist_src],
+        c_args: ['-O0', '-fno-lto', '-ggdb'],
         include_directories: inc)
     test('onesize', e)
 endif

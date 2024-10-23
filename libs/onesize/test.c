@@ -38,18 +38,16 @@
 #include "blk/blk.h"
 #include "onesize/onesize.h"
 
-struct test {
-    int a;
-    float b;
-    char c;
-};
-
 int main(void) {
     struct am_onesize ma;
-    struct test test[3];
-    struct am_blk blk = {.ptr = test, .size = sizeof(test)};
+    struct test {
+        int a;
+        float b;
+        unsigned *c;
+    } test_arr[2];
+    struct am_blk blk = {.ptr = &test_arr[0], .size = sizeof(test_arr)};
 
-    am_onesize_init(&ma, &blk, sizeof(struct test), AM_ALIGN_MAX);
+    am_onesize_init(&ma, &blk, sizeof(struct test), AM_ALIGNOF(struct test));
 
     AM_ASSERT(am_onesize_get_nfree(&ma) == 2);
 

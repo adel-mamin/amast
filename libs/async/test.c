@@ -163,84 +163,64 @@ static void test_async_exit(void) {
     AM_ASSERT((1 == state) && (AM_ASYNC_RC_DONE == rc));
 }
 
-struct am_async_chain {
+static struct am_async_chain {
     struct am_async async;
-    int ready[3];
-    int foo[3];
-};
+    int ready;
+    int foo;
+} test_async_chain[3];
 
 static enum am_async_rc am_async_call_1(struct am_async_chain *me);
 static enum am_async_rc am_async_call_2(struct am_async_chain *me);
-static enum am_async_rc am_async_call_3(struct am_async_chain *me);
 
 static enum am_async_rc am_async_call_1(struct am_async_chain *me) {
     AM_ASYNC_BEGIN(me);
-    enum am_async_rc rc = am_async_call_2(me);
+    enum am_async_rc rc = am_async_call_2(&test_async_chain[1]);
     if (AM_ASYNC_RC_BUSY == rc) {
         return rc;
     }
-    AM_ASYNC_AWAIT(me->ready[0]);
-    me->foo[0] = 1;
+    AM_ASYNC_AWAIT(me->ready);
+    me->foo = 1;
     AM_ASYNC_END();
 }
 
 static enum am_async_rc am_async_call_2(struct am_async_chain *me) {
     AM_ASYNC_BEGIN(me);
-    enum am_async_rc rc = am_async_call_3(me);
-    if (AM_ASYNC_RC_BUSY == rc) {
-        return rc;
-    }
-    AM_ASYNC_AWAIT(me->ready[1]);
-    me->foo[1] = 1;
-    AM_ASYNC_END();
-}
-
-static enum am_async_rc am_async_call_3(struct am_async_chain *me) {
-    AM_ASYNC_BEGIN(me);
-    AM_ASYNC_AWAIT(me->ready[2]);
-    me->foo[2] = 1;
+    AM_ASYNC_AWAIT(me->ready);
+    me->foo = 1;
     AM_ASYNC_END();
 }
 
 static void test_async_call_chain(void) {
-    struct am_async_chain me = {0};
-
     for (int i = 0; i < 2; ++i) {
-        memset(&me, 0, sizeof(me));
-        am_async_init(&me.async);
+        memset(test_async_chain, 0, sizeof(test_async_chain));
 
-        enum am_async_rc rc = am_async_call_1(&me);
+        struct am_async_chain *me1 = &test_async_chain[0];
+        struct am_async_chain *me2 = &test_async_chain[1];
+
+        am_async_init(&me1->async);
+        am_async_init(&me2->async);
+
+        enum am_async_rc rc = am_async_call_1(me1);
         AM_ASSERT(AM_ASYNC_RC_BUSY == rc);
-        AM_ASSERT(0 == me.foo[0]);
-        AM_ASSERT(0 == me.foo[1]);
-        AM_ASSERT(0 == me.foo[2]);
+        AM_ASSERT(0 == me1->foo);
+        AM_ASSERT(0 == me2->foo);
 
-        rc = am_async_call_1(&me);
+        rc = am_async_call_1(me1);
         AM_ASSERT(AM_ASYNC_RC_BUSY == rc);
-        AM_ASSERT(0 == me.foo[0]);
-        AM_ASSERT(0 == me.foo[1]);
-        AM_ASSERT(0 == me.foo[2]);
+        AM_ASSERT(0 == me1->foo);
+        AM_ASSERT(0 == me2->foo);
 
-        me.ready[2] = 1;
-        rc = am_async_call_1(&me);
+        me2->ready = 1;
+        rc = am_async_call_1(me1);
         AM_ASSERT(AM_ASYNC_RC_BUSY == rc);
-        AM_ASSERT(0 == me.foo[0]);
-        AM_ASSERT(0 == me.foo[1]);
-        AM_ASSERT(1 == me.foo[2]);
+        AM_ASSERT(0 == me1->foo);
+        AM_ASSERT(1 == me2->foo);
 
-        me.ready[1] = 1;
-        rc = am_async_call_1(&me);
-        AM_ASSERT(AM_ASYNC_RC_BUSY == rc);
-        AM_ASSERT(0 == me.foo[0]);
-        AM_ASSERT(1 == me.foo[1]);
-        AM_ASSERT(1 == me.foo[2]);
-
-        me.ready[0] = 1;
-        rc = am_async_call_1(&me);
+        me1->ready = 1;
+        rc = am_async_call_1(me1);
         AM_ASSERT(AM_ASYNC_RC_DONE == rc);
-        AM_ASSERT(1 == me.foo[0]);
-        AM_ASSERT(1 == me.foo[1]);
-        AM_ASSERT(1 == me.foo[2]);
+        AM_ASSERT(1 == me1->foo);
+        AM_ASSERT(1 == me2->foo);
     }
 }
 
