@@ -39,7 +39,7 @@
 
 static char m_calc_log_buf[256];
 
-void test_calc_log(char *fmt, ...) {
+static void test_calc_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(m_calc_log_buf, (int)sizeof(m_calc_log_buf), fmt, ap);

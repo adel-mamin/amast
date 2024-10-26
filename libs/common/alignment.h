@@ -47,7 +47,8 @@
         d                    \
     ))
 
-#define AM_ALIGNOF_PTR(ptr) (1U << (unsigned)__builtin_ctz((uintptr_t)ptr))
+#define AM_ALIGNOF_PTR(ptr) \
+    (1U << (unsigned)__builtin_ctz(AM_CAST(unsigned, ptr)))
 
 #define AM_ALIGN_PTR_UP(ptr, align)                           \
     ((void *)(((uintptr_t)(ptr) + (uintptr_t)((align) - 1)) & \

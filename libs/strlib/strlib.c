@@ -48,15 +48,16 @@
 #include "strlib/strlib.h"
 
 /* https://stackoverflow.com/a/30734030/2410359 */
-int str_icmp(const char *a, const char *b) {
-    int ca, cb;
+int str_icmp(const char *s1, const char *s2) {
+    int ca;
+    int cb;
     do {
-        ca = *(unsigned char *)a;
-        cb = *(unsigned char *)b;
+        ca = *(const unsigned char *)s1;
+        cb = *(const unsigned char *)s2;
         ca = tolower(toupper(ca));
         cb = tolower(toupper(cb));
-        a++;
-        b++;
+        s1++;
+        s2++;
     } while (ca == cb && ca != '\0');
     return ca - cb;
 }
@@ -422,6 +423,7 @@ int str_lcatf(char *dst, int lim, const char *fmt, ...) {
     return (int)len;
 }
 
+AM_DISABLE_WARNING(AM_W_SUGGEST_ATTRIBUTE_FORMAT)
 int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap) {
     AM_ASSERT(dst);
     AM_ASSERT(lim > 0);
@@ -436,6 +438,7 @@ int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap) {
 
     return (int)len;
 }
+AM_ENABLE_WARNING(AM_W_SUGGEST_ATTRIBUTE_FORMAT)
 
 char *str_sep(char **sp, const char *delim) {
     AM_ASSERT(sp);
@@ -445,7 +448,10 @@ char *str_sep(char **sp, const char *delim) {
         return NULL;
     }
 
+    AM_DISABLE_WARNING(AM_W_SIGN_CONVERSION)
     *sp += strspn(*sp, /*accept=*/delim);
+    AM_ENABLE_WARNING(AM_W_SIGN_CONVERSION)
+
     char *begin = *sp;
     *sp += strcspn(begin, /*reject=*/delim);
     char *end = *sp;
@@ -501,7 +507,7 @@ char *str_add_prefix(
     char *out, int outsz, const char *str, const char *prefix
 ) {
     int copied = str_lcpy(out, prefix, outsz);
-    if (copied + 1 > outsz) {
+    if (copied >= outsz) {
         return out;
     }
     str_lcpy(out + copied, str, outsz - copied);

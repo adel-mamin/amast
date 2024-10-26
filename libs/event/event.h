@@ -45,9 +45,10 @@
  * @retval false  the event does not have user event ID
  */
 #define AM_EVENT_HAS_USER_ID(event) \
-    (((struct am_event*)(event))->id >= AM_EVT_USER)
+    (((const struct am_event*)(event))->id >= AM_EVT_USER)
 
 #define AM_EVENT_TICK_DOMAIN_BITS 3
+#define AM_EVENT_TICK_DOMAIN_MASK ((1U << AM_EVENT_TICK_DOMAIN_BITS) - 1U)
 
 #define AM_EVT_CTOR(id_) ((struct am_event){.id = (id_)})
 

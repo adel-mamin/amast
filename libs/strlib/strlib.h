@@ -38,6 +38,16 @@
 #include <inttypes.h>
 
 /**
+ * Compare two strings in a case insensitive manner.
+ * @param s1  the first string
+ * @param s2  the second string
+ * @retval 0  if the s1 and s2 are equal
+ * @retval a negative value if s1 is less than s2
+ * @retval a positive value if s1 is greater than s2
+ */
+int str_icmp(const char *s1, const char *s2);
+
+/**
  * Check if string has a boolean value.
  * Case insensitive.
  * @param str            the string to check

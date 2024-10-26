@@ -68,7 +68,7 @@ void am_timer_event_ctor(struct am_event_timer *event, int id, int domain) {
     memset(event, 0, sizeof(*event));
     am_dlist_item_init(&event->item);
     event->event.id = id;
-    event->event.tick_domain = domain;
+    event->event.tick_domain = (unsigned)domain & AM_EVENT_TICK_DOMAIN_MASK;
 }
 
 void am_timer_arm(

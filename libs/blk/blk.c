@@ -77,7 +77,7 @@ void am_blk_zero(struct am_blk *blk) {
     memset(blk->ptr, 0, (size_t)blk->size);
 }
 
-void *am_blk_cpy(struct am_blk *dst, const struct am_blk *src) {
+void *am_blk_copy(struct am_blk *dst, const struct am_blk *src) {
     AM_ASSERT(dst);
     AM_ASSERT(dst->ptr);
     AM_ASSERT(src);
@@ -85,5 +85,5 @@ void *am_blk_cpy(struct am_blk *dst, const struct am_blk *src) {
     AM_ASSERT(dst->size > 0);
     AM_ASSERT(dst->size == src->size);
 
-    return memcpy(dst->ptr, src->ptr, src->size);
+    return memcpy(dst->ptr, src->ptr, (size_t)src->size);
 }

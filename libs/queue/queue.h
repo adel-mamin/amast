@@ -132,7 +132,7 @@ void *am_queue_pop_front_and_copy(struct am_queue *hnd, void *buf, int size);
  *         Do not free it!
  *         If queue is empty, then NULL is returned.
  */
-void *am_queue_peek_head(struct am_queue *hnd);
+void *am_queue_peek_front(struct am_queue *hnd);
 
 /**
  * Peek an item from the back (tail) of the queue.

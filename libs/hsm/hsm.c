@@ -39,9 +39,9 @@
 #define HSM_HIERARCHY_DEPTH_MAX 16
 
 struct am_hsm_path {
-    am_hsm_state_fn fn[HSM_HIERARCHY_DEPTH_MAX];
-    unsigned char ifn[HSM_HIERARCHY_DEPTH_MAX];
     int len;
+    am_hsm_state_fn fn[HSM_HIERARCHY_DEPTH_MAX];
+    char ifn[HSM_HIERARCHY_DEPTH_MAX];
 };
 
 /** canned events */
@@ -120,8 +120,8 @@ static void hsm_build(
  * @param path  the path to enter
  */
 static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
-    for (int i = path->len - 1; i >= 0; --i) {
-        hsm_set_current(hsm, &AM_HSM_STATE(path->fn[i], path->ifn[i]));
+    for (int i = path->len; i > 0; --i) {
+        hsm_set_current(hsm, &AM_HSM_STATE(path->fn[i - 1], path->ifn[i - 1]));
         enum am_hsm_rc rc = hsm->state(hsm, &m_hsm_evt_entry);
         AM_ASSERT((AM_HSM_RC_SUPER == rc) || (AM_HSM_RC_HANDLED == rc));
     }
@@ -237,9 +237,9 @@ static enum am_hsm_rc hsm_dispatch(
      * If dst requests initial transition - enter and init the dst substates.
      */
     while (hsm->temp != am_hsm_top) {
-        for (int i = path.len - 1; i >= 0; --i) {
+        for (int i = 0; i < path.len; ++i) {
             if ((path.fn[i] == hsm->temp) && (path.ifn[i] == hsm->itemp)) {
-                /* LCA is other than am_hsm_top() */
+                /* LCA is found and it is other than am_hsm_top() */
                 path.len = i;
                 hsm_enter_and_init(hsm, &path);
                 return rc;

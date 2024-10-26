@@ -37,6 +37,13 @@ amast_exe = executable(
     include_directories: libs_inc
 )
 
+amast_makefile = custom_target(
+    'amast_makefile',
+    input : 'Makefile',
+    output : 'Makefile',
+    command : ['cp', '@INPUT@', '@OUTDIR@']
+)
+
 amast_src = custom_target(
     'amast_src',
     input : [files_txt],
@@ -46,7 +53,7 @@ amast_src = custom_target(
         CLANG_FORMAT, '--style=file', '-i', '@OUTPUT@'
     ],
     build_always_stale: true,
-    depends: amast_exe
+    depends: [amast_exe, amast_makefile]
 )
 
 if unit_test
@@ -59,6 +66,7 @@ if unit_test
             '-ffunction-sections', '-fdata-sections'
         ],
         link_args: ['-Wl,--gc-sections'],
+        dependencies: [libm_dep]
     )
     test('unity', e)
 endif

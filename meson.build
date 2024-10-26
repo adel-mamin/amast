@@ -36,6 +36,87 @@ project('amast', 'c',
 
 add_project_arguments('-DAMAST_VERSION="@0@"'.format(meson.project_version()), language : 'c')
 
+compiler = meson.get_compiler('c')
+compiler_id = compiler.get_id()
+
+extra_warning_args = []
+if compiler_id == 'gcc' or compiler_id == 'clang'
+    extra_warning_args += [
+         '-Wchar-subscripts',
+         '-Winit-self',
+         '-Wmain',
+         '-Wmissing-include-dirs',
+         '-Wswitch-default',
+         #'-Wswitch-enum',
+         '-Wunused',
+         '-Wunused-parameter',
+         '-Wunused-variable',
+         '-Wuninitialized',
+         '-Wunknown-pragmas',
+         '-Wstrict-overflow=5',
+         '-Wmissing-format-attribute',
+         '-Wfloat-equal',
+         '-Wshadow',
+         '-Wpointer-arith',
+         #'-Wundef',
+         '-Wunused-macros',
+         '-Wcast-qual',
+         '-Wwrite-strings',
+         '-Wconversion',
+         '-Wdangling-else',
+         '-Wdate-time',
+         '-Wmissing-declarations',
+         '-Wpacked',
+         '-Wredundant-decls',
+         # '-Winline',
+         '-Wdisabled-optimization',
+         '-Winvalid-pch',
+         '-Wmissing-noreturn',
+         '-Wunreachable-code']
+
+    extra_warning_args += [
+         '-Wformat',
+         '-Wformat=2',
+         '-Wformat-nonliteral',
+         '-Wformat-security',
+         '-Wformat-y2k',
+         '-Wcast-align']
+
+    if compiler.has_argument('-Wno-gnu-zero-variadic-macro-arguments')
+         extra_warning_args += ['-Wno-gnu-zero-variadic-macro-arguments']
+    endif
+    if compiler.has_argument('-Wnull-dereference')
+         extra_warning_args += ['-Wnull-dereference']
+    endif
+    if compiler.has_argument('-Wno-deprecated-copy-with-user-provided-copy')
+         extra_warning_args += ['-Wno-deprecated-copy-with-user-provided-copy']
+    endif
+
+    extra_warning_args += ['-Wno-declaration-after-statement']
+
+endif
+
+add_project_arguments(
+    [
+        extra_warning_args,
+        '-fno-strict-aliasing',
+        '-fmessage-length=0',
+        '-fno-common',
+        '-ffunction-sections',
+        '-fdata-sections',
+        '-fno-builtin',
+        '-ftrapv',
+        '-funwind-tables',
+        '-fno-omit-frame-pointer'
+    ],
+    language : 'c')
+
+add_project_link_arguments([
+    '-Wl,--gc-sections',
+    '-Wl,-Map=output.map'],
+    language : 'c')
+
+
 CLANG_FORMAT = find_program('clang-format', required: false, disabler: true)
 CLANG_TIDY = find_program('clang-tidy', required: false, disabler: true)
 RUN_CLANG_TIDY = find_program('run-clang-tidy', required: false, disabler: true)
@@ -44,6 +125,8 @@ FIND = find_program('find', required: false, disabler: true)
 PYTHON = find_program('python3')
 
 unit_test = get_option('unit_test')
+
+libm_dep = compiler.find_library('m', required: true)
 
 libs_inc = include_directories(['libs', '.'])
 subdir('libs')

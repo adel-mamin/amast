@@ -131,7 +131,7 @@ struct am_hsm_state {
     /** HSM state function  */
     am_hsm_state_fn fn;
     /** HSM state function instance. Used for submachines. Default is 0. */
-    unsigned char ifn;
+    char ifn;
 };
 
 /** Helper macro. Not to be used directly. */
@@ -140,7 +140,7 @@ struct am_hsm_state {
 
 /** Helper macro. Not to be used directly. */
 #define AM_STATE2_(s, i) \
-    (struct am_hsm_state) { .fn = (am_hsm_state_fn)s, .ifn = i }
+    (struct am_hsm_state) { .fn = (am_hsm_state_fn)s, .ifn = (char)(i) }
 
 /**
  * Get HSM state from event handler and optionally the event handler instance.
@@ -168,9 +168,9 @@ struct am_hsm {
     am_hsm_spy_fn spy;
 #endif
     /** instance of active state */
-    unsigned istate : 8;
+    char istate : 8;
     /** instance of temporary state during transitions & event processing */
-    unsigned itemp : 8;
+    char itemp : 8;
 };
 
 /**
@@ -184,7 +184,7 @@ struct am_hsm {
 /** Helper macro. Not to be used directly. */
 #define AM_SET_TEMP_(s, i)                               \
     (((struct am_hsm *)me)->temp = (am_hsm_state_fn)(s), \
-     ((struct am_hsm *)me)->itemp = (i))
+     ((struct am_hsm *)me)->itemp = (char)(i))
 
 /** Helper macro. Not to be used directly. */
 #define AM_TRAN1_(s) (AM_SET_TEMP_(s, 0), AM_HSM_RC_TRAN)

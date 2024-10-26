@@ -34,7 +34,7 @@
 
 struct test_spy {
     struct am_hsm hsm;
-    void (*log)(char *fmt, ...);
+    void (*log)(const char *fmt, ...);
     char log_buf[256];
 };
 
@@ -60,7 +60,7 @@ static enum am_hsm_rc spy_init(
     return AM_HSM_TRAN(spy_s);
 }
 
-static void spy_ctor(void (*log)(char *fmt, ...)) {
+static void spy_ctor(void (*log)(const char *fmt, ...)) {
     struct test_spy *me = &m_test_spy;
     am_hsm_ctor(&me->hsm, &AM_HSM_STATE(spy_init));
     me->log = log;
@@ -75,7 +75,7 @@ static void spy(struct am_hsm *hsm, const struct am_event *event) {
     AM_ASSERT(0);
 }
 
-static void test_spy_log(char *fmt, ...) {
+static void test_spy_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(m_test_spy.log_buf, (int)sizeof(m_test_spy.log_buf), fmt, ap);

@@ -145,27 +145,6 @@ struct am_slist_item *am_slist_pop_front(struct am_slist *hnd) {
     return am_slist_pop_after(hnd, &hnd->sentinel);
 }
 
-void am_slist_move_to_head(
-    struct am_slist *from, struct am_slist *to, struct am_slist_item *item
-) {
-    AM_ASSERT(from);
-    AM_ASSERT(to);
-    AM_ASSERT(item);
-
-    struct am_slist_item *prev = &from->sentinel;
-    struct am_slist_item *cur = am_slist_peek_front(from);
-    while (cur) {
-        if (cur == item) {
-            am_slist_pop_after(from, prev);
-            am_slist_push_front(to, cur);
-            return;
-        }
-        struct am_slist_item *tmp = cur;
-        cur = am_slist_next_item(from, prev);
-        prev = tmp;
-    }
-}
-
 void am_slist_push_back(struct am_slist *hnd, struct am_slist_item *item) {
     am_slist_push_after(hnd, hnd->back, item);
 }

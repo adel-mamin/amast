@@ -50,7 +50,7 @@ extern struct am_hsm *g_calc;
 struct am_blk calc_get_operand(struct am_hsm *me, int index);
 char calc_get_operator(struct am_hsm *me);
 bool calc_get_result(struct am_hsm *me, double *res);
-void calc_ctor(void (*log)(char *fmt, ...));
+void calc_ctor(void (*log)(const char *fmt, ...));
 
 #ifdef __cplusplus
 }

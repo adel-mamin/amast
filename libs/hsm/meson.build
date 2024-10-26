@@ -111,7 +111,7 @@ if unit_test
         [
             'tests' / 'submachine' / 'calc' / 'test.c'
         ],
-        dependencies: [libhsm_dep, libstr_dep],
+        dependencies: [libhsm_dep, libstr_dep, libm_dep],
         include_directories: [include_directories('tests')])
     test('submachine-calc', e, suite: 'hsm')
 

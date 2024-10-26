@@ -144,13 +144,13 @@ static void db_init(struct db *db, const char *db_fname, const char *odir) {
 
     qsort(
         db->src.includes_std,
-        db->src.includes_std_num,
+        (size_t)db->src.includes_std_num,
         sizeof(db->src.includes_std[0]),
         compare_includes
     );
     qsort(
         db->hdr.includes_std,
-        db->hdr.includes_std_num,
+        (size_t)db->hdr.includes_std_num,
         sizeof(db->hdr.includes_std[0]),
         compare_includes
     );
@@ -207,7 +207,7 @@ static void file_append(
     char fn_name[PATH_MAX];
     convert_fname_to_fn_name(src_fname, fn_name);
     char buffer[2 * PATH_MAX];
-    snprintf(buffer, sizeof(buffer), "int %s(void) {\n", fn_name);
+    snprintf(buffer, sizeof(buffer), "static int %s(void) {\n", fn_name);
     strcpy(tests[*ntests], fn_name);
     (*ntests)++;
     *pos = '\0';
@@ -217,7 +217,7 @@ static void file_append(
     fputs(pos, dst);
 }
 
-const char *get_repo_fname(const char *fname) {
+static const char *get_repo_fname(const char *fname) {
     const char *src = strstr(fname, "/amast/");
     assert(src);
     return src + 1;

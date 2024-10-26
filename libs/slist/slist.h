@@ -195,6 +195,16 @@ bool am_slist_owns(
     const struct am_slist *hnd, const struct am_slist_item *item
 );
 
+/**
+ * Get next list item.
+ * @param hnd     the list handler
+ * @param item    the item to be checked
+ * @return Next list item or NULL
+ */
+struct am_slist_item *am_slist_next_item(
+    const struct am_slist *hnd, const struct am_slist_item *item
+);
+
 #if defined __cplusplus
 }
 #endif

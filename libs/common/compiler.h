@@ -107,12 +107,14 @@ typedef int ssize_t;
 #define AM_NORETURN __attribute__((noreturn))
 /** alignment compiler instruction */
 #define AM_ALIGNED(x) __attribute__((aligned(x)))
+
 /**
-  The parameter `si` specifies which argument is the format string argument
-  (starting from 1), while `ftc` is the number of the first argument to check
-  against the format string. For functions where the arguments are not available
-  to be checked (such as vprintf), specify the third parameter as zero.
-  In this case the compiler only checks the format string for consistency.
+ * The parameter `si` specifies which argument is the format string argument
+ * (starting from 1), while `ftc` is the number of the first argument to check
+ * against the format string. For functions where the arguments are not
+ * available to be checked (such as vprintf), specify the third parameter as
+ * zero. In this case the compiler only checks the format string for
+ * consistency.
  */
 #define AM_PRINTF(si, ftc) __attribute__((format(printf, (si), (ftc))))
 #define AM_ATTR(...) __attribute__((__VA_ARGS__))
@@ -132,8 +134,9 @@ typedef int ssize_t;
 #define AM_CAST(TYPE, PTR) (((TYPE)(uintptr_t)(const void *)(PTR)))
 #define AM_VCAST(TYPE, PTR) (((TYPE)(uintptr_t)(const volatile void *)(PTR)))
 
-/* Taken from
-   https://stackoverflow.com/questions/3378560/how-to-disable-gcc-warnings-for-a-few-lines-of-code
+/*
+ * Taken from
+ * https://stackoverflow.com/questions/3378560/how-to-disable-gcc-warnings-for-a-few-lines-of-code
  */
 
 /** Stringification macro */

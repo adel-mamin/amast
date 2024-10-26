@@ -50,7 +50,7 @@ void am_queue_init(
     AM_ASSERT(hnd);
     AM_ASSERT(isize > 0);
     AM_ASSERT(alignment > 0);
-    AM_ASSERT(AM_IS_POWER_OF_TWO(alignment));
+    AM_ASSERT(AM_IS_POWER_OF_TWO((unsigned)alignment));
     AM_ASSERT(blk);
     AM_ASSERT(blk->ptr);
     AM_ASSERT(blk->size > 0);
@@ -96,7 +96,7 @@ int am_queue_capacity(struct am_queue *hnd) {
     return (hnd->blk.size / hnd->isize) - 1;
 }
 
-int am_queue_isize(struct am_queue *hnd) {
+int am_queue_item_size(struct am_queue *hnd) {
     AM_ASSERT(hnd);
     return hnd->isize;
 }

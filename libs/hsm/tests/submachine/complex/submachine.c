@@ -91,7 +91,7 @@
 
 struct complex_sm {
     struct am_hsm hsm;
-    void (*log)(char *fmt, ...);
+    void (*log)(const char *fmt, ...);
 };
 
 static struct complex_sm m_complex_sm;
@@ -328,7 +328,7 @@ static enum am_hsm_rc complex_sm_init(
     return AM_HSM_TRAN(cs_s1, SM_1);
 }
 
-void complex_sm_ctor(void (*log)(char *fmt, ...)) {
+void complex_sm_ctor(void (*log)(const char *fmt, ...)) {
     struct complex_sm *me = &m_complex_sm;
     am_hsm_ctor(&me->hsm, &AM_HSM_STATE(complex_sm_init));
     me->log = log;

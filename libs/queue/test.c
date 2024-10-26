@@ -54,37 +54,33 @@ static void test_am_queue(const int capacity, const int rdwr_num) {
     if (!rdwr_num) {
         return;
     }
+    AM_ASSERT(rdwr_num > 0);
 
-    for (int i = 0; i < rdwr_num; i++) {
+    for (int i = 1; i <= rdwr_num; i++) {
         bool rc = am_queue_push_back(&q, &i, (int)sizeof(int));
         AM_ASSERT(true == rc);
-        AM_ASSERT(am_queue_length(&q) == (i + 1));
-        AM_ASSERT(am_queue_capacity(&q) >= am_queue_length(&q));
+        AM_ASSERT(am_queue_length(&q) == i);
         AM_ASSERT(!am_queue_is_empty(&q));
     }
 
-    for (int i = 0; i < rdwr_num; i++) {
+    for (int i = 1; i <= rdwr_num; i++) {
         void *ptr = am_queue_pop_front(&q);
         AM_ASSERT(ptr);
-        AM_DISABLE_WARNING(AM_W_NULL_DEREFERENCE)
         AM_ASSERT(i == *(int *)ptr);
-        AM_ENABLE_WARNING(AM_W_NULL_DEREFERENCE)
     }
 
-    for (int i = 0; i < rdwr_num; i++) {
+    for (int i = 1; i <= rdwr_num; i++) {
         bool rc = am_queue_push_front(&q, &i, (int)sizeof(i));
         AM_ASSERT(true == rc);
-        AM_ASSERT(am_queue_length(&q) == (i + 1));
-        AM_ASSERT(am_queue_capacity(&q) >= am_queue_length(&q));
+        AM_ASSERT(am_queue_length(&q) > 0);
+        AM_ASSERT(am_queue_length(&q) == i);
         AM_ASSERT(!am_queue_is_empty(&q));
     }
 
-    for (int i = rdwr_num - 1; i >= 0; i--) {
+    for (int i = rdwr_num; i > 0; i--) {
         void *ptr = am_queue_pop_front(&q);
         AM_ASSERT(ptr);
-        AM_DISABLE_WARNING(AM_W_NULL_DEREFERENCE)
         AM_ASSERT(i == *(int *)ptr);
-        AM_ENABLE_WARNING(AM_W_NULL_DEREFERENCE)
     }
 
     AM_ASSERT(am_queue_length(&q) == 0);

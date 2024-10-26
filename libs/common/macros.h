@@ -57,7 +57,7 @@
 #define AM_ABS(x) (((x) >= 0) ? (x) : -(x))
 
 /** Assert macro */
-#define AM_ASSERT(x) assert(AM_LIKELY(x))
+#define AM_ASSERT(x) AM_LIKELY(x) ? (void)(0) : __builtin_trap()
 
 /** Checks if #x is a power of two */
 #define AM_IS_POWER_OF_TWO(x) (0 == (((x) - 1u) & (x)))

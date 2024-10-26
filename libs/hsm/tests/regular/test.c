@@ -36,7 +36,7 @@
 
 static char m_regular_log_buf[256];
 
-void test_log(char *fmt, ...) {
+static void test_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(m_regular_log_buf, (int)sizeof(m_regular_log_buf), fmt, ap);

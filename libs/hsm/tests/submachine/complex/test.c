@@ -35,7 +35,7 @@
 
 static char m_complex_sm_log_buf[256];
 
-void cpl_test_log(char *fmt, ...) {
+static void cpl_test_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(
