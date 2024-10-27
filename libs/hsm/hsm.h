@@ -168,9 +168,9 @@ struct am_hsm {
     am_hsm_spy_fn spy;
 #endif
     /** instance of active state */
-    char istate : 8;
+    char istate;
     /** instance of temporary state during transitions & event processing */
-    char itemp : 8;
+    char itemp;
 };
 
 /**
