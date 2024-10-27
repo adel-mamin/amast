@@ -25,7 +25,7 @@
 
 /**
  * @file
- * timer API implementation
+ * Timer API implementation.
  */
 
 #include <string.h>
@@ -51,7 +51,7 @@ static struct timer m_timer;
 
 void am_timer_ctor(const struct am_timer_cfg *cfg) {
     AM_ASSERT(cfg);
-    AM_ASSERT(cfg->post);
+    AM_ASSERT(cfg->post || cfg->publish);
 
     memset(&m_timer, 0, sizeof(m_timer));
     for (int i = 0; i < AM_COUNTOF(m_timer.domains); ++i) {
@@ -62,7 +62,7 @@ void am_timer_ctor(const struct am_timer_cfg *cfg) {
 
 void am_timer_event_ctor(struct am_event_timer *event, int id, int domain) {
     AM_ASSERT(event);
-    AM_ASSERT(id > 0);
+    AM_ASSERT(id >= AM_EVT_USER);
     AM_ASSERT(domain < AM_TICK_DOMAIN_MAX);
 
     memset(event, 0, sizeof(*event));
@@ -77,11 +77,17 @@ void am_timer_arm(
     struct timer *me = &m_timer;
 
     AM_ASSERT(event);
+    AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
     /* make sure it wasn't already armed */
     AM_ASSERT(!am_dlist_item_is_linked(&event->item));
     AM_ASSERT(event->event.id > 0);
     AM_ASSERT(event->event.tick_domain < AM_COUNTOF(me->domains));
     AM_ASSERT(ticks >= 0);
+    if (owner) {
+        AM_ASSERT(me->cfg.post);
+    } else {
+        AM_ASSERT(me->cfg.publish);
+    }
 
     event->owner = owner;
     event->shot_in_ticks = ticks;

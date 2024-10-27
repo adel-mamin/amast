@@ -36,7 +36,7 @@
 
 /**
  * Returns number of elements in the array.
- * Note two triks:
+ * Note two tricks:
  * 1. putting the array name in the index operator ('[]') instead of the 0.
  *    This is done in case the macro is mistakenly used in C++ code
  *    with an item that overloads operator[]().

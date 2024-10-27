@@ -37,6 +37,7 @@ extern "C" {
 /** Timer module configuration. */
 struct am_timer_cfg {
     /** either post or publish callback must be non-NULL */
+
     /**
      * Expired events are posted using this callback.
      * Posting is one-to-one event delivery mechanism.
@@ -47,7 +48,12 @@ struct am_timer_cfg {
      * Publishing is one-to-many event delivery mechanism.
      */
     void (*publish)(const struct am_event *event);
-    /* optional, can be NULL */
+    /**
+     * Custom update the content of the event.
+     * Optional, can be NULL.
+     * @param event  the event to update
+     * @return the updated event
+     */
     struct am_event_timer *(*update)(struct am_event_timer *event);
 };
 
@@ -89,13 +95,16 @@ void am_timer_event_ctor(struct am_event_timer *event, int id, int domain);
 
 /**
  * Tick timer.
+ *
  * Update all armed timers and fire expired timer events.
- * @param domain only tick timers in this tick domain
+ *
+ * @param domain  only tick timers in this tick domain
  */
 void am_timer_tick(int domain);
 
 /**
  * Send timer event to owner in specified number of ticks.
+ *
  * @param event     the timer event to arm
  * @param owner     the timer event's owner that gets the posted event.
  *                  Can be NULL, in which case the time event is published.
