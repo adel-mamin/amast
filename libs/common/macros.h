@@ -116,7 +116,7 @@
         ret__;                                  \
     })
 
-/** Example: int i = 0; DO_EVERY(2, i++;);
+/** Example: int i = 0; AM_DO_EVERY(2, i++;);
     call N | i
     -------+--
     0      | 0
@@ -134,7 +134,7 @@
         }                          \
     } while (0)
 
-/** Example: int i = 0; DO_ONCE(2, i++;);
+/** Example: int i = 0; AM_DO_ONCE(2, i++;);
     call N | i
     -------+--
     0      | 1
@@ -153,14 +153,26 @@
 
 #define AM_DO_EACH_MS(ms, cmd)                    \
     do {                                          \
-        static struct timer timer__ = TIMER_INIT; \
-        if (!timer_armed(&timer__)) {             \
-            timer_arm_timeout_ms(&timer__, (ms)); \
+        if ((ms) < 0) {                           \
+            break;                                \
         }                                         \
-        if (timer_expired(&timer__)) {            \
-            timer_arm_timeout_ms(&timer__, (ms)); \
-            cmd;                                  \
+        uint32_t now_ms__ = am_pal_time_get_ms(); \
+        static uint32_t prev_ms__ = 0;            \
+        static char armed__ = 0;                  \
+        static int elapsed_ms__ = 0;              \
+        if (!armed__) {                           \
+            prev_ms__ = now_ms__;                 \
+            armed__ = 1;                          \
+            /* run cmd the first time around */   \
+            elapsed_ms__ = ms;                    \
         }                                         \
+        elapsed_ms__ += now_ms__ - prev_ms__;     \
+        prev_ms__ = now_ms__;                     \
+        if (elapsed_ms__ < (ms)) {                \
+            break;                                \
+        }                                         \
+        elapsed_ms__ = 0;                         \
+        cmd                                       \
     } while (0)
 
 #define AM_DOUBLE_EQ(d1, d2, tolerance) (fabs((d1) - (d2)) <= (tolerance))
