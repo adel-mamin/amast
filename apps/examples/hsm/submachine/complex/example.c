@@ -44,9 +44,9 @@ static void test_log(const char *fmt, ...) {
     va_end(ap);
 }
 
-static void test_print(char c) {
+static void test_print(int c) {
     printf(AM_COLOR_YELLOW_BOLD);
-    printf("%c", c);
+    printf("%c", (char)c);
     printf(AM_COLOR_RESET);
     printf(": %s\n", m_log_buf);
 }
@@ -75,7 +75,7 @@ int main(void) {
     };
 
     for (;;) {
-        char c = getchar();
+        int c = getchar();
         /* move the cursor up one line */
         printf("\033[A\r");
         if ('\n' == c) {
@@ -84,7 +84,7 @@ int main(void) {
         printf("\r");
         printf("%s", blank);
 
-        char n = getchar();
+        int n = getchar();
         while (n != '\n') {
             printf("%s", blank);
             n = getchar();

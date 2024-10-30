@@ -31,6 +31,7 @@
 #define QUEUE_H_INCLUDED
 
 #include <stdbool.h>
+#include "blk/blk.h"
 
 #ifdef __cplusplus
 extern "C" {

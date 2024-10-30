@@ -123,6 +123,7 @@ RUN_CLANG_TIDY = find_program('run-clang-tidy', required: false, disabler: true)
 CPPCHECK = find_program('cppcheck', required: false, disabler: true)
 FIND = find_program('find', required: false, disabler: true)
 PYTHON = find_program('python3')
+IWYU = find_program('include-what-you-use', required: false, disabler: true)
 
 unit_test = get_option('unit_test')
 
@@ -193,5 +194,25 @@ run_target(
         '--suppress=*:/opt/*',
         '--suppress=*:/usr/*',
         '--project=@0@'.format(meson.project_build_root() / 'compile_commands.json')
+    ],
+)
+
+run_target(
+    'iwyu',
+    command: [
+        PYTHON,
+        '../.pixi/envs/default/bin/iwyu_tool.py',
+        '-j',
+        '@0@'.format(run_command('nproc', check: true).stdout().strip()),
+        '-p',
+        meson.project_build_root(),
+        files_to_check,
+        '--',
+        '-Xiwyu',
+        '--error=1',
+        '-Xiwyu',
+        '--no_comments',
+        '-Xiwyu',
+        '--no_fwd_decls'
     ],
 )

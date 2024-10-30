@@ -30,10 +30,9 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <limits.h>
 #include <string.h>
 
-#include "common/compiler.h"
+#include "common/compiler.h" /* IWYU pragma: keep */
 #include "common/macros.h"
 #include "common/alignment.h"
 #include "blk/blk.h"

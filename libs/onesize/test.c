@@ -28,8 +28,6 @@
  */
 
 #include <stddef.h>
-#include <stdint.h>
-#include <assert.h>
 
 #include "common/compiler.h"
 #include "common/macros.h"

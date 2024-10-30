@@ -100,7 +100,7 @@ static bool calc_set_event_id(struct calc_event *e, char c) {
     return true;
 }
 
-static void calc_log(char *fmt, ...) { (void)fmt; }
+static void calc_log(const char *fmt, ...) { (void)fmt; }
 
 int main(void) {
     calc_ctor(calc_log);
@@ -116,12 +116,12 @@ int main(void) {
     static const char *blank = " ";
 
     for (;;) {
-        char c = getchar();
+        int c = getchar();
         if ('\n' == c) {
             printf("\033[A\r"); /* move the cursor up one line */
             continue;
         }
-        char n = getchar();
+        int n = getchar();
         if (EOF == c) {
             am_hsm_dispatch(g_calc, &(struct am_event){.id = EVT_OFF});
             goto end;
@@ -145,8 +145,8 @@ int main(void) {
             am_hsm_dispatch(g_calc, &(struct am_event){.id = EVT_OFF});
             goto end;
         }
-        struct calc_event e = {.data = c};
-        bool valid = calc_set_event_id(&e, c);
+        struct calc_event e = {.data = (char)c};
+        bool valid = calc_set_event_id(&e, (char)c);
         if (!valid) {
             continue;
         }

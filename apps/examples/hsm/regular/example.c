@@ -37,16 +37,16 @@
 
 static char m_regular_log_buf[256];
 
-void test_log(char *fmt, ...) {
+void test_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(m_regular_log_buf, (int)sizeof(m_regular_log_buf), fmt, ap);
     va_end(ap);
 }
 
-static void test_print(char c) {
+static void test_print(int c) {
     printf(AM_COLOR_YELLOW_BOLD);
-    printf("%c", c);
+    printf("%c", (char)c);
     printf(AM_COLOR_RESET);
     printf(": %s\n", m_regular_log_buf);
 }
@@ -76,7 +76,7 @@ int main(void) {
     };
 
     for (;;) {
-        char c = getchar();
+        int c = getchar();
         /* move the cursor up one line */
         printf("\033[A\r");
         if ('\n' == c) {
@@ -85,7 +85,7 @@ int main(void) {
         printf("\r");
         printf("%s", blank);
 
-        char n = getchar();
+        int n = getchar();
         while (n != '\n') {
             printf("%s", blank);
             n = getchar();

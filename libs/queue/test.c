@@ -27,15 +27,11 @@
  * Queue API unit tests.
  */
 
-#include <stddef.h>
-#include <stdint.h>
 #include <stdbool.h>
-#include <limits.h>
-#include <string.h>
 
-#include "common/compiler.h"
-#include "common/macros.h"
+#include "common/compiler.h" /* IWYU pragma: keep */
 #include "blk/blk.h"
+#include "common/macros.h"
 #include "queue/queue.h"
 
 static void test_am_queue(const int capacity, const int rdwr_num) {

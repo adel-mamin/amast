@@ -27,6 +27,7 @@
  * Doubly linked list unit tests.
  */
 
+#include <stdbool.h>
 #include <stddef.h>
 
 #include "common/compiler.h"

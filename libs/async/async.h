@@ -45,8 +45,8 @@ extern "C" {
 
 /** Async function return codes */
 enum am_async_rc {
-    AM_ASYNC_RC_DONE = -2,      /**< Async function is done */
-    AM_ASYNC_RC_BUSY = -1       /**< Async function is busy */
+    AM_ASYNC_RC_DONE = -2, /**< Async function is done */
+    AM_ASYNC_RC_BUSY = -1  /**< Async function is busy */
 };
 
 /** Async state */
