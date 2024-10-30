@@ -87,8 +87,10 @@ Enumerations
 
   Defines return codes used in async functions:
 
-  - **AM_ASYNC_RC_DONE**: Indicates that the async function has completed successfully.
-  - **AM_ASYNC_RC_BUSY**: Indicates that the async function is still busy and should be re-entered later.
+  - **AM_ASYNC_RC_DONE**: Indicates that the async function has
+    completed successfully.
+  - **AM_ASYNC_RC_BUSY**: Indicates that the async function is still
+    busy and should be re-entered later.
 
 Usage Example
 =============
@@ -99,11 +101,16 @@ The following example demonstrates how to use this async implementation in C.
 
     #include "async.h"
 
-    int async_function(struct am_async *me) {
+    struct my_async {
+        struct am_async async;
+        int foo;
+    };
+
+    int async_function(struct my_async *me) {
         AM_ASYNC_BEGIN(me);
 
         /* Await some condition before continuing */
-        AM_ASYNC_AWAIT(some_condition());
+        AM_ASYNC_AWAIT(me->foo);
 
         /* Yield control back to the caller */
         AM_ASYNC_YIELD();
@@ -121,10 +128,10 @@ The following example demonstrates how to use this async implementation in C.
     }
 
     int main() {
-        struct am_async async;
-        am_async_init(&async);
+        struct my_async me;
+        am_async_init(&me);
 
-        while (async_function(&async) == AM_ASYNC_RC_BUSY) {
+        while (async_function(&me) == AM_ASYNC_RC_BUSY) {
             /* Perform other work while async function is busy */
         }
 
@@ -134,5 +141,8 @@ The following example demonstrates how to use this async implementation in C.
 Notes
 =====
 
-- Avoid using switch-case constructs withing asynchronous function using the macros
+- Avoid using switch-case constructs withing asynchronous function
+  using the macros
+- Keep the variables that should preserve their values across async
+  function calls in a state stored outside of the async function.
 - See `test.c` for usage examples
