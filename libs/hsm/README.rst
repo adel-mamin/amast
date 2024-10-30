@@ -380,3 +380,13 @@ calling **am_hsm_get_state_instance()** API.
 
 The complete implementation of the given submachine example can be found
 in **test/submachine/basic/test.c**
+
+It is useful sometimes to instantiate a standalone submachine for the purpose
+of unit testing, for example. To achieve this the transition tables outside of
+the submachine must be extended with one more instance pointing to unit test
+state(s). The extra instance then can be instantiated as a substate of
+a unit test state machine(s).
+
+A submachine (sub)state can also be a superstate of itself, which creates
+a recursion. The example of the submachines recursion can be seen in
+**tests/submachine/complex/submachine.c**.
