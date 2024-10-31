@@ -31,6 +31,7 @@
 #include <unistd.h>
 
 #include "libs/common/macros.h"
+#include "libs/strlib/strlib.h"
 
 #define DB_FILES_MAX 256
 #define MAX_INCLUDES_NUM 256
@@ -70,20 +71,20 @@ static void include_add_unique(
     char arr[MAX_INCLUDES_NUM][PATH_MAX], int *arr_size, const char *inc_file
 ) {
     if (include_is_unique(arr, *arr_size, inc_file)) {
-        strcpy(arr[*arr_size], inc_file);
+        str_lcpy(arr[*arr_size], inc_file, sizeof(arr[*arr_size]));
         (*arr_size)++;
     }
 }
 
 /* process a line and detect #include directives */
-static void process_content(struct files *db, char *line) {
-    char inc_file[PATH_MAX];
-    if (sscanf(line, "#include <%[^>]>%*s", inc_file) == 1) {
+static void process_content(struct files *db, const char *line) {
+    char inc_file[PATH_MAX + 1];
+    if (sscanf(line, "#include <%[^>]>%256*s", inc_file) == 1) {
         include_add_unique(db->includes_std, &db->includes_std_num, inc_file);
-    } else if (sscanf(line, "#include \"%[^\"]\"%*s", inc_file) == 1) {
+    } else if (sscanf(line, "#include \"%[^\"]\"%256*s", inc_file) == 1) {
         /* ignore user includes */;
     } else { /* non-include line */
-        strcat(db->content[db->len], line);
+        str_lcat(db->content[db->len], line, sizeof(db->content[db->len]));
     }
 }
 
@@ -206,7 +207,7 @@ static void file_append(
     convert_fname_to_fn_name(src_fname, fn_name);
     char buffer[2 * PATH_MAX];
     snprintf(buffer, sizeof(buffer), "static int %s(void) {\n", fn_name);
-    strcpy(tests[*ntests], fn_name);
+    str_lcpy(tests[*ntests], fn_name, sizeof(tests[*ntests]));
     (*ntests)++;
     *pos = '\0';
     fputs(src, dst);
@@ -242,7 +243,7 @@ static void add_amast_description(
     fprintf(f, "\n");
 }
 
-static void add_amast_includes_std(FILE *f, struct files *db) {
+static void add_amast_includes_std(FILE *f, const struct files *db) {
     for (int i = 0; i < db->includes_std_num; ++i) {
         fprintf(f, "#include <%s>\n", db->includes_std[i]);
     }

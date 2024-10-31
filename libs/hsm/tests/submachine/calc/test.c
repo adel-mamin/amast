@@ -50,6 +50,7 @@ static void test_calc(void) {
 
     am_hsm_init(g_calc, /*init_event=*/NULL);
 
+    /* NOLINTBEGIN(clang-analyzer-optin.performance.Padding) */
     struct test {
         int event;
         char event_data;
@@ -57,6 +58,7 @@ static void test_calc(void) {
         const char *data[2];
         char op;
     };
+    /* NOLINTEND(clang-analyzer-optin.performance.Padding) */
     static const struct test in[] = {
         /* clang-format off */
         [0] = {EVT_DIGIT_0,  '\0', "on-0;", {"0", ""}, '\0'},

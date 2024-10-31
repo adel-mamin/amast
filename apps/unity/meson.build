@@ -32,7 +32,7 @@ files_txt = configure_file(
 
 amast_exe = executable(
     'amast-unity',
-    'unity.c',
+    ['unity.c', str_src],
     c_args: ['-std=gnu99', '-ggdb', '-fno-lto'],
     include_directories: libs_inc
 )
