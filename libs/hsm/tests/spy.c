@@ -24,13 +24,13 @@
 
 #include <stddef.h>
 #include <string.h>
+#include <stdarg.h>
+/* IWYU pragma: no_include <__stdarg_va_arg.h> */
 
-#include "common/compiler.h"
 #include "common/macros.h"
-#include "common/types.h"
+#include "event/event.h"
 #include "strlib/strlib.h"
 #include "hsm/hsm.h"
-#include "common.h"
 
 struct test_spy {
     struct am_hsm hsm;

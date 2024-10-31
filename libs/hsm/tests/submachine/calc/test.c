@@ -22,17 +22,16 @@
  * SOFTWARE.
  */
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
+#include <math.h> /* IWYU pragma: keep */
+/* IWYU pragma: no_include <__stdarg_va_arg.h> */
 
-#include "common/compiler.h"
 #include "common/macros.h"
-#include "common/types.h"
 #include "strlib/strlib.h"
 #include "blk/blk.h"
 #include "hsm/hsm.h"
-#include "common.h"
 #include "calc.h"
 
 /** calculator test */

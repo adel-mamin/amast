@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-#include "common/compiler.h"
+#include "common/compiler.h" /* IWYU pragma: keep */
 #include "common/macros.h"
 #include "crc/crc.h"
 

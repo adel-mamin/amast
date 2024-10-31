@@ -29,8 +29,8 @@
  * String utilities unit tests.
  */
 
-#include <limits.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <math.h>
 #include <string.h>
 

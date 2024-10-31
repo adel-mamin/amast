@@ -30,9 +30,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "common/compiler.h"
 #include "common/macros.h"
-#include "common/types.h"
 #include "hsm/hsm.h"
 
 /** the maximum depth of HSM hierarchy */

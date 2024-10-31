@@ -1,9 +1,9 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017,2019-2021 Adel Mamin
- * Copyright (c) 2017 Martin Sustrik
- * Copyright (c) 2008, 2009, 2010, 2012, 2013, 2014, 2015  William Ahern
+ * Copyright (c) Adel Mamin
+ * Copyright (c) Martin Sustrik
+ * Copyright (c) William Ahern
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,18 +30,15 @@
  */
 
 #include <string.h>
-#include <assert.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <stdbool.h>
 #include <errno.h>
 #include <stdio.h>
 #include <ctype.h>
-#include <float.h>
-#include <math.h>
 #include <stdarg.h>
 #include <complex.h>
+/* IWYU pragma: no_include <__stdarg_va_arg.h> */
 
 #include "common/macros.h"
 #include "common/compiler.h"
@@ -423,7 +420,7 @@ int str_lcatf(char *dst, int lim, const char *fmt, ...) {
     return (int)len;
 }
 
-AM_DISABLE_WARNING(AM_W_SUGGEST_ATTRIBUTE_FORMAT)
+AM_DISABLE_WARNING_SUGGEST_ATTRIBUTE_FORMAT()
 int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap) {
     AM_ASSERT(dst);
     AM_ASSERT(lim > 0);
@@ -432,13 +429,15 @@ int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap) {
     long len = (int)strlen(dst);
     AM_ASSERT(len <= lim);
 
+    AM_DISABLE_WARNING(AM_W_FORMAT_NONLITERAL);
     len += vsnprintf(dst + len, (size_t)(lim - len), fmt, ap); /* NOLINT */
+    AM_ENABLE_WARNING(AM_W_FORMAT_NONLITERAL);
 
     AM_ASSERT(len <= INT_MAX);
 
     return (int)len;
 }
-AM_ENABLE_WARNING(AM_W_SUGGEST_ATTRIBUTE_FORMAT)
+AM_ENABLE_WARNING_SUGGEST_ATTRIBUTE_FORMAT()
 
 char *str_sep(char **sp, const char *delim) {
     AM_ASSERT(sp);

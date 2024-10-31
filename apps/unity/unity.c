@@ -26,13 +26,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
-#include <linux/limits.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "libs/common/macros.h"
-#include "libs/blk/blk.h"
 
 #define DB_FILES_MAX 256
 #define MAX_INCLUDES_NUM 256

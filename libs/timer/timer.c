@@ -29,9 +29,9 @@
  */
 
 #include <string.h>
-#include <stdint.h>
 #include <stddef.h>
 
+#include "common/macros.h"
 #include "dlist/dlist.h"
 #include "timer/timer.h"
 

@@ -27,13 +27,11 @@
  * Singly linked list implementation.
  */
 
-#include <assert.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <limits.h>
 
+#include "common/compiler.h" /* IWYU pragma: keep */
 #include "common/macros.h"
-#include "common/compiler.h"
 #include "slist/slist.h"
 
 void am_slist_init(struct am_slist *hnd) {

@@ -24,10 +24,10 @@
 
 #include <stdio.h>
 #include <string.h>
+/* IWYU pragma: no_include <__stdarg_va_arg.h> */
 
-#include "common/compiler.h"
 #include "common/macros.h"
-#include "common/types.h"
+#include "event/event.h"
 #include "strlib/strlib.h"
 #include "hsm/hsm.h"
 #include "common.h"

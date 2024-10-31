@@ -29,9 +29,10 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
+
 #include "common/compiler.h"
 #include "event/event.h"
-#include "common/macros.h"
 #include "dlist/dlist.h"
 
 /** Timer module configuration. */

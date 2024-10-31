@@ -30,8 +30,8 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "common/compiler.h"
 #include "common/macros.h"
+#include "event/event.h"
 #include "timer/timer.h"
 
 #define EVT_TEST AM_EVT_USER

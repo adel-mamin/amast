@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2024 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +22,7 @@
  * SOFTWARE.
  */
 
-#include <assert.h>
-#include <string.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <stdbool.h>
-#include <stdio.h>
-
-#include "common/compiler.h"
+#include "common/compiler.h" /* IWYU pragma: keep */
 #include "common/macros.h"
 #include "blk/blk.h"
 

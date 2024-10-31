@@ -30,6 +30,9 @@
 #ifndef ONESIZE_H_INCLUDED
 #define ONESIZE_H_INCLUDED
 
+#include "blk/blk.h"
+#include "slist/slist.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

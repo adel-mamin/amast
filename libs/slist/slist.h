@@ -36,8 +36,6 @@
 extern "C" {
 #endif
 
-struct am_slist_item;
-
 /**
  * Singly linked item.
  * There are at least two ways to make an arbitrary structure `struct foo`

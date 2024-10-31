@@ -22,14 +22,10 @@
  * SOFTWARE.
  */
 
-#include <stdio.h>
-#include <string.h>
-
-#include "common/compiler.h"
 #include "common/macros.h"
-#include "common/types.h"
 #include "hsm/hsm.h"
 #include "common.h"
+#include "event/event.h"
 #include "submachine.h"
 
 /**

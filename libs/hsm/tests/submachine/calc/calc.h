@@ -25,6 +25,12 @@
 #ifndef CALC_H_INCLUDED
 #define CALC_H_INCLUDED
 
+#include <stdbool.h>
+
+#include "blk/blk.h"
+#include "event/event.h"
+#include "hsm/hsm.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -42,8 +48,6 @@ struct calc_event {
     struct am_event event;
     char data;
 };
-
-struct calc;
 
 extern struct am_hsm *g_calc;
 

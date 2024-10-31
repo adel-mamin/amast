@@ -22,13 +22,10 @@
  * SOFTWARE.
  */
 
-#include <assert.h>
-#include <limits.h>
-#include <stddef.h>
 #include <string.h>
 
 #include "common/macros.h"
-#include "common/compiler.h"
+#include "common/compiler.h" /* IWYU pragma: keep */
 
 #include "async.h"
 
@@ -147,7 +144,9 @@ static enum am_async_rc am_async_exit(struct am_async *me, int *state) {
     AM_ASYNC_BEGIN(me);
     (*state) = 1;
     AM_ASYNC_EXIT();
+    AM_DISABLE_WARNING(AM_W_UNREACHABLE_CODE);
     (*state) = 2;
+    AM_ENABLE_WARNING(AM_W_UNREACHABLE_CODE);
     AM_ASYNC_END();
 }
 

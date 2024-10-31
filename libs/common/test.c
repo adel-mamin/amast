@@ -28,11 +28,7 @@
  */
 
 #include <stdint.h>
-#include <stddef.h>
-#include <assert.h>
-#include <limits.h>
-#include <stdio.h>
-#include <stdbool.h>
+#include <stddef.h>/* IWYU pragma: keep */
 
 #include "common/compiler.h"
 #include "common/macros.h"

@@ -25,16 +25,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include <math.h>
 #include <ctype.h>
 
-#include "common/compiler.h"
-#include "common/macros.h"
 #include "common/constants.h"
-#include "common/types.h"
 #include "blk/blk.h"
+#include "event/event.h"
 #include "hsm/hsm.h"
-#include "common.h"
 #include "calc.h"
 
 /** calculator example */

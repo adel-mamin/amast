@@ -23,12 +23,11 @@
  */
 
 #include <stdio.h>
-#include <string.h>
+/* IWYU pragma: no_include <__stdarg_va_arg.h> */
 
-#include "common/compiler.h"
 #include "common/constants.h"
 #include "common/macros.h"
-#include "common/types.h"
+#include "event/event.h"
 #include "strlib/strlib.h"
 #include "hsm/hsm.h"
 #include "common.h"
@@ -37,7 +36,7 @@
 
 static char m_regular_log_buf[256];
 
-void test_log(const char *fmt, ...) {
+static void test_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(m_regular_log_buf, (int)sizeof(m_regular_log_buf), fmt, ap);

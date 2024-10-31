@@ -36,6 +36,9 @@
 #include <complex.h>
 #include <stdarg.h>
 #include <inttypes.h>
+#include <stdbool.h>
+
+#include "common/compiler.h"
 
 /**
  * Compare two strings in a case insensitive manner.

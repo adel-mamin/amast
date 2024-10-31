@@ -35,6 +35,8 @@
 #define HSM_H_INCLUDED
 
 #include <stdbool.h>
+
+#include "common/compiler.h"
 #include "event/event.h"
 
 #ifdef __cplusplus

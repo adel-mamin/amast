@@ -24,11 +24,8 @@
 
 #include <stddef.h>
 
-#include "common/compiler.h"
-#include "common/macros.h"
-#include "common/types.h"
+#include "event/event.h"
 #include "hsm/hsm.h"
-#include "common.h"
 
 struct test_dtor {
     struct am_hsm hsm;

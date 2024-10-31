@@ -28,13 +28,9 @@
 #include <stdbool.h>
 #include <math.h>
 
-#include "common/compiler.h"
 #include "common/macros.h"
-#include "common/types.h"
 #include "blk/blk.h"
 #include "hsm/hsm.h"
-#include "common.h"
-
 #include "calc.h"
 
 /** calculator example */

@@ -27,13 +27,11 @@
  * Singly linked list unit tests.
  */
 
-#include <assert.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <limits.h>
 
+#include "common/compiler.h" /* IWYU pragma: keep */
 #include "common/macros.h"
-#include "common/compiler.h"
 #include "slist/slist.h"
 
 static struct am_slist slist;

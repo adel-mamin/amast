@@ -37,15 +37,15 @@
 #define AM_ALIGN_MAX 16
 #endif
 
-/** Alignment of a type */
-#define AM_ALIGNOF(type)     \
-    ((int)offsetof(          \
-        struct {             \
-            unsigned char c; \
-            type d;          \
-        },                   \
-        d                    \
-    ))
+#define AM_ALIGNOF(type)                         \
+    AM_DISABLE_WARNING_GNU_OFFSETOF_EXTENSIONS() \
+    ((int)offsetof(                              \
+        struct {                                 \
+            char c;                              \
+            type d;                              \
+        },                                       \
+        d                                        \
+    )) AM_ENABLE_WARNING_GNU_OFFSETOF_EXTENSIONS()
 
 #define AM_ALIGNOF_PTR(ptr) \
     (1U << (unsigned)__builtin_ctz(AM_CAST(unsigned, ptr)))
