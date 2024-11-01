@@ -48,8 +48,10 @@ struct files {
 
 struct db {
     struct files src;
+    struct files src_test;
     struct files hdr;
-    const char *odir; /* amast.h and amast.c are placed here */
+    struct files hdr_test;
+    const char *odir; /* amast(-test).h and amast(-test).c are placed here */
 };
 
 static struct db m_db = {.src.len = 0, .hdr.len = 0};
@@ -127,15 +129,27 @@ static void db_init(struct db *db, const char *db_fname, const char *odir) {
         fname[strcspn(fname, "\n")] = 0;
 
         if (strstr(fname, ".c") != NULL) {
-            assert(db->src.len < AM_COUNTOF(db->src.content));
-            read_file(&db->src, fname);
-            db->src.len++;
+            if (strstr(fname, "test") != NULL) {
+                assert(db->src_test.len < AM_COUNTOF(db->src_test.content));
+                read_file(&db->src_test, fname);
+                db->src_test.len++;
+            } else {
+                assert(db->src.len < AM_COUNTOF(db->src.content));
+                read_file(&db->src, fname);
+                db->src.len++;
+            }
             continue;
         }
         if (strstr(fname, ".h") != NULL) {
-            assert(db->hdr.len < AM_COUNTOF(db->hdr.content));
-            read_file(&db->hdr, fname);
-            db->hdr.len++;
+            if (strstr(fname, "test") != NULL) {
+                assert(db->hdr_test.len < AM_COUNTOF(db->hdr_test.content));
+                read_file(&db->hdr_test, fname);
+                db->hdr_test.len++;
+            } else {
+                assert(db->hdr.len < AM_COUNTOF(db->hdr.content));
+                read_file(&db->hdr, fname);
+                db->hdr.len++;
+            }
             continue;
         }
         assert(0);
@@ -151,9 +165,21 @@ static void db_init(struct db *db, const char *db_fname, const char *odir) {
         compare_includes
     );
     qsort(
+        db->src_test.includes_std,
+        (size_t)db->src_test.includes_std_num,
+        sizeof(db->src_test.includes_std[0]),
+        compare_includes
+    );
+    qsort(
         db->hdr.includes_std,
         (size_t)db->hdr.includes_std_num,
         sizeof(db->hdr.includes_std[0]),
+        compare_includes
+    );
+    qsort(
+        db->hdr_test.includes_std,
+        (size_t)db->hdr_test.includes_std_num,
+        sizeof(db->hdr_test.includes_std[0]),
         compare_includes
     );
 }
@@ -202,7 +228,7 @@ static void file_append(
      */
     const char *main_fn = "int main(void) {";
     char *pos = strstr(src, main_fn);
-    if (!pos) {
+    if (!pos || !ntests || !tests) {
         fputs(src, dst);
         return;
     }
@@ -253,20 +279,14 @@ static void add_amast_includes_std(FILE *f, const struct files *db) {
     fprintf(f, "\n");
 }
 
-static void create_amast_files(struct db *db) {
-    char amast_h[PATH_MAX];
-    snprintf(amast_h, sizeof(amast_h), "%s/amast.h", db->odir);
-    FILE *hdr_file = fopen(amast_h, "w");
+static void create_amast_h_file(
+    struct db *db, int *ntests, char (*tests)[PATH_MAX]
+) {
+    char fname[PATH_MAX];
+    snprintf(fname, sizeof(fname), "%s/amast.h", db->odir);
+    FILE *hdr_file = fopen(fname, "w");
     if (!hdr_file) {
-        fprintf(stderr, "Failed to create %s\n", amast_h);
-        exit(EXIT_FAILURE);
-    }
-    char amast_c[PATH_MAX];
-    snprintf(amast_c, sizeof(amast_c), "%s/amast.c", db->odir);
-    FILE *src_file = fopen(amast_c, "w");
-    if (!src_file) {
-        fprintf(stderr, "Failed to create %s\n", amast_c);
-        fclose(hdr_file);
+        fprintf(stderr, "Failed to create %s\n", fname);
         exit(EXIT_FAILURE);
     }
 
@@ -274,77 +294,154 @@ static void create_amast_files(struct db *db) {
     fprintf(hdr_file, "#define AMAST_H_INCLUDED\n");
     fprintf(hdr_file, "\n");
 
-    add_amast_description(hdr_file, "header", &m_db.hdr);
-    add_amast_includes_std(hdr_file, &m_db.hdr);
+    add_amast_description(hdr_file, "header", &db->hdr);
+    add_amast_includes_std(hdr_file, &db->hdr);
 
     fprintf(hdr_file, "#ifdef AMAST_UNIT_TESTS\n");
     fprintf(hdr_file, "#undef AM_HSM_SPY\n");
     fprintf(hdr_file, "#define AM_HSM_SPY\n");
     fprintf(hdr_file, "#endif /* AMAST_UNIT_TESTS */ \n");
 
-    char tests[32][PATH_MAX];
-    int ntests = 0;
     /* Copy content of all header files to amast.h */
     for (int i = 0; i < db->hdr.len; i++) {
-        assert(ntests < (AM_COUNTOF(tests) - 1));
         fprintf(hdr_file, "\n/* %s */\n\n", get_repo_fname(db->hdr.fnames[i]));
         file_append(
-            db->hdr.content[i], db->hdr.fnames[i], hdr_file, &ntests, tests
+            db->hdr.content[i], db->hdr.fnames[i], hdr_file, ntests, tests
         );
     }
 
     fprintf(hdr_file, "\n");
     fprintf(hdr_file, "#endif /* AMAST_H_INCLUDED */\n");
 
-    add_amast_description(src_file, "source", &m_db.src);
+    fclose(hdr_file);
+}
 
-    add_amast_includes_std(src_file, &m_db.src);
+static void create_amast_test_h_file(
+    struct db *db, int *ntests, char (*tests)[PATH_MAX]
+) {
+    char fname[PATH_MAX];
+    snprintf(fname, sizeof(fname), "%s/amast_test.h", db->odir);
+    FILE *hdr_file = fopen(fname, "w");
+    if (!hdr_file) {
+        fprintf(stderr, "Failed to create %s\n", fname);
+        exit(EXIT_FAILURE);
+    }
+
+    fprintf(hdr_file, "#ifndef AMAST_TEST_H_INCLUDED\n");
+    fprintf(hdr_file, "#define AMAST_TEST_H_INCLUDED\n");
+    fprintf(hdr_file, "\n");
+
+    add_amast_description(hdr_file, "header", &db->hdr_test);
+    add_amast_includes_std(hdr_file, &db->hdr_test);
+
+    /* Copy content of all header files to amast.h */
+    for (int i = 0; i < db->hdr_test.len; i++) {
+        fprintf(
+            hdr_file, "\n/* %s */\n\n", get_repo_fname(db->hdr_test.fnames[i])
+        );
+        file_append(
+            db->hdr_test.content[i],
+            db->hdr_test.fnames[i],
+            hdr_file,
+            ntests,
+            tests
+        );
+    }
+
+    fprintf(hdr_file, "\n");
+    fprintf(hdr_file, "#endif /* AMAST_TEST_H_INCLUDED */\n");
+
+    fclose(hdr_file);
+}
+
+static void create_amast_c_file(
+    struct db *db, int *ntests, char (*tests)[PATH_MAX]
+) {
+    char fname[PATH_MAX];
+    snprintf(fname, sizeof(fname), "%s/amast.c", db->odir);
+    FILE *src_file = fopen(fname, "w");
+    if (!src_file) {
+        fprintf(stderr, "Failed to create %s\n", fname);
+        exit(EXIT_FAILURE);
+    }
+
+    add_amast_description(src_file, "source", &db->src);
+
+    add_amast_includes_std(src_file, &db->src);
     fprintf(src_file, "#include \"amast.h\"\n");
     fprintf(src_file, "\n");
 
     /* Copy content of all source files to amast.c */
     for (int i = 0; i < db->src.len; i++) {
         fprintf(src_file, "/* %s */\n", get_repo_fname(db->src.fnames[i]));
-        assert(ntests < (AM_COUNTOF(tests) - 1));
-        if (strstr(db->src.fnames[i], "test") != NULL) {
-            fprintf(src_file, "\n");
-            fprintf(src_file, "#ifdef AMAST_UNIT_TESTS\n");
-            fprintf(src_file, "\n");
-            file_append(
-                db->src.content[i], db->src.fnames[i], src_file, &ntests, tests
-            );
-            fprintf(src_file, "\n");
-            fprintf(src_file, "#endif /* AMAST_UNIT_TESTS */\n");
-            fprintf(src_file, "\n");
-            continue;
-        }
+        assert(*ntests < (AM_COUNTOF(*tests) - 1));
+        AM_ASSERT(strstr(db->src.fnames[i], "test") == NULL);
         file_append(
-            db->src.content[i], db->src.fnames[i], src_file, &ntests, tests
+            db->src.content[i], db->src.fnames[i], src_file, ntests, tests
         );
     }
 
-    /* Add the final main function to amast.c */
+    fclose(src_file);
+}
+
+static void create_amast_test_c_file(
+    struct db *db, int *ntests, char (*tests)[PATH_MAX]
+) {
+    char fname[PATH_MAX];
+    snprintf(fname, sizeof(fname), "%s/amast_test.c", db->odir);
+    FILE *src_file = fopen(fname, "w");
+    if (!src_file) {
+        fprintf(stderr, "Failed to create %s\n", fname);
+        exit(EXIT_FAILURE);
+    }
+
+    add_amast_description(src_file, "source", &db->src_test);
+
+    add_amast_includes_std(src_file, &db->src_test);
+    fprintf(src_file, "#include \"amast.h\"\n");
+    fprintf(src_file, "#include \"amast_test.h\"\n");
     fprintf(src_file, "\n");
-    fprintf(src_file, "#ifdef AMAST_UNIT_TESTS\n");
-    fprintf(src_file, "\n");
+
+    /* Copy content of all source files to amast.c */
+    for (int i = 0; i < db->src_test.len; i++) {
+        fprintf(src_file, "/* %s */\n", get_repo_fname(db->src_test.fnames[i]));
+        assert(*ntests < (AM_COUNTOF(*tests) - 1));
+        AM_ASSERT(strstr(db->src_test.fnames[i], "test") != NULL);
+        file_append(
+            db->src_test.content[i],
+            db->src_test.fnames[i],
+            src_file,
+            ntests,
+            tests
+        );
+    }
+
+    /* Add the final main function to amast_test.c */
     fprintf(src_file, "int main(void) {\n");
-    for (int i = 0; i < ntests; i++) {
+    for (int i = 0; i < *ntests; i++) {
         fprintf(src_file, "    %s();\n", tests[i]);
     }
     fprintf(src_file, "    return 0;\n");
     fprintf(src_file, "}\n");
     fprintf(src_file, "\n");
-    fprintf(src_file, "#endif /* AMAST_UNIT_TESTS */\n");
 
-    fclose(hdr_file);
     fclose(src_file);
+}
+
+static void create_amast_files(struct db *db) {
+    char tests[32][PATH_MAX];
+    int ntests = 0;
+    create_amast_h_file(db, &ntests, tests);
+    create_amast_test_h_file(db, &ntests, tests);
+    create_amast_c_file(db, &ntests, tests);
+    create_amast_test_c_file(db, &ntests, tests);
 }
 
 static void print_help(const char *cmd) {
     printf("Usage: %s -f <file name> -o <output directory>\n", cmd);
     printf(
-        "Creates amast.h and amast.c files from the list of files "
-        "in <file name>\n"
+        "Creates amast(-test).h and amast(-test).c files from the list "
+        "of files in <file name>\n"
     );
     printf("The files are created in the <output directory>\n");
 }
@@ -379,7 +476,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    printf("Generating amast.h and amast.c in %s ... ", odir);
+    printf("Generating amast(-test).h and amast(-test).c in %s ... ", odir);
 
     db_init(&m_db, fname, odir);
     create_amast_files(&m_db);

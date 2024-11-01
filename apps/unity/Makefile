@@ -70,21 +70,27 @@ LDFLAGS = -Wl,--gc-sections -flto=auto
 TESTFLAGS = $(CFLAGS) $(LDFLAGS) -ggdb -DAMAST_UNIT_TESTS
 AR = ar
 ARFLAGS = rcs
-TARGET = amast.a
-OBJECT = amast.o
-TEST_EXEC = amast
+TEST_EXEC = amast-test
 
-all: $(TARGET)
+SRC = amast.c amast_test.c
+OBJ = amast.o amast_test.o
+HEADER = amast.h amast_test.h
 
-$(TARGET): $(OBJECT)
-	$(AR) $(ARFLAGS) $(TARGET) $(OBJECT)
+LIB = libamast.a
 
-$(OBJECT): amast.c
-	$(CC) $(CFLAGS) -c amast.c -o $(OBJECT)
+.PHONY: all test clean lib
+
+all: test amast
+
+test: $(OBJ)
+	$(CC) $(CFLAGS) $(TESTFLAGS) -o amast-test $(OBJ)
+	./amast-test
 
 clean:
-	rm -f $(OBJECT) $(TARGET) $(TEST_EXEC)
+	rm -f $(OBJ) amast-test $(LIB)
 
-test: amast.c
-	$(CC) $(TESTFLAGS) amast.c -o $(TEST_EXEC)
-	./$(TEST_EXEC)
+lib: amast.o
+	ar rcs $(LIB) amast.o
+
+%.o: %.c $(HEADER)
+	$(CC) $(CFLAGS) -c $< -o $@

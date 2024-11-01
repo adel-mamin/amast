@@ -47,7 +47,12 @@ amast_makefile = custom_target(
 amast_src = custom_target(
     'amast_src',
     input : [files_txt],
-    output : ['amast.c', 'amast.h'],
+    output : [
+        'amast.c',
+        'amast_test.c',
+        'amast.h',
+        'amast_test.h'
+    ],
     command : [
         amast_exe, '-f', '@INPUT@', '-o', '@OUTDIR@' , '&&',
         CLANG_FORMAT, '--style=file', '-i', '@OUTPUT@'
