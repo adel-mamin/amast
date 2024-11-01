@@ -187,6 +187,7 @@ run_target(
         CPPCHECK,
         '-j',
         '@0@'.format(run_command('nproc').stdout().strip()),
+        '-D__cppcheck__',
         '--error-exitcode=2',
         '--enable=warning,style',
         '--inline-suppr',

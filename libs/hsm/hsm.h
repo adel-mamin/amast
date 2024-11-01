@@ -279,7 +279,7 @@ bool am_hsm_is_in(struct am_hsm *hsm, const struct am_hsm_state *state);
  * @retval false  the active HSM state DOES NOT equal #state
  */
 bool am_hsm_active_state_is_eq(
-    struct am_hsm *hsm, const struct am_hsm_state *state
+    const struct am_hsm *hsm, const struct am_hsm_state *state
 );
 
 /**

@@ -197,7 +197,7 @@ bool str_to_double(const char *str, double *val, char **endptr) {
 }
 
 float complex str_to_complex(char *str) {
-    char *start = str;
+    const char *start = str;
     char *end = NULL;
     float real = strtof(start, &end);
     AM_ASSERT(start != end);
@@ -249,7 +249,7 @@ bool str_is_double(const char *str, double *extracted_val) {
     if (!ok) {
         return false;
     }
-    char *found = strchr(str, '.');
+    const char *found = strchr(str, '.');
     if (!found || (found >= endptr)) {
         found = strchr(str, 'E');
     }
@@ -357,7 +357,7 @@ const char *str_rstrip(const char *string, char delim) {
 
 int str_lcpy(char *dst, const char *src, int lim) {
     char *d = dst;
-    char *e = &dst[lim];
+    const char *e = &dst[lim];
     const char *s = src;
 
     if (d < e) {
@@ -380,7 +380,7 @@ int str_lcat(char *dst, const char *src, int lim) {
     AM_ASSERT(lim > 0);
 
     char *d = memchr(dst, '\0', (size_t)lim);
-    char *e = &dst[lim];
+    const char *e = &dst[lim];
     const char *s = src;
     const char *p;
 
@@ -453,7 +453,7 @@ char *str_sep(char **sp, const char *delim) {
 
     char *begin = *sp;
     *sp += strcspn(begin, /*reject=*/delim);
-    char *end = *sp;
+    const char *end = *sp;
 
     if (begin == end) {
         *sp = NULL;
@@ -583,7 +583,7 @@ int str_lcat_path(char *head, const char *tail, int lim, char delim) {
     if (delim == tail[0]) {
         tail++;
     }
-    char d[2] = {delim, '\0'};
+    const char d[2] = {delim, '\0'};
     str_lcat(head, d, lim);
     return str_lcat(head, tail, lim);
 }

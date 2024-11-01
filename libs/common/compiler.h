@@ -81,6 +81,9 @@
 /* Portland Group PGCC/PGCPP */
 #elif defined(__SUNPRO_C) || defined(__SUNPRO_CC)
 /* Oracle Solaris Studio */
+#elif defined(__cppcheck__)
+/* cppcheck run */
+#define AM_COMPILER_ID AM_COMPILER_GCC
 #else
 #error "Unknown compiler!"
 #endif
@@ -133,16 +136,6 @@ typedef int ssize_t;
 
 #define AM_CAST(TYPE, PTR) (((TYPE)(uintptr_t)(const void *)(PTR)))
 #define AM_VCAST(TYPE, PTR) (((TYPE)(uintptr_t)(const volatile void *)(PTR)))
-
-/*
- * Taken from
- * https://stackoverflow.com/questions/3378560/how-to-disable-gcc-warnings-for-a-few-lines-of-code
- */
-
-/** Stringification macro */
-#define AM_STRINGIFY__(s) #s
-/** Join x and y together */
-#define AM_JOINSTR_(x, y) AM_STRINGIFY__(x##y)
 
 /**
  * Choose one of two macros.

@@ -129,7 +129,7 @@ static void test_am_slist_pop(void) {
 
 static bool predicate_slist(void *context, struct am_slist_item *item) {
     int v = *(int *)context;
-    struct test_slist *data = (struct test_slist *)item;
+    const struct test_slist *data = (struct test_slist *)item;
 
     return (v == data->data);
 }
@@ -147,7 +147,7 @@ static void test_am_slist_find(void) {
     for (v = 0; v < 3; v++) {
         e = am_slist_find(&slist, predicate_slist, &v);
         AM_ASSERT(e != NULL);
-        struct test_slist *d = (struct test_slist *)e;
+        const struct test_slist *d = (struct test_slist *)e;
         AM_ASSERT(v == d->data);
     }
 

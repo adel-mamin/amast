@@ -16,3 +16,8 @@ ragel = ">=6.10,<7"
 cppcheck = ">=2.13.4,<2.14"
 clang = ">=18.1.7,<18.2"
 zig = ">=0.9.1,<0.10"
+make = ">=4.4.1,<5"
+include-what-you-use = ">=0.22,<0.23"
+
+[pypi-dependencies]
+setuptools-scm = ">=8.1.0, <9"

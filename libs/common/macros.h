@@ -46,8 +46,13 @@
  *    divisible by the size of the object the pointer points to.
  *    In that situation a divide-by-zero will cause the compiler to error out.
  */
+#ifdef __cppcheck__
+/* to avoid "Modulo of one is always equal to zero [moduloofone]" warnings */
+#define AM_COUNTOF(arr) ((int)(sizeof(arr) / sizeof(0 [arr])))
+#else
 #define AM_COUNTOF(arr) \
     ((int)(sizeof(arr) / sizeof(0 [arr]) / !(sizeof(arr) % sizeof(0 [arr]))))
+#endif /* __cppcheck__ */
 
 /** Returns maximum element */
 #define AM_MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -104,6 +109,17 @@
 /** Taken from http://nullprogram.com/blog/2015/02/17/ */
 #define AM_CONTAINER_OF(ptr, type, member) \
     (AM_CAST(type *, ((char *)(ptr) - offsetof(type, member)))) /* NOLINT */
+
+/*
+ * Taken from
+ * https://stackoverflow.com/questions/3378560/how-to-disable-gcc-warnings-for-a-few-lines-of-code
+ */
+
+/** Stringification macro */
+#define AM_STRINGIFY_(s) #s
+#define AM_STRINGIFY(s) AM_STRINGIFY_(s)
+/** Join x and y together */
+#define AM_JOINSTR_(x, y) AM_STRINGIFY(x##y)
 
 /** Counts the number of trailing zeros in a word */
 #define AM_COUNT_TRAILING_ZEROS(word)           \

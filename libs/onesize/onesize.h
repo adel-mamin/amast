@@ -120,7 +120,7 @@ void am_onesize_iterate_over_allocated(
  * @param hnd  the allocator
  * @return the number of free blocks
  */
-int am_onesize_get_nfree(struct am_onesize *hnd);
+int am_onesize_get_nfree(const struct am_onesize *hnd);
 
 /**
  * The minimum number of free memory blocks of size block_size available so far.
@@ -128,20 +128,20 @@ int am_onesize_get_nfree(struct am_onesize *hnd);
  * @param hnd  the allocator
  * @return the minimum number of blocks of size block_size available so far
  */
-int am_onesize_get_min_nfree(struct am_onesize *hnd);
+int am_onesize_get_min_nfree(const struct am_onesize *hnd);
 
 /**
  * Returns the memory block size.
  * @param hnd  the allocator
  * @return the block size [bytes]
  */
-int am_onesize_get_block_size(struct am_onesize *hnd);
+int am_onesize_get_block_size(const struct am_onesize *hnd);
 
 /**
  * Get total number of memory blocks - the total capacity of the allocator.
  * @return the total number of blocks
  */
-int am_onesize_get_nblocks(struct am_onesize *hnd);
+int am_onesize_get_nblocks(const struct am_onesize *hnd);
 
 #ifdef __cplusplus
 }

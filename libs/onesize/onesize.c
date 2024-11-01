@@ -142,22 +142,22 @@ void am_onesize_iterate_over_allocated(
     }
 }
 
-int am_onesize_get_nfree(struct am_onesize *hnd) {
+int am_onesize_get_nfree(const struct am_onesize *hnd) {
     AM_ASSERT(hnd);
     return hnd->nfree;
 }
 
-int am_onesize_get_min_nfree(struct am_onesize *hnd) {
+int am_onesize_get_min_nfree(const struct am_onesize *hnd) {
     AM_ASSERT(hnd);
     return hnd->minfree;
 }
 
-int am_onesize_get_block_size(struct am_onesize *hnd) {
+int am_onesize_get_block_size(const struct am_onesize *hnd) {
     AM_ASSERT(hnd);
     return hnd->block_size;
 }
 
-int am_onesize_get_nblocks(struct am_onesize *hnd) {
+int am_onesize_get_nblocks(const struct am_onesize *hnd) {
     AM_ASSERT(hnd);
     return hnd->ntotal;
 }

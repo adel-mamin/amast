@@ -53,7 +53,7 @@ struct am_queue {
  * @retval true   queue is empty
  * @retval false  queue is not empty
  */
-bool am_queue_is_empty(struct am_queue *hnd);
+bool am_queue_is_empty(const struct am_queue *hnd);
 
 /**
  * Queue is full predicate.
@@ -82,7 +82,7 @@ int am_queue_capacity(struct am_queue *hnd);
  * @param hnd  the queue
  * @return queue item size [bytes]
  */
-int am_queue_item_size(struct am_queue *hnd);
+int am_queue_item_size(const struct am_queue *hnd);
 
 /**
  * Queue initialization with memory a block.
@@ -103,7 +103,7 @@ void am_queue_init(
  * @return true   the initialization was done
  * @return false  the initialization was not done
  */
-bool am_queue_is_valid(struct am_queue *hnd);
+bool am_queue_is_valid(const struct am_queue *hnd);
 
 /**
  * Pop an item from the front (head) of the queue.

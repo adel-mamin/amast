@@ -242,7 +242,7 @@ static void test_str_sep(void) {
     char str[3] = {':', ':', '\0'};
     const char delim[] = ":";
     char *ctx = &str[0];
-    char *res = str_sep(&ctx, delim);
+    const char *res = str_sep(&ctx, delim);
     AM_ASSERT(res == NULL);
 }
 
@@ -277,7 +277,7 @@ static void test_str_skip_prefix(void) {
 static void test_str_add_prefix(void) {
     {
         char out[3];
-        char *res = str_add_prefix(out, 3, "s", "p");
+        const char *res = str_add_prefix(out, 3, "s", "p");
         AM_ASSERT('p' == res[0]);
         AM_ASSERT('s' == res[1]);
         AM_ASSERT(0 == res[2]);
@@ -285,7 +285,7 @@ static void test_str_add_prefix(void) {
 
     {
         char out[3];
-        char *res = str_add_prefix(out, 3, "s", "prefix");
+        const char *res = str_add_prefix(out, 3, "s", "prefix");
         AM_ASSERT('p' == res[0]);
         AM_ASSERT('r' == res[1]);
         AM_ASSERT(0 == res[2]);
@@ -293,7 +293,7 @@ static void test_str_add_prefix(void) {
 }
 
 static void test_split_path(void) {
-    char delim[] = "/\\";
+    const char delim[] = "/\\";
     struct test {
         struct str_token head;
         struct str_token tail;
@@ -332,14 +332,14 @@ static void test_split_path(void) {
 static void test_lcat_path(void) {
     {
         char head[16] = "/a";
-        char tail[16] = "b";
+        const char tail[16] = "b";
         int rc = str_lcat_path(head, tail, sizeof(head), '/');
         AM_ASSERT(4 == rc);
         AM_ASSERT(0 == strncmp(head, "/a/b", 4));
     }
     {
         char head[16] = "/a/";
-        char tail[16] = "b";
+        const char tail[16] = "b";
         int rc = str_lcat_path(head, tail, sizeof(head), '/');
         AM_ASSERT(4 == rc);
         AM_ASSERT(0 == strncmp(head, "/a/b", 4));

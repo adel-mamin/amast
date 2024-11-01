@@ -55,6 +55,7 @@ struct db {
 static struct db m_db = {.src.len = 0, .hdr.len = 0};
 
 /* check if the include already exists in the array */
+/* cppcheck-suppress-begin constParameter */
 static bool include_is_unique(
     char arr[MAX_INCLUDES_NUM][PATH_MAX], int arr_size, const char *inc_file
 ) {
@@ -65,6 +66,7 @@ static bool include_is_unique(
     }
     return true;
 }
+/* cppcheck-suppress-end constParameter */
 
 /* add unique include to the array */
 static void include_add_unique(
@@ -77,14 +79,15 @@ static void include_add_unique(
 }
 
 /* process a line and detect #include directives */
-static void process_content(struct files *db, const char *line) {
+static void process_content(struct files *db, const char *ln) {
     char inc_file[PATH_MAX + 1];
-    if (sscanf(line, "#include <%[^>]>%256*s", inc_file) == 1) {
+#define AM_LIM AM_STRINGIFY(PATH_MAX)
+    if (sscanf(ln, "#include <%" AM_LIM "[^>]>%*s", inc_file) == 1) {
         include_add_unique(db->includes_std, &db->includes_std_num, inc_file);
-    } else if (sscanf(line, "#include \"%[^\"]\"%256*s", inc_file) == 1) {
+    } else if (sscanf(ln, "#include \"%" AM_LIM "[^\"]\"%*s", inc_file) == 1) {
         /* ignore user includes */;
     } else { /* non-include line */
-        str_lcat(db->content[db->len], line, sizeof(db->content[db->len]));
+        str_lcat(db->content[db->len], ln, sizeof(db->content[db->len]));
     }
 }
 

@@ -27,7 +27,7 @@
 #include "common/macros.h"
 #include "common/compiler.h" /* IWYU pragma: keep */
 
-#include "async.h"
+#include "async/async.h"
 
 static enum am_async_rc am_async_reentrant(
     struct am_async *me, int *reent, int *state

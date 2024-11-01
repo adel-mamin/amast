@@ -53,12 +53,14 @@ static void hsm_set_current(struct am_hsm *hsm, const struct am_hsm_state *s) {
     hsm->istate = hsm->itemp = s->ifn;
 }
 
-static bool hsm_temp_is_eq(struct am_hsm *hsm, const struct am_hsm_state *s) {
+static bool hsm_temp_is_eq(
+    const struct am_hsm *hsm, const struct am_hsm_state *s
+) {
     return (hsm->temp == s->fn) && (hsm->itemp == s->ifn);
 }
 
 bool am_hsm_active_state_is_eq(
-    struct am_hsm *hsm, const struct am_hsm_state *state
+    const struct am_hsm *hsm, const struct am_hsm_state *state
 ) {
     AM_ASSERT(hsm);
     AM_ASSERT(hsm->state);
@@ -133,7 +135,7 @@ static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
  * @param hsm    exit the states of this HSM
  * @param until  stop the exit when reaching this state without exiting it
  */
-static void hsm_exit(struct am_hsm *hsm, struct am_hsm_state *until) {
+static void hsm_exit(struct am_hsm *hsm, const struct am_hsm_state *until) {
     while (!hsm_temp_is_eq(hsm, until)) {
         hsm->state = hsm->temp;
         hsm->istate = hsm->itemp;

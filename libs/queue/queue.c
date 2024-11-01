@@ -71,7 +71,7 @@ void am_queue_init(
     hnd->magic2 = AM_QUEUE_MAGIC2;
 }
 
-bool am_queue_is_empty(struct am_queue *hnd) {
+bool am_queue_is_empty(const struct am_queue *hnd) {
     AM_ASSERT(hnd);
     return hnd->rd == hnd->wr;
 }
@@ -95,7 +95,7 @@ int am_queue_capacity(struct am_queue *hnd) {
     return (hnd->blk.size / hnd->isize) - 1;
 }
 
-int am_queue_item_size(struct am_queue *hnd) {
+int am_queue_item_size(const struct am_queue *hnd) {
     AM_ASSERT(hnd);
     return hnd->isize;
 }
@@ -177,7 +177,7 @@ bool am_queue_push_front(struct am_queue *hnd, const void *ptr, int size) {
     return true;
 }
 
-bool am_queue_is_valid(struct am_queue *hnd) {
+bool am_queue_is_valid(const struct am_queue *hnd) {
     AM_ASSERT(hnd);
     return (AM_QUEUE_MAGIC1 == hnd->magic1) && (AM_QUEUE_MAGIC2 == hnd->magic2);
 }

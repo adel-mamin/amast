@@ -29,7 +29,7 @@
  * http://www.ross.net/crc/download/crc_v3.txt
  */
 
-#include <stdlib.h>
+/* #include <stdlib.h> */
 
 #include "common/compiler.h" /* IWYU pragma: keep */
 #include "common/macros.h"
@@ -155,7 +155,8 @@ static const unsigned long crc32_lookup[CRC32_LOOKUP_SIZE] = {
 };
 
 unsigned int crc16(const unsigned char *data, int size, unsigned int crc) {
-    AM_ASSERT(!size || (size && (NULL != data)));
+    AM_ASSERT(data);
+    AM_ASSERT(size > 0);
 
     for (int i = 0; i < size; i++) {
         int idx = 0xFFu & ((crc >> 8u) ^ *data++);
@@ -166,7 +167,8 @@ unsigned int crc16(const unsigned char *data, int size, unsigned int crc) {
 }
 
 unsigned long crc24(const unsigned char *data, int size, unsigned long crc) {
-    AM_ASSERT(!size || (size && (NULL != data)));
+    AM_ASSERT(data);
+    AM_ASSERT(size > 0);
 
     for (int i = 0; i < size; i++) {
         unsigned char index = (unsigned char)((crc >> 16u) ^ *data++);
@@ -177,7 +179,8 @@ unsigned long crc24(const unsigned char *data, int size, unsigned long crc) {
 }
 
 unsigned long crc32(const unsigned char *data, int size, unsigned long crc) {
-    AM_ASSERT(!size || (size && (NULL != data)));
+    AM_ASSERT(data);
+    AM_ASSERT(size > 0);
 
     for (int i = 0; i < size; i++) {
         unsigned int idx = (unsigned int)((crc >> 24U) ^ *data++);

@@ -40,12 +40,14 @@ static struct owner {
     int npost;
 } m_owner;
 
+/* cppcheck-suppress-begin constParameterCallback */
 static void post_cb(void *owner, const struct am_event *event) {
     (void)event;
     AM_ASSERT(owner == &m_owner);
     AM_ASSERT(AM_EVT_USER == event->id);
     m_owner.npost++;
 }
+/* cppcheck-suppress-end constParameterCallback */
 
 static void test_arm(void) {
     memset(&m_owner, 0, sizeof(m_owner));
