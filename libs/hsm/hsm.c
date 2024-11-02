@@ -158,8 +158,8 @@ static void hsm_exit(struct am_hsm *hsm, const struct am_hsm_state *until) {
  *
  * @param hsm   enter and init the states of this HSM
  * @param path  the path to enter
- *              Initially it is path from LCA substate to destination state
- *              (both inclusive), then reused.
+ *              Initially it is path from least common ancestor (LCA) substate
+ *              to destination state (both inclusive), then reused.
  */
 static void hsm_enter_and_init(struct am_hsm *hsm, struct am_hsm_path *path) {
     hsm_enter(hsm, path);
@@ -236,10 +236,10 @@ static enum am_hsm_rc hsm_dispatch(
      * Once LCA is found, do not exit it. Enter all LCA substates down to dst.
      * If dst requests initial transition - enter and init the dst substates.
      */
-    while (hsm->temp != am_hsm_top) {
+    while (hsm->state != am_hsm_top) {
         for (int i = 0; i < path.len; ++i) {
-            if ((path.fn[i] == hsm->temp) && (path.ifn[i] == hsm->itemp)) {
-                /* LCA is found and it is other than am_hsm_top() */
+            if ((path.fn[i] == hsm->state) && (path.ifn[i] == hsm->istate)) {
+                /* LCA is found and it is not am_hsm_top() */
                 path.len = i;
                 hsm_enter_and_init(hsm, &path);
                 return rc;
@@ -317,7 +317,7 @@ void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event) {
 
     hsm->state = hsm->temp;
     hsm->istate = hsm->itemp;
-    enum am_hsm_rc rc = hsm->temp(hsm, init_event);
+    enum am_hsm_rc rc = hsm->state(hsm, init_event);
     AM_ASSERT(AM_HSM_RC_TRAN == rc);
 
     struct am_hsm_state dst = {.fn = hsm->temp, .ifn = hsm->itemp};
