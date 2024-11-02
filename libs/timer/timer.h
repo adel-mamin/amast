@@ -81,6 +81,7 @@ AM_ASSERT_STATIC(AM_TICK_DOMAIN_MAX < (1U << AM_EVENT_TICK_DOMAIN_BITS));
 
 /**
  * Timer constructor.
+ *
  * @param cfg  timer module configuration
  *             The timer module makes an internal copy of the configuration.
  */
@@ -88,11 +89,28 @@ void am_timer_ctor(const struct am_timer_cfg *cfg);
 
 /**
  * Timer event constructor.
+ *
  * @param event   the timer event to construct
  * @param id      the timer event identifier
  * @param domain  tick domain the event belongs to
  */
 void am_timer_event_ctor(struct am_event_timer *event, int id, int domain);
+
+/**
+ * Allocate and construct timer event.
+ * Cannot fail. Cannot be freed. Never garbage collected.
+ * The returned timer event is fully constructed.
+ * No need to call am_timer_event_ctor() for it.
+ * Provides an alternative way to reserve memory for timer events in
+ * addition to the static allocation in user code.
+ * Allocation of timer event using this API is preferred as it
+ * improves cache locality of timer event structures.
+ *
+ * @param id      the timer event id
+ * @param size    the timer event size [bytes]
+ * @param domain  the clock domain [0-AM_TICK_DOMAIN_MAX[
+ */
+struct am_event_timer *am_timer_event_allocate(int id, int size, int domain);
 
 /**
  * Tick timer.
@@ -120,6 +138,7 @@ void am_timer_arm(
 
 /**
  * Disarm timer.
+ *
  * @param event   the timer to disarm
  * @retval true   the timer was armed
  * @retval false  the timer was not armed
@@ -128,6 +147,7 @@ bool am_timer_disarm(struct am_event_timer *event);
 
 /**
  * Check if timer is armed.
+ *
  * @param event   the timer to check
  * @retval true   the timer is armed
  * @retval false  the timer is not armed
