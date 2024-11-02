@@ -22,18 +22,11 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
-src = []
+event_src = [files('event.c')]
+src += [event_src]
 
-subdir('blk')
-subdir('common')
-subdir('crc')
-subdir('dlist')
-subdir('strlib')
-subdir('timer')
-subdir('async')
-subdir('hsm')
-subdir('queue')
-subdir('slist')
-subdir('onesize')
-subdir('event')
+libevent = library('event', [event_src], include_directories: [inc])
+libevent_dep = declare_dependency(
+    link_with : libevent,
+    include_directories : [inc]
+)
