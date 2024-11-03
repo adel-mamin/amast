@@ -1,9 +1,9 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017,2019-2021 Adel Mamin
- * Copyright (c) 2017 Martin Sustrik
- * Copyright (c) 2008, 2009, 2010, 2012, 2013, 2014, 2015  William Ahern
+ * Copyright (c) Adel Mamin
+ * Copyright (c) Martin Sustrik
+ * Copyright (c) William Ahern
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
