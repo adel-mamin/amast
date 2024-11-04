@@ -34,6 +34,9 @@ extern "C" {
 #include "common/compiler.h"
 #include "event/event.h"
 #include "dlist/dlist.h"
+#include "pal/pal.h"
+
+AM_ASSERT_STATIC(AM_EVENT_TICK_DOMAIN_MASK >= AM_PAL_TICK_DOMAIN_MAX);
 
 /** Timer module configuration. */
 struct am_timer_cfg {
@@ -72,13 +75,6 @@ struct am_event_timer {
     int interval_ticks;
 };
 
-#ifndef AM_TICK_DOMAIN_MAX
-/** total number of tick domains */
-#define AM_TICK_DOMAIN_MAX 1
-#endif
-
-AM_ASSERT_STATIC(AM_TICK_DOMAIN_MAX < (1U << AM_EVENT_TICK_DOMAIN_BITS));
-
 /**
  * Timer constructor.
  *
@@ -108,7 +104,7 @@ void am_timer_event_ctor(struct am_event_timer *event, int id, int domain);
  *
  * @param id      the timer event id
  * @param size    the timer event size [bytes]
- * @param domain  the clock domain [0-AM_TICK_DOMAIN_MAX[
+ * @param domain  the clock domain [0-AM_PAL_TICK_DOMAIN_MAX[
  */
 struct am_event_timer *am_timer_event_allocate(int id, int size, int domain);
 
@@ -116,6 +112,7 @@ struct am_event_timer *am_timer_event_allocate(int id, int size, int domain);
  * Tick timer.
  *
  * Update all armed timers and fire expired timer events.
+ * Must be called every tick.
  *
  * @param domain  only tick timers in this tick domain
  */

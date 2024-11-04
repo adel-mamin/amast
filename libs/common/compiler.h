@@ -505,22 +505,24 @@ static inline unsigned long long __rdtsc() {
 #define AM_COMPILER_BARRIER() asm volatile("" : : : "memory")
 #endif /* AM_COMPILER_ID */
 
-/* static assert */
 /* clang-format off */
-/* The compile time assert code is taken from here:
-   http://stackoverflow.com/questions/3385515/static-assert-in-c */
+
+/*
+ * The compile time assert code is taken from here:
+ * http://stackoverflow.com/questions/3385515/static-assert-in-c
+ */
 
 /** Compile time assert helper */
 #define AM_COMPILE_TIME_ASSERT3(cond, msg) \
     typedef char static_assertion_##msg[(!!(cond)) * 2 - 1]
 /** Compile time assert helper */
-#define AM_COMPILE_TIME_ASSERT2(x, l) \
-    AM_COMPILE_TIME_ASSERT3(x, static_assertion_at_line_##l)
+#define AM_COMPILE_TIME_ASSERT2(cond, line) \
+    AM_COMPILE_TIME_ASSERT3(cond, static_assertion_at_line_##line)
 /** Compile time assert helper */
-#define AM_COMPILE_TIME_ASSERT(x, l) AM_COMPILE_TIME_ASSERT2(x, l)
+#define AM_COMPILE_TIME_ASSERT(cond, line) AM_COMPILE_TIME_ASSERT2(cond, line)
 
 /** Compile time assert */
-#define AM_ASSERT_STATIC(x) AM_COMPILE_TIME_ASSERT(x, __LINE__)
+#define AM_ASSERT_STATIC(cond) AM_COMPILE_TIME_ASSERT(cond, __LINE__)
 /* clang-format on */
 
 /*! @cond Doxygen_Suppress */

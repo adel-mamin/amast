@@ -28,6 +28,8 @@
  * Platform abstraction layer (PAL) API implementation for FreeRTOS
  */
 
+#ifdef AMAST_PAL_FREERTOS
+
 #include "FreeRTOS.h"
 
 #include "pal/pal.h"
@@ -105,16 +107,20 @@ uint32_t am_pal_time_get_ms(void) {
     return ticks * portTICK_PERIOD_MS;
 }
 
-uint32_t am_pal_time_get_tick(void) {
+uint32_t am_pal_time_get_tick(int domain) {
+    (void)domain;
     if (xPortIsInsideInterrupt()) {
         return (uint32_t)xTaskGetTickCountFromISR();
     }
     return (uint32_t)xTaskGetTickCount();
 }
 
-uint32_t am_pal_time_get_tick_from_ms(uint32_t ms) {
+uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms) {
+    (void)domain;
     if (0 == ms) {
         return 0;
     }
     return AM_MAX(1, AM_DIVIDE_ROUND_UP(ms, portTICK_PERIOD_MS));
 }
+
+#endif /* AMAST_PAL_FREERTOS */

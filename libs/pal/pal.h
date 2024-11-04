@@ -31,6 +31,12 @@
 #ifndef PAL_H_INCLUDED
 #define PAL_H_INCLUDED
 
+#include <stdint.h>
+
+#ifndef AM_PAL_TICK_DOMAIN_MAX
+#define AM_PAL_TICK_DOMAIN_MAX 1 /** total number of tick domains */
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -51,8 +57,8 @@ void am_pal_task_notify(void *task);
 void am_pal_task_wait(void *task);
 
 uint32_t am_pal_time_get_ms(void);
-uint32_t am_pal_time_get_tick(void);
-uint32_t am_pal_time_get_tick_from_ms(uint32_t us);
+uint32_t am_pal_time_get_tick(int domain);
+uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t us);
 
 #ifdef __cplusplus
 }

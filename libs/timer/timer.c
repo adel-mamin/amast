@@ -33,6 +33,7 @@
 #include "common/macros.h"
 #include "dlist/dlist.h"
 #include "timer/timer.h"
+#include "pal/pal.h"
 
 /** Timer module descriptor. */
 struct timer {
@@ -41,7 +42,7 @@ struct timer {
      * Each domain comprises a list of the timer events,
      * which belong to this domain.
      */
-    struct am_dlist domains[AM_TICK_DOMAIN_MAX];
+    struct am_dlist domains[AM_PAL_TICK_DOMAIN_MAX];
     /** timer module configuration */
     struct am_timer_cfg cfg;
 };
@@ -62,7 +63,7 @@ void am_timer_ctor(const struct am_timer_cfg *cfg) {
 void am_timer_event_ctor(struct am_event_timer *event, int id, int domain) {
     AM_ASSERT(event);
     AM_ASSERT(id >= AM_EVT_USER);
-    AM_ASSERT(domain < AM_TICK_DOMAIN_MAX);
+    AM_ASSERT(domain < AM_PAL_TICK_DOMAIN_MAX);
 
     memset(event, 0, sizeof(*event));
     am_dlist_item_init(&event->item);
