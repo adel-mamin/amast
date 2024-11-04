@@ -151,4 +151,24 @@ struct am_event *am_event_dup(
     const struct am_event *event, int size, int margin
 );
 
+/**
+ * Log event content callback.
+ *
+ * @param pool_index   pool index
+ * @param event_index  event_index within the pool
+ * @param event        event to log
+ * @param size         the event size [bytes]
+ */
+typedef void (*am_event_log_func)(
+    int pool_index, int event_index, const struct am_event *event, int size
+);
+
+/**
+ * Log event content of the first num events in each event pool.
+ *
+ * @param num  the number of events to log in each pool (if <0, then log all)
+ * @param cb   the logging callback
+ */
+void am_event_log_pools(int num, am_event_log_func cb);
+
 #endif /* EVENT_H_INCLUDED */

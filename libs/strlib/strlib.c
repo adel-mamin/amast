@@ -420,7 +420,7 @@ int str_lcatf(char *dst, int lim, const char *fmt, ...) {
     return (int)len;
 }
 
-AM_DISABLE_WARNING_SUGGEST_ATTRIBUTE_FORMAT()
+AM_DISABLE_WARNING_SUGGEST_ATTRIBUTE_FORMAT();
 int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap) {
     AM_ASSERT(dst);
     AM_ASSERT(lim > 0);
@@ -437,7 +437,7 @@ int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap) {
 
     return (int)len;
 }
-AM_ENABLE_WARNING_SUGGEST_ATTRIBUTE_FORMAT()
+AM_ENABLE_WARNING_SUGGEST_ATTRIBUTE_FORMAT();
 
 char *str_sep(char **sp, const char *delim) {
     AM_ASSERT(sp);
@@ -447,9 +447,9 @@ char *str_sep(char **sp, const char *delim) {
         return NULL;
     }
 
-    AM_DISABLE_WARNING(AM_W_SIGN_CONVERSION)
+    AM_DISABLE_WARNING(AM_W_SIGN_CONVERSION);
     *sp += strspn(*sp, /*accept=*/delim);
-    AM_ENABLE_WARNING(AM_W_SIGN_CONVERSION)
+    AM_ENABLE_WARNING(AM_W_SIGN_CONVERSION);
 
     char *begin = *sp;
     *sp += strcspn(begin, /*reject=*/delim);

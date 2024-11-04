@@ -154,9 +154,9 @@ void am_timer_tick(int domain) {
 struct am_event_timer *am_timer_event_allocate(int id, int size, int domain) {
     AM_ASSERT(size >= (int)sizeof(struct am_event_timer));
     struct am_event *e = am_event_allocate(id, size, /*margin=*/0);
-    AM_DISABLE_WARNING(AM_W_CAST_ALIGN)
+    AM_DISABLE_WARNING(AM_W_CAST_ALIGN);
     struct am_event_timer *te = (struct am_event_timer *)e;
-    AM_ENABLE_WARNING(AM_W_CAST_ALIGN)
+    AM_ENABLE_WARNING(AM_W_CAST_ALIGN);
     am_timer_event_ctor(te, id, domain);
     return te;
 }

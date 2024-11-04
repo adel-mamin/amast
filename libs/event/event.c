@@ -29,8 +29,10 @@
  */
 
 #include <string.h>
+#include <stddef.h>
 
 #include "common/compiler.h" /* IWYU pragma: keep */
+#include "common/alignment.h"
 #include "common/macros.h"
 #include "onesize/onesize.h"
 #include "blk/blk.h"
@@ -158,15 +160,6 @@ int am_event_get_pool_nblocks(int index) {
 
 int am_event_get_pools_num(void) { return am_event_state_.npool; }
 
-/**
- * Duplicate an event by allocating it from memory pools provided
- * at initialization and then copying the content of the given event.
- * The allocation cannot fail, if margin is 0.
- * @param event the event to duplicate.
- * @param size the event size [bytes].
- * @param margin free memory blocks to be available after the allocation.
- * @return the newly allocated event.
- */
 struct am_event *am_event_dup(
     const struct am_event *event, int size, int margin
 ) {
@@ -187,4 +180,48 @@ struct am_event *am_event_dup(
     }
 
     return dup;
+}
+
+/** Event log context. */
+struct am_event_log_ctx {
+    am_event_log_func cb; /**< event log callback */
+    int pool_ind;         /**< event pool index */
+};
+
+/**
+ * A helper callback to be the type am_onesize_iterate_func
+ *
+ * @param ctx    an instance of struct am_event_log_ctx
+ * @param index  the index of event buffer to log
+ * @param buf    the event buffer to log
+ * @param size   the size of event buffer to log [bytes]
+ */
+static void am_event_log_cb(void *ctx, int index, const char *buf, int size) {
+    AM_ASSERT(ctx);
+    AM_ASSERT(buf);
+    AM_ASSERT(AM_ALIGNOF_PTR(buf) >= AM_ALIGNOF(struct am_event));
+    AM_ASSERT(size >= (int)sizeof(struct am_event));
+
+    struct am_event_log_ctx *log = (struct am_event_log_ctx *)ctx;
+    AM_ASSERT(log->cb);
+    AM_ASSERT(log->pool_ind >= 0);
+
+    AM_DISABLE_WARNING(AM_W_CAST_ALIGN);
+    const struct am_event *event = (const struct am_event *)buf;
+    AM_ENABLE_WARNING(AM_W_CAST_ALIGN);
+    log->cb(log->pool_ind, index, event, size);
+}
+
+void am_event_log_pools(int num, am_event_log_func cb) {
+    AM_ASSERT(num > 0);
+    AM_ASSERT(cb);
+
+    struct am_event_state *me = &am_event_state_;
+    struct am_event_log_ctx ctx = {.cb = cb};
+    for (int i = 0; i < me->npool; i++) {
+        ctx.pool_ind = i;
+        am_onesize_iterate_over_allocated(
+            &me->pool[i], num, &ctx, am_event_log_cb
+        );
+    }
 }

@@ -115,7 +115,7 @@ static void string_is_double(const char *str, double expected_val) {
     double val = 0;
     bool is_double = str_is_double(str, &val);
     AM_ASSERT(is_double);
-    AM_DISABLE_WARNING(AM_W_DOUBLE_PROMOTION)
+    AM_DISABLE_WARNING(AM_W_DOUBLE_PROMOTION);
     if (isnan((float)val)) {                   /* NOLINT */
         AM_ASSERT(isnan((float)expected_val)); /* NOLINT */
     } else if (isinf((float)val)) {            /* NOLINT */
@@ -123,7 +123,7 @@ static void string_is_double(const char *str, double expected_val) {
     } else {
         /* AM_ASSERT(is_double && SAME_ALMOST(val, expected_val)); */
     }
-    AM_ENABLE_WARNING(AM_W_DOUBLE_PROMOTION)
+    AM_ENABLE_WARNING(AM_W_DOUBLE_PROMOTION);
 }
 
 static void string_is_not_double(const char *str) {
