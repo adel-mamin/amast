@@ -151,6 +151,15 @@ bool am_timer_disarm(struct am_event_timer *event);
  */
 bool am_timer_is_armed(const struct am_event_timer *event);
 
+/**
+ * Check if timer domain has armed timers.
+ *
+ * @param domain  the domain to check
+ * @retval true   the timer domain is empty
+ * @retval false  the timer domain has armed timers
+ */
+bool am_timer_domain_is_empty(int domain);
+
 #ifdef __cplusplus
 }
 #endif

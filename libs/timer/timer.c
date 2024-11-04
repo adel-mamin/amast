@@ -160,3 +160,10 @@ struct am_event_timer *am_timer_event_allocate(int id, int size, int domain) {
     am_timer_event_ctor(te, id, domain);
     return te;
 }
+
+bool am_timer_domain_is_empty(int domain) {
+    struct timer *me = &m_timer;
+    AM_ASSERT(domain >= 0);
+    AM_ASSERT(domain < AM_COUNTOF(me->domains));
+    return am_dlist_is_empty(&me->domains[domain]);
+}
