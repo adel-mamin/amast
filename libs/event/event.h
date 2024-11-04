@@ -135,4 +135,20 @@ struct am_event *am_event_allocate(int id, int size, int margin);
  */
 void am_event_free(const struct am_event *event);
 
+/**
+ * Duplicate an event.
+ *
+ * Allocate it from memory pools provided at initialization and
+ * then copy the content of the given event to it.
+ * The allocation cannot fail, if margin is 0.
+ *
+ * @param event   the event to duplicate
+ * @param size    the event size [bytes]
+ * @param margin  free memory blocks to be available after the allocation
+ * @return the newly allocated event.
+ */
+struct am_event *am_event_dup(
+    const struct am_event *event, int size, int margin
+);
+
 #endif /* EVENT_H_INCLUDED */

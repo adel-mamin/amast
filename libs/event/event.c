@@ -157,3 +157,34 @@ int am_event_get_pool_nblocks(int index) {
 }
 
 int am_event_get_pools_num(void) { return am_event_state_.npool; }
+
+/**
+ * Duplicate an event by allocating it from memory pools provided
+ * at initialization and then copying the content of the given event.
+ * The allocation cannot fail, if margin is 0.
+ * @param event the event to duplicate.
+ * @param size the event size [bytes].
+ * @param margin free memory blocks to be available after the allocation.
+ * @return the newly allocated event.
+ */
+struct am_event *am_event_dup(
+    const struct am_event *event, int size, int margin
+) {
+    AM_ASSERT(event);
+    AM_ASSERT(size >= (int)sizeof(struct am_event));
+    const struct am_event_state *me = &am_event_state_;
+    AM_ASSERT(me->npool > 0);
+    AM_ASSERT(event->id >= AM_EVT_USER);
+    AM_ASSERT(margin >= 0);
+
+    // cppcheck-suppress nullPointerRedundantCheck
+    struct am_event *dup = am_event_allocate(event->id, size, margin);
+    if (dup && (size > (int)sizeof(struct am_event))) {
+        char *dst = (char *)dup + sizeof(*dup);
+        const char *src = (const char *)event + sizeof(*event);
+        int sz = size - (int)sizeof(struct am_event);
+        memcpy(dst, src, (size_t)sz);
+    }
+
+    return dup;
+}
