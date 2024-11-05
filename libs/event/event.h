@@ -50,6 +50,9 @@
 #define AM_EVENT_HAS_USER_ID(event) \
     (((const struct am_event *)(event))->id >= AM_EVT_USER)
 
+#define AM_EVENT_REF_COUNTER_BITS 6
+#define AM_EVENT_REF_COUNTER_MASK ((1U << AM_EVENT_REF_COUNTER_BITS) - 1U)
+
 #define AM_EVENT_TICK_DOMAIN_BITS 3
 #define AM_EVENT_TICK_DOMAIN_MASK ((1U << AM_EVENT_TICK_DOMAIN_BITS) - 1U)
 
@@ -68,7 +71,7 @@ struct am_event {
      */
 
     /** reference counter */
-    unsigned ref_counter : 6;
+    unsigned ref_counter : AM_EVENT_REF_COUNTER_BITS;
     /** if set to zero, then event is statically allocated */
     unsigned pool_index : AM_EVENT_POOL_INDEX_BITS;
     /** tick domain for time events */
@@ -170,5 +173,19 @@ typedef void (*am_event_log_func)(
  * @param cb   the logging callback
  */
 void am_event_log_pools(int num, am_event_log_func cb);
+
+/**
+ * Increment event reference counter.
+ *
+ * @param event  the event
+ */
+void am_event_inc_ref_cnt(struct am_event *event);
+
+/**
+ * Decrement event reference counter.
+ *
+ * @param event  the event
+ */
+void am_event_dec_ref_cnt(struct am_event *event);
 
 #endif /* EVENT_H_INCLUDED */
