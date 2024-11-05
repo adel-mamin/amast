@@ -225,20 +225,3 @@ void am_event_log_pools(int num, am_event_log_func cb) {
         );
     }
 }
-
-void am_event_inc_ref_cnt(struct am_event *event) {
-    AM_ASSERT(event);
-    AM_ASSERT(event->ref_counter < AM_EVENT_REF_COUNTER_MASK);
-    ++event->ref_counter;
-}
-
-void am_event_dec_ref_cnt(struct am_event *event) {
-    AM_ASSERT(event);
-    AM_ASSERT(event->ref_counter > 0);
-    --event->ref_counter;
-}
-
-int am_event_get_ref_cnt(const struct am_event *event) {
-    AM_ASSERT(event);
-    return event->ref_counter;
-}

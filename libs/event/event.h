@@ -31,6 +31,9 @@
 #ifndef EVENT_H_INCLUDED
 #define EVENT_H_INCLUDED
 
+#include "common/compiler.h" /* IWYU pragma: keep */
+#include "common/macros.h"
+
 /**
  * The event IDs below this value are reserved
  * and should not be used for user events.
@@ -179,14 +182,22 @@ void am_event_log_pools(int num, am_event_log_func cb);
  *
  * @param event  the event
  */
-void am_event_inc_ref_cnt(struct am_event *event);
+static inline void am_event_inc_ref_cnt(struct am_event *event) {
+    AM_ASSERT(event);
+    AM_ASSERT(event->ref_counter < AM_EVENT_REF_COUNTER_MASK);
+    ++event->ref_counter;
+}
 
 /**
  * Decrement event reference counter.
  *
  * @param event  the event
  */
-void am_event_dec_ref_cnt(struct am_event *event);
+static inline void am_event_dec_ref_cnt(struct am_event *event) {
+    AM_ASSERT(event);
+    AM_ASSERT(event->ref_counter > 0);
+    --event->ref_counter;
+}
 
 /**
  * Return event reference counter.
@@ -194,6 +205,9 @@ void am_event_dec_ref_cnt(struct am_event *event);
  * @param event  the event, which reference counter is to be returned
  * @return the event reference counter
  */
-int am_event_get_ref_cnt(const struct am_event *event);
+static inline int am_event_get_ref_cnt(const struct am_event *event) {
+    AM_ASSERT(event);
+    return event->ref_counter;
+}
 
 #endif /* EVENT_H_INCLUDED */
