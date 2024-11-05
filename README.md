@@ -3,9 +3,18 @@
 ## Introduction
 <a name="introduction"></a>
 
-Amast is a minimalist asynchronous toolkit that makes it easier to develop C language based projects.
+Amast is a minimalist asynchronous toolkit that makes it easier to develop C language based projects. Written in C99.
 
-## How to use
+## What Is Inside
+
+- hierarchical state machine (HSM) with submachines support ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/hsm/README.rst), [examples](https://github.com/adel-mamin/amast/tree/main/apps/examples/hsm))
+- async/await ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/async/README.rst))
+- doubly and singly linked lists
+- onesize memory allocator
+- timers
+- events
+
+## How To Use
 <a name="how-to-use"></a>
 
 Just include `amast.h` and `amast.c` from the latest release to your project.
