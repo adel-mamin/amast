@@ -237,3 +237,8 @@ void am_event_dec_ref_cnt(struct am_event *event) {
     AM_ASSERT(event->ref_counter > 0);
     --event->ref_counter;
 }
+
+int am_event_get_ref_cnt(const struct am_event *event) {
+    AM_ASSERT(event);
+    return event->ref_counter;
+}

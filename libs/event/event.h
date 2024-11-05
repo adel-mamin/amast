@@ -188,4 +188,12 @@ void am_event_inc_ref_cnt(struct am_event *event);
  */
 void am_event_dec_ref_cnt(struct am_event *event);
 
+/**
+ * Return event reference counter.
+ *
+ * @param event  the event, which reference counter is to be returned
+ * @return the event reference counter
+ */
+int am_event_get_ref_cnt(const struct am_event *event);
+
 #endif /* EVENT_H_INCLUDED */
