@@ -68,11 +68,6 @@ struct am_event {
     /** event ID */
     int id;
 
-    /**
-     * The flags below have special purpose in active objects framework (AOF).
-     * Otherwise are unused.
-     */
-
     /** reference counter */
     unsigned ref_counter : AM_EVENT_REF_COUNTER_BITS;
     /** if set to zero, then event is statically allocated */
@@ -86,34 +81,41 @@ struct am_event {
 };
 
 /**
- * Adds an event memory pool.
- * The event memory pools must be added in the order of increasing block sizes.
+ * Add an event memory pool.
+ *
+ * Event memory pools must be added in the order of increasing block sizes.
+ *
  * @param pool        the memory pool pointer
  * @param size        the memory pool size [bytes]
  * @param block_size  the maximum size of allocated memory block [bytes]
- * @param alignment the required alignment of allocated memory blocks [bytes].
+ * @param alignment the required alignment of allocated memory blocks [bytes]
  */
 void am_event_add_pool(void *pool, int size, int block_size, int alignment);
 
 /**
- * The minimum number of free memory blocks available so far in the memory pool
+ * Get minimum number of free memory blocks available so far in the memory pool
  * with a given index.
  * Could be used to assess the usage of the underlying memory pool.
+ *
  * @param index  memory pool index
+ *
  * @return the minimum number of blocks of size block_size available so far
  */
 int am_event_get_pool_min_nfree(int index);
 
 /**
- * The minimum number of free memory blocks available now in the memory pool
+ * Get minimum number of free memory blocks available now in the memory pool
  * with a given index.
+ *
  * @param index  memory pool index
+ *
  * @return the number of free blocks of size block_size available now
  */
 int am_event_get_pool_nfree_now(int index);
 
 /**
  * The number of blocks in the pool with the given index.
+ *
  * @param index  the pool index
  * @return the number of blocks
  */
@@ -121,22 +123,26 @@ int am_event_get_pool_nblocks(int index);
 
 /**
  * The number of registered pools.
+ *
  * @return the number of pools
  */
 int am_event_get_pools_num(void);
 
 /**
- * Allocates an event from memory pools provided at initialization.
+ * Allocate an event from the memory pools provided at initialization.
  * The allocation cannot fail, if margin is 0.
+ *
  * @param id      the event identifier
  * @param size    the event size [bytes]
- * @param margin  free memory blocks to be available after the allocation
- * @return the newly allocated event.
+ * @param margin  free memory blocks to remain available after the allocation
+ *
+ * @return the newly allocated event
  */
 struct am_event *am_event_allocate(int id, int size, int margin);
 
 /**
  * Free the event allocated earlier with am_event_allocate().
+ *
  * @param event  the event to free
  */
 void am_event_free(const struct am_event *event);
@@ -151,6 +157,7 @@ void am_event_free(const struct am_event *event);
  * @param event   the event to duplicate
  * @param size    the event size [bytes]
  * @param margin  free memory blocks to be available after the allocation
+ *
  * @return the newly allocated event.
  */
 struct am_event *am_event_dup(
@@ -158,7 +165,7 @@ struct am_event *am_event_dup(
 );
 
 /**
- * Log event content callback.
+ * Log event content callback type.
  *
  * @param pool_index   pool index
  * @param event_index  event_index within the pool
