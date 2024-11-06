@@ -125,6 +125,8 @@ static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
         enum am_hsm_rc rc = hsm->state(hsm, &m_hsm_evt_entry);
         AM_ASSERT((AM_HSM_RC_SUPER == rc) || (AM_HSM_RC_HANDLED == rc));
     }
+    hsm->level += (char)path->len;
+    AM_ASSERT(hsm->level <= HSM_HIERARCHY_DEPTH_MAX);
 }
 
 /**
@@ -145,6 +147,8 @@ static void hsm_exit(struct am_hsm *hsm, const struct am_hsm_state *until) {
             rc = hsm->temp(hsm, &m_hsm_evt_empty);
         }
         AM_ASSERT(AM_HSM_RC_SUPER == rc);
+        AM_ASSERT(hsm->level > 0);
+        --hsm->level;
     }
 }
 
@@ -224,6 +228,8 @@ static enum am_hsm_rc hsm_dispatch(
         path.ifn[0] = dst.ifn;
         path.len = 1;
         enum am_hsm_rc r = src.fn(hsm, &m_hsm_evt_exit);
+        AM_ASSERT(hsm->level > 0);
+        --hsm->level;
         AM_ASSERT((AM_HSM_RC_SUPER == r) || (AM_HSM_RC_HANDLED == r));
         hsm_enter_and_init(hsm, &path);
         return rc;
@@ -237,7 +243,9 @@ static enum am_hsm_rc hsm_dispatch(
      * If dst requests initial transition - enter and init the dst substates.
      */
     while (hsm->state != am_hsm_top) {
-        for (int i = 0; i < path.len; ++i) {
+        if (hsm->level <= path.len) {
+            /* path has higher level states at lower indices (reversed) */
+            int i = path.len - hsm->level;
             if ((path.fn[i] == hsm->state) && (path.ifn[i] == hsm->istate)) {
                 /* LCA is found and it is not am_hsm_top() */
                 path.len = i;
@@ -252,6 +260,8 @@ static enum am_hsm_rc hsm_dispatch(
         AM_ASSERT(AM_HSM_RC_SUPER == r);
         hsm->state = hsm->temp;
         hsm->istate = hsm->itemp;
+        AM_ASSERT(hsm->level > 0);
+        --hsm->level;
     }
     /* LCA is am_hsm_top() */
     hsm_enter_and_init(hsm, &path);

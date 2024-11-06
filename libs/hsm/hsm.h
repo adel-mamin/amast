@@ -169,10 +169,15 @@ struct am_hsm {
     /** HSM spy callback */
     am_hsm_spy_fn spy;
 #endif
-    /** instance of active state */
+    /** active state instance [0,255] */
     char istate;
-    /** instance of temporary state during transitions & event processing */
+    /** temporary state instance during transitions & event processing [0,255]*/
     char itemp;
+    /**
+     * active state hierarchy level [0,HSM_HIERARCHY_DEPTH_MAX]
+     * (level 0 is assigned to am_hsm_top())
+     */
+    char level;
 };
 
 /**
