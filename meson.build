@@ -131,7 +131,7 @@ libm_dep = compiler.find_library('m', required: true)
 
 libs_inc = include_directories(['libs', '.'])
 subdir('libs')
-subdir('apps' / 'unity')
+subdir('tools' / 'unity')
 subdir('apps' / 'examples')
 
 files_to_check = run_command(
