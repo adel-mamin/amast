@@ -34,11 +34,17 @@
 #include "common/compiler.h" /* IWYU pragma: keep */
 #include "common/macros.h"
 
+#define AM_EVT_RANGE_HSM_BEGIN 1
+#define AM_EVT_RANGE_HSM_END 4
+#define AM_EVT_RANGE_FSM_BEGIN 5
+#define AM_EVT_RANGE_FSM_END 6
+#define AM_EVT_INTERNAL_MAX AM_EVT_RANGE_FSM_END
+
 /**
  * The event IDs below this value are reserved
  * and should not be used for user events.
  */
-#define AM_EVT_USER 5
+#define AM_EVT_USER (AM_EVT_INTERNAL_MAX + 1) /* 7 */
 
 #ifndef AM_EVENT_POOL_NUM_MAX
 #define AM_EVENT_POOL_NUM_MAX 3

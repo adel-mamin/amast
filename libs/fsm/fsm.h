@@ -42,24 +42,25 @@
 extern "C" {
 #endif
 
-/**
- * Entry event.
- * Run entry action(s) for a given state.
- * No state transition is allowed in response to this event.
- */
-#define AM_FSM_EVT_ENTRY 0
+enum am_fsm_evt {
+    /**
+     * Entry event.
+     * Run entry action(s) for a given state.
+     * No state transition is allowed in response to this event.
+     */
+    AM_FSM_EVT_ENTRY = AM_EVT_RANGE_FSM_BEGIN,
 
-/**
- * Exit event.
- * Run exit action(s) for a given state.
- * No state transition is allowed in response to this event.
- */
-#define AM_FSM_EVT_EXIT 1
+    /**
+     * Exit event.
+     * Run exit action(s) for a given state.
+     * No state transition is allowed in response to this event.
+     */
+    AM_FSM_EVT_EXIT,
+    /** FSM event with maximum value */
+    AM_FSM_EVT_MAX = AM_FSM_EVT_EXIT
+};
 
-/** FSM event with maximum value. */
-#define AM_FSM_EVT_MAX AM_FSM_EVT_EXIT
-
-AM_ASSERT_STATIC(AM_EVT_USER > AM_FSM_EVT_MAX);
+AM_ASSERT_STATIC(AM_FSM_EVT_MAX <= AM_EVT_RANGE_FSM_END);
 
 /**
  * FSM state handler return codes.

@@ -43,40 +43,42 @@
 extern "C" {
 #endif
 
-/**
- * Empty event.
- * Should not cause any side effects in event handlers.
- * The event handlers must always return the AM_HSM_SUPER() in response
- * to this event.
- */
-#define AM_HSM_EVT_EMPTY 1
+enum am_hsm_evt {
+    /**
+     * Empty event.
+     * Should not cause any side effects in event handlers.
+     * The event handlers must always return the AM_HSM_SUPER() in response
+     * to this event.
+     */
+    AM_HSM_EVT_EMPTY = AM_EVT_RANGE_HSM_BEGIN,
 
-/**
- * Init event.
- * Run initial transition from a given state.
- * Always follows the #AM_HSM_EVT_ENTRY event.
- */
-#define AM_HSM_EVT_INIT 2
+    /**
+     * Init event.
+     * Run initial transition from a given state.
+     * Always follows the #AM_HSM_EVT_ENTRY event.
+     */
+    AM_HSM_EVT_INIT,
 
-/**
- * Entry event.
- * Run entry action(s) for a given state.
- * Always precedes the #AM_HSM_EVT_INIT event.
- * No state transition is allowed in response to this event.
- */
-#define AM_HSM_EVT_ENTRY 3
+    /**
+     * Entry event.
+     * Run entry action(s) for a given state.
+     * Always precedes the #AM_HSM_EVT_INIT event.
+     * No state transition is allowed in response to this event.
+     */
+    AM_HSM_EVT_ENTRY,
 
-/**
- * Exit event.
- * Run exit action(s) for a given state.
- * No state transition is allowed in response to this event.
- */
-#define AM_HSM_EVT_EXIT 4
+    /**
+     * Exit event.
+     * Run exit action(s) for a given state.
+     * No state transition is allowed in response to this event.
+     */
+    AM_HSM_EVT_EXIT,
 
-/** HSM event with maximum value. */
-#define AM_HSM_EVT_MAX AM_HSM_EVT_EXIT
+    /** HSM event with maximum value. */
+    AM_HSM_EVT_MAX = AM_HSM_EVT_EXIT
+};
 
-AM_ASSERT_STATIC(AM_EVT_USER > AM_HSM_EVT_MAX);
+AM_ASSERT_STATIC(AM_HSM_EVT_MAX <= AM_EVT_RANGE_HSM_END);
 
 /**
  * HSM state handler return codes.
