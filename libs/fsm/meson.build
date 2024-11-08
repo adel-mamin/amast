@@ -22,19 +22,14 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
-src = []
+fsm_src = [files(
+    'fsm.c',
+)]
+src += [fsm_src]
 
-subdir('blk')
-subdir('common')
-subdir('crc')
-subdir('dlist')
-subdir('strlib')
-subdir('timer')
-subdir('async')
-subdir('fsm')
-subdir('hsm')
-subdir('queue')
-subdir('slist')
-subdir('onesize')
-subdir('event')
+libfsm = library('fsm', [fsm_src], include_directories : [inc])
+libfsm_dep = declare_dependency(
+    link_with : libfsm,
+    include_directories : [inc]
+)
+
