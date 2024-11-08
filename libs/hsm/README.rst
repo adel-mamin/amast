@@ -354,7 +354,7 @@ Here is how it is coded in pseudocode:
                [S1_0] = {.fn = AM_HSM_STATE_FN(s2)},
                [S1_1] = {.fn = AM_HSM_STATE_FN(s3)}
            };
-           int instance = am_hsm_get_state_instance(&me->hsm);
+           int instance = am_hsm_get_own_instance(&me->hsm);
            ASSERT(instance < AM_COUNTOF(tt));
            return AM_HSM_TRAN(tt[instance].fn);
        }
@@ -376,7 +376,7 @@ Here is how it is coded in pseudocode:
 Please note that any transitions between states within submachines as well as
 all references to any submachine state via **AM_HSM_SUPER()**  must be done
 with explicit specification of state instance, which can be retrieved by
-calling **am_hsm_get_state_instance()** API.
+calling **am_hsm_get_own_instance()** API.
 
 The complete implementation of the given submachine example can be found
 in **test/submachine/basic/test.c**
