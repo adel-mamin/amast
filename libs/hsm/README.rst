@@ -27,7 +27,7 @@ GLOSSARY
        (**AM_HSM_EVT_INIT**). It immediately follows the entry event.
 
    state
-       an event handler. A,B,C,D,E,F,am_hsm_top are all states
+       an event handler. A,B,C,D,E,F,am_hsm_top are all states (see state diagram below)
 
    current state
        the state which currently gets the incoming events
@@ -128,7 +128,7 @@ STATE RELATIONS
 
 States B and D are children of A. States C and E are children of B and D,
 respectively.  State F has no children. Both A and F have the default parent
-am_hsm_top provided by the framework (**am_hsm_top()**).
+am_hsm_top provided by the library (**am_hsm_top()**).
 
 EVENT PROPAGATION
 =================
@@ -148,9 +148,9 @@ chooses to pass then, the event will be sent to state B, its direct parent. If
 state B also chooses to pass then the event will finally be sent to state
 A. If A chooses to pass then event is consumed by **am_hsm_top()**.
 
-To inform the framework that an event is handled the event handler function
+To inform the library that an event is handled the event handler function
 must return **AM_HSM_HANDLED()**.
-To inform the framework that an event is passed to a superstate the event
+To inform the library that an event is passed to a superstate the event
 handler function must return **AM_HSM_SUPER(superstate)**.
 
 STATE TRANSITION
@@ -165,7 +165,7 @@ case the current state is C, the source state is A and the target state is F.
 When transitioning, exit events are sent up the ancestor chain until reaching
 the nearest common ancestor (NCA) of the current and target states. Then,
 entry events are sent down the ancestor chain to the target state. Finally
-the framework sends init event to the target state. The NCA does not receive
+the library sends init event to the target state. The NCA does not receive
 an exit event nor does it receive an entry and init events. There is a
 special case when the source and target states match (a self-transition). In
 this scenario the source state will be sent an exit and then an entry event
@@ -224,7 +224,7 @@ INITIAL STATE
 =============
 
 In addition to regular states every HSM must declare the initial state,
-which the HSM framework invokes to execute the topmost initial transition.
+which the HSM library invokes to execute the topmost initial transition.
 
 HSM INITIALIZATION
 ==================
@@ -238,7 +238,7 @@ flexibility and better control of the initialization timeline:
 HSM TOPOLOGY
 ============
 
-HSM framework discovers the HSM topology by sending **AM_HSM_EVT_EMPTY** event
+HSM library discovers the user HSM topology by sending **AM_HSM_EVT_EMPTY** event
 to state event handlers. The state event handlers should explicitly process
 the event and always return **AM_HSM_SUPER(superstate)** in response.
 
