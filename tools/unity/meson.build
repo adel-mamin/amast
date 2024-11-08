@@ -67,7 +67,7 @@ if unit_test
         amast_src,
         include_directories: libs_inc,
         c_args: [
-            '-DAMAST_UNIT_TESTS',
+            '-DAM_HSM_SPY',
             '-ffunction-sections', '-fdata-sections'
         ],
         link_args: ['-Wl,--gc-sections'],

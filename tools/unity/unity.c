@@ -297,11 +297,6 @@ static void create_amast_h_file(
     add_amast_description(hdr_file, "header", &db->hdr);
     add_amast_includes_std(hdr_file, &db->hdr);
 
-    fprintf(hdr_file, "#ifdef AMAST_UNIT_TESTS\n");
-    fprintf(hdr_file, "#undef AM_HSM_SPY\n");
-    fprintf(hdr_file, "#define AM_HSM_SPY\n");
-    fprintf(hdr_file, "#endif /* AMAST_UNIT_TESTS */ \n");
-
     /* Copy content of all header files to amast.h */
     for (int i = 0; i < db->hdr.len; i++) {
         fprintf(hdr_file, "\n/* %s */\n\n", get_repo_fname(db->hdr.fnames[i]));

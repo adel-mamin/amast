@@ -65,12 +65,11 @@ CFLAGS += -Wformat-nonliteral
 CFLAGS += -Wformat-security
 CFLAGS += -Wcast-align
 CFLAGS += -Wno-declaration-after-statement
+CFLAGS += -DAM_HSM_SPY
 
 LDFLAGS = -Wl,--gc-sections -flto=auto
-TESTFLAGS = $(CFLAGS) $(LDFLAGS) -ggdb -DAMAST_UNIT_TESTS
 AR = ar
 ARFLAGS = rcs
-TEST_EXEC = amast-test
 
 SRC = amast.c amast_test.c
 OBJ = amast.o amast_test.o
@@ -83,7 +82,7 @@ LIB = libamast.a
 all: test amast
 
 test: $(OBJ)
-	$(CC) $(CFLAGS) $(TESTFLAGS) -o amast-test $(OBJ)
+	$(CC) $(CFLAGS) -ggdb -o amast-test $(OBJ)
 	./amast-test
 
 clean:
