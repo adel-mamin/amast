@@ -26,7 +26,7 @@
 /**
  * @file
  *
- * Hierarchical State Machine (HSM) framework API declaration.
+ * Hierarchical State Machine (HSM) module API declaration.
  * Configuration defines:
  * AM_HSM_SPY - enables HSM spy callback support for debugging
  */
@@ -332,7 +332,7 @@ void am_hsm_dtor(struct am_hsm *hsm);
  * Perform HSM initial transition.
  *
  * @param hsm         the HSM handler
- * @param init_event  the init event. Can be NULL. The event is not recycled.
+ * @param init_event  the init event. Can be NULL.
  */
 void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event);
 
