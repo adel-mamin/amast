@@ -132,7 +132,7 @@ struct am_fsm {
 #define AM_FSM_HANDLED() AM_FSM_RC_HANDLED
 
 /** Helper macro. Not to be used directly. */
-#define AM_SET_STATE_(s) (((struct am_hsm *)me)->state = (am_hsm_state_fn)(s))
+#define AM_SET_STATE_(s) (((struct am_fsm *)me)->state = (am_fsm_state)(s))
 
 /**
  * Event processing is over. Transition is taken.

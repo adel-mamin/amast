@@ -33,3 +33,13 @@ libfsm_dep = declare_dependency(
     include_directories : [inc]
 )
 
+if unit_test
+    e = executable(
+        'history',
+        [
+            'tests' / 'history.c'
+        ],
+        dependencies: [libfsm_dep],
+        include_directories: [include_directories('tests')])
+    test('history', e, suite: 'fsm')
+endif

@@ -122,7 +122,7 @@ void am_fsm_dtor(struct am_fsm *fsm) {
 
 void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event) {
     AM_ASSERT(fsm);
-    AM_ASSERT(NULL == fsm->state); /* was am_fsm_ctor() called? */
+    AM_ASSERT(fsm->state); /* was am_fsm_ctor() called? */
 
     enum am_fsm_rc rc = fsm->state(fsm, init_event);
     AM_ASSERT(AM_FSM_RC_TRAN == rc);
