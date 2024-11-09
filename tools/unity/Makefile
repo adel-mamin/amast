@@ -83,7 +83,7 @@ LIB = libamast.a
 all: test lib
 
 test: $(OBJ)
-	$(CC) $(CFLAGS) -ggdb -o amast_test $(OBJ)
+	$(CC) $(CFLAGS) -ggdb $(OBJ) -o amast_test
 	./amast_test
 
 clean:
