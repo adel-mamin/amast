@@ -152,6 +152,9 @@ static void db_init(struct db *db, const char *db_fname, const char *odir) {
             }
             continue;
         }
+        if ('\0' == fname[0]) {
+            continue;
+        }
         assert(0);
     }
 
