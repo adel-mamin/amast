@@ -25,44 +25,40 @@
 #include <stddef.h>
 
 #include "event/event.h"
-#include "hsm/hsm.h"
+#include "fsm/fsm.h"
 
-struct dtor_hsm {
-    struct am_hsm hsm;
+struct dtor_fsm {
+    struct am_fsm fsm;
 };
 
-static struct dtor_hsm m_dtor_hsm;
+static struct dtor_fsm m_dtor_fsm;
 
-/* test am_hsm_dtor() */
+/* test am_fsm_dtor() */
 
-static enum am_hsm_rc dtor_hsm_s(
-    struct dtor_hsm *me, const struct am_event *event
+static enum am_fsm_rc dtor_fsm_s(
+    struct dtor_fsm *me, const struct am_event *event
 ) {
-    switch (event->id) {
-    case AM_HSM_EVT_EXIT:
-        return AM_HSM_HANDLED();
-    default:
-        break;
-    }
-    return AM_HSM_SUPER(am_hsm_top);
+    (void)me;
+    (void)event;
+    return AM_FSM_HANDLED();
 }
 
-static enum am_hsm_rc dtor_hsm_sinit(
-    struct dtor_hsm *me, const struct am_event *event
+static enum am_fsm_rc dtor_fsm_sinit(
+    struct dtor_fsm *me, const struct am_event *event
 ) {
     (void)event;
-    return AM_HSM_TRAN(dtor_hsm_s);
+    return AM_FSM_TRAN(dtor_fsm_s);
 }
 
-static void dtor_hsm(void) {
-    struct dtor_hsm *me = &m_dtor_hsm;
-    am_hsm_ctor(&me->hsm, &AM_HSM_STATE(dtor_hsm_sinit));
-    am_hsm_init(&me->hsm, /*init_event=*/NULL);
-    am_hsm_dtor(&me->hsm);
-    AM_ASSERT(am_hsm_is_in(&me->hsm, NULL));
+static void dtor_fsm(void) {
+    struct dtor_fsm *me = &m_dtor_fsm;
+    am_fsm_ctor(&me->fsm, AM_FSM_STATE(dtor_fsm_sinit));
+    am_fsm_init(&me->fsm, /*init_event=*/NULL);
+    am_fsm_dtor(&me->fsm);
+    AM_ASSERT(am_fsm_is_in(&me->fsm, NULL));
 }
 
 int main(void) {
-    dtor_hsm();
+    dtor_fsm();
     return 0;
 }

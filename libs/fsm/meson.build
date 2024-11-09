@@ -51,4 +51,13 @@ if unit_test
         dependencies: [libfsm_dep],
         include_directories: [include_directories('tests')])
     test('redispatch', e, suite: 'fsm')
+
+    e = executable(
+        'dtor',
+        [
+            'tests'/ 'dtor.c'
+        ],
+        dependencies: [libfsm_dep],
+        include_directories: [include_directories('tests')])
+    test('dtor', e, suite: 'fsm')
 endif

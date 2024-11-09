@@ -63,9 +63,9 @@ bool am_hsm_active_state_is_eq(
     const struct am_hsm *hsm, const struct am_hsm_state *state
 ) {
     AM_ASSERT(hsm);
-    AM_ASSERT(hsm->state);
-    AM_ASSERT(state);
-    AM_ASSERT(state->fn);
+    if ((NULL == state) || (NULL == state->fn)) {
+        return NULL == hsm->state;
+    }
     return (hsm->state == state->fn) && (hsm->istate == state->ifn);
 }
 
@@ -284,8 +284,10 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event) {
 
 bool am_hsm_is_in(struct am_hsm *hsm, const struct am_hsm_state *state) {
     AM_ASSERT(hsm);
-    AM_ASSERT(hsm->state);
-    AM_ASSERT(state);
+
+    if ((NULL == state) || (NULL == state->fn)) {
+        return NULL == hsm->state;
+    }
 
     struct am_hsm hsm_ = *hsm;
 

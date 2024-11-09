@@ -102,9 +102,6 @@ void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event) {
 
 bool am_fsm_is_in(const struct am_fsm *fsm, const am_fsm_state state) {
     AM_ASSERT(fsm);
-    AM_ASSERT(fsm->state);
-    AM_ASSERT(state);
-
     return fsm->state == state;
 }
 
