@@ -192,6 +192,7 @@ run_target(
         '--error-exitcode=2',
         '--enable=warning,style',
         '--inline-suppr',
+        '--check-level=exhaustive',
         '--suppress=sizeofDivisionMemfunc',
         '--suppress=*:/opt/*',
         '--suppress=*:/usr/*',

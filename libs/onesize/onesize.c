@@ -111,7 +111,7 @@ void am_onesize_free_all(struct am_onesize *hnd) {
 
     int minfree = hnd->minfree;
     am_onesize_init_internal(s);
-    hnd->minfree = minfree;
+    hnd->minfree = minfree; /* cppcheck-suppress redundantAssignment */
 }
 
 void am_onesize_iterate_over_allocated(
