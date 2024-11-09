@@ -126,4 +126,13 @@ if unit_test
         include_directories: [include_directories('tests')])
     test('spy', e, suite: 'hsm')
 
+    e = executable(
+        'reenter',
+        [
+            'tests' / 'reenter.c',
+            hsm_src,
+        ],
+        dependencies: [libstr_dep],
+        include_directories: [include_directories('tests')])
+    test('reenter', e, suite: 'hsm')
 endif

@@ -59,6 +59,7 @@
 @SRC_ROOT@/libs/hsm/tests/spy.c
 @SRC_ROOT@/libs/hsm/tests/redispatch.c
 @SRC_ROOT@/libs/hsm/tests/dtor.c
+@SRC_ROOT@/libs/hsm/tests/reenter.c
 @SRC_ROOT@/libs/hsm/tests/common.h
 @SRC_ROOT@/libs/hsm/tests/regular/regular.h
 @SRC_ROOT@/libs/hsm/tests/regular/regular.c
