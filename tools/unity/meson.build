@@ -68,6 +68,7 @@ if unit_test
         include_directories: libs_inc,
         c_args: [
             '-DAM_HSM_SPY',
+            '-DAM_FSM_SPY',
             '-ffunction-sections', '-fdata-sections'
         ],
         link_args: ['-Wl,--gc-sections'],

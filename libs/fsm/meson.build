@@ -60,4 +60,15 @@ if unit_test
         dependencies: [libfsm_dep],
         include_directories: [include_directories('tests')])
     test('dtor', e, suite: 'fsm')
+
+    e = executable(
+        'spy',
+        [
+            'tests' / 'spy.c',
+            fsm_src,
+        ],
+        c_args: ['-DAM_FSM_SPY'],
+        dependencies: [libstr_dep],
+        include_directories: [include_directories('tests')])
+    test('spy', e, suite: 'fsm')
 endif

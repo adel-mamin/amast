@@ -129,7 +129,6 @@ void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event) {
 #ifdef AM_FSM_SPY
 void am_fsm_set_spy(struct am_fsm *fsm, am_fsm_spy_fn spy) {
     AM_ASSERT(fsm);
-    AM_ASSERT(NULL == fsm->state); /* was am_fsm_ctor() called? */
     fsm->spy = spy;
 }
 #endif
