@@ -138,6 +138,7 @@ files_to_check = run_command(
     FIND,
     meson.project_source_root() / 'libs',
     meson.project_source_root() / 'apps',
+    meson.project_source_root() / 'tools',
     '-name',
     '*.h',
     '-or',

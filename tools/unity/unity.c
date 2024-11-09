@@ -371,7 +371,7 @@ static void create_amast_c_file(
 
     /* Copy content of all source files to amast.c */
     for (int i = 0; i < db->src.len; i++) {
-        fprintf(src_file, "/* %s */\n", get_repo_fname(db->src.fnames[i]));
+        fprintf(src_file, "\n/* %s */\n\n", get_repo_fname(db->src.fnames[i]));
         assert(*ntests < (AM_COUNTOF(*tests) - 1));
         AM_ASSERT(strstr(db->src.fnames[i], "test") == NULL);
         file_append(
@@ -402,7 +402,9 @@ static void create_amast_test_c_file(
 
     /* Copy content of all source files to amast.c */
     for (int i = 0; i < db->src_test.len; i++) {
-        fprintf(src_file, "/* %s */\n", get_repo_fname(db->src_test.fnames[i]));
+        fprintf(
+            src_file, "\n/* %s */\n\n", get_repo_fname(db->src_test.fnames[i])
+        );
         assert(*ntests < (AM_COUNTOF(*tests) - 1));
         AM_ASSERT(strstr(db->src_test.fnames[i], "test") != NULL);
         file_append(
@@ -415,10 +417,13 @@ static void create_amast_test_c_file(
     }
 
     /* Add the final main function to amast_test.c */
-    fprintf(src_file, "int main(void) {\n");
+    fprintf(src_file, "\nint main(void) {\n");
     for (int i = 0; i < *ntests; i++) {
         fprintf(src_file, "    %s();\n", tests[i]);
     }
+    fprintf(src_file, "\n");
+    fprintf(src_file, "    printf(\"Amast unit tests passed!\\n\");\n");
+    fprintf(src_file, "\n");
     fprintf(src_file, "    return 0;\n");
     fprintf(src_file, "}\n");
     fprintf(src_file, "\n");
