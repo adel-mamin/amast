@@ -15,6 +15,14 @@ Amast is a minimalist asynchronous toolkit that makes it easier to develop C lan
 - timers
 - events
 
+## How To Compile
+<a name="how-to-compile"></a>
+
+On Linux or WSL:
+
+Install [pixi](https://pixi.sh/latest/#installation).
+Run `pixi run all`.
+
 ## How To Use
 <a name="how-to-use"></a>
 
