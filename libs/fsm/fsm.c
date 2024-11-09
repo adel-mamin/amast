@@ -37,9 +37,9 @@
 static const struct am_event m_fsm_evt_entry = {.id = AM_FSM_EVT_ENTRY};
 static const struct am_event m_fsm_evt_exit = {.id = AM_FSM_EVT_EXIT};
 
-am_fsm_state am_fsm_get_active_state(const struct am_fsm *fsm) {
+am_fsm_state_fn am_fsm_get_active_state(const struct am_fsm *fsm) {
     AM_ASSERT(fsm);
-    return AM_FSM_STATE(fsm->state);
+    return AM_FSM_STATE_FN(fsm->state);
 }
 
 /**
@@ -48,7 +48,7 @@ am_fsm_state am_fsm_get_active_state(const struct am_fsm *fsm) {
  * @param fsm    the FSM state
  * @param state  the state to enter
  */
-static void fsm_enter(struct am_fsm *fsm, const am_fsm_state state) {
+static void fsm_enter(struct am_fsm *fsm, const am_fsm_state_fn state) {
     fsm->state = state;
     enum am_fsm_rc rc = fsm->state(fsm, &m_fsm_evt_entry);
     AM_ASSERT(AM_FSM_RC_HANDLED == rc);
@@ -72,14 +72,14 @@ static enum am_fsm_rc fsm_dispatch(
     AM_ASSERT(event);
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
 
-    am_fsm_state src = fsm->state;
+    am_fsm_state_fn src = fsm->state;
     enum am_fsm_rc rc = fsm->state(fsm, event);
     if (AM_FSM_RC_HANDLED == rc) {
         AM_ASSERT(fsm->state == src);
         return rc;
     }
     /* transition was taken */
-    am_fsm_state dst = fsm->state;
+    am_fsm_state_fn dst = fsm->state;
     fsm->state = src;
     fsm_exit(fsm);
     fsm_enter(fsm, dst);
@@ -100,12 +100,12 @@ void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event) {
     }
 }
 
-bool am_fsm_is_in(const struct am_fsm *fsm, const am_fsm_state state) {
+bool am_fsm_is_in(const struct am_fsm *fsm, const am_fsm_state_fn state) {
     AM_ASSERT(fsm);
     return fsm->state == state;
 }
 
-void am_fsm_ctor(struct am_fsm *fsm, const am_fsm_state state) {
+void am_fsm_ctor(struct am_fsm *fsm, const am_fsm_state_fn state) {
     AM_ASSERT(fsm);
     AM_ASSERT(state);
     fsm->state = state;

@@ -89,7 +89,7 @@ static enum am_fsm_rc redisp_fsm_sinit(
 
 static void redispatch_fsm(void) {
     struct redisp_fsm *me = &m_redisp_fsm;
-    am_fsm_ctor(&me->fsm, AM_FSM_STATE(redisp_fsm_sinit));
+    am_fsm_ctor(&me->fsm, AM_FSM_STATE_FN(redisp_fsm_sinit));
 
     am_fsm_init(&me->fsm, /*init_event=*/NULL);
     AM_ASSERT(0 == me->a_handled);
@@ -98,12 +98,12 @@ static void redispatch_fsm(void) {
     static const struct am_event e1 = {.id = FSM_EVT_A};
     am_fsm_dispatch(&me->fsm, &e1);
     AM_ASSERT(1 == me->a_handled);
-    AM_ASSERT(am_fsm_is_in(&me->fsm, AM_FSM_STATE(redisp_fsm_s2)));
+    AM_ASSERT(am_fsm_is_in(&me->fsm, AM_FSM_STATE_FN(redisp_fsm_s2)));
 
     static const struct am_event e2 = {.id = FSM_EVT_B};
     am_fsm_dispatch(&me->fsm, &e2);
     AM_ASSERT(1 == me->b_handled);
-    AM_ASSERT(am_fsm_is_in(&me->fsm, AM_FSM_STATE(redisp_fsm_s1)));
+    AM_ASSERT(am_fsm_is_in(&me->fsm, AM_FSM_STATE_FN(redisp_fsm_s1)));
 }
 
 int main(void) {

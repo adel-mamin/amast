@@ -64,7 +64,7 @@ static enum am_fsm_rc spy_fsm_init(
 
 static void spy_fsm_ctor(void (*log)(const char *fmt, ...)) {
     struct spy_fsm *me = &m_spy_fsm;
-    am_fsm_ctor(&me->fsm, AM_FSM_STATE(spy_fsm_init));
+    am_fsm_ctor(&me->fsm, AM_FSM_STATE_FN(spy_fsm_init));
     me->log = log;
 }
 

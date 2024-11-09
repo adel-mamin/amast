@@ -54,7 +54,7 @@ static enum am_fsm_rc dtor_fsm_sinit(
 
 static void dtor_fsm(void) {
     struct dtor_fsm *me = &m_dtor_fsm;
-    am_fsm_ctor(&me->fsm, AM_FSM_STATE(dtor_fsm_sinit));
+    am_fsm_ctor(&me->fsm, AM_FSM_STATE_FN(dtor_fsm_sinit));
     am_fsm_init(&me->fsm, /*init_event=*/NULL);
     am_fsm_dtor(&me->fsm);
     AM_ASSERT(am_fsm_is_in(&me->fsm, NULL));

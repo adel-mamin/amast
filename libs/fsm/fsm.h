@@ -87,7 +87,7 @@ struct am_fsm;
  * @param event  the event to handle
  * @return return code
  */
-typedef enum am_fsm_rc (*am_fsm_state)(
+typedef enum am_fsm_rc (*am_fsm_state_fn)(
     struct am_fsm *fsm, const struct am_event *event
 );
 
@@ -111,12 +111,12 @@ typedef void (*am_fsm_spy_fn)(struct am_fsm *fsm, const struct am_event *event);
  * @param s  FSM event handler
  * @return FSM state
  */
-#define AM_FSM_STATE(s) ((am_fsm_state)(s))
+#define AM_FSM_STATE_FN(s) ((am_fsm_state_fn)(s))
 
 /** FSM state */
 struct am_fsm {
     /** active state */
-    am_fsm_state state;
+    am_fsm_state_fn state;
 #ifdef AM_FSM_SPY
     /** FSM spy callback */
     am_fsm_spy_fn spy;
@@ -132,14 +132,14 @@ struct am_fsm {
 #define AM_FSM_HANDLED() AM_FSM_RC_HANDLED
 
 /** Helper macro. Not to be used directly. */
-#define AM_SET_STATE_(s) (((struct am_fsm *)me)->state = (am_fsm_state)(s))
+#define AM_SET_STATE_(s) (((struct am_fsm *)me)->state = (am_fsm_state_fn)(s))
 
 /**
  * Event processing is over. Transition is taken.
  *
  * It should never be returned for #AM_FSM_EVT_ENTRY or #AM_FSM_EVT_EXIT events.
  *
- * @param s  the new state of type #am_fsm_state
+ * @param s  the new state of type #am_fsm_state_fn
  */
 #define AM_FSM_TRAN(s) (AM_SET_STATE_(s), AM_FSM_RC_TRAN)
 
@@ -149,7 +149,7 @@ struct am_fsm {
  * It should never be returned for #AM_FSM_EVT_ENTRY or #AM_FSM_EVT_EXIT events.
  * Do not redispatch the same event more than once.
  *
- * @param s  the new state of type #am_fsm_state
+ * @param s  the new state of type #am_fsm_state_fn
  */
 #define AM_FSM_TRAN_REDISPATCH(s) (AM_SET_STATE_(s), AM_FSM_RC_TRAN_REDISPATCH)
 
@@ -169,7 +169,7 @@ void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event);
  * @retval false  not in the state
  * @retval true   in the state
  */
-bool am_fsm_is_in(const struct am_fsm *fsm, const am_fsm_state state);
+bool am_fsm_is_in(const struct am_fsm *fsm, const am_fsm_state_fn state);
 
 /**
  * Get the active state.
@@ -177,7 +177,7 @@ bool am_fsm_is_in(const struct am_fsm *fsm, const am_fsm_state state);
  * @param fsm  the FSM handler
  * @return the active state
  */
-am_fsm_state am_fsm_get_active_state(const struct am_fsm *fsm);
+am_fsm_state_fn am_fsm_get_active_state(const struct am_fsm *fsm);
 
 /**
  * FSM constructor.
@@ -186,7 +186,7 @@ am_fsm_state am_fsm_get_active_state(const struct am_fsm *fsm);
  * @param state  the initial state of the FSM object
  *               The initial state must return AM_FSM_TRAN(s)
  */
-void am_fsm_ctor(struct am_fsm *fsm, const am_fsm_state state);
+void am_fsm_ctor(struct am_fsm *fsm, const am_fsm_state_fn state);
 
 /**
  * FSM destructor.

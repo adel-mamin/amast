@@ -70,7 +70,7 @@ static enum am_fsm_rc reenter_fsm_init(
 
 static void reenter_fsm_ctor(void (*log)(const char *fmt, ...)) {
     struct reenter_fsm *me = &m_reenter_fsm;
-    am_fsm_ctor(&me->fsm, AM_FSM_STATE(reenter_fsm_init));
+    am_fsm_ctor(&me->fsm, AM_FSM_STATE_FN(reenter_fsm_init));
     me->log = log;
 }
 
