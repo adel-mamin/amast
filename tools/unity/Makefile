@@ -66,6 +66,7 @@ CFLAGS += -Wformat-security
 CFLAGS += -Wcast-align
 CFLAGS += -Wno-declaration-after-statement
 CFLAGS += -DAM_HSM_SPY
+CFLAGS += -DAM_FSM_SPY
 
 LDFLAGS = -Wl,--gc-sections -flto=auto
 AR = ar
@@ -79,14 +80,14 @@ LIB = libamast.a
 
 .PHONY: all test clean lib
 
-all: test amast
+all: test lib
 
 test: $(OBJ)
-	$(CC) $(CFLAGS) -ggdb -o amast-test $(OBJ)
-	./amast-test
+	$(CC) $(CFLAGS) -ggdb -o amast_test $(OBJ)
+	./amast_test
 
 clean:
-	rm -f $(OBJ) amast-test $(LIB)
+	rm -f $(OBJ) amast_test $(LIB)
 
 lib: amast.o
 	ar rcs $(LIB) amast.o
