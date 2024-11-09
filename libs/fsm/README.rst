@@ -27,20 +27,11 @@ GLOSSARY
    state transition
        the process of changing of the current state to another or to itself
 
-   initial transition
-       the state transition that may optionally happen after entering a state
-       if the state is a target state of a state transition.
-       The state D has the initial transition, whereas state B does not.
-
    source state
        the state that initiates the state transition
 
    target state
        the destination state of a state transition
-
-   topology
-       FSM topology is the architecture of FSM - the set of all parent -
-       child relations between FSM states
 
 INTRODUCTION
 ============
