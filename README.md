@@ -7,6 +7,7 @@ Amast is a minimalist asynchronous toolkit that makes it easier to develop C lan
 
 ## What Is Inside
 
+- finite state machine (FSM) ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/fsm/README.rst))
 - hierarchical state machine (HSM) with submachines support ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/hsm/README.rst), [examples](https://github.com/adel-mamin/amast/tree/main/apps/examples/hsm))
 - async/await ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/async/README.rst))
 - doubly and singly linked lists
