@@ -71,4 +71,14 @@ if unit_test
         dependencies: [libstr_dep],
         include_directories: [include_directories('tests')])
     test('spy', e, suite: 'fsm')
+
+    e = executable(
+        'reenter',
+        [
+            'tests' / 'reenter.c',
+            fsm_src,
+        ],
+        dependencies: [libstr_dep],
+        include_directories: [include_directories('tests')])
+    test('reenter', e, suite: 'fsm')
 endif
