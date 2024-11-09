@@ -42,4 +42,13 @@ if unit_test
         dependencies: [libfsm_dep],
         include_directories: [include_directories('tests')])
     test('history', e, suite: 'fsm')
+
+    e = executable(
+        'redispatch',
+        [
+            'tests'/ 'redispatch.c'
+        ],
+        dependencies: [libfsm_dep],
+        include_directories: [include_directories('tests')])
+    test('redispatch', e, suite: 'fsm')
 endif

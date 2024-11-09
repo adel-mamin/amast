@@ -29,6 +29,8 @@
 @SRC_ROOT@/libs/async/test.c
 @SRC_ROOT@/libs/fsm/fsm.h
 @SRC_ROOT@/libs/fsm/fsm.c
+@SRC_ROOT@/libs/fsm/tests/history.c
+@SRC_ROOT@/libs/fsm/tests/redispatch.c
 @SRC_ROOT@/libs/hsm/hsm.h
 @SRC_ROOT@/libs/hsm/hsm.c
 @SRC_ROOT@/libs/hsm/tests/hsm_top_as_nca.c
