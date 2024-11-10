@@ -111,7 +111,7 @@ typedef void (*am_fsm_spy_fn)(struct am_fsm *fsm, const struct am_event *event);
  * @param s  FSM event handler
  * @return FSM state
  */
-#define AM_FSM_STATE_FN(s) ((am_fsm_state_fn)(s))
+#define AM_FSM_STATE_CTOR(s) ((am_fsm_state_fn)(s))
 
 /** FSM state */
 struct am_fsm {
@@ -172,12 +172,12 @@ void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event);
 bool am_fsm_is_in(const struct am_fsm *fsm, const am_fsm_state_fn state);
 
 /**
- * Get the active state.
+ * Get active state.
  *
  * @param fsm  the FSM handler
  * @return the active state
  */
-am_fsm_state_fn am_fsm_get_active_state(const struct am_fsm *fsm);
+am_fsm_state_fn am_fsm_state(const struct am_fsm *fsm);
 
 /**
  * FSM constructor.

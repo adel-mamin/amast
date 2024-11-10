@@ -82,14 +82,14 @@ static enum am_hsm_rc nca_init(
 
 static void test_am_hsm_top_as_nca(void) {
     struct test_nca *me = &m_test_nca;
-    am_hsm_ctor(&me->hsm, &AM_HSM_STATE(nca_init));
+    am_hsm_ctor(&me->hsm, &AM_HSM_STATE_CTOR(nca_init));
 
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
-    AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(nca_s11)));
+    AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(nca_s11)));
 
     static const struct am_event E = {.id = HSM_EVT_A};
     am_hsm_dispatch(&me->hsm, &E);
-    AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(nca_s2)));
+    AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(nca_s2)));
 }
 
 int main(void) {

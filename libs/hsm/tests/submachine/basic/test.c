@@ -53,7 +53,7 @@ static enum am_hsm_rc bs_s2(struct basic_sm *me, const struct am_event *event);
 static enum am_hsm_rc bs_s3(struct basic_sm *me, const struct am_event *event);
 
 static enum am_hsm_rc bs_s(struct basic_sm *me, const struct am_event *event) {
-    AM_ASSERT(0 == am_hsm_get_own_instance(&me->hsm));
+    AM_ASSERT(0 == am_hsm_instance(&me->hsm));
     switch (event->id) {
     case FOO:
         return AM_HSM_TRAN(bs_s1, /*instance=*/S1_0);
@@ -74,7 +74,7 @@ static enum am_hsm_rc bs_s1(struct basic_sm *me, const struct am_event *event) {
             [S1_0] = {.fn = (am_hsm_state_fn)bs_s2},
             [S1_1] = {.fn = (am_hsm_state_fn)bs_s3}
         };
-        int instance = am_hsm_get_own_instance(&me->hsm);
+        int instance = am_hsm_instance(&me->hsm);
         AM_ASSERT(instance < AM_COUNTOF(tt));
         return AM_HSM_TRAN(tt[instance].fn);
     }
@@ -86,13 +86,13 @@ static enum am_hsm_rc bs_s1(struct basic_sm *me, const struct am_event *event) {
 
 static enum am_hsm_rc bs_s2(struct basic_sm *me, const struct am_event *event) {
     (void)event;
-    AM_ASSERT(0 == am_hsm_get_own_instance(&me->hsm));
+    AM_ASSERT(0 == am_hsm_instance(&me->hsm));
     return AM_HSM_SUPER(bs_s1, S1_0);
 }
 
 static enum am_hsm_rc bs_s3(struct basic_sm *me, const struct am_event *event) {
     (void)event;
-    AM_ASSERT(0 == am_hsm_get_own_instance(&me->hsm));
+    AM_ASSERT(0 == am_hsm_instance(&me->hsm));
     return AM_HSM_SUPER(bs_s1, S1_1);
 }
 
@@ -103,38 +103,38 @@ static enum am_hsm_rc bs_init(struct basic_sm *me, const struct am_event *evt) {
 
 static void test_basic_sm(void) {
     struct basic_sm *me = &m_basic_sm;
-    am_hsm_ctor(&me->hsm, &AM_HSM_STATE(bs_init));
+    am_hsm_ctor(&me->hsm, &AM_HSM_STATE_CTOR(bs_init));
 
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
-    AM_ASSERT(am_hsm_active_state_is_eq(&me->hsm, &AM_HSM_STATE(bs_s)));
+    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(bs_s)));
 
     {
         struct am_event e = {.id = FOO};
         am_hsm_dispatch(&me->hsm, &e);
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(bs_s1, S1_0)));
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE(bs_s1, S1_1)));
-        AM_ASSERT(am_hsm_active_state_is_eq(&me->hsm, &AM_HSM_STATE(bs_s2)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(bs_s1, S1_0)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(bs_s1, S1_1)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(bs_s2)));
     }
     {
         struct am_event e = {.id = BAZ};
         am_hsm_dispatch(&me->hsm, &e);
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE(bs_s1, S1_0)));
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE(bs_s1, S1_1)));
-        AM_ASSERT(am_hsm_active_state_is_eq(&me->hsm, &AM_HSM_STATE(bs_s)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(bs_s1, S1_0)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(bs_s1, S1_1)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(bs_s)));
     }
     {
         struct am_event e = {.id = BAR};
         am_hsm_dispatch(&me->hsm, &e);
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE(bs_s1, S1_0)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE(bs_s1, S1_1)));
-        AM_ASSERT(am_hsm_active_state_is_eq(&me->hsm, &AM_HSM_STATE(bs_s3)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(bs_s1, S1_0)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(bs_s1, S1_1)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(bs_s3)));
     }
     {
         struct am_event e = {.id = BAZ};
         am_hsm_dispatch(&me->hsm, &e);
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE(bs_s1, S1_0)));
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE(bs_s1, S1_1)));
-        AM_ASSERT(am_hsm_active_state_is_eq(&me->hsm, &AM_HSM_STATE(bs_s)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(bs_s1, S1_0)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(bs_s1, S1_1)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(bs_s)));
     }
 }
 

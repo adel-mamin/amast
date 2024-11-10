@@ -100,7 +100,7 @@ static enum am_hsm_rc reenter_hsm_init(
 
 static void reenter_hsm_ctor(void (*log)(const char *fmt, ...)) {
     struct reenter_hsm *me = &m_reenter_hsm;
-    am_hsm_ctor(&me->hsm, &AM_HSM_STATE(reenter_hsm_init));
+    am_hsm_ctor(&me->hsm, &AM_HSM_STATE_CTOR(reenter_hsm_init));
     me->log = log;
     me->log_buf[0] = '\0';
 }

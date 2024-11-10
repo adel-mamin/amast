@@ -149,16 +149,16 @@ struct am_hsm_state {
 /**
  * Get HSM state from event handler and optionally the event handler instance.
  *
- * AM_HSM_STATE(s)     is converted to
- *                     (struct am_hsm_state){.fn = s, .ifn = 0}
- * AM_HSM_STATE(s, i)  is converted to
- *                     (struct am_hsm_state){.fn = s, .ifn = i}
+ * AM_HSM_STATE_CTOR(s)     is converted to
+ *                          (struct am_hsm_state){.fn = s, .ifn = 0}
+ * AM_HSM_STATE_CTOR(s, i)  is converted to
+ *                          (struct am_hsm_state){.fn = s, .ifn = i}
  *
  * @param s  HSM event handler
  * @param i  HSM event handler instance. Used by submachines. Default is 0.
  * @return HSM state structure
  */
-#define AM_HSM_STATE(...) \
+#define AM_HSM_STATE_CTOR(...) \
     AM_GET_MACRO_2_(__VA_ARGS__, AM_STATE2_, AM_STATE1_, _)(__VA_ARGS__)
 
 /** HSM state */
@@ -171,9 +171,9 @@ struct am_hsm {
     /** HSM spy callback */
     am_hsm_spy_fn spy;
 #endif
-    /** active state instance [0,255] */
+    /** active state instance [0,127] */
     char istate;
-    /** temporary state instance during transitions & event processing [0,255]*/
+    /** temporary state instance during transitions & event processing [0,127]*/
     char itemp;
     /**
      * active state hierarchy level [0,HSM_HIERARCHY_DEPTH_MAX]
@@ -277,15 +277,15 @@ bool am_hsm_is_in(struct am_hsm *hsm, const struct am_hsm_state *state);
  * Check if active state equals to #state (not in hierarchical sense).
  *
  * If active state of hsm is S1, which is substate of S, then
- * am_hsm_state_is_eq(hsm, &AM_HSM_STATE(S1)) is true, but
- * am_hsm_state_is_eq(hsm, &AM_HSM_STATE(S)) is false.
+ * am_hsm_state_is_eq(hsm, &AM_HSM_STATE_CTOR(S1)) is true, but
+ * am_hsm_state_is_eq(hsm, &AM_HSM_STATE_CTOR(S)) is false.
  *
  * @param hsm     the HSM handler
  * @param state   the state to compare against
  * @retval true   the active HSM state equals #state
  * @retval false  the active HSM state DOES NOT equal #state
  */
-bool am_hsm_active_state_is_eq(
+bool am_hsm_state_is_eq(
     const struct am_hsm *hsm, const struct am_hsm_state *state
 );
 
@@ -299,10 +299,10 @@ bool am_hsm_active_state_is_eq(
  * @param hsm  the HSM handler
  * @return the instance
  */
-int am_hsm_get_own_instance(const struct am_hsm *hsm);
+int am_hsm_instance(const struct am_hsm *hsm);
 
 /**
- * Get the active state.
+ * Get active state.
  *
  * E.g., assume HSM is in state S11,
  * which is a substate of S1, which is in turn a substate of S.
@@ -311,7 +311,7 @@ int am_hsm_get_own_instance(const struct am_hsm *hsm);
  * @param hsm  the HSM handler
  * @return the active state
  */
-struct am_hsm_state am_hsm_get_active_state(const struct am_hsm *hsm);
+struct am_hsm_state am_hsm_state(const struct am_hsm *hsm);
 
 /**
  * HSM constructor.

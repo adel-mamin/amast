@@ -59,7 +59,7 @@ static bool hsm_temp_is_eq(
     return (hsm->temp == s->fn) && (hsm->itemp == s->ifn);
 }
 
-bool am_hsm_active_state_is_eq(
+bool am_hsm_state_is_eq(
     const struct am_hsm *hsm, const struct am_hsm_state *state
 ) {
     AM_ASSERT(hsm);
@@ -69,14 +69,14 @@ bool am_hsm_active_state_is_eq(
     return (hsm->state == state->fn) && (hsm->istate == state->ifn);
 }
 
-int am_hsm_get_own_instance(const struct am_hsm *hsm) {
+int am_hsm_instance(const struct am_hsm *hsm) {
     AM_ASSERT(hsm);
     return hsm->itemp;
 }
 
-struct am_hsm_state am_hsm_get_active_state(const struct am_hsm *hsm) {
+struct am_hsm_state am_hsm_state(const struct am_hsm *hsm) {
     AM_ASSERT(hsm);
-    return AM_HSM_STATE(hsm->state, hsm->istate);
+    return AM_HSM_STATE_CTOR(hsm->state, hsm->istate);
 }
 
 /**
@@ -121,7 +121,9 @@ static void hsm_build(
  */
 static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
     for (int i = path->len; i > 0; --i) {
-        hsm_set_current(hsm, &AM_HSM_STATE(path->fn[i - 1], path->ifn[i - 1]));
+        hsm_set_current(
+            hsm, &AM_HSM_STATE_CTOR(path->fn[i - 1], path->ifn[i - 1])
+        );
         enum am_hsm_rc rc = hsm->state(hsm, &m_hsm_evt_entry);
         AM_ASSERT((AM_HSM_RC_SUPER == rc) || (AM_HSM_RC_HANDLED == rc));
     }
@@ -167,15 +169,16 @@ static void hsm_exit(struct am_hsm *hsm, const struct am_hsm_state *until) {
  */
 static void hsm_enter_and_init(struct am_hsm *hsm, struct am_hsm_path *path) {
     hsm_enter(hsm, path);
-    hsm_set_current(hsm, &AM_HSM_STATE(path->fn[0], path->ifn[0]));
+    hsm_set_current(hsm, &AM_HSM_STATE_CTOR(path->fn[0], path->ifn[0]));
     while (hsm->state(hsm, &m_hsm_evt_init) == AM_HSM_RC_TRAN) {
-        struct am_hsm_state from = AM_HSM_STATE(hsm->temp, hsm->itemp);
-        struct am_hsm_state until = AM_HSM_STATE(path->fn[0], path->ifn[0]);
+        struct am_hsm_state from = AM_HSM_STATE_CTOR(hsm->temp, hsm->itemp);
+        struct am_hsm_state until =
+            AM_HSM_STATE_CTOR(path->fn[0], path->ifn[0]);
         hsm_build(hsm, path, &from, &until);
         hsm_enter(hsm, path);
-        hsm_set_current(hsm, &AM_HSM_STATE(path->fn[0], path->ifn[0]));
+        hsm_set_current(hsm, &AM_HSM_STATE_CTOR(path->fn[0], path->ifn[0]));
     }
-    hsm_set_current(hsm, &AM_HSM_STATE(path->fn[0], path->ifn[0]));
+    hsm_set_current(hsm, &AM_HSM_STATE_CTOR(path->fn[0], path->ifn[0]));
 }
 
 static enum am_hsm_rc hsm_dispatch(
@@ -215,7 +218,7 @@ static enum am_hsm_rc hsm_dispatch(
     hsm->temp = hsm->state;
     hsm->itemp = hsm->istate;
 
-    if (!am_hsm_active_state_is_eq(hsm, &src)) {
+    if (!am_hsm_state_is_eq(hsm, &src)) {
         hsm_exit(hsm, /*until=*/&src);
         hsm_set_current(hsm, &src);
     }
@@ -235,7 +238,8 @@ static enum am_hsm_rc hsm_dispatch(
         return rc;
     }
 
-    hsm_build(hsm, &path, /*from=*/&dst, /*until=*/&AM_HSM_STATE(am_hsm_top));
+    struct am_hsm_state until = AM_HSM_STATE_CTOR(am_hsm_top);
+    hsm_build(hsm, &path, /*from=*/&dst, &until);
 
     /*
      * Exit states from src till am_hsm_top() and search LCA along the way.
@@ -317,8 +321,8 @@ void am_hsm_ctor(struct am_hsm *hsm, const struct am_hsm_state *state) {
 
 void am_hsm_dtor(struct am_hsm *hsm) {
     AM_ASSERT(hsm);
-    hsm_exit(hsm, /*until=*/&AM_HSM_STATE(am_hsm_top));
-    hsm_set_current(hsm, &AM_HSM_STATE(NULL));
+    hsm_exit(hsm, /*until=*/&AM_HSM_STATE_CTOR(am_hsm_top));
+    hsm_set_current(hsm, &AM_HSM_STATE_CTOR(NULL));
 }
 
 void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event) {
@@ -334,7 +338,8 @@ void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event) {
 
     struct am_hsm_state dst = {.fn = hsm->temp, .ifn = hsm->itemp};
     struct am_hsm_path path;
-    hsm_build(hsm, &path, /*from=*/&dst, /*until=*/&AM_HSM_STATE(am_hsm_top));
+    struct am_hsm_state until = AM_HSM_STATE_CTOR(am_hsm_top);
+    hsm_build(hsm, &path, /*from=*/&dst, &until);
     hsm_enter_and_init(hsm, &path);
 }
 

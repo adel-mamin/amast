@@ -87,7 +87,7 @@ static enum am_hsm_rc redisp_sinit(
 
 static void test_redispatch(void) {
     struct test_redisp *me = &m_test_redisp;
-    am_hsm_ctor(&me->hsm, &AM_HSM_STATE(redisp_sinit));
+    am_hsm_ctor(&me->hsm, &AM_HSM_STATE_CTOR(redisp_sinit));
 
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
     AM_ASSERT(0 == me->foo);
@@ -95,12 +95,12 @@ static void test_redispatch(void) {
     static const struct am_event e1 = {.id = HSM_EVT_A};
     am_hsm_dispatch(&me->hsm, &e1);
     AM_ASSERT(1 == me->foo);
-    AM_ASSERT(am_hsm_active_state_is_eq(&me->hsm, &AM_HSM_STATE(redisp_s2)));
+    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(redisp_s2)));
 
     static const struct am_event e2 = {.id = HSM_EVT_B};
     am_hsm_dispatch(&me->hsm, &e2);
     AM_ASSERT(2 == me->foo2);
-    AM_ASSERT(am_hsm_active_state_is_eq(&me->hsm, &AM_HSM_STATE(redisp_s1)));
+    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(redisp_s1)));
 }
 
 int main(void) {
