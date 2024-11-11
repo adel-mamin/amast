@@ -132,7 +132,7 @@ struct am_fsm {
 #define AM_FSM_HANDLED() AM_FSM_RC_HANDLED
 
 /** Helper macro. Not to be used directly. */
-#define AM_SET_STATE_(s) (((struct am_fsm *)me)->state = (am_fsm_state_fn)(s))
+#define AM_FSM_SET_(s) (((struct am_fsm *)me)->state = (am_fsm_state_fn)(s))
 
 /**
  * Event processing is over. Transition is taken.
@@ -141,7 +141,7 @@ struct am_fsm {
  *
  * @param s  the new state of type #am_fsm_state_fn
  */
-#define AM_FSM_TRAN(s) (AM_SET_STATE_(s), AM_FSM_RC_TRAN)
+#define AM_FSM_TRAN(s) (AM_FSM_SET_(s), AM_FSM_RC_TRAN)
 
 /**
  * Event redispatch is requested. Transition is taken.
@@ -151,7 +151,7 @@ struct am_fsm {
  *
  * @param s  the new state of type #am_fsm_state_fn
  */
-#define AM_FSM_TRAN_REDISPATCH(s) (AM_SET_STATE_(s), AM_FSM_RC_TRAN_REDISPATCH)
+#define AM_FSM_TRAN_REDISPATCH(s) (AM_FSM_SET_(s), AM_FSM_RC_TRAN_REDISPATCH)
 
 /**
  * Synchronous dispatch of event to the given FSM.

@@ -78,7 +78,7 @@ static enum am_fsm_rc fsm_dispatch(
         AM_ASSERT(fsm->state == src);
         return rc;
     }
-    /* transition was taken */
+    /* transition was triggered */
     am_fsm_state_fn dst = fsm->state;
     fsm->state = src;
     fsm_exit(fsm);
