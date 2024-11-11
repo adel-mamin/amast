@@ -194,10 +194,10 @@ struct am_hsm {
     unsigned char hierarchy_level : AM_HSM_HIERARCHY_LEVEL_BITS;
     /** safety net to catch missing am_hsm_ctor() call */
     unsigned char ctor_called : 1;
+    /** safety net to catch missing am_hsm_init() call */
+    unsigned char init_called : 1;
     /** safety net to catch reentrant am_hsm_dispatch() call */
     unsigned char dispatch_in_progress : 1;
-    /** unused */
-    unsigned char unused : 1;
 #ifdef AM_HSM_SPY
     /** HSM spy callback */
     am_hsm_spy_fn spy;
