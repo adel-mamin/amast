@@ -173,14 +173,14 @@ static enum am_hsm_rc hsm_dispatch(
      * propagate event up the ancestor chain till it is either
      * handled or ignored or triggers transition
      */
-    int cnt = 0;
+    int cnt = HSM_HIERARCHY_DEPTH_MAX;
     do {
         src = hsm->state;
         hsm->state = state;
         /* preserve hsm->ifn as the instance of src.fn */
         rc = src.fn(hsm, event);
-        ++cnt;
-        AM_ASSERT(cnt <= HSM_HIERARCHY_DEPTH_MAX);
+        --cnt;
+        AM_ASSERT(cnt); /* HSM hierarchy depth exceeds HSM_HIERARCHY_DEPTH_MAX*/
     } while (AM_HSM_RC_SUPER == rc);
 
     {
