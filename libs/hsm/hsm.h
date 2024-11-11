@@ -134,17 +134,20 @@ typedef void (*am_hsm_spy_fn)(struct am_hsm *hsm, const struct am_event *event);
 struct am_hsm_state {
     /** HSM state function  */
     am_hsm_state_fn fn;
-    /** HSM state function instance. Used for submachines. Default is 0. */
+    /**
+     * HSM state function instance. Used for submachines.
+     * Default is 0. Valid range [0,127].
+     */
     char ifn;
 };
 
 /** Helper macro. Not to be used directly. */
 #define AM_STATE1_(s) \
-    (struct am_hsm_state) { .fn = (am_hsm_state_fn)s, .ifn = 0 }
+    (struct am_hsm_state) { .fn = (am_hsm_state_fn)(s), .ifn = 0 }
 
 /** Helper macro. Not to be used directly. */
 #define AM_STATE2_(s, i) \
-    (struct am_hsm_state) { .fn = (am_hsm_state_fn)s, .ifn = (char)(i) }
+    (struct am_hsm_state) { .fn = (am_hsm_state_fn)(s), .ifn = (char)(i) }
 
 /**
  * Get HSM state from event handler and optionally the event handler instance.
@@ -161,29 +164,48 @@ struct am_hsm_state {
 #define AM_HSM_STATE_CTOR(...) \
     AM_GET_MACRO_2_(__VA_ARGS__, AM_STATE2_, AM_STATE1_, _)(__VA_ARGS__)
 
+/** HSM hierarchy maximum depth */
+#define HSM_HIERARCHY_DEPTH_MAX 16
+
+/** HSM hierarchy level representation bits number */
+#define AM_HSM_HIERARCHY_LEVEL_BITS 5
+
+/** HSM hierarchy level representation bits mask */
+#define AM_HSM_HIERARCHY_LEVEL_MASK ((1U << AM_HSM_HIERARCHY_LEVEL_BITS) - 1)
+
+AM_ASSERT_STATIC(HSM_HIERARCHY_DEPTH_MAX <= AM_HSM_HIERARCHY_LEVEL_MASK);
+
 /** HSM state */
 struct am_hsm {
     /** active state */
-    am_hsm_state_fn state;
-    /** temp state during transitions and event processing */
-    am_hsm_state_fn temp;
-#ifdef AM_HSM_SPY
-    /** HSM spy callback */
-    am_hsm_spy_fn spy;
-#endif
-    /** active state instance [0,127] */
-    char istate;
-    /** temporary state instance during transitions & event processing [0,127]*/
-    char itemp;
+    struct am_hsm_state state;
+    /**
+     * While am_hsm::state::ifn maintans state instance of active state,
+     * am_hsm::ifn maintans the transitive instance that may differ
+     * from am_hsm::state::ifn, when an event is propagated up
+     * from substates to superstates.
+     * Returned by am_hsm_instance().
+     */
+    unsigned char ifn;
     /**
      * active state hierarchy level [0,HSM_HIERARCHY_DEPTH_MAX]
      * (level 0 is assigned to am_hsm_top())
      */
-    char level;
+    unsigned char hierarchy_level : AM_HSM_HIERARCHY_LEVEL_BITS;
+    /** safety net to catch missing am_hsm_ctor() call */
+    unsigned char ctor_called : 1;
+    /** safety net to catch reentrant am_hsm_dispatch() call */
+    unsigned char dispatch_in_progress : 1;
+    /** unused */
+    unsigned char unused : 1;
+#ifdef AM_HSM_SPY
+    /** HSM spy callback */
+    am_hsm_spy_fn spy;
+#endif
 };
 
 /**
- * Event processing is over. No transition was taken.
+ * Event processing is over. No transition was triggered.
  * Used as a return value from an event handler that handled
  * an event and wants to prevent the event propagation to
  * superstate(s).
@@ -191,17 +213,17 @@ struct am_hsm {
 #define AM_HSM_HANDLED() AM_HSM_RC_HANDLED
 
 /** Helper macro. Not to be used directly. */
-#define AM_SET_TEMP_(s, i)                               \
-    (((struct am_hsm *)me)->temp = (am_hsm_state_fn)(s), \
-     ((struct am_hsm *)me)->itemp = (char)(i))
+#define AM_HSM_SET_(s, i)                                    \
+    (((struct am_hsm *)me)->state = AM_HSM_STATE_CTOR(s, i), \
+     ((struct am_hsm *)me)->ifn = (unsigned char)i)
 
 /** Helper macro. Not to be used directly. */
-#define AM_TRAN1_(s) (AM_SET_TEMP_(s, 0), AM_HSM_RC_TRAN)
+#define AM_TRAN1_(s) (AM_HSM_SET_(s, 0), AM_HSM_RC_TRAN)
 /** Helper macro. Not to be used directly. */
-#define AM_TRAN2_(s, i) (AM_SET_TEMP_(s, i), AM_HSM_RC_TRAN)
+#define AM_TRAN2_(s, i) (AM_HSM_SET_(s, i), AM_HSM_RC_TRAN)
 
 /**
- * Event processing is over. Transition is taken.
+ * Event processing is over. Transition is triggered.
  *
  * It should never be returned for #AM_HSM_EVT_ENTRY or #AM_HSM_EVT_EXIT events.
  * Conversely, the response to #AM_HSM_EVT_INIT event can optionally use
@@ -216,12 +238,12 @@ struct am_hsm {
     AM_GET_MACRO_2_(__VA_ARGS__, AM_TRAN2_, AM_TRAN1_, _)(__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
-#define AM_TRAN_REDISP1_(s) (AM_SET_TEMP_(s, 0), AM_HSM_RC_TRAN_REDISPATCH)
+#define AM_TRAN_REDISP1_(s) (AM_HSM_SET_(s, 0), AM_HSM_RC_TRAN_REDISPATCH)
 /** Helper macro. Not to be used directly. */
-#define AM_TRAN_REDISP2_(s, i) (AM_SET_TEMP_(s, i), AM_HSM_RC_TRAN_REDISPATCH)
+#define AM_TRAN_REDISP2_(s, i) (AM_HSM_SET_(s, i), AM_HSM_RC_TRAN_REDISPATCH)
 
 /**
- * Event redispatch is requested. Transition is taken.
+ * Event redispatch is requested. Transition is triggered.
  *
  * It should never be returned for #AM_HSM_EVT_ENTRY, #AM_HSM_EVT_EXIT or
  * #AM_HSM_EVT_INIT events.
@@ -235,12 +257,12 @@ struct am_hsm {
     (__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
-#define AM_SUPER1_(s) (AM_SET_TEMP_(s, 0), AM_HSM_RC_SUPER)
+#define AM_SUPER1_(s) (AM_HSM_SET_(s, 0), AM_HSM_RC_SUPER)
 /** Helper macro. Not to be used directly. */
-#define AM_SUPER2_(s, i) (AM_SET_TEMP_(s, i), AM_HSM_RC_SUPER)
+#define AM_SUPER2_(s, i) (AM_HSM_SET_(s, i), AM_HSM_RC_SUPER)
 
 /**
- * Event processing is passed to superstate. No transition was taken.
+ * Event processing is passed to superstate. No transition was triggered.
  *
  * If no explicit superstate exists, then the top (super)state am_hsm_top()
  * must be used.
