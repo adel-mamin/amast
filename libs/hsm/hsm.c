@@ -44,26 +44,6 @@ static const struct am_event m_hsm_evt_init = {.id = AM_HSM_EVT_INIT};
 static const struct am_event m_hsm_evt_entry = {.id = AM_HSM_EVT_ENTRY};
 static const struct am_event m_hsm_evt_exit = {.id = AM_HSM_EVT_EXIT};
 
-bool am_hsm_state_is_eq(
-    const struct am_hsm *hsm, const struct am_hsm_state *state
-) {
-    AM_ASSERT(hsm);
-    if ((NULL == state) || (NULL == state->fn)) {
-        return NULL == hsm->state.fn;
-    }
-    return (hsm->state.fn == state->fn) && (hsm->state.ifn == state->ifn);
-}
-
-int am_hsm_instance(const struct am_hsm *hsm) {
-    AM_ASSERT(hsm);
-    return (int)hsm->ifn;
-}
-
-struct am_hsm_state am_hsm_state(const struct am_hsm *hsm) {
-    AM_ASSERT(hsm);
-    return hsm->state;
-}
-
 static void hsm_set_state(struct am_hsm *hsm, const struct am_hsm_state *s) {
     hsm->state = *s;
     hsm->ifn = (unsigned char)s->ifn;
@@ -312,6 +292,26 @@ bool am_hsm_is_in(struct am_hsm *hsm, const struct am_hsm_state *state) {
     *hsm = hsm_;
 
     return in;
+}
+
+bool am_hsm_state_is_eq(
+    const struct am_hsm *hsm, const struct am_hsm_state *state
+) {
+    AM_ASSERT(hsm);
+    if ((NULL == state) || (NULL == state->fn)) {
+        return NULL == hsm->state.fn;
+    }
+    return (hsm->state.fn == state->fn) && (hsm->state.ifn == state->ifn);
+}
+
+int am_hsm_instance(const struct am_hsm *hsm) {
+    AM_ASSERT(hsm);
+    return (int)hsm->ifn;
+}
+
+struct am_hsm_state am_hsm_state(const struct am_hsm *hsm) {
+    AM_ASSERT(hsm);
+    return hsm->state;
 }
 
 void am_hsm_ctor(struct am_hsm *hsm, const struct am_hsm_state *state) {
