@@ -36,7 +36,12 @@ hsm_inc = include_directories(
 )
 src += [hsm_src]
 
-libhsm = library('hsm', [hsm_src], include_directories: [inc, hsm_inc])
+libhsm = library(
+    'hsm',
+    [hsm_src],
+    link_with: libassert,
+    include_directories: [inc, hsm_inc]
+)
 libhsm_dep = declare_dependency(
     link_with : libhsm,
     include_directories : [inc, hsm_inc]
@@ -122,7 +127,7 @@ if unit_test
             hsm_src,
         ],
         c_args: ['-DAM_HSM_SPY'],
-        dependencies: [libstr_dep],
+        dependencies: [libstr_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('spy', e, suite: 'hsm')
 
@@ -130,9 +135,8 @@ if unit_test
         'reenter',
         [
             'tests' / 'reenter.c',
-            hsm_src,
         ],
-        dependencies: [libstr_dep],
+        dependencies: [libstr_dep, libhsm_dep],
         include_directories: [include_directories('tests')])
     test('reenter', e, suite: 'hsm')
 endif

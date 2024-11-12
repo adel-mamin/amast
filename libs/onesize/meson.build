@@ -29,6 +29,7 @@ if unit_test
         'onesize',
         ['onesize.c', 'test.c', blk_src, slist_src],
         c_args: ['-O0', '-fno-lto', '-ggdb'],
+        dependencies : [libassert_dep],
         include_directories: inc)
     test('onesize', e)
 endif

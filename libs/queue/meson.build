@@ -32,6 +32,7 @@ if unit_test
             'test.c',
             queue_src,
         ],
+        dependencies : [libassert_dep],
         include_directories: inc)
     test('queue', e)
 endif

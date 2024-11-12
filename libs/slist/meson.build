@@ -26,6 +26,11 @@ slist_src = [files('slist.c')]
 src += slist_src
 
 if unit_test
-    e = executable('slist', ['slist.c', 'test.c'], include_directories: inc)
+    e = executable(
+        'slist',
+        ['slist.c', 'test.c'],
+        link_with: libassert,
+        include_directories: inc
+    )
     test('slist', e)
 endif

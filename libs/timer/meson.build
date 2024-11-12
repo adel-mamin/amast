@@ -27,13 +27,14 @@ src += timer_src
 
 libtimer = library('timer', [timer_src], include_directories: inc)
 libtimer_dep = declare_dependency(
-    link_with : [libtimer, libdlist],
+    link_with : [libtimer, libdlist, libassert],
     include_directories : inc)
 
 if unit_test
     e = executable(
         'timer',
         ['timer.c', 'test.c', dlist_src],
+        dependencies : [libassert_dep],
         include_directories: inc)
     test('timer', e)
 endif

@@ -33,6 +33,7 @@ files_txt = configure_file(
 amast_exe = executable(
     'amast-unity',
     ['unity.c', str_src],
+    dependencies : [libassert_dep],
     c_args: ['-std=gnu99', '-ggdb', '-fno-lto'],
     include_directories: libs_inc
 )
@@ -69,10 +70,11 @@ if unit_test
         c_args: [
             '-DAM_HSM_SPY',
             '-DAM_FSM_SPY',
+            '-DAM_PAL_STUBS',
             '-ffunction-sections', '-fdata-sections'
         ],
         link_args: ['-Wl,--gc-sections'],
-        dependencies: [libm_dep]
+        dependencies: [libm_dep, libassert_dep]
     )
     test('unity', e)
 endif

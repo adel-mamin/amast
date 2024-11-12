@@ -25,6 +25,11 @@
 src += [files('crc.c')]
 
 if unit_test
-    e = executable('crc', ['crc.c', 'test.c'], include_directories: inc)
+    e = executable(
+        'crc',
+        ['crc.c', 'test.c'],
+        include_directories: inc,
+        dependencies : [libassert_dep]
+    )
     test('crc', e)
 endif

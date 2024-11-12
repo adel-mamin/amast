@@ -22,7 +22,17 @@
 # SOFTWARE.
 #
 
+assert_src = [files('assert.c')]
+
+libassert = library('assert', [assert_src], include_directories: inc)
+libassert_dep = declare_dependency(link_with : libassert, include_directories : inc)
+
 if unit_test
-    e = executable('common', ['test.c'], include_directories: inc)
+    e = executable(
+        'common',
+        ['test.c'],
+        include_directories: inc,
+        dependencies : [libassert_dep]
+    )
     test('common', e)
 endif

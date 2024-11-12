@@ -27,7 +27,12 @@ fsm_src = [files(
 )]
 src += [fsm_src]
 
-libfsm = library('fsm', [fsm_src], include_directories : [inc])
+libfsm = library(
+    'fsm',
+    [fsm_src],
+    link_with: libassert,
+    include_directories : [inc]
+)
 libfsm_dep = declare_dependency(
     link_with : libfsm,
     include_directories : [inc]
@@ -68,7 +73,7 @@ if unit_test
             fsm_src,
         ],
         c_args: ['-DAM_FSM_SPY'],
-        dependencies: [libstr_dep],
+        dependencies: [libstr_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('spy', e, suite: 'fsm')
 
@@ -76,9 +81,8 @@ if unit_test
         'reenter',
         [
             'tests' / 'reenter.c',
-            fsm_src,
         ],
-        dependencies: [libstr_dep],
+        dependencies: [libfsm_dep, libstr_dep],
         include_directories: [include_directories('tests')])
     test('reenter', e, suite: 'fsm')
 endif

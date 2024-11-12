@@ -27,9 +27,16 @@ src += [dlist_src]
 
 libdlist = library('dlist', [dlist_src], include_directories: inc)
 libdlist_dep = declare_dependency(
-    link_with : libdlist, include_directories : inc)
+    link_with : [libdlist, libassert],
+    include_directories : inc
+)
 
 if unit_test
-    e = executable('dlist', ['dlist.c', 'test.c'], include_directories: inc)
+    e = executable(
+        'dlist',
+        ['dlist.c', 'test.c'],
+        include_directories: inc,
+        dependencies : [libassert_dep]
+    )
     test('dlist', e)
 endif

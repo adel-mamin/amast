@@ -25,8 +25,11 @@
 inc = [include_directories('.')]
 src = []
 
-subdir('blk')
 subdir('common')
+if unit_test
+  subdir('pal' / 'stubs')
+endif
+subdir('blk')
 subdir('crc')
 subdir('dlist')
 subdir('strlib')

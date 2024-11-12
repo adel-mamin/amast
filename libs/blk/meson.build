@@ -26,6 +26,10 @@ blk_src = [files('blk.c')]
 src += blk_src
 
 if unit_test
-    e = executable('blk', ['blk.c', 'test.c'], include_directories: inc)
+    e = executable(
+        'blk',
+        ['blk.c', 'test.c'],
+        include_directories: inc,
+        dependencies : [libassert_dep])
     test('blk', e)
 endif

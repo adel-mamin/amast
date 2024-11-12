@@ -27,12 +27,14 @@
  * Commonly used macros.
  */
 
+#ifndef COMMON_MACROS_H_INCLUDED
+#define COMMON_MACROS_H_INCLUDED
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <assert.h>
 
-#ifndef COMMON_MACROS_H_INCLUDED
-#define COMMON_MACROS_H_INCLUDED
+#include "common/compiler.h"
 
 /**
  * Returns number of elements in the array.
@@ -61,8 +63,20 @@
 /** Returns absolute value */
 #define AM_ABS(x) (((x) >= 0) ? (x) : -(x))
 
+#ifdef __FILE_NAME__
+#define AM_FILE_NAME __FILE_NAME__
+#else
+#define AM_FILE_NAME __FILE__
+#endif /* __FILE_NAME__ */
+
+/** defined in libs/pal */
+AM_NORETURN void am_assert_failure(
+    const char *assertion, const char *file, int line
+);
+
 /** Assert macro */
-#define AM_ASSERT(x) AM_LIKELY(x) ? (void)(0) : __builtin_trap()
+#define AM_ASSERT(x) \
+    AM_LIKELY(x) ? (void)(0) : am_assert_failure(#x, AM_FILE_NAME, __LINE__)
 
 /** Checks if #x is a power of two */
 #define AM_IS_POWER_OF_TWO(x) (0 == (((x) - 1u) & (x)))

@@ -3,10 +3,12 @@
 @SRC_ROOT@/libs/common/alignment.h
 @SRC_ROOT@/libs/common/constants.h
 @SRC_ROOT@/libs/common/types.h
+@SRC_ROOT@/libs/common/assert.c
 @SRC_ROOT@/libs/common/test.c
 
 @SRC_ROOT@/libs/pal/pal.h
 @SRC_ROOT@/libs/pal/freertos/pal.c
+@SRC_ROOT@/libs/pal/stubs/pal.c
 
 @SRC_ROOT@/libs/event/event.h
 

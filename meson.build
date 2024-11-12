@@ -127,6 +127,10 @@ IWYU = find_program('include-what-you-use', required: false, disabler: true)
 
 unit_test = get_option('unit_test')
 
+if unit_test
+    add_project_arguments(['-DAMAST_PAL_STUBS'], language: 'c')
+endif
+
 libm_dep = compiler.find_library('m', required: true)
 
 libs_inc = include_directories(['libs', '.'])
