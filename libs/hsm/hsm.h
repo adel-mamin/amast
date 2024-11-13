@@ -43,6 +43,7 @@
 extern "C" {
 #endif
 
+/** HSM reserved events. */
 enum am_hsm_evt {
     /**
      * Empty event.

@@ -30,6 +30,12 @@ files_txt = configure_file(
     }
 )
 
+configure_file(
+    input: 'amast_config.h',
+    output: 'amast_config.h',
+    copy: true
+)
+
 amast_exe = executable(
     'amast-unity',
     ['unity.c', str_src],

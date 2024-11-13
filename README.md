@@ -26,9 +26,11 @@ Run `pixi run all`.
 ## How To Use
 <a name="how-to-use"></a>
 
-Just include `amast.h` and `amast.c` from the latest release to your project.
+Include `amast.h`, `amast_config.h` and `amast.c` from the latest release to your project.
 
-If you want to run Amast unit tests, then also include `amast_test.h` and `amast_test.c`. Also `Makefile` is available: run `make test` to run unit tests.
+If you want to run Amast unit tests, then also include `amast_test.h` and `amast_test.c`.
+
+`Makefile` is available for optional use. Run `make test` to run unit tests.
 
 ## Features, Bugs, etc.
 

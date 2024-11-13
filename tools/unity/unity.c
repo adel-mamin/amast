@@ -300,6 +300,10 @@ static void create_amast_h_file(
     add_amast_description(hdr_file, "header", &db->hdr);
     add_amast_includes_std(hdr_file, &db->hdr);
 
+    fprintf(hdr_file, "\n");
+    fprintf(hdr_file, "#include \"amast_config.h\"\n");
+    fprintf(hdr_file, "\n");
+
     /* Copy content of all header files to amast.h */
     for (int i = 0; i < db->hdr.len; i++) {
         fprintf(hdr_file, "\n/* %s */\n\n", get_repo_fname(db->hdr.fnames[i]));
@@ -331,6 +335,10 @@ static void create_amast_test_h_file(
 
     add_amast_description(hdr_file, "header", &db->hdr_test);
     add_amast_includes_std(hdr_file, &db->hdr_test);
+
+    fprintf(hdr_file, "\n");
+    fprintf(hdr_file, "#include \"amast_config.h\"\n");
+    fprintf(hdr_file, "\n");
 
     /* Copy content of all header files to amast.h */
     for (int i = 0; i < db->hdr_test.len; i++) {
@@ -366,6 +374,7 @@ static void create_amast_c_file(
     add_amast_description(src_file, "source", &db->src);
 
     add_amast_includes_std(src_file, &db->src);
+    fprintf(src_file, "#include \"amast_config.h\"\n");
     fprintf(src_file, "#include \"amast.h\"\n");
     fprintf(src_file, "\n");
 
@@ -396,6 +405,7 @@ static void create_amast_test_c_file(
     add_amast_description(src_file, "source", &db->src_test);
 
     add_amast_includes_std(src_file, &db->src_test);
+    fprintf(src_file, "#include \"amast_config.h\"\n");
     fprintf(src_file, "#include \"amast.h\"\n");
     fprintf(src_file, "#include \"amast_test.h\"\n");
     fprintf(src_file, "\n");
