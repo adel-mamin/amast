@@ -169,7 +169,7 @@ void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event);
  * @retval false  not in the state
  * @retval true   in the state
  */
-bool am_fsm_is_in(const struct am_fsm *fsm, const am_fsm_state_fn state);
+bool am_fsm_is_in(const struct am_fsm *fsm, am_fsm_state_fn state);
 
 /**
  * Get active state.
@@ -186,7 +186,7 @@ am_fsm_state_fn am_fsm_state(const struct am_fsm *fsm);
  * @param state  the initial state of the FSM object
  *               The initial state must return AM_FSM_TRAN(s)
  */
-void am_fsm_ctor(struct am_fsm *fsm, const am_fsm_state_fn state);
+void am_fsm_ctor(struct am_fsm *fsm, am_fsm_state_fn state);
 
 /**
  * FSM destructor.
