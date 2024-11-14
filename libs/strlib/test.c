@@ -34,7 +34,6 @@
 #include <math.h>
 #include <string.h>
 
-#include "common/compiler.h"
 #include "common/macros.h"
 #include "strlib/strlib.h"
 

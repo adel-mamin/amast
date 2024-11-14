@@ -31,7 +31,7 @@ extern "C" {
 
 #include <stdbool.h>
 
-#include "common/compiler.h"
+#include "common/macros.h"
 #include "event/event.h"
 #include "dlist/dlist.h"
 #include "pal/pal.h"

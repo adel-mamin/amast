@@ -41,7 +41,6 @@
 /* IWYU pragma: no_include <__stdarg_va_arg.h> */
 
 #include "common/macros.h"
-#include "common/compiler.h"
 #include "strlib/strlib.h"
 
 /* https://stackoverflow.com/a/30734030/2410359 */

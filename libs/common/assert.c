@@ -28,6 +28,7 @@
  * Assert implementation
  */
 
+#include "common/compiler.h"
 #include "common/macros.h"
 
 AM_NORETURN void am_assert_failure(

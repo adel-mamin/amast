@@ -38,7 +38,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
-#include "common/compiler.h"
+#include "common/macros.h"
 
 /**
  * Compare two strings in a case insensitive manner.
