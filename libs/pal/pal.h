@@ -58,7 +58,7 @@ void am_pal_task_wait(void *task);
 
 uint32_t am_pal_time_get_ms(void);
 uint32_t am_pal_time_get_tick(int domain);
-uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t us);
+uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms);
 
 #ifdef __cplusplus
 }
