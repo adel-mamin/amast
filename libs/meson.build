@@ -26,9 +26,7 @@ inc = [include_directories('.')]
 src = []
 
 subdir('common')
-if unit_test
-  subdir('pal' / 'stubs')
-endif
+subdir('pal' / 'stubs')
 subdir('blk')
 subdir('crc')
 subdir('dlist')

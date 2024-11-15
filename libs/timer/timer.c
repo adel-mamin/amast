@@ -49,6 +49,9 @@ struct timer {
 
 static struct timer m_timer;
 
+static void am_timer_crit_enter(void) {}
+static void am_timer_crit_exit(void) {}
+
 void am_timer_ctor(const struct am_timer_cfg *cfg) {
     AM_ASSERT(cfg);
     AM_ASSERT(cfg->post || cfg->publish);
@@ -58,6 +61,10 @@ void am_timer_ctor(const struct am_timer_cfg *cfg) {
         am_dlist_init(&m_timer.domains[i]);
     }
     m_timer.cfg = *cfg;
+    if (!m_timer.cfg.crit_enter || !m_timer.cfg.crit_exit) {
+        m_timer.cfg.crit_enter = am_timer_crit_enter;
+        m_timer.cfg.crit_exit = am_timer_crit_exit;
+    }
 }
 
 void am_timer_event_ctor(struct am_event_timer *event, int id, int domain) {
@@ -93,14 +100,21 @@ void am_timer_arm(
     event->shot_in_ticks = ticks;
     event->interval_ticks = interval;
     event->event.pubsub_time = owner ? false : true;
+
+    me->cfg.crit_enter();
     am_dlist_push_back(&me->domains[event->event.tick_domain], &event->item);
+    me->cfg.crit_exit();
 }
 
 bool am_timer_disarm(struct am_event_timer *event) {
     AM_ASSERT(event);
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
 
+    struct timer *me = &m_timer;
+
+    me->cfg.crit_enter();
     bool was_armed = am_dlist_pop(&event->item);
+    me->cfg.crit_exit();
     event->shot_in_ticks = event->interval_ticks = 0;
 
     return was_armed;
@@ -118,6 +132,8 @@ void am_timer_tick(int domain) {
     AM_ASSERT(domain < AM_COUNTOF(me->domains));
 
     struct am_dlist_iterator it;
+
+    me->cfg.crit_enter();
     am_dlist_iterator_init(
         &me->domains[domain], &it, /*direction=*/AM_DLIST_FORWARD
     );
@@ -149,6 +165,7 @@ void am_timer_tick(int domain) {
             me->cfg.post(t->owner, &t->event);
         }
     }
+    me->cfg.crit_exit();
 }
 
 struct am_event_timer *am_timer_event_allocate(int id, int size, int domain) {

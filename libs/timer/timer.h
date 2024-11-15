@@ -59,6 +59,10 @@ struct am_timer_cfg {
      * @return the updated event
      */
     struct am_event_timer *(*update)(struct am_event_timer *event);
+    /** Enter critical section */
+    void (*crit_enter)(void);
+    /** Exit critical section */
+    void (*crit_exit)(void);
 };
 
 /** Timer event. */
