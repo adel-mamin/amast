@@ -24,7 +24,12 @@
 
 assert_src = [files('assert.c')]
 
-libassert = library('assert', [assert_src], include_directories: inc)
+libassert = library(
+    'assert',
+    [assert_src],
+    c_args: '-DAM_ASSERT_FAILURE',
+    include_directories: inc
+)
 libassert_dep = declare_dependency(link_with : libassert, include_directories : inc)
 
 if unit_test
