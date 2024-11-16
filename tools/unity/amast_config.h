@@ -25,7 +25,7 @@
 #ifndef AMAST_CONFIG_H_INCLUDED
 #define AMAST_CONFIG_H_INCLUDED
 
-/*
+/**
  * Enable am_hsm_set_spy() API to register user callback
  * to intercept external events passed via am_hsm_dispatch() API.
  * Increases the size of struct am_hsm by the size of a function
@@ -35,7 +35,7 @@
 #define AM_HSM_SPY
 #endif
 
-/*
+/**
  * Enable am_fsm_set_spy() API to register user callback
  * to intercept external events passed via am_fsm_dispatch() API.
  * Increases the size of struct am_fsm by the size of a function
@@ -45,7 +45,7 @@
 #define AM_FSM_SPY
 #endif
 
-/*
+/**
  * Enable PAL stubs.
  * Useful for unit tests.
  * There should only be one AM_PAL_... defined at a time.
@@ -54,12 +54,17 @@
 #define AM_PAL_STUBS
 #endif
 
-/*
+/**
  * Enable PAL API implementation for FreeRTOS.
  * There should only be one AM_PAL_... defined at a time.
  */
 #ifndef AM_PAL_FREERTOS
 #define AM_PAL_FREERTOS
+#endif
+
+/** Enable am_assert_failure() implementation */
+#ifndef AM_ASSERT_FAILURE
+#define AM_ASSERT_FAILURE
 #endif
 
 #endif /* AMAST_CONFIG_H_INCLUDED */
