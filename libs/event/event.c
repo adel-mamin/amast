@@ -63,7 +63,10 @@ void am_event_add_pool(void *pool, int size, int block_size, int alignment) {
     memset(&blk, 0, sizeof(blk));
     blk.ptr = pool;
     blk.size = size;
-    am_onesize_init(&me->pool[me->npool], &blk, block_size, alignment);
+    struct am_onesize_cfg cfg = {
+        .pool = &blk, .block_size = block_size, .alignment = alignment
+    };
+    am_onesize_ctor(&me->pool[me->npool], &cfg);
 
     ++me->npool;
 }

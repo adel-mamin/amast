@@ -45,25 +45,41 @@ struct am_onesize {
     int nfree;          /**< current number of blocks in free list */
     int ntotal;         /**< total number of blocks */
     int minfree;        /**< minimum number of blocks in free list */
+    /** Enter critical section */
+    void (*crit_enter)(void);
+    /** Exit critical section */
+    void (*crit_exit)(void);
+};
+
+/** Onesize configuration. */
+struct am_onesize_cfg {
+    /** the memory pool */
+    struct am_blk *pool;
+    /**
+     * The maximum size of the memory block the allocator
+     * can allocate [bytes]. The allocation of memory blocks
+     * bigger that this size will fail.
+     */
+    int block_size;
+    /** The alignment of allocated memory blocks [bytes] */
+    int alignment;
+    /** Enter critical section */
+    void (*crit_enter)(void);
+    /** Exit critical section */
+    void (*crit_exit)(void);
 };
 
 /**
- * Initializes a new onesize allocator.
+ * Construct a new onesize allocator.
  * Allocation requests up to block_size bytes are
  * rounded up to block_size bytes and served from a singly-linked
  * list of buffers. Due to the simplicity of onesize allocator
  * management, allocations from it are fast.
  *
- * @param hnd         the allocator
- * @param pool        the memory pool
- * @param block_size  the maximum size of the memory block the allocator
- *                    can allocate [bytes]. The allocation of memory blocks
- *                    bigger that this size will fail.
- * @param alignment   the alignment of allocated memory blocks [bytes]
+ * @param hnd  the allocator
+ * @param cfg  configuration
  */
-void am_onesize_init(
-    struct am_onesize *hnd, struct am_blk *pool, int block_size, int alignment
-);
+void am_onesize_ctor(struct am_onesize *hnd, struct am_onesize_cfg *cfg);
 
 /**
  * Allocate memory if \p size is <= block_size. The block at the front

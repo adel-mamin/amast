@@ -44,7 +44,12 @@ int main(void) {
     } test_arr[2];
     struct am_blk blk = {.ptr = &test_arr[0], .size = sizeof(test_arr)};
 
-    am_onesize_init(&ma, &blk, sizeof(struct test), AM_ALIGNOF(struct test));
+    struct am_onesize_cfg cfg = {
+        .pool = &blk,
+        .block_size = sizeof(struct test),
+        .alignment = AM_ALIGNOF(struct test)
+    };
+    am_onesize_ctor(&ma, &cfg);
 
     AM_ASSERT(am_onesize_get_nfree(&ma) == 2);
 

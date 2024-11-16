@@ -60,7 +60,9 @@ void *am_onesize_allocate(struct am_onesize *hnd, int size) {
         return NULL;
     }
 
+    hnd->crit_enter();
     if (am_slist_is_empty(&hnd->fl)) {
+        hnd->crit_exit();
         return NULL;
     }
 
@@ -68,6 +70,7 @@ void *am_onesize_allocate(struct am_onesize *hnd, int size) {
     AM_ASSERT(elem);
 
     am_onesize_run_stats(hnd, 1, 0);
+    hnd->crit_exit();
 
     return elem;
 }
@@ -82,15 +85,17 @@ void am_onesize_free(struct am_onesize *hnd, const void *ptr) {
 
     struct am_slist_item *p = AM_CAST(struct am_slist_item *, ptr);
 
+    hnd->crit_enter();
     am_slist_push_front(&hnd->fl, p);
     am_onesize_run_stats(hnd, 0, 1);
+    hnd->crit_exit();
 }
 
 /**
  * Internal initialization routine.
  * @param hnd  the allocator
  */
-static void am_onesize_init_internal(struct am_onesize *hnd) {
+static void am_onesize_ctor_internal(struct am_onesize *hnd) {
     am_slist_init(&hnd->fl);
 
     char *ptr = (char *)hnd->pool.ptr;
@@ -108,9 +113,11 @@ void am_onesize_free_all(struct am_onesize *hnd) {
 
     struct am_onesize *s = (struct am_onesize *)hnd;
 
+    hnd->crit_enter();
     int minfree = hnd->minfree;
-    am_onesize_init_internal(s);
+    am_onesize_ctor_internal(s);
     hnd->minfree = minfree; /* cppcheck-suppress redundantAssignment */
+    hnd->crit_exit();
 }
 
 void am_onesize_iterate_over_allocated(
@@ -128,6 +135,7 @@ void am_onesize_iterate_over_allocated(
     }
     int iterated = 0;
     num = AM_MIN(num, total);
+    hnd->crit_enter();
     for (int i = 0; (i < total) && (iterated < num); i++) {
         AM_ASSERT(AM_ALIGNOF_PTR(ptr) >= AM_ALIGNOF(struct am_slist_item));
         struct am_slist_item *item = AM_CAST(struct am_slist_item *, ptr);
@@ -135,10 +143,13 @@ void am_onesize_iterate_over_allocated(
             continue; /* the item is free */
         }
         /* the item is allocated */
+        hnd->crit_exit();
         cb(ctx, iterated, (char *)item, impl->block_size);
+        hnd->crit_enter();
         ptr += impl->block_size;
         iterated++;
     }
+    hnd->crit_exit();
 }
 
 int am_onesize_get_nfree(const struct am_onesize *hnd) {
@@ -161,31 +172,42 @@ int am_onesize_get_nblocks(const struct am_onesize *hnd) {
     return hnd->ntotal;
 }
 
-void am_onesize_init(
-    struct am_onesize *hnd, struct am_blk *pool, int block_size, int alignment
-) {
+static void am_onesize_crit_enter(void) {}
+static void am_onesize_crit_exit(void) {}
+
+void am_onesize_ctor(struct am_onesize *hnd, struct am_onesize_cfg *cfg) {
     AM_ASSERT(hnd);
-    AM_ASSERT(pool);
-    AM_ASSERT(pool->ptr);
-    AM_ASSERT(pool->size > 0);
-    AM_ASSERT(pool->size >= block_size);
-    AM_ASSERT(alignment >= AM_ALIGNOF(struct am_slist_item));
+    AM_ASSERT(cfg);
+    AM_ASSERT(cfg->pool);
+    AM_ASSERT(cfg->pool->ptr);
+    AM_ASSERT(cfg->pool->size > 0);
+    AM_ASSERT(cfg->pool->size >= cfg->block_size);
+    AM_ASSERT(cfg->alignment >= AM_ALIGNOF(struct am_slist_item));
 
     memset(hnd, 0, sizeof(*hnd));
 
-    void *alignedptr = AM_ALIGN_PTR_UP(pool->ptr, alignment);
-    int affix = (int)((uintptr_t)alignedptr - (uintptr_t)pool->ptr);
-    AM_ASSERT(affix < pool->size);
-    pool->size -= affix;
-    pool->ptr = alignedptr;
+    void *alignedptr = AM_ALIGN_PTR_UP(cfg->pool->ptr, cfg->alignment);
+    int affix = (int)((uintptr_t)alignedptr - (uintptr_t)cfg->pool->ptr);
+    AM_ASSERT(affix < cfg->pool->size);
+    cfg->pool->size -= affix;
+    cfg->pool->ptr = alignedptr;
 
-    block_size = AM_MAX(block_size, (int)sizeof(struct am_slist_item));
-    block_size = AM_MAX(block_size, alignment);
+    cfg->block_size =
+        AM_MAX(cfg->block_size, (int)sizeof(struct am_slist_item));
+    cfg->block_size = AM_MAX(cfg->block_size, cfg->alignment);
 
-    AM_ASSERT(pool->size >= block_size);
+    AM_ASSERT(cfg->pool->size >= cfg->block_size);
 
-    hnd->pool = *pool;
-    hnd->block_size = block_size;
+    hnd->pool = *cfg->pool;
+    hnd->block_size = cfg->block_size;
 
-    am_onesize_init_internal(hnd);
+    if (cfg->crit_enter && cfg->crit_exit) {
+        hnd->crit_enter = cfg->crit_enter;
+        hnd->crit_exit = cfg->crit_exit;
+    } else {
+        hnd->crit_enter = am_onesize_crit_enter;
+        hnd->crit_exit = am_onesize_crit_exit;
+    }
+
+    am_onesize_ctor_internal(hnd);
 }
