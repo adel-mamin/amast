@@ -24,7 +24,7 @@
 
 /**
  * @file
- * Queue API.
+ * Queue API implementation.
  */
 
 #include <stddef.h>
@@ -32,16 +32,10 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "common/compiler.h" /* IWYU pragma: keep */
 #include "common/macros.h"
 #include "common/alignment.h"
 #include "blk/blk.h"
 #include "queue/queue.h"
-
-/** Magic number to detect properly initialized queue */
-#define AM_QUEUE_MAGIC1 0xCAFEABBA
-/** Magic number to detect properly initialized am_queue */
-#define AM_QUEUE_MAGIC2 0xDEADBEEF
 
 void am_queue_init(
     struct am_queue *hnd, int isize, int alignment, struct am_blk *blk
@@ -67,8 +61,6 @@ void am_queue_init(
     AM_ASSERT(blk->size >= (2 * hnd->isize));
 
     hnd->blk = *blk;
-    hnd->magic1 = AM_QUEUE_MAGIC1;
-    hnd->magic2 = AM_QUEUE_MAGIC2;
 }
 
 bool am_queue_is_empty(const struct am_queue *hnd) {
@@ -175,9 +167,4 @@ bool am_queue_push_front(struct am_queue *hnd, const void *ptr, int size) {
     memcpy(dst, ptr, (size_t)hnd->isize);
 
     return true;
-}
-
-bool am_queue_is_valid(const struct am_queue *hnd) {
-    AM_ASSERT(hnd);
-    return (AM_QUEUE_MAGIC1 == hnd->magic1) && (AM_QUEUE_MAGIC2 == hnd->magic2);
 }

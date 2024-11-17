@@ -43,12 +43,10 @@ struct am_queue {
     int rd;            /**< read index */
     int wr;            /**< write index */
     struct am_blk blk; /**< queue memory block */
-    unsigned magic1;   /**< magic number1 */
-    unsigned magic2;   /**< magic number2 */
 };
 
 /**
- * Queue is empty predicate.
+ * Check if queue is empty.
  * @param hnd     queue handler
  * @retval true   queue is empty
  * @retval false  queue is not empty
@@ -56,7 +54,7 @@ struct am_queue {
 bool am_queue_is_empty(const struct am_queue *hnd);
 
 /**
- * Queue is full predicate.
+ * Check if queue is full.
  * @param hnd     the queue
  * @retval true   queue is full
  * @retval false  queue is not empty
@@ -64,7 +62,7 @@ bool am_queue_is_empty(const struct am_queue *hnd);
 bool am_queue_is_full(struct am_queue *hnd);
 
 /**
- * Return how many items are in the queue.
+ * Return how many items are in queue.
  * @param hnd  the queue
  * @return number of queued items
  */
@@ -98,15 +96,7 @@ void am_queue_init(
 );
 
 /**
- * Checks if the queue was properly initialized.
- * @param hnd     the queue
- * @return true   the initialization was done
- * @return false  the initialization was not done
- */
-bool am_queue_is_valid(const struct am_queue *hnd);
-
-/**
- * Pop an item from the front (head) of the queue.
+ * Pop an item from the front (head) of queue.
  * Takes O(1) to complete.
  * @param hnd  the queue
  * @return The popped item. The memory is owned by the queue
@@ -116,17 +106,17 @@ bool am_queue_is_valid(const struct am_queue *hnd);
 void *am_queue_pop_front(struct am_queue *hnd);
 
 /**
- * Pop an item from the front (head) of the queue to the provided buffer.
+ * Pop an item from the front (head) of queue to the provided buffer.
  * Takes O(1) to complete.
  * @param queue  the queue
- * @param buf    the popped item is compied here.
- * @param size   the byte size of buf.
+ * @param buf    the popped item is copied here
+ * @param size   the byte size of buf
  * @return The popped item. NULL if queue was empty.
  */
 void *am_queue_pop_front_and_copy(struct am_queue *hnd, void *buf, int size);
 
 /**
- * Peek an item from the front (head) of the queue.
+ * Peek an item from the front (head) of queue.
  * Takes O(1) to complete.
  * @param hnd  the queue
  * @return The peeked item. The memory is owned by the queue.
@@ -136,7 +126,7 @@ void *am_queue_pop_front_and_copy(struct am_queue *hnd, void *buf, int size);
 void *am_queue_peek_front(struct am_queue *hnd);
 
 /**
- * Peek an item from the back (tail) of the queue.
+ * Peek an item from the back (tail) of queue.
  * Takes O(1) to complete.
  * @param hnd  the queue
  * @return The peeked item. The memory is owned by the queue.
@@ -146,7 +136,7 @@ void *am_queue_peek_front(struct am_queue *hnd);
 void *am_queue_peek_back(struct am_queue *hnd);
 
 /**
- * Push an item to the front (head) of the queue.
+ * Push an item to the front (head) of queue.
  * Takes O(1) to complete.
  * @param hnd   the queue
  * @param ptr   the new queue item
@@ -159,7 +149,7 @@ void *am_queue_peek_back(struct am_queue *hnd);
 bool am_queue_push_front(struct am_queue *hnd, const void *ptr, int size);
 
 /**
- * Push an item to the back (tail) of the queue.
+ * Push an item to the back (tail) of queue.
  * Takes O(1) to complete.
  * @param hnd   the queue
  * @param ptr   the new queue item
