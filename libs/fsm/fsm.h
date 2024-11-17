@@ -154,7 +154,7 @@ struct am_fsm {
 #define AM_FSM_TRAN_REDISPATCH(s) (AM_FSM_SET_(s), AM_FSM_RC_TRAN_REDISPATCH)
 
 /**
- * Synchronous dispatch of event to the given FSM.
+ * Synchronous dispatch of event to a given FSM.
  *
  * @param fsm    the FSM handler
  * @param event  the event to dispatch
@@ -197,6 +197,9 @@ void am_fsm_dtor(struct am_fsm *fsm);
 
 /**
  * Perform FSM initial transition.
+ *
+ * Call the initial state set by am_fsm_ctor() with provided
+ * optional initial event.
  *
  * @param fsm         the FSM handler
  * @param init_event  the init event. Can be NULL.

@@ -19,7 +19,7 @@ GLOSSARY
        (see the diagram below)
 
    current state
-       the state which currently gets the incoming events
+       the state which currently gets incoming events
 
    active state
        same as current state
@@ -54,14 +54,15 @@ Below is an example of a simple FSM with three states
 (`Idle`, `Processing`, and `Completed`) and basic transitions:
 
 ::
-
-      +----------+    Start     +------------+
+          * Initial State
+          |
+      +---v------+    Start     +------------+
       |   Idle   |------------->| Processing |
-      +----------+              +------------+
-           ^                         |
+      +----^-----+              +------------+
+           |                         |
            | Reset                   | Complete
            |     +-------------+     |
-           +-----|  Completed  |<----+
+           +-----|  Completed  <-----+
                  +-------------+
 
 This FSM transitions from `Idle` to `Processing` upon receiving a `Start` event,
@@ -123,7 +124,7 @@ Example:
     am_fsm_ctor(&my_fsm, initial_state);
     am_fsm_init(&my_fsm, NULL); /* initiates with no event */
 
-The initial state must always return `AM_FSM_TRAN(new_state)` macro
+The initial state must always return **AM_FSM_TRAN(new_state)** macro
 to proceed to the appropriate active state.
 
 FSM INITIALIZATION
@@ -138,31 +139,57 @@ flexibility and better control of the initialization timeline:
 TRANSITION TO HISTORY
 =====================
 
-The library does not natively support history transitions;
-however, an FSM can retain its last active state by tracking it in the user code.
+Transition to history is a useful technique that is convenient to apply in
+certain use cases. It does not require to use any dedicated FSM API.
 
-To implement a history mechanism:
+Given the following example:
 
-1. Store the current state before each transition.
-2. Use this stored state as a "return-to" state whenever necessary.
+::
 
-Example:
+   +---+   +---+  +---+
+   | A |   | B |  | C |
+   +---+   +---+  +---+
 
-.. code:: c
+the transition to history technique can be
+demonstrated as follows. Assume that the FSM is in the state A.
+The user code stores the current state in a local variable of type
+**am_fsm_state_fn**. This is done with:
 
-    static am_fsm_state last_state;
+.. code-block:: C
 
-    void some_state(struct am_fsm *fsm, const struct am_event *event) {
-        switch (event->id) {
-        case HISTORY_EVENT:
-            return AM_FSM_TRAN(last_state);
-        default:
-            last_state = fsm->state;
-            break;
-        }
-        return AM_FSM_HANDLED();
-    }
+   struct foo {
+       struct am_fsm fsm;
+       ...
+       am_fsm_state_fn history;
+       ...
+   };
+   ...
+   static enum am_fsm_rc A(struct foo *me, const struct event *event) {
+       switch (event->id) {
+       case AM_FSM_EVT_ENTRY:
+           me->history = am_fsm_state(&me->fsm);
+           return AM_FSM_HANLDED();
+       ...
+       }
+       return AM_FSM_HANDLED();
+   }
 
-Using this approach, the FSM can revert to the most recent state whenever needed,
-simulating a "history" functionality.
+Then the transition to state C happens, which is then followed by a request
+to transition back to the previous state. Since the previous state is captured
+in **me->history** it can be achieved by doing this:
 
+.. code-block:: C
+
+   static enum am_fsm_rc C(struct foo *me, const struct event *event) {
+       switch (event->id) {
+       case FSM_EVT_FOO:
+           return AM_FSM_TRAN(me->history);
+       ...
+       }
+       return AM_FSM_HANDLED();
+   }
+
+So, that is essentially all about it.
+
+Another example of the usage of the transition to history technique can be seen
+in **test/history.c** unit test.

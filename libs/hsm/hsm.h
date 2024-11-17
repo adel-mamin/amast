@@ -275,7 +275,7 @@ struct am_hsm {
     AM_GET_MACRO_2_(__VA_ARGS__, AM_SUPER2_, AM_SUPER1_, _)(__VA_ARGS__)
 
 /**
- * Synchronous dispatch of event to the given HSM.
+ * Synchronous dispatch of event to a given HSM.
  *
  * @param hsm    the HSM handler
  * @param event  the event to dispatch
@@ -355,6 +355,9 @@ void am_hsm_dtor(struct am_hsm *hsm);
 
 /**
  * Perform HSM initial transition.
+ *
+ * Call the initial state set by am_hsm_ctor() with provided
+ * optional initial event.
  *
  * @param hsm         the HSM handler
  * @param init_event  the init event. Can be NULL.
