@@ -89,8 +89,12 @@ struct am_event {
 
 /** Event module configuration. */
 struct am_event_cfg {
-    /** Notify owner about a new event. */
-    void (*notify)(void *owner);
+    /** Notify owner about event queue is busy. */
+    void (*notify_event_queue_busy)(void *owner);
+    /** Notify owner about event queue is empty. */
+    void (*notify_event_queue_empty)(void *owner);
+    /** Wait owner notification about event queue is busy. */
+    void (*wait_event_queue_busy)(void *owner);
     /** Enter critical section. */
     void (*crit_enter)(void);
     /** Exit critical section. */
@@ -266,7 +270,7 @@ static inline int am_event_get_ref_cnt(const struct am_event *event) {
  * @retval true   the event was posted
  * @retval false  the event was not posted
  */
-bool am_event_postx_fifo(
+bool am_event_push_back_x(
     void *owner,
     struct am_queue *queue,
     const struct am_event *event,
@@ -283,7 +287,7 @@ bool am_event_postx_fifo(
  * @param queue   the event queue
  * @param event   the event to post
  */
-void am_event_post_fifo(
+void am_event_push_back(
     void *owner, struct am_queue *queue, const struct am_event *event
 );
 
@@ -297,8 +301,18 @@ void am_event_post_fifo(
  * @param queue   the event queue
  * @param event   the event to post
  */
-void am_event_post_lifo(
+void am_event_push_front(
     void *owner, struct am_queue *queue, const struct am_event *event
 );
+
+/**
+ * Pop event from the front of event queue.
+ *
+ * @param owner   the event queue owner (optional)
+ * @param queue   the event queue
+ *
+ * @return the popped event. Cannot be NULL.
+ */
+const struct am_event *am_event_pop_front(void *owner, struct am_queue *queue);
 
 #endif /* EVENT_H_INCLUDED */
