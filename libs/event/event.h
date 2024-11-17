@@ -89,6 +89,8 @@ struct am_event {
 
 /** Event module configuration. */
 struct am_event_cfg {
+    /** Push event to the front of owner event queue */
+    void (*push_front)(void *owner, const struct am_event *event);
     /** Notify owner about event queue is busy. */
     void (*notify_event_queue_busy)(void *owner);
     /** Notify owner about event queue is empty. */
@@ -314,5 +316,38 @@ void am_event_push_front(
  * @return the popped event. Cannot be NULL.
  */
 const struct am_event *am_event_pop_front(void *owner, struct am_queue *queue);
+
+/**
+ * Defer an event.
+ *
+ * Assert if the event was not defered.
+ *
+ * @param queue  the queue to store the deferred event
+ * @param event  the event to defer
+ */
+void am_event_defer(struct am_queue *queue, const struct am_event *event);
+
+/**
+ * Defer an event.
+ *
+ * @param queue   the queue to store the deferred event
+ * @param event   the event to defer
+ * @param margin  free event queue slots to be available after event is deferred
+ */
+void am_event_defer_x(
+    struct am_queue *queue, const struct am_event *event, int margin
+);
+
+/**
+ * Recall deferred event.
+ *
+ * @param owner  event owner
+ * @param queue  queue of deferred events
+ * @retval non-NULL the recalled event.
+ *         DO NOT USE IT FOR ANYTHING BUT FOR THE REFERENCE.
+ *         For example, do not push it to any event queue or free it.
+ * @retval NULL no recalled events
+ */
+const struct am_event *am_event_recall(void *owner, struct am_queue *queue);
 
 #endif /* EVENT_H_INCLUDED */
