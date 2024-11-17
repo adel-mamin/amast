@@ -31,7 +31,10 @@
 #ifndef EVENT_H_INCLUDED
 #define EVENT_H_INCLUDED
 
+#include <stdbool.h>
+
 #include "common/macros.h"
+#include "queue/queue.h"
 
 #define AM_EVT_RANGE_HSM_BEGIN 1
 #define AM_EVT_RANGE_HSM_END 4
@@ -65,6 +68,7 @@
 #define AM_EVENT_TICK_DOMAIN_MASK ((1U << AM_EVENT_TICK_DOMAIN_BITS) - 1U)
 
 #define AM_EVENT_POOL_INDEX_BITS 5
+#define AM_EVENT_POOL_INDEX_MASK ((1U << AM_EVENT_POOL_INDEX_BITS) - 1U)
 
 /** Event descriptor */
 struct am_event {
@@ -85,6 +89,8 @@ struct am_event {
 
 /** Event module configuration. */
 struct am_event_cfg {
+    /** Notify owner about a new event. */
+    void (*notify)(void *owner);
     /** Enter critical section. */
     void (*crit_enter)(void);
     /** Exit critical section. */
@@ -204,6 +210,17 @@ typedef void (*am_event_log_func)(
 void am_event_log_pools(int num, am_event_log_func cb);
 
 /**
+ * Check if event is static.
+ * @param e  the event to check
+ * @return true   the event is static
+ * @return false  the event is not static
+ */
+static inline bool am_event_is_static(const struct am_event *event) {
+    AM_ASSERT(event);
+    return (0 == (event->pool_index & AM_EVENT_POOL_INDEX_MASK));
+}
+
+/**
  * Increment event reference counter.
  *
  * @param event  the event
@@ -235,5 +252,53 @@ static inline int am_event_get_ref_cnt(const struct am_event *event) {
     AM_ASSERT(event);
     return event->ref_counter;
 }
+
+/**
+ * Push event to the back of event queue.
+ *
+ * Notify owner (if set) if it is the first event in the queue.
+ * Does not assert if margin is non-zero and the event was not posted.
+ *
+ * @param owner   the event queue owner (optional)
+ * @param queue   the event queue
+ * @param event   the event to pst
+ * @param margin  free event queue slots to be available after event was posted
+ * @retval true   the event was posted
+ * @retval false  the event was not posted
+ */
+bool am_event_postx_fifo(
+    void *owner,
+    struct am_queue *queue,
+    const struct am_event *event,
+    int margin
+);
+
+/**
+ * Push event to the back of event queue.
+ *
+ * Notify owner (if set) if it is the first event in the queue.
+ * Assert if the event was not posted.
+ *
+ * @param owner   the event queue owner (optional)
+ * @param queue   the event queue
+ * @param event   the event to post
+ */
+void am_event_post_fifo(
+    void *owner, struct am_queue *queue, const struct am_event *event
+);
+
+/**
+ * Push event to the front of event queue.
+ *
+ * Notify owner (if set) if it is the first event in the queue.
+ * Assert if the event was not posted.
+ *
+ * @param owner   the event queue owner (optional)
+ * @param queue   the event queue
+ * @param event   the event to post
+ */
+void am_event_post_lifo(
+    void *owner, struct am_queue *queue, const struct am_event *event
+);
 
 #endif /* EVENT_H_INCLUDED */

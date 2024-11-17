@@ -45,6 +45,8 @@ struct am_event_state {
     struct am_onesize pool[AM_EVENT_POOL_NUM_MAX];
     /** the number of user defined event memory pools */
     int npool;
+    /** notify owner */
+    void (*notify)(void *owner);
     /** enter critical section */
     void (*crit_enter)(void);
     /** exit critical section */
@@ -53,6 +55,7 @@ struct am_event_state {
 
 static struct am_event_state event_state_;
 
+static void am_event_notify(void *owner) { (void)owner; }
 static void am_event_crit_enter(void) {}
 static void am_event_crit_exit(void) {}
 
@@ -60,9 +63,13 @@ void am_event_state_ctor(const struct am_event_cfg *cfg) {
     AM_ASSERT(cfg);
 
     struct am_event_state *me = &event_state_;
-    me->crit_enter = am_event_crit_enter;
-    me->crit_exit = am_event_crit_exit;
+    me->notify = cfg->notify;
+    me->crit_enter = cfg->crit_enter;
+    me->crit_exit = cfg->crit_exit;
 
+    if (!me->notify) {
+        me->notify = am_event_notify;
+    }
     if (!me->crit_enter || !me->crit_exit) {
         me->crit_enter = am_event_crit_enter;
         me->crit_exit = am_event_crit_exit;
@@ -246,4 +253,77 @@ void am_event_log_pools(int num, am_event_log_func cb) {
             &me->pool[i], num, &ctx, am_event_log_cb
         );
     }
+}
+
+bool am_event_postx_fifo(
+    void *owner,
+    struct am_queue *queue,
+    const struct am_event *event,
+    int margin
+) {
+    AM_ASSERT(queue);
+    AM_ASSERT(event);
+    AM_ASSERT(margin >= 0);
+    const int capacity = am_queue_capacity(queue);
+    AM_ASSERT(margin < capacity);
+
+    struct am_event_state *me = &event_state_;
+    me->crit_enter();
+
+    const int len = am_queue_length(queue);
+    AM_ASSERT(capacity >= len);
+    if (margin && ((capacity - len) <= margin)) {
+        me->crit_exit();
+        am_event_free(event);
+        return false;
+    }
+
+    if (!am_event_is_static(event)) {
+        am_event_inc_ref_cnt(AM_CAST(struct am_event *, event));
+    }
+
+    bool wasempty = am_queue_is_empty(queue);
+    bool rc = am_queue_push_back(queue, &event, sizeof(event));
+    AM_ASSERT(true == rc);
+
+    if (wasempty && owner) {
+        me->notify(owner);
+    }
+
+    me->crit_exit();
+
+    return true;
+}
+
+void am_event_post_fifo(
+    void *owner, struct am_queue *queue, const struct am_event *event
+) {
+    AM_ASSERT(queue);
+    AM_ASSERT(event);
+
+    (void)am_event_postx_fifo(owner, queue, event, /*margin=*/0);
+}
+
+void am_event_post_lifo(
+    void *owner, struct am_queue *queue, const struct am_event *event
+) {
+    AM_ASSERT(queue);
+    AM_ASSERT(event);
+
+    struct am_event_state *me = &event_state_;
+    me->crit_enter();
+
+    if (!am_event_is_static(event)) {
+        am_event_inc_ref_cnt(AM_CAST(struct am_event *, event));
+    }
+
+    bool wasempty = am_queue_is_empty(queue);
+    bool rc = am_queue_push_front(queue, &event, sizeof(event));
+    AM_ASSERT(true == rc);
+
+    if (wasempty && owner) {
+        me->notify(owner);
+    }
+
+    me->crit_exit();
 }
