@@ -25,7 +25,6 @@
 #include <string.h>
 
 #include "common/macros.h"
-#include "common/compiler.h" /* IWYU pragma: keep */
 
 #include "async/async.h"
 

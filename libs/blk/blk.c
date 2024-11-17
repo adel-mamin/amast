@@ -26,7 +26,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "common/compiler.h" /* IWYU pragma: keep */
 #include "common/macros.h"
 #include "blk/blk.h"
 

@@ -29,7 +29,6 @@
 
 #include <stdbool.h>
 
-#include "common/compiler.h" /* IWYU pragma: keep */
 #include "blk/blk.h"
 #include "common/macros.h"
 #include "queue/queue.h"

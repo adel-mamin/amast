@@ -30,7 +30,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "common/compiler.h" /* IWYU pragma: keep */
 #include "common/macros.h"
 #include "slist/slist.h"
 

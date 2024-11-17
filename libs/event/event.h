@@ -31,7 +31,6 @@
 #ifndef EVENT_H_INCLUDED
 #define EVENT_H_INCLUDED
 
-#include "common/compiler.h" /* IWYU pragma: keep */
 #include "common/macros.h"
 
 #define AM_EVT_RANGE_HSM_BEGIN 1

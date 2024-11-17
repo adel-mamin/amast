@@ -31,7 +31,6 @@
 #include <string.h>
 #include <stddef.h>
 
-#include "common/compiler.h" /* IWYU pragma: keep */
 #include "common/alignment.h"
 #include "common/macros.h"
 #include "onesize/onesize.h"
