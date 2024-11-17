@@ -54,7 +54,7 @@ static void test_arm(void) {
     struct am_timer_cfg cfg = {
         .post = post_cb, .publish = NULL, .update = NULL
     };
-    am_timer_ctor(&cfg);
+    am_timer_state_ctor(&cfg);
 
     struct am_event_timer event;
     am_timer_event_ctor(&event, /*id=*/EVT_TEST, /*domain=*/0);

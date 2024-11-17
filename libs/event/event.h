@@ -64,8 +64,6 @@
 #define AM_EVENT_TICK_DOMAIN_BITS 3
 #define AM_EVENT_TICK_DOMAIN_MASK ((1U << AM_EVENT_TICK_DOMAIN_BITS) - 1U)
 
-#define AM_EVT_CTOR(id_) ((struct am_event){.id = (id_)})
-
 #define AM_EVENT_POOL_INDEX_BITS 5
 
 /** Event descriptor */
@@ -84,6 +82,22 @@ struct am_event {
     /** n/a */
     unsigned reserved : 1;
 };
+
+/** Event module configuration. */
+struct am_event_cfg {
+    /** Enter critical section. */
+    void (*crit_enter)(void);
+    /** Exit critical section. */
+    void (*crit_exit)(void);
+};
+
+/**
+ * Event state constructor.
+ *
+ * @param cfg  event state configuration
+ *             The event module makes an internal copy of the configuration.
+ */
+void am_event_state_ctor(const struct am_event_cfg *cfg);
 
 /**
  * Add an event memory pool.

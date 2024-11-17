@@ -52,7 +52,7 @@ static struct timer m_timer;
 static void am_timer_crit_enter(void) {}
 static void am_timer_crit_exit(void) {}
 
-void am_timer_ctor(const struct am_timer_cfg *cfg) {
+void am_timer_state_ctor(const struct am_timer_cfg *cfg) {
     AM_ASSERT(cfg);
     AM_ASSERT(cfg->post || cfg->publish);
 

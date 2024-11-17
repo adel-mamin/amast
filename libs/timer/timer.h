@@ -59,9 +59,9 @@ struct am_timer_cfg {
      * @return the updated event
      */
     struct am_event_timer *(*update)(struct am_event_timer *event);
-    /** Enter critical section */
+    /** Enter critical section. */
     void (*crit_enter)(void);
-    /** Exit critical section */
+    /** Exit critical section. */
     void (*crit_exit)(void);
 };
 
@@ -80,12 +80,12 @@ struct am_event_timer {
 };
 
 /**
- * Timer constructor.
+ * Timer state constructor.
  *
- * @param cfg  timer module configuration
+ * @param cfg  timer state configuration
  *             The timer module makes an internal copy of the configuration.
  */
-void am_timer_ctor(const struct am_timer_cfg *cfg);
+void am_timer_state_ctor(const struct am_timer_cfg *cfg);
 
 /**
  * Timer event constructor.
