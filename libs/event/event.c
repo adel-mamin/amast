@@ -418,3 +418,24 @@ const struct am_event *am_event_recall(void *owner, struct am_queue *queue) {
 
     return e;
 }
+
+int am_event_flush_queue(struct am_queue *queue) {
+    struct am_event **event = NULL;
+    int cnt = 0;
+    struct am_event_state *me = &event_state_;
+
+    me->crit_enter();
+
+    while ((event = (struct am_event **)am_queue_pop_front(queue)) != NULL) {
+        me->crit_exit();
+        cnt++;
+        const struct am_event *e = *event;
+        AM_ASSERT(e);
+        am_event_free(e);
+        me->crit_enter();
+    }
+
+    me->crit_exit();
+
+    return cnt;
+}

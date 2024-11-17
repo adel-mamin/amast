@@ -350,4 +350,11 @@ void am_event_defer_x(
  */
 const struct am_event *am_event_recall(void *owner, struct am_queue *queue);
 
+/**
+ * Flush all event from event queue.
+ * @param queue  the queue to flush
+ * @return the number of events flushed
+ */
+int am_event_flush_queue(struct am_queue *queue);
+
 #endif /* EVENT_H_INCLUDED */
