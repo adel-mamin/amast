@@ -22,13 +22,20 @@
 # SOFTWARE.
 #
 
-src += [files('onesize.c')]
+onesize_src = [files('onesize.c')]
+src += onesize_src
+
+libonesize = library('onesize', [onesize_src], c_args: ['-O0', '-fno-lto', '-ggdb'], include_directories: [inc])
+libonesize_dep = declare_dependency(
+    link_with: libonesize,
+    dependencies: [libslist_dep],
+    include_directories : [inc]
+)
 
 if unit_test
     e = executable(
         'onesize',
         ['onesize.c', 'test.c', blk_src, slist_src],
-        c_args: ['-O0', '-fno-lto', '-ggdb'],
         dependencies : [libassert_dep],
         include_directories: inc)
     test('onesize', e)

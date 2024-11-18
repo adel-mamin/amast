@@ -25,8 +25,9 @@
 event_src = [files('event.c')]
 src += [event_src]
 
-libevent = library('event', [event_src], include_directories: [inc])
+libevent = library('event', [event_src], c_args: ['-O0', '-fno-lto', '-ggdb'], include_directories: [inc])
 libevent_dep = declare_dependency(
-    link_with : libevent,
+    link_with: libevent,
+    dependencies: [libonesize_dep, libqueue_dep],
     include_directories : [inc]
 )

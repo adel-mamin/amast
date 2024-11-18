@@ -119,7 +119,7 @@ void am_event_state_ctor(const struct am_event_cfg *cfg);
  * @param pool        the memory pool pointer
  * @param size        the memory pool size [bytes]
  * @param block_size  the maximum size of allocated memory block [bytes]
- * @param alignment the required alignment of allocated memory blocks [bytes]
+ * @param alignment   the required alignment of allocated memory blocks [bytes]
  */
 void am_event_add_pool(void *pool, int size, int block_size, int alignment);
 

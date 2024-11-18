@@ -140,7 +140,21 @@ subdir('apps' / 'examples')
 
 files_to_check = run_command(
     FIND,
-    meson.project_source_root() / 'libs',
+
+    meson.project_source_root() / 'libs' / 'async',
+    meson.project_source_root() / 'libs' / 'blk',
+    meson.project_source_root() / 'libs' / 'common',
+    meson.project_source_root() / 'libs' / 'crc',
+    meson.project_source_root() / 'libs' / 'dlist',
+    meson.project_source_root() / 'libs' / 'event',
+    meson.project_source_root() / 'libs' / 'fsm',
+    meson.project_source_root() / 'libs' / 'hsm',
+    meson.project_source_root() / 'libs' / 'onesize',
+    meson.project_source_root() / 'libs' / 'pal',
+    meson.project_source_root() / 'libs' / 'queue',
+    meson.project_source_root() / 'libs' / 'slist',
+    meson.project_source_root() / 'libs' / 'strlib',
+    meson.project_source_root() / 'libs' / 'timer',
     meson.project_source_root() / 'apps',
     meson.project_source_root() / 'tools',
     '-name',
