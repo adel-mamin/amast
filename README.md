@@ -40,6 +40,12 @@ The project uses "Discussions" instead of "Issues".
 
 For making sure issues are addressed, both me and the community can better evaluate which issues and features are high priority because they can be "upvoted".
 
+## How To Contribute
+
+If you find the project useful, then please star it. It helps promoting it.
+
+If you find any bugs, please report them.
+
 ## License
 <a name="license"></a>
 
