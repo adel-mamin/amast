@@ -30,8 +30,14 @@
 #ifndef ONESIZE_H_INCLUDED
 #define ONESIZE_H_INCLUDED
 
+#include "common/alignment.h"
+#include "common/macros.h"
 #include "blk/blk.h"
 #include "slist/slist.h"
+
+#define AM_ONESIZE_BLOCK_SIZE(t) (AM_MAX(sizeof(struct am_slist), sizeof(t)))
+#define AM_ONESIZE_BLOCK_ALIGNMENT(t) \
+    (AM_MAX(AM_ALIGNOF(struct am_slist), AM_ALIGNOF(t)))
 
 #ifdef __cplusplus
 extern "C" {

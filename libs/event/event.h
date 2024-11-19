@@ -35,6 +35,7 @@
 
 #include "common/macros.h"
 #include "queue/queue.h"
+#include "onesize/onesize.h"
 
 #define AM_EVT_RANGE_HSM_BEGIN 1
 #define AM_EVT_RANGE_HSM_END 4
@@ -69,6 +70,9 @@
 
 #define AM_EVENT_POOL_INDEX_BITS 5
 #define AM_EVENT_POOL_INDEX_MASK ((1U << AM_EVENT_POOL_INDEX_BITS) - 1U)
+
+#define AM_EVENT_BLOCK_SIZE(t) AM_ONESIZE_BLOCK_SIZE(t)
+#define AM_EVENT_BLOCK_ALIGNMENT(t) AM_ONESIZE_BLOCK_ALIGNMENT(t)
 
 /** Event descriptor */
 struct am_event {

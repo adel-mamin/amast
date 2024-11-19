@@ -138,9 +138,14 @@ int main(void) {
     am_event_state_ctor(&cfg);
 
     {
-        static struct am_event pool[3];
+        static char pool[1 * AM_EVENT_BLOCK_SIZE(struct am_event)] AM_ALIGNED(
+            AM_EVENT_BLOCK_ALIGNMENT(struct am_event)
+        );
         am_event_add_pool(
-            pool, (int)sizeof(pool), (int)sizeof(pool[0]), AM_ALIGN_MAX
+            pool,
+            (int)sizeof(pool),
+            AM_EVENT_BLOCK_SIZE(struct am_event),
+            AM_EVENT_BLOCK_ALIGNMENT(struct am_event)
         );
         AM_ASSERT(1 == am_event_get_pool_nblocks(/*index=*/0));
     }
