@@ -75,6 +75,8 @@ void am_event_state_ctor(const struct am_event_cfg *cfg) {
     AM_ASSERT(cfg);
 
     struct am_event_state *me = &event_state_;
+    memset(me, 0, sizeof(*me));
+
     me->push_front = cfg->push_front;
     me->notify_event_queue_busy = cfg->notify_event_queue_busy;
     me->notify_event_queue_empty = cfg->notify_event_queue_empty;
