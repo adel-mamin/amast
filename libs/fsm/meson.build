@@ -22,10 +22,8 @@
 # SOFTWARE.
 #
 
-fsm_src = [files(
-    'fsm.c',
-)]
-src += [fsm_src]
+fsm_src = [files('fsm.c')]
+src += fsm_src
 
 libfsm = library(
     'fsm',

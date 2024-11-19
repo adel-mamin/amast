@@ -54,7 +54,7 @@
 #endif
 
 /**
- * Check if event has a valid user event ID
+ * Check if event has a valid user event ID.
  * @param event   event to check
  * @retval true   the event has user event ID
  * @retval false  the event does not have user event ID
