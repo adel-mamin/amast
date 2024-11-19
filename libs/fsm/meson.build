@@ -85,4 +85,14 @@ if unit_test
         dependencies: [libfsm_dep, libstr_dep],
         include_directories: [include_directories('tests')])
     test('reenter', e, suite: 'fsm')
+
+    e = executable(
+        'queue',
+        [
+            'tests' / 'queue.c',
+        ],
+        c_args: ['-O0', '-fno-lto', '-ggdb'],
+        dependencies: [libstr_dep, libfsm_dep, libevent_dep],
+        include_directories: [include_directories('tests')])
+    test('queue', e, suite: 'fsm')
 endif

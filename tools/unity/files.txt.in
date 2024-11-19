@@ -47,6 +47,7 @@
 @SRC_ROOT@/libs/fsm/tests/redispatch.c
 @SRC_ROOT@/libs/fsm/tests/dtor.c
 @SRC_ROOT@/libs/fsm/tests/reenter.c
+@SRC_ROOT@/libs/fsm/tests/queue.c
 
 @SRC_ROOT@/libs/hsm/hsm.h
 @SRC_ROOT@/libs/hsm/hsm.c
