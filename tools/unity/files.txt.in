@@ -14,6 +14,10 @@
 @SRC_ROOT@/libs/blk/blk.c
 @SRC_ROOT@/libs/blk/test.c
 
+@SRC_ROOT@/libs/bit/bit.h
+@SRC_ROOT@/libs/bit/bit.c
+@SRC_ROOT@/libs/bit/test.c
+
 @SRC_ROOT@/libs/queue/queue.h
 @SRC_ROOT@/libs/queue/queue.c
 @SRC_ROOT@/libs/queue/test.c

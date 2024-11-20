@@ -1,7 +1,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) Adel Mamin
+# Copyright (c) 2017,2018 Adel Mamin
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,26 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
-src = []
+bit_src = [files('bit.c')]
+src += bit_src
 
-subdir('common')
-subdir('pal' / 'stubs')
-subdir('blk')
-subdir('crc')
-subdir('slist')
-subdir('dlist')
-subdir('bit')
-subdir('queue')
-subdir('strlib')
-subdir('onesize')
-subdir('event')
-subdir('timer')
-subdir('async')
-subdir('fsm')
-subdir('hsm')
+libbit = library(
+    'bit',
+    [bit_src],
+    link_with: libassert,
+    include_directories : [inc]
+)
+libbit_dep = declare_dependency(
+    link_with : libbit,
+    include_directories : [inc]
+)
+
+if unit_test
+    e = executable(
+        'bit',
+        ['test.c'],
+        dependencies: libbit_dep,
+        include_directories: inc
+    )
+    test('bit', e)
+endif
