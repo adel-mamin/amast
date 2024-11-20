@@ -33,7 +33,6 @@
 
 #include <stdbool.h>
 
-#include "common/macros.h"
 #include "queue/queue.h"
 #include "onesize/onesize.h"
 
@@ -225,32 +224,21 @@ void am_event_log_pools(int num, am_event_log_func cb);
  * @return true   the event is static
  * @return false  the event is not static
  */
-static inline bool am_event_is_static(const struct am_event *event) {
-    AM_ASSERT(event);
-    return (0 == (event->pool_index & AM_EVENT_POOL_INDEX_MASK));
-}
+bool am_event_is_static(const struct am_event *event);
 
 /**
  * Increment event reference counter.
  *
  * @param event  the event
  */
-static inline void am_event_inc_ref_cnt(struct am_event *event) {
-    AM_ASSERT(event);
-    AM_ASSERT(event->ref_counter < AM_EVENT_REF_COUNTER_MASK);
-    ++event->ref_counter;
-}
+void am_event_inc_ref_cnt(struct am_event *event);
 
 /**
  * Decrement event reference counter.
  *
  * @param event  the event
  */
-static inline void am_event_dec_ref_cnt(struct am_event *event) {
-    AM_ASSERT(event);
-    AM_ASSERT(event->ref_counter > 0);
-    --event->ref_counter;
-}
+void am_event_dec_ref_cnt(struct am_event *event);
 
 /**
  * Return event reference counter.
@@ -258,10 +246,7 @@ static inline void am_event_dec_ref_cnt(struct am_event *event) {
  * @param event  the event, which reference counter is to be returned
  * @return the event reference counter
  */
-static inline int am_event_get_ref_cnt(const struct am_event *event) {
-    AM_ASSERT(event);
-    return event->ref_counter;
-}
+int am_event_get_ref_cnt(const struct am_event *event);
 
 /**
  * Push event to the back of event queue.
