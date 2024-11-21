@@ -231,14 +231,14 @@ bool am_event_is_static(const struct am_event *event);
  *
  * @param event  the event
  */
-void am_event_inc_ref_cnt(struct am_event *event);
+void am_event_inc_ref_cnt(const struct am_event *event);
 
 /**
  * Decrement event reference counter.
  *
  * @param event  the event
  */
-void am_event_dec_ref_cnt(struct am_event *event);
+void am_event_dec_ref_cnt(const struct am_event *event);
 
 /**
  * Return event reference counter.
