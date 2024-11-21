@@ -289,14 +289,14 @@ bool am_event_is_static(const struct am_event *event) {
 void am_event_inc_ref_cnt(const struct am_event *event) {
     AM_ASSERT(event);
     AM_ASSERT(event->ref_counter < AM_EVENT_REF_COUNTER_MASK);
-    struct am_event *e = AM_CAST(struct am_event*, event);
+    struct am_event *e = AM_CAST(struct am_event *, event);
     ++e->ref_counter;
 }
 
 void am_event_dec_ref_cnt(const struct am_event *event) {
     AM_ASSERT(event);
     AM_ASSERT(event->ref_counter > 0);
-    struct am_event *e = AM_CAST(struct am_event*, event);
+    struct am_event *e = AM_CAST(struct am_event *, event);
     --e->ref_counter;
 }
 

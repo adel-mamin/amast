@@ -69,6 +69,7 @@
 @SRC_ROOT@/libs/hsm/tests/dtor.c
 @SRC_ROOT@/libs/hsm/tests/reenter.c
 @SRC_ROOT@/libs/hsm/tests/queue.c
+@SRC_ROOT@/libs/hsm/tests/defer.c
 @SRC_ROOT@/libs/hsm/tests/common.h
 @SRC_ROOT@/libs/hsm/tests/regular/regular.h
 @SRC_ROOT@/libs/hsm/tests/regular/regular.c

@@ -145,8 +145,16 @@ if unit_test
         [
             'tests' / 'queue.c',
         ],
-        c_args: ['-O0', '-fno-lto', '-ggdb'],
         dependencies: [libstr_dep, libhsm_dep, libevent_dep],
         include_directories: [include_directories('tests')])
     test('queue', e, suite: 'hsm')
+
+    e = executable(
+        'defer',
+        [
+            'tests' / 'defer.c',
+        ],
+        dependencies: [libstr_dep, libhsm_dep, libevent_dep],
+        include_directories: [include_directories('tests')])
+    test('defer', e, suite: 'hsm')
 endif

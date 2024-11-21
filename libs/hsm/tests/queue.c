@@ -58,7 +58,7 @@ static void hsmq_log(const char *fmt, ...) {
 
 struct am_hsmq {
     struct am_hsm hsm;
-    struct am_queue queue;
+    struct am_queue event_queue;
     void (*log)(const char *fmt, ...);
 };
 
@@ -71,8 +71,8 @@ static enum am_hsm_rc hsmq_b(struct am_hsmq *me, const struct am_event *event);
 
 static void hsmq_commit(void) {
     struct am_hsmq *me = &am_hsmq_;
-    while (!am_queue_is_empty(&me->queue)) {
-        const struct am_event **e = am_queue_pop_front(&me->queue);
+    while (!am_queue_is_empty(&me->event_queue)) {
+        const struct am_event **e = am_queue_pop_front(&me->event_queue);
         AM_ASSERT(e);
         AM_ASSERT(*e);
         am_hsm_dispatch(am_hsmq, *e);
@@ -95,7 +95,7 @@ static void hsmq_ctor(void (*log)(const char *fmt, ...)) {
     static const struct am_event *pool[2];
     struct am_blk blk = {.ptr = pool, .size = (int)sizeof(pool)};
     am_queue_init(
-        &me->queue,
+        &me->event_queue,
         /*isize=*/sizeof(pool[0]),
         AM_ALIGNOF(struct am_event *),
         &blk
@@ -108,7 +108,7 @@ static enum am_hsm_rc hsmq_a(struct am_hsmq *me, const struct am_event *event) {
         me->log("a-A;");
         const struct am_event *e =
             am_event_allocate(/*id=*/AM_EVT_B, sizeof(*e), /*margin=*/0);
-        am_event_push_back(me, &me->queue, e);
+        am_event_push_back(me, &me->event_queue, e);
         return AM_HSM_TRAN(hsmq_b);
     }
     default:
