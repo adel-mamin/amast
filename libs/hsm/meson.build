@@ -141,13 +141,13 @@ if unit_test
     test('reenter', e, suite: 'hsm')
 
     e = executable(
-        'queue',
+        'event_queue',
         [
-            'tests' / 'queue.c',
+            'tests' / 'event_queue.c',
         ],
         dependencies: [libstr_dep, libhsm_dep, libevent_dep],
         include_directories: [include_directories('tests')])
-    test('queue', e, suite: 'hsm')
+    test('event_queue', e, suite: 'hsm')
 
     e = executable(
         'defer',
