@@ -36,6 +36,7 @@
 #include "queue/queue.h"
 #include "onesize/onesize.h"
 
+#define AM_EVT_INVALID 0
 #define AM_EVT_RANGE_HSM_BEGIN 1
 #define AM_EVT_RANGE_HSM_END 4
 #define AM_EVT_RANGE_FSM_BEGIN 5
