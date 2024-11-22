@@ -127,6 +127,34 @@ Example:
 The initial state must always return **AM_FSM_TRAN(new_state)** macro
 to proceed to the appropriate active state.
 
+FSM CODING RULES
+================
+
+1. FSM states must be represented by event handlers of type **am_fsm_state_fn**.
+2. The name of the first argument of all user event handler functions
+   must be **me**.
+3. For convenience instead of using **struct am_fsm *me** the first argument
+   can point to a user structure. In this case the user structure
+   must have **struct am_fsm** instance as its first field.
+   For example, the first argument can be **struct foo *me**, where
+   **struct foo** is defined like this:
+
+   .. code-block:: C
+
+   struct foo {
+       struct am_fsm fsm;
+       ...
+   };
+
+4. Each user event handler should be implemented as a switch-case of handled
+   events.
+5. Avoid placing any code with side effects outside of the switch-case of
+   event handlers.
+6. Processing of **AM_FSM_EVT_ENTRY** and **AM_FSM_EVT_EXIT** events should
+   not trigger state transitions. It means that user event handlers should
+   not return **AM_FSM_TRAN()** or **AM_FSM_TRAN_REDISPATCH()** for
+   these events.
+
 FSM INITIALIZATION
 ==================
 

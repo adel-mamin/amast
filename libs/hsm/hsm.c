@@ -154,12 +154,14 @@ static void hsm_exit(struct am_hsm *hsm, const struct am_hsm_state *until) {
 static void hsm_enter_and_init(struct am_hsm *hsm, struct am_hsm_path *path) {
     hsm_enter(hsm, path);
     hsm_set_state(hsm, &path->state[0]);
-    while (hsm->state.fn(hsm, &m_hsm_evt_init) == AM_HSM_RC_TRAN) {
+    enum am_hsm_rc rc;
+    while ((rc = hsm->state.fn(hsm, &m_hsm_evt_init)) == AM_HSM_RC_TRAN) {
         struct am_hsm_state until = path->state[0];
         hsm_build(hsm, path, /*from=*/&hsm->state, &until, /*till=*/NULL);
         hsm_enter(hsm, path);
         hsm_set_state(hsm, &path->state[0]);
     }
+    AM_ASSERT(rc != AM_HSM_RC_TRAN_REDISPATCH);
     hsm_set_state(hsm, &path->state[0]);
 }
 

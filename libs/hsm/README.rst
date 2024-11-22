@@ -242,6 +242,40 @@ HSM library discovers the user HSM topology by sending **AM_HSM_EVT_EMPTY** even
 to state event handlers. The state event handlers should explicitly process
 the event and always return **AM_HSM_SUPER(superstate)** in response.
 
+HSM CODING RULES
+================
+
+1. HSM states must be represented by event handlers of type **am_hsm_state_fn**.
+2. The name of the first argument of all user event handler functions
+   must be **me**.
+3. For convenience instead of using **struct am_hsm *me** the first argument
+   can point to a user structure. In this case the user structure
+   must have **struct am_hsm** instance as its first field.
+   For example, the first argument can be **struct foo *me**, where
+   **struct foo** is defined like this:
+
+   .. code-block:: C
+
+   struct foo {
+       struct am_hsm hsm;
+       ...
+   };
+
+4. Each user event handler should be implemented as a switch-case of handled
+   events.
+5. Avoid placing any code with side effects outside of the switch-case of
+   event handlers.
+6. Processing of **AM_HSM_EVT_ENTRY** and **AM_HSM_EVT_EXIT** events should
+   not trigger state transitions. It means that user event handlers should
+   not return **AM_HSM_TRAN()** or **AM_HSM_TRAN_REDISPATCH()** for
+   these events.
+6. Processing of **AM_HSM_EVT_INIT** event can optionally only trigger
+   transition by returning the result of **AM_HSM_TRAN()** macro.
+   The use of **AM_HSM_TRAN_REDISPATCH()** is not allowed in this case.
+7. Processing of **AM_HSM_EVT_INIT** event can optionally only trigger
+   transition to a substate of the state triggering the transition.
+   Transition to peer states of superstates is not allowed in this case.
+
 TRANSITION TO HISTORY
 =====================
 

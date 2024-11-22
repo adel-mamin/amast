@@ -109,12 +109,12 @@ struct am_hsm;
  * switch statement. Event handlers should avoid using any code outside
  * of the switch statement, especially code that has side effects.
  *
- * @param hsm    the state machine
+ * @param me     the state machine
  * @param event  the event to handle
  * @return return code
  */
 typedef enum am_hsm_rc (*am_hsm_state_fn)(
-    struct am_hsm *hsm, const struct am_event *event
+    struct am_hsm *me, const struct am_event *event
 );
 
 /**
@@ -126,10 +126,10 @@ typedef enum am_hsm_rc (*am_hsm_state_fn)(
  * Set by am_hsm_set_spy().
  * Only supported if hsm.c is compiled with #AM_HSM_SPY defined.
  *
- * @param hsm    the handler of HSM to spy
+ * @param me     the handler of HSM to spy
  * @param event  the event to spy
  */
-typedef void (*am_hsm_spy_fn)(struct am_hsm *hsm, const struct am_event *event);
+typedef void (*am_hsm_spy_fn)(struct am_hsm *me, const struct am_event *event);
 
 /** HSM state */
 struct am_hsm_state {
