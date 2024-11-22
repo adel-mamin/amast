@@ -53,6 +53,13 @@ bool am_bit_u64_is_empty(const struct am_bit_u64 *u64);
 int am_bit_u64_msb(const struct am_bit_u64 *u64);
 
 /**
+ * Return the index of the most significant bit (MSB) set to 1.
+ * @param u8  the bit array to check
+ * @return the MSB index
+ */
+int am_bit_u8_msb(uint8_t u8);
+
+/**
  * Set bit with index n to 1.
  * @param u64  the bit array
  * @param n    the index of bit to set. Zero based. The valid range [0..63].

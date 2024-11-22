@@ -37,7 +37,7 @@
 #include "common/compiler.h"
 #include "bit/bit.h"
 
-static const int8_t am_bit_u8_2_msb[] = {
+static const int8_t am_bit_msb_from_u8[] = {
     0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4,
     4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6,
@@ -51,32 +51,19 @@ static const int8_t am_bit_u8_2_msb[] = {
     7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7
 };
 
-/**
- * Check if bit array has no bits set to 1.
- *
- * @param u64  the bit array to check
- * @retval true   bit array is empty
- * @retval false  bit array is not empty
- */
 bool am_bit_u64_is_empty(const struct am_bit_u64 *u64) {
     return 0 == u64->bytes;
 }
 
-/**
- * Return the index of the most significant bit (MSB) set to 1.
- * @param u64  the bit array to check
- * @return the MSB index
- */
-int am_bit_u64_msb(const struct am_bit_u64 *u64) {
-    int i = am_bit_u8_2_msb[u64->bytes];
-    return am_bit_u8_2_msb[u64->bits[i]] + i * 8;
+int am_bit_u8_msb(uint8_t u8) {
+    return am_bit_msb_from_u8[u8];
 }
 
-/**
- * Set bit with index n to 1.
- * @param u64  the bit array
- * @param n    the index of bit to set. Zero based. The valid range [0..63].
- */
+int am_bit_u64_msb(const struct am_bit_u64 *u64) {
+    int i = am_bit_msb_from_u8[u64->bytes];
+    return am_bit_msb_from_u8[u64->bits[i]] + i * 8;
+}
+
 void am_bit_u64_set(struct am_bit_u64 *u64, int n) {
     AM_ASSERT(n >= 0);
     AM_ASSERT(n < 64);
@@ -91,11 +78,6 @@ void am_bit_u64_set(struct am_bit_u64 *u64, int n) {
     u64->bits[i] = (unsigned char)mask;
 }
 
-/**
- * Clears a bit to 1 with index n.
- * @param u64 the bit array.
- * @param n the index. Zero based. The valid range [0..63].
- */
 void am_bit_u64_clear(struct am_bit_u64 *u64, int n) {
     AM_ASSERT(n >= 0);
     AM_ASSERT(n < 64);
