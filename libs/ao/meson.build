@@ -22,22 +22,15 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
-src = []
+ao_src = [files('ao.c', 'port' / 'cooperative' / 'port.c')]
+src += ao_src
 
-subdir('common')
-subdir('pal' / 'stubs')
-subdir('blk')
-subdir('crc')
-subdir('slist')
-subdir('dlist')
-subdir('bit')
-subdir('queue')
-subdir('strlib')
-subdir('onesize')
-subdir('event')
-subdir('timer')
-subdir('async')
-subdir('fsm')
-subdir('hsm')
-subdir('ao')
+libao = library(
+    'ao',
+    [ao_src],
+    include_directories: [
+        inc,
+        include_directories('port' / 'cooperative')
+    ]
+)
+libao_dep = declare_dependency(link_with: libao, include_directories: [inc])
