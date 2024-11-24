@@ -84,12 +84,14 @@ struct am_ao_subscribe_list {
 
 /**
  * Publish event.
+ *
  * @param event  the event to publish
  */
 void am_ao_publish(const struct am_event *event);
 
 /**
  * Publish event.
+ *
  * @param event   the event to publish
  * @param margin  free event queue slots to be available after event is pushed
  * @retval true   success
@@ -99,6 +101,7 @@ bool am_ao_publish_x(const struct am_event *event, int margin);
 
 /**
  * Active object constructor.
+ *
  * @param ao     the active object to construct
  * @param state  the initial state of the active object
  */
@@ -162,28 +165,32 @@ void am_ao_state_dtor(void);
 
 /**
  * Subscribes active object to event.
- * @param ao active object to subscribe.
- * @param event the event to subscribe to.
+ *
+ * @param ao     active object to subscribe
+ * @param event  the event to subscribe to
  */
 void am_ao_subscribe(const struct am_ao *ao, int event);
 
 /**
  * Unsubscribes active object from the event.
- * @param ao active object to unsubscribe.
- * @param event the event ID to unsubscribe from.
+ *
+ * @param ao     active object to unsubscribe
+ * @param event  the event ID to unsubscribe from
  */
 void am_ao_unsubscribe(const struct am_ao *ao, int event);
 
 /**
  * Unsubscribes active object from all events.
- * @param ao active object to unsubscribe.
+ *
+ * @param ao  active object to unsubscribe
  */
 void am_ao_unsubscribe_all(const struct am_ao *ao);
 
 /**
  * Initialize the AO subscribe list.
- * @param sub the array of AO subscribe lists.
- * @param nsub the number of elements in sub array.
+ *
+ * @param sub   the array of AO subscribe lists
+ * @param nsub  the number of elements in sub array
  */
 void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
 
@@ -199,8 +206,9 @@ bool am_ao_run_all(bool loop);
 
 /**
  * Log the content of the first num events in each event queue of every AO.
- * @param num the number of events to log.
- * @param log the logging callback.
+ *
+ * @param num  the number of events to log
+ * @param log  the logging callback
  */
 void am_ao_dump_event_queues(
     int num, void (*log)(const char *name, int i, int len, int cap, int event)
@@ -208,7 +216,8 @@ void am_ao_dump_event_queues(
 
 /**
  * Log last event of every AO.
- * @param log  the logging callback.
+ *
+ * @param log  the logging callback
  */
 void am_ao_log_last_events(void (*log)(const char *name, int event));
 
