@@ -141,12 +141,6 @@ struct am_ao_cfg {
      * atomically with a transition to a sleep mode.
      */
     void (*on_idle)(void);
-    /** User callback for user start-up code (e.g. enable interrupts). */
-    void (*on_startup)(void);
-    /** User callback for user cleanup code. */
-    void (*on_cleanup)(void);
-    /** User callback for user on-tick event. */
-    void (*on_tick)(struct am_event_timer *event);
     /** Debug callback. */
     void (*debug)(const struct am_ao *ao, const struct am_event *e);
     /** Enter critical section. */
@@ -202,12 +196,6 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
  * @retval false  processed no events
  */
 bool am_ao_run_all(bool loop);
-
-/**
- * Returns the current tick counter value.
- * @param domain clock domain [0..AO_CLK_DOMAIN_MAX[.
- */
-unsigned am_ao_now_tick(int domain);
 
 /**
  * Log the content of the first num events in each event queue of every AO.

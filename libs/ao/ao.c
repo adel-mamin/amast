@@ -50,7 +50,7 @@
 
 #include "ao/ao.h"
 
-/** Active object (AO module internal state instance. */
+/** Active object (AO) module internal state instance. */
 struct am_ao_state g_am_ao_state;
 
 bool am_ao_publish_x(const struct am_event *event, int margin) {
