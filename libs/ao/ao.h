@@ -31,7 +31,12 @@
 #ifndef AO_H_INCLUDED
 #define AO_H_INCLUDED
 
+#include "hsm/hsm.h"
 #include "timer/timer.h"
+
+#ifndef AM_AO_EVT_PUB_MAX
+#define AM_AO_EVT_PUB_MAX AM_EVT_USER
+#endif
 
 #ifdef __cplusplus
 extern "C" {
