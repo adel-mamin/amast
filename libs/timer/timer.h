@@ -38,6 +38,17 @@ extern "C" {
 
 AM_ASSERT_STATIC(AM_EVENT_TICK_DOMAIN_MASK >= AM_PAL_TICK_DOMAIN_MAX);
 
+/**
+ * Expired events are posted using this callback.
+ * Posting is one-to-one event delivery mechanism.
+ */
+typedef void (*am_timer_post_fn)(void *owner, const struct am_event *event);
+/**
+ * Expired events are published using this callback.
+ * Publishing is one-to-many event delivery mechanism.
+ */
+typedef void (*am_timer_publish_fn)(const struct am_event *event);
+
 /** Timer module configuration. */
 struct am_timer_cfg {
     /** either post or publish callback must be non-NULL */
@@ -46,12 +57,12 @@ struct am_timer_cfg {
      * Expired events are posted using this callback.
      * Posting is one-to-one event delivery mechanism.
      */
-    void (*post)(void *owner, const struct am_event *event);
+    am_timer_post_fn post;
     /**
      * Expired events are published using this callback.
      * Publishing is one-to-many event delivery mechanism.
      */
-    void (*publish)(const struct am_event *event);
+    am_timer_publish_fn publish;
     /**
      * Custom update the content of the event.
      * Optional, can be NULL.
