@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2024 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef BLK_H_INCLUDED
-#define BLK_H_INCLUDED
+#ifndef AM_BLK_H_INCLUDED
+#define AM_BLK_H_INCLUDED
 
 #include <stdbool.h>
 
@@ -48,4 +48,4 @@ void *am_blk_copy(struct am_blk *dst, const struct am_blk *src);
 }
 #endif
 
-#endif /* BLK_H_INCLUDED */
+#endif /* AM_BLK_H_INCLUDED */

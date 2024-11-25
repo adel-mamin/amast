@@ -30,8 +30,8 @@
  * http://stackoverflow.com/questions/1786257/properly-handling-compiler-specifics-unix-windows-in-c
  */
 
-#ifndef COMPILER_H_INCLUDED
-#define COMPILER_H_INCLUDED
+#ifndef AM_COMPILER_H_INCLUDED
+#define AM_COMPILER_H_INCLUDED
 
 #include <limits.h>
 
@@ -586,4 +586,4 @@ AM_ASSERT_STATIC(LONG_MAX == ((1ULL << (unsigned)(LONG_BITS - 1)) - 1));
 
 int am_compiler_alignment(void);
 
-#endif /* COMPILER_H_INCLUDED */
+#endif /* AM_COMPILER_H_INCLUDED */

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Adel Mamin
+ * Copyright (c) Adel Mamin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-#ifndef COMMON_TYPES_H_INCLUDED
-#define COMMON_TYPES_H_INCLUDED
+#ifndef AM_TYPES_H_INCLUDED
+#define AM_TYPES_H_INCLUDED
 
-#endif /* COMMON_TYPES_H_INCLUDED */
+#endif /* AM_TYPES_H_INCLUDED */

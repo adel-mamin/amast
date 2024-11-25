@@ -30,8 +30,8 @@
  * string utilities API
  */
 
-#ifndef STRLIB_H_INCLUDED
-#define STRLIB_H_INCLUDED
+#ifndef AM_STRLIB_H_INCLUDED
+#define AM_STRLIB_H_INCLUDED
 
 #include <complex.h>
 #include <stdarg.h>
@@ -326,4 +326,4 @@ void str_split_path(
  */
 int str_lcat_path(char *dst, const char *src, int lim, char delim);
 
-#endif /* STRLIB_H_INCLUDED */
+#endif /* AM_STRLIB_H_INCLUDED */

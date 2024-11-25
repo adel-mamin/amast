@@ -28,8 +28,8 @@
  * Active Object (AO) API declaration.
  */
 
-#ifndef AO_H_INCLUDED
-#define AO_H_INCLUDED
+#ifndef AM_AO_H_INCLUDED
+#define AM_AO_H_INCLUDED
 
 #include "hsm/hsm.h"
 #include "timer/timer.h"
@@ -280,4 +280,4 @@ void am_ao_log_last_events(void (*log)(const char *name, int event));
 }
 #endif
 
-#endif /* #ifndef AO_H_INCLUDED */
+#endif /* AM_AO_H_INCLUDED */

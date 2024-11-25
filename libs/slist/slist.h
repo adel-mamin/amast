@@ -27,8 +27,8 @@
  * Singly linked list interface.
  */
 
-#ifndef SLIST_H_INCLUDED
-#define SLIST_H_INCLUDED
+#ifndef AM_SLIST_H_INCLUDED
+#define AM_SLIST_H_INCLUDED
 
 #include <stdbool.h>
 
@@ -207,4 +207,4 @@ struct am_slist_item *am_slist_next_item(
 }
 #endif
 
-#endif /* SLIST_H_INCLUDED */
+#endif /* AM_SLIST_H_INCLUDED */

@@ -27,8 +27,8 @@
  * onesize memory allocator interface
  */
 
-#ifndef ONESIZE_H_INCLUDED
-#define ONESIZE_H_INCLUDED
+#ifndef AM_ONESIZE_H_INCLUDED
+#define AM_ONESIZE_H_INCLUDED
 
 #include "common/alignment.h"
 #include "common/macros.h"
@@ -169,4 +169,4 @@ int am_onesize_get_nblocks(const struct am_onesize *hnd);
 }
 #endif
 
-#endif /* ONESIZE_H_INCLUDED */
+#endif /* AM_ONESIZE_H_INCLUDED */

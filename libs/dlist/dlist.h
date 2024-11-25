@@ -27,8 +27,8 @@
  * Doubly linked list interface.
  */
 
-#ifndef DLIST_H_INCLUDED
-#define DLIST_H_INCLUDED
+#ifndef AM_DLIST_H_INCLUDED
+#define AM_DLIST_H_INCLUDED
 
 #include <stdbool.h>
 
@@ -303,4 +303,4 @@ bool am_dlist_owns(
 }
 #endif
 
-#endif /* DLIST_H_INCLUDED */
+#endif /* AM_DLIST_H_INCLUDED */

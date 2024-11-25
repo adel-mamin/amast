@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef ASYNC_H_INCLUDED
-#define ASYNC_H_INCLUDED
+#ifndef AM_ASYNC_H_INCLUDED
+#define AM_ASYNC_H_INCLUDED
 
 /**
  * Async/await API implementation.
@@ -162,4 +162,4 @@ static inline void am_async_init(struct am_async *me) {
 }
 #endif
 
-#endif /* ASYNC_H_INCLUDED */
+#endif /* AM_ASYNC_H_INCLUDED */

@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef TIMER_H_INCLUDED
-#define TIMER_H_INCLUDED
+#ifndef AM_TIMER_H_INCLUDED
+#define AM_TIMER_H_INCLUDED
 
 #ifdef __cplusplus
 extern "C" {
@@ -179,4 +179,4 @@ bool am_timer_domain_is_empty(int domain);
 }
 #endif
 
-#endif /* TIMER_H_INCLUDED */
+#endif /* AM_TIMER_H_INCLUDED */

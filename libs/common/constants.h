@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef COMMON_CONSTANTS_H_INCLUDED
-#define COMMON_CONSTANTS_H_INCLUDED
+#ifndef AM_CONSTANTS_H_INCLUDED
+#define AM_CONSTANTS_H_INCLUDED
 
 /*
  * Taken from:
@@ -55,4 +55,4 @@
 
 #define AM_COLOR_RESET "\x1b[0m"
 
-#endif /* COMMON_CONSTANTS_H_INCLUDED */
+#endif /* AM_CONSTANTS_H_INCLUDED */

@@ -27,8 +27,8 @@
  * Queue API.
  */
 
-#ifndef QUEUE_H_INCLUDED
-#define QUEUE_H_INCLUDED
+#ifndef AM_QUEUE_H_INCLUDED
+#define AM_QUEUE_H_INCLUDED
 
 #include <stdbool.h>
 #include "blk/blk.h"
@@ -165,4 +165,4 @@ bool am_queue_push_back(struct am_queue *hnd, const void *ptr, int size);
 }
 #endif
 
-#endif /* QUEUE_H_INCLUDED */
+#endif /* AM_QUEUE_H_INCLUDED */

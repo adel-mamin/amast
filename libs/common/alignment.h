@@ -27,8 +27,8 @@
  * alignment API declaration
  */
 
-#ifndef ALIGNMENT_H_INCLUDED
-#define ALIGNMENT_H_INCLUDED
+#ifndef AM_ALIGNMENT_H_INCLUDED
+#define AM_ALIGNMENT_H_INCLUDED
 
 #if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L))
 #include <stddef.h>
@@ -62,4 +62,4 @@
     ((int)(((unsigned)(size) + (unsigned)(align) - 1u) & \
            (unsigned)~(unsigned)((unsigned)(align) - 1u)))
 
-#endif /* ALIGNMENT_H_INCLUDED */
+#endif /* AM_ALIGNMENT_H_INCLUDED */

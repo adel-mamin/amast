@@ -30,8 +30,8 @@
  * AM_FSM_SPY - enables FSM spy callback support for debugging
  */
 
-#ifndef FSM_H_INCLUDED
-#define FSM_H_INCLUDED
+#ifndef AM_FSM_H_INCLUDED
+#define AM_FSM_H_INCLUDED
 
 #include <stdbool.h>
 
@@ -223,4 +223,4 @@ void am_fsm_set_spy(struct am_fsm *fsm, am_fsm_spy_fn spy);
 }
 #endif
 
-#endif /* FSM_H_INCLUDED */
+#endif /* AM_FSM_H_INCLUDED */

@@ -28,8 +28,8 @@
  * Platform abstraction layer (PAL) API
  */
 
-#ifndef PAL_H_INCLUDED
-#define PAL_H_INCLUDED
+#ifndef AM_PAL_H_INCLUDED
+#define AM_PAL_H_INCLUDED
 
 #include <stdint.h>
 
@@ -69,4 +69,4 @@ void am_pal_sleep_ms(int ms);
 }
 #endif
 
-#endif /* PAL_H_INCLUDED */
+#endif /* AM_PAL_H_INCLUDED */

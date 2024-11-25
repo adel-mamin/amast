@@ -27,8 +27,8 @@
  * CRC utilities.
  */
 
-#ifndef CRC_H_INCLUDED
-#define CRC_H_INCLUDED
+#ifndef AM_CRC_H_INCLUDED
+#define AM_CRC_H_INCLUDED
 
 /**
  * Compute CRC16.
@@ -131,4 +131,4 @@ void crc_fletcher8(
     unsigned char *ck_b
 );
 
-#endif /* CRC_H_INCLUDED */
+#endif /* AM_CRC_H_INCLUDED */

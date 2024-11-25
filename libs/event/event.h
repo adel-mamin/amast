@@ -28,8 +28,8 @@
  * Event API declaration.
  */
 
-#ifndef EVENT_H_INCLUDED
-#define EVENT_H_INCLUDED
+#ifndef AM_EVENT_H_INCLUDED
+#define AM_EVENT_H_INCLUDED
 
 #include <stdbool.h>
 
@@ -367,4 +367,4 @@ const struct am_event *am_event_recall(void *owner, struct am_queue *queue);
  */
 int am_event_flush_queue(struct am_queue *queue);
 
-#endif /* EVENT_H_INCLUDED */
+#endif /* AM_EVENT_H_INCLUDED */

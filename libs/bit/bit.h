@@ -27,8 +27,8 @@
  * Bit utilities interface.
  */
 
-#ifndef BIT_H_INCLUDED
-#define BIT_H_INCLUDED
+#ifndef AM_BIT_H_INCLUDED
+#define AM_BIT_H_INCLUDED
 
 /** A 64 bit array */
 struct am_bit_u64 {
@@ -73,4 +73,4 @@ void am_bit_u64_set(struct am_bit_u64 *u64, int n);
  */
 void am_bit_u64_clear(struct am_bit_u64 *u64, int n);
 
-#endif /* BIT_H_INCLUDED */
+#endif /* AM_BIT_H_INCLUDED */

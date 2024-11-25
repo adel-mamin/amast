@@ -31,8 +31,8 @@
  * AM_HSM_SPY - enables HSM spy callback support for debugging
  */
 
-#ifndef HSM_H_INCLUDED
-#define HSM_H_INCLUDED
+#ifndef AM_HSM_H_INCLUDED
+#define AM_HSM_H_INCLUDED
 
 #include <stdbool.h>
 
@@ -392,4 +392,4 @@ enum am_hsm_rc am_hsm_top(struct am_hsm *hsm, const struct am_event *event);
 }
 #endif
 
-#endif /* HSM_H_INCLUDED */
+#endif /* AM_HSM_H_INCLUDED */
