@@ -354,14 +354,28 @@ void am_event_push_back(
     (void)am_event_push_back_x(owner, queue, event, /*margin=*/0);
 }
 
-void am_event_push_front(
-    void *owner, struct am_queue *queue, const struct am_event *event
+bool am_event_push_front_x(
+    void *owner,
+    struct am_queue *queue,
+    const struct am_event *event,
+    int margin
 ) {
     AM_ASSERT(queue);
     AM_ASSERT(event);
+    AM_ASSERT(margin >= 0);
+    const int capacity = am_queue_capacity(queue);
+    AM_ASSERT(margin < capacity);
 
     struct am_event_state *me = &event_state_;
     me->crit_enter();
+
+    const int len = am_queue_length(queue);
+    AM_ASSERT(capacity >= len);
+    if (margin && ((capacity - len) <= margin)) {
+        me->crit_exit();
+        am_event_free(event);
+        return false;
+    }
 
     if (!am_event_is_static(event)) {
         am_event_inc_ref_cnt(AM_CAST(struct am_event *, event));
@@ -376,6 +390,17 @@ void am_event_push_front(
     }
 
     me->crit_exit();
+
+    return true;
+}
+
+void am_event_push_front(
+    void *owner, struct am_queue *queue, const struct am_event *event
+) {
+    AM_ASSERT(queue);
+    AM_ASSERT(event);
+
+    (void)am_event_push_front_x(owner, queue, event, /*margin=*/0);
 }
 
 const struct am_event *am_event_pop_front(void *owner, struct am_queue *queue) {

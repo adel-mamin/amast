@@ -116,6 +116,32 @@ void am_ao_publish(const struct am_event *event) {
     am_ao_publish_x(event, /*margin=*/0);
 }
 
+void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event) {
+    AM_ASSERT(ao);
+    AM_ASSERT(event);
+    am_event_push_back(ao, &ao->event_queue, event);
+}
+
+bool am_ao_post_fifo_x(struct am_ao *ao, const struct am_event *event, int margin) {
+    AM_ASSERT(ao);
+    AM_ASSERT(event);
+    AM_ASSERT(margin >= 0);
+    return am_event_push_back_x(ao, &ao->event_queue, event, margin);
+}
+
+void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event) {
+    AM_ASSERT(ao);
+    AM_ASSERT(event);
+    am_event_push_front(ao, &ao->event_queue, event);
+}
+
+bool am_ao_post_lifo_x(struct am_ao *ao, const struct am_event *event, int margin) {
+    AM_ASSERT(ao);
+    AM_ASSERT(event);
+    AM_ASSERT(margin >= 0);
+    return am_event_push_front_x(ao, &ao->event_queue, event, margin);
+}
+
 void am_ao_subscribe(const struct am_ao *ao, int event) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao));

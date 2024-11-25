@@ -287,6 +287,26 @@ void am_event_push_back(
  * Push event to the front of event queue.
  *
  * Notify owner (if set) if it is the first event in the queue.
+ * Does not assert if margin is non-zero and the event was not posted.
+ *
+ * @param owner   the event queue owner (optional)
+ * @param queue   the event queue
+ * @param event   the event to pst
+ * @param margin  free event queue slots to be available after event was posted
+ * @retval true   the event was posted
+ * @retval false  the event was not posted
+ */
+bool am_event_push_front_x(
+    void *owner,
+    struct am_queue *queue,
+    const struct am_event *event,
+    int margin
+);
+
+/**
+ * Push event to the front of event queue.
+ *
+ * Notify owner (if set) if it is the first event in the queue.
  * Assert if the event was not posted.
  *
  * @param owner   the event queue owner (optional)

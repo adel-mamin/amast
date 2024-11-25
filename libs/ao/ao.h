@@ -100,6 +100,56 @@ void am_ao_publish(const struct am_event *event);
 bool am_ao_publish_x(const struct am_event *event, int margin);
 
 /**
+ * Post event to the back of AO event queue.
+ *
+ * If AO event queue is full the API asserts.
+ * The event is handled asynchronously.
+ *
+ * @param ao      the event is posted to this AO
+ * @param event   the event to post
+ */
+void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
+
+/**
+ * Post event to the back of AO event queue.
+ *
+ * If AO event queue is full and margin is >0 the API fails gracefully.
+ * The event is handled asynchronously.
+ *
+ * @param ao      the event is posted to this AO
+ * @param event   the event to post
+ * @param margin  free event queue slots to be available after event is posted
+ * @retval true   the event was posted
+ * @retval false  the event was not posted
+ */
+bool am_ao_post_fifo_x(struct am_ao *ao, const struct am_event *event, int margin);
+
+/**
+ * Post event to the front of AO event queue.
+ *
+ * If AO event queue is full the API asserts.
+ * The event is handled asynchronously.
+ *
+ * @param ao      the event is posted to this AO
+ * @param event   the event to post
+ */
+void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
+
+/**
+ * Post event to the front of AO event queue.
+ *
+ * If AO event queue is full and margin is >0 the API fails gracefully.
+ * The event is handled asynchronously.
+ *
+ * @param ao      the event is posted to this AO
+ * @param event   the event to post
+ * @param margin  free event queue slots to be available after event is posted
+ * @retval true   the event was posted
+ * @retval false  the event was not posted
+ */
+bool am_ao_post_lifo_x(struct am_ao *ao, const struct am_event *event, int margin);
+
+/**
  * Active object constructor.
  *
  * @param ao     the active object to construct
