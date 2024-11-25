@@ -123,4 +123,15 @@ uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms) {
     return AM_MAX(1, AM_DIVIDE_ROUND_UP(ms, portTICK_PERIOD_MS));
 }
 
+void am_pal_sleep_ticks(int domain, int ticks) {
+    AM_ASSERT(AM_PAL_TICK_DOMAIN_DEFAULT == domain);
+    vTaskDelay(ticks);
+}
+
+void am_pal_sleep_ms(int ms) {
+    uint32_t ticks =
+        am_pal_time_get_tick_from_ms(AM_PAL_TICK_DOMAIN_DEFAULT, ms);
+    vTaskDelay(ticks);
+}
+
 #endif /* AMAST_PAL_FREERTOS */
