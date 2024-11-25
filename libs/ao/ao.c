@@ -100,7 +100,7 @@ bool am_ao_publish_x(const struct am_event *event, int margin) {
     /*
      * Tries to free the event.
      * It is needed to balance the ref counter increment at the beginning of
-     * ao_publish(). Also takes care of the case when no active objects
+     * am_ao_publish(). Also takes care of the case when no active objects
      * subscribed to this event.
      */
     am_event_free(event);
