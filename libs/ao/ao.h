@@ -217,7 +217,7 @@ void am_ao_state_dtor(void);
  * Subscribes active object to event.
  *
  * @param ao     active object to subscribe
- * @param event  the event to subscribe to
+ * @param event  the event ID to subscribe to
  */
 void am_ao_subscribe(const struct am_ao *ao, int event);
 
