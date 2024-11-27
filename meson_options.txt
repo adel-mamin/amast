@@ -1,1 +1,3 @@
-option('unit_test', type : 'boolean', value : false)
+option('unit_test', type: 'boolean', value: false)
+option('pal', type: 'combo', choices: ['stubs', 'posix', 'win', 'freertos'], value: 'posix')
+option('ao_cooperative_port', type: 'boolean', value: false)

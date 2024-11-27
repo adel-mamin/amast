@@ -126,6 +126,8 @@ PYTHON = find_program('python3')
 IWYU = find_program('include-what-you-use', required: false, disabler: true)
 
 unit_test = get_option('unit_test')
+pal = get_option('pal')
+ao_cooperative_port = get_option('ao_cooperative_port')
 
 if unit_test
     add_project_arguments(['-DAMAST_PAL_STUBS'], language: 'c')
@@ -222,7 +224,7 @@ run_target(
     'iwyu',
     command: [
         PYTHON,
-        '../.pixi/envs/default/bin/iwyu_tool.py',
+        '@0@/.pixi/envs/default/bin/iwyu_tool.py'.format(meson.project_source_root()),
         '-j',
         '@0@'.format(run_command('nproc', check: true).stdout().strip()),
         '-p',
