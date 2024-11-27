@@ -22,22 +22,12 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
-src = []
-
-subdir('common')
-subdir('pal')
-subdir('blk')
-subdir('crc')
-subdir('slist')
-subdir('dlist')
-subdir('bit')
-subdir('queue')
-subdir('strlib')
-subdir('onesize')
-subdir('event')
-subdir('timer')
-subdir('async')
-subdir('fsm')
-subdir('hsm')
-subdir('ao')
+if pal == 'stubs'
+    subdir('stubs')
+elif pal == 'posix'
+    subdir('posix')
+elif pal == 'win'
+    subdir('win')
+elif pal == 'freertos'
+    subdir('freertos')
+endif
