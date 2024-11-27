@@ -7,14 +7,15 @@ platforms = ["linux-64"]
 version = "0.1.0"
 
 [tasks]
-setup = "meson setup build -Dunit_test=true"
-style = "meson compile -C build style"
-cppcheck = "meson compile -C build cppcheck"
-tidy = "meson compile -C build tidy"
-test = "meson test -C build"
-libs = "meson compile -C build"
-iwyu = "meson compile -C build iwyu"
-all = { depends-on = ["setup", "libs", "style", "cppcheck", "tidy", "iwyu", "test"] }
+setup_posix = "meson setup builds/posix -Dunit_test=true -Dpal=posix"
+style_posix = "meson compile -C builds/posix style"
+cppcheck_posix = "meson compile -C builds/posix cppcheck"
+tidy_posix = "meson compile -C builds/posix tidy"
+test_posix = "meson test -C builds/posix"
+libs_posix = "meson compile -C builds/posix"
+iwyu_posix = "meson compile -C builds/posix iwyu"
+posix = { depends-on = ["setup_posix", "libs_posix", "style_posix", "cppcheck_posix", "tidy_posix", "iwyu_posix", "test_posix"] }
+all = { depends-on = ["posix"] }
 
 [dependencies]
 meson = ">=1.6.0,<2"
