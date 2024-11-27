@@ -62,6 +62,14 @@
 #define AM_PAL_FREERTOS
 #endif
 
+/**
+ * Enable PAL API implementation for posix.
+ * There should only be one AM_PAL_... defined at a time.
+ */
+#ifndef AM_PAL_POSIX
+#define AM_PAL_POSIX
+#endif
+
 /** Enable am_assert_failure() implementation */
 #ifndef AM_ASSERT_FAILURE
 #define AM_ASSERT_FAILURE
