@@ -8,6 +8,7 @@
 
 @SRC_ROOT@/libs/pal/pal.h
 @SRC_ROOT@/libs/pal/freertos/pal.c
+@SRC_ROOT@/libs/pal/posix/pal.c
 @SRC_ROOT@/libs/pal/stubs/pal.c
 
 @SRC_ROOT@/libs/blk/blk.h
