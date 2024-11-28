@@ -99,8 +99,6 @@ struct am_event_cfg {
     void (*notify_event_queue_busy)(void *owner);
     /** Notify owner about event queue is empty. */
     void (*notify_event_queue_empty)(void *owner);
-    /** Wait owner notification about event queue is busy. */
-    void (*wait_event_queue_busy)(void *owner);
     /** Enter critical section. */
     void (*crit_enter)(void);
     /** Exit critical section. */
