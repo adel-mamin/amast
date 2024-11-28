@@ -32,10 +32,6 @@
 extern "C" {
 #endif
 
-struct am_ao_port {
-    struct am_bit_u64 ready_aos;
-};
-
 void am_ao_notify(void *ao);
 void am_ao_port_ctor(struct am_ao_port *me);
 

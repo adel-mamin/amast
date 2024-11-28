@@ -26,6 +26,7 @@
 #define AM_AO_STATE_H_INCLUDED
 
 #include "ao/ao.h"
+#include "bit/bit.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,11 +58,15 @@ struct am_ao_state {
     void (*crit_enter)(void);
     /** Exit critical section. */
     void (*crit_exit)(void);
+
+    /** only used by cooperative AOs */
+    struct am_bit_u64 ready_aos;
 };
 
 extern struct am_ao_state g_am_ao_state;
 
-void smf_init_impl(void);
+void am_ao_notify(void *ao);
+void am_ao_notify_event_queue_empty(void *ao);
 
 #ifdef __cplusplus
 }

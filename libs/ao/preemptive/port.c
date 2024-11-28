@@ -43,13 +43,20 @@ AM_NORETURN static void am_ao_task(void *param) {
     struct am_ao *ao = (struct am_ao *)param;
 
     for (;;) {
+        am_pal_task_wait(ao->task);
         const struct am_event *e = am_event_pop_front(ao, &ao->event_queue);
-        struct am_ao_state *me = &g_am_ao_state;
-        me->debug(ao, e);
-        ao->last_event = e->id;
-        am_hsm_dispatch(&ao->hsm, e);
-        am_event_free(e);
-        ao->last_event = AM_EVT_INVALID;
+        AM_ASSERT(e);
+        while (e) {
+            struct am_ao_state *me = &g_am_ao_state;
+            me->debug(ao, e);
+
+            ao->last_event = e->id;
+            am_hsm_dispatch(&ao->hsm, e);
+            ao->last_event = AM_EVT_INVALID;
+
+            am_event_free(e);
+            e = am_event_pop_front(ao, &ao->event_queue);
+        }
     }
 }
 
