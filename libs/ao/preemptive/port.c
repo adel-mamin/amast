@@ -22,59 +22,40 @@
  * SOFTWARE.
  */
 
-#include <assert.h>
-#include <inttypes.h>
-#include <limits.h>
+#ifdef AMAST_AO_PREEMPTIVE
+
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
-#include <string.h>
 
-#include "bit/bit.h"
 #include "blk/blk.h"
 #include "common/alignment.h"
-#include "common/compiler.h"
 #include "common/macros.h"
-#include "dlist/dlist.h"
 #include "hsm/hsm.h"
-#include "onesize/onesize.h"
 #include "queue/queue.h"
-#include "slist/slist.h"
 #include "event/event.h"
+#include "pal/pal.h"
 #include "ao/ao.h"
 #include "state.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+AM_NORETURN static void am_ao_task(void *param) {
+    AM_ASSERT(param);
 
-bool am_ao_run_all(bool loop) {
-    struct am_ao_state *me = &g_am_ao_state;
-    bool processed = false;
-    do {
-        me->crit_enter();
+    struct am_ao *ao = (struct am_ao *)param;
 
-        if (am_bit_u64_is_empty(&me->port.ready_aos)) {
-            me->on_idle();
-            me->crit_exit();
-            continue;
-        }
-        int msb = am_bit_u64_msb(&me->port.ready_aos);
-        struct am_ao *ao = me->ao[msb];
-        AM_ASSERT(ao);
-
-        me->crit_exit();
-
+    for (;;) {
         const struct am_event *e = am_event_pop_front(ao, &ao->event_queue);
+        struct am_ao_state *me = &g_am_ao_state;
         me->debug(ao, e);
         ao->last_event = e->id;
         am_hsm_dispatch(&ao->hsm, e);
-        ao->last_event = AM_EVT_INVALID;
         am_event_free(e);
-        processed = true;
-    } while (loop);
+        ao->last_event = AM_EVT_INVALID;
+    }
+}
 
-    return processed;
+bool am_ao_run_all(bool loop) {
+    (void)loop;
+    return false;
 }
 
 void am_ao_start(
@@ -87,9 +68,6 @@ void am_ao_start(
     const char *name,
     const struct am_event *init_event
 ) {
-    (void)stack;
-    (void)stack_size;
-
     AM_ASSERT(ao);
     AM_ASSERT(prio >= 0);
     AM_ASSERT(prio < AM_AO_NUM_MAX);
@@ -97,8 +75,7 @@ void am_ao_start(
     AM_ASSERT(queue_size > 0);
 
     struct am_blk blk = {
-        .ptr = queue,
-        .size = (int)sizeof(struct am_event *) * queue_size
+        .ptr = queue, .size = (int)sizeof(queue[0]) * queue_size
     };
 
     am_queue_init(
@@ -115,20 +92,15 @@ void am_ao_start(
     AM_ASSERT(NULL == me->ao[prio]);
     me->ao[prio] = ao;
     am_hsm_init(&ao->hsm, init_event);
+
+    ao->task = am_pal_task_create(
+        name,
+        prio,
+        stack,
+        stack_size,
+        /*entry=*/am_ao_task,
+        /*arg=*/ao
+    );
 }
 
-void am_ao_notify(void *ao) {
-    am_bit_u64_set(&g_am_ao_state.port.ready_aos, ((struct am_ao*)ao)->prio);
-}
-
-void am_ao_notify_event_queue_empty(void *ao) {
-    am_bit_u64_clear(&g_am_ao_state.port.ready_aos, ((struct am_ao*)ao)->prio);
-}
-
-void am_ao_port_ctor(struct am_ao_port *me) {
-    (void)me;
-}
-
-#ifdef __cplusplus
-}
-#endif
+#endif /* AMAST_AO_PREEMPTIVE */

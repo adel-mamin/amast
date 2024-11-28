@@ -30,6 +30,9 @@
 #ifndef AM_BIT_H_INCLUDED
 #define AM_BIT_H_INCLUDED
 
+#include <stdbool.h>
+#include <stdint.h>
+
 /** A 64 bit array */
 struct am_bit_u64 {
     unsigned char bytes;   /**< redundant byte mask */

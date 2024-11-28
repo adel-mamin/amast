@@ -84,8 +84,8 @@
 @SRC_ROOT@/libs/onesize/onesize.c
 @SRC_ROOT@/libs/onesize/test.c
 
-@SRC_ROOT@/libs/ao/port/cooperative/port.h
-@SRC_ROOT@/libs/ao/port/cooperative/port.c
+@SRC_ROOT@/libs/ao/cooperative/port.c
+@SRC_ROOT@/libs/ao/preemptive/port.c
 @SRC_ROOT@/libs/ao/ao.h
 @SRC_ROOT@/libs/ao/ao.c
 @SRC_ROOT@/libs/ao/state.h

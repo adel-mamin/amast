@@ -28,23 +28,15 @@
  * Active Object (AO) API implementation.
  */
 
-#include <assert.h>
-#include <inttypes.h>
-#include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
-#include "blk/blk.h"
-#include "common/alignment.h"
-#include "common/compiler.h"
 #include "common/macros.h"
-#include "dlist/dlist.h"
 #include "hsm/hsm.h"
-#include "onesize/onesize.h"
+#include "event/event.h"
 #include "queue/queue.h"
-#include "slist/slist.h"
 #include "bit/bit.h"
 #include "ao/state.h"
 
@@ -90,7 +82,8 @@ bool am_ao_publish_x(const struct am_event *event, int margin) {
             int ind = 8 * i + msb;
             struct am_ao *ao = me->ao[ind];
             AM_ASSERT(ao);
-            bool pushed = am_event_push_back_x(ao, &ao->event_queue, event, margin);
+            bool pushed =
+                am_event_push_back_x(ao, &ao->event_queue, event, margin);
             if (!pushed) {
                 rc = false;
             }
@@ -122,7 +115,9 @@ void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event) {
     am_event_push_back(ao, &ao->event_queue, event);
 }
 
-bool am_ao_post_fifo_x(struct am_ao *ao, const struct am_event *event, int margin) {
+bool am_ao_post_fifo_x(
+    struct am_ao *ao, const struct am_event *event, int margin
+) {
     AM_ASSERT(ao);
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
@@ -135,7 +130,9 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event) {
     am_event_push_front(ao, &ao->event_queue, event);
 }
 
-bool am_ao_post_lifo_x(struct am_ao *ao, const struct am_event *event, int margin) {
+bool am_ao_post_lifo_x(
+    struct am_ao *ao, const struct am_event *event, int margin
+) {
     AM_ASSERT(ao);
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
@@ -245,12 +242,9 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     if (!me->crit_exit) {
         me->crit_exit = am_ao_crit_exit;
     }
-
-    am_ao_port_ctor(&me->port);
 }
 
-void am_ao_state_dtor(void) {
-}
+void am_ao_state_dtor(void) {}
 
 void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub) {
     AM_ASSERT(sub);

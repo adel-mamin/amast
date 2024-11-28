@@ -24,17 +24,10 @@
 
 /**
  * @file
- * Bit utilities unit tests.
+ * Bit API unit tests.
  */
 
-#include <assert.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <limits.h>
-
 #include "common/macros.h"
-#include "common/compiler.h"
 #include "bit/bit.h"
 
 static void test_bit_u64(void) {

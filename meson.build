@@ -127,7 +127,7 @@ IWYU = find_program('include-what-you-use', required: false, disabler: true)
 
 unit_test = get_option('unit_test')
 pal = get_option('pal')
-ao_cooperative_port = get_option('ao_cooperative_port')
+ao_type = get_option('ao_type')
 
 if unit_test
     add_project_arguments(['-DAMAST_PAL_STUBS'], language: 'c')
@@ -143,7 +143,9 @@ subdir('apps' / 'examples')
 files_to_check = run_command(
     FIND,
 
+    meson.project_source_root() / 'libs' / 'ao',
     meson.project_source_root() / 'libs' / 'async',
+    meson.project_source_root() / 'libs' / 'bit',
     meson.project_source_root() / 'libs' / 'blk',
     meson.project_source_root() / 'libs' / 'common',
     meson.project_source_root() / 'libs' / 'crc',

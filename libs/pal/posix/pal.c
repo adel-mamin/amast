@@ -63,10 +63,20 @@ struct am_pal_task {
     pthread_cond_t cond;
     /* flag to track notification state */
     bool notified;
-    void *arg;
-    /* entry point */
+    /* entry function */
     void (*entry)(void *arg);
+    /* entry function argumement */
+    void *arg;
 };
+
+static void *thread_entry_wrapper(void *arg) {
+    AM_ASSERT(arg);
+    struct am_pal_task *ctx = (struct am_pal_task *)arg;
+    AM_ASSERT(ctx->entry);
+    ctx->entry(ctx->arg);
+    free(ctx);  // Clean up allocated memory
+    return NULL;
+}
 
 static pthread_mutex_t critical_section_mutex_ = PTHREAD_MUTEX_INITIALIZER;
 
@@ -92,7 +102,6 @@ void *am_pal_task_create(
     AM_ASSERT(stack_size > 0);
     AM_ASSERT(entry);
     AM_ASSERT(priority >= 0);
-    (void)arg;
 
     pthread_attr_t attr;
     int ret = pthread_attr_init(&attr);
@@ -115,6 +124,17 @@ void *am_pal_task_create(
 
     struct am_pal_task *task = malloc(sizeof(struct am_pal_task));
     AM_ASSERT(0 == task);
+
+    task->entry = entry;
+    task->arg = arg;
+
+    ret = pthread_create(&task->thread, &attr, thread_entry_wrapper, task);
+    AM_ASSERT(0 == ret);
+    pthread_attr_destroy(&attr);
+
+    /* detach the thread so it cleans up after finishing */
+    ret = pthread_detach(task->thread);
+    AM_ASSERT(0 == ret);
 
     pthread_setname_np(task->thread, name);
 

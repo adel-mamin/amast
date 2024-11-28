@@ -31,8 +31,14 @@
 #ifndef AM_AO_H_INCLUDED
 #define AM_AO_H_INCLUDED
 
+#include <stdbool.h>
+#include <stdint.h>
+
+#include "common/compiler.h"
+#include "common/macros.h"
+#include "event/event.h"
+#include "queue/queue.h"
 #include "hsm/hsm.h"
-#include "timer/timer.h"
 
 #ifndef AM_AO_EVT_PUB_MAX
 #define AM_AO_EVT_PUB_MAX AM_EVT_USER
@@ -49,9 +55,7 @@ struct am_ao {
     const char *name;            /**< the human readable name of AO */
     struct am_queue event_queue; /**< the event queue */
     int last_event;              /**< last processed event */
-#if defined AO_TASK_HND
-    AO_TASK_HND task; /**< task handle */
-#endif
+    void *task;                  /**< task handle */
 };
 
 /** AO state configuration. */
@@ -127,7 +131,9 @@ void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
  * @retval true   the event was posted
  * @retval false  the event was not posted
  */
-bool am_ao_post_fifo_x(struct am_ao *ao, const struct am_event *event, int margin);
+bool am_ao_post_fifo_x(
+    struct am_ao *ao, const struct am_event *event, int margin
+);
 
 /**
  * Post event to the front of AO event queue.
@@ -152,7 +158,9 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
  * @retval true   the event was posted
  * @retval false  the event was not posted
  */
-bool am_ao_post_lifo_x(struct am_ao *ao, const struct am_event *event, int margin);
+bool am_ao_post_lifo_x(
+    struct am_ao *ao, const struct am_event *event, int margin
+);
 
 /**
  * Active object constructor.

@@ -22,15 +22,23 @@
 # SOFTWARE.
 #
 
-ao_src = [files('ao.c', 'port' / 'cooperative' / 'port.c')]
+ao_src = [files('ao.c')]
+ao_c_args = []
+if ao_type == 'cooperative'
+    ao_src += [files('cooperative' / 'port.c')]
+    ao_c_args += ['-DAMAST_AO_COOPERATIVE']
+elif ao_type == 'preemptive'
+    ao_src += [files('preemptive' / 'port.c')]
+    ao_c_args += ['-DAMAST_AO_PREEMPTIVE']
+endif
 src += ao_src
 
 libao = library(
     'ao',
     [ao_src],
+    c_args: ao_c_args,
     include_directories: [
         inc,
-        include_directories('port' / 'cooperative')
     ]
 )
 libao_dep = declare_dependency(link_with: libao, include_directories: [inc])

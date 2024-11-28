@@ -26,7 +26,6 @@
 #define AM_AO_STATE_H_INCLUDED
 
 #include "ao/ao.h"
-#include "port.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,9 +57,6 @@ struct am_ao_state {
     void (*crit_enter)(void);
     /** Exit critical section. */
     void (*crit_exit)(void);
-
-    /** port specific port */
-    struct am_ao_port port;
 };
 
 extern struct am_ao_state g_am_ao_state;
