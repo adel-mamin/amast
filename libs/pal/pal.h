@@ -47,6 +47,8 @@
 extern "C" {
 #endif
 
+void am_pal_ctor(void);
+
 void am_pal_crit_enter(void);
 void am_pal_crit_exit(void);
 

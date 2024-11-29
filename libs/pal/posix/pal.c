@@ -240,4 +240,6 @@ void am_pal_sleep_ms(int ms) {
     nanosleep(&ts, /*rmtp=*/NULL);
 }
 
+void am_pal_ctor(void) {}
+
 #endif /* AMAST_PAL_POSIX */

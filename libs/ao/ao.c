@@ -39,6 +39,7 @@
 #include "queue/queue.h"
 #include "bit/bit.h"
 #include "timer/timer.h"
+#include "pal/pal.h"
 #include "ao/state.h"
 
 #include "ao/ao.h"
@@ -245,6 +246,8 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     if (!me->crit_exit) {
         me->crit_exit = am_ao_crit_exit_stub;
     }
+
+    am_pal_ctor();
 
     struct am_event_cfg cfg_event = {
         .push_front = (am_event_push_front_fn)am_ao_post_lifo,
