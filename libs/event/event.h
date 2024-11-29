@@ -82,7 +82,7 @@ struct am_event {
     /** reference counter */
     unsigned ref_counter : AM_EVENT_REF_COUNTER_BITS;
     /** if set to zero, then event is statically allocated */
-    unsigned pool_index : AM_EVENT_POOL_INDEX_BITS;
+    unsigned pool_index_plus_one : AM_EVENT_POOL_INDEX_BITS;
     /** tick domain for time events */
     unsigned tick_domain : AM_EVENT_TICK_DOMAIN_BITS;
     /** PUB/SUB time event */

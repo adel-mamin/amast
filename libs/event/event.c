@@ -37,7 +37,7 @@
 #include "blk/blk.h"
 #include "event.h"
 
-#define AM_EVENT_IS_STATIC(event) (0 == (event)->pool_index)
+#define AM_EVENT_IS_STATIC(event) (0 == (event)->pool_index_plus_one)
 
 /** Event internal state. */
 struct am_event_state {
@@ -157,8 +157,9 @@ struct am_event *am_event_allocate(int id, int size, int margin) {
         AM_DISABLE_WARNING(AM_W_NULL_DEREFERENCE);
         memset(event, 0, sizeof(*event));
         event->id = id;
-        event->pool_index =
+        event->pool_index_plus_one =
             (unsigned)i & ((1U << AM_EVENT_POOL_INDEX_BITS) - 1);
+        event->pool_index_plus_one += 1;
         AM_ENABLE_WARNING(AM_W_NULL_DEREFERENCE);
 
         return event;
@@ -186,8 +187,8 @@ void am_event_free(const struct am_event *event) {
         return;
     }
 
-    AM_ASSERT(event->pool_index <= AM_EVENT_POOL_NUM_MAX);
-    am_onesize_free(&event_state_.pool[event->pool_index - 1], event);
+    AM_ASSERT(event->pool_index_plus_one <= AM_EVENT_POOL_NUM_MAX);
+    am_onesize_free(&event_state_.pool[event->pool_index_plus_one - 1], event);
 
     me->crit_exit();
 }
@@ -283,7 +284,7 @@ void am_event_log_pools(int num, am_event_log_func cb) {
 
 bool am_event_is_static(const struct am_event *event) {
     AM_ASSERT(event);
-    return (0 == (event->pool_index & AM_EVENT_POOL_INDEX_MASK));
+    return (0 == (event->pool_index_plus_one & AM_EVENT_POOL_INDEX_MASK));
 }
 
 void am_event_inc_ref_cnt(const struct am_event *event) {

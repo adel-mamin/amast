@@ -73,6 +73,7 @@ void am_timer_event_ctor(struct am_event_timer *event, int id, int domain) {
     AM_ASSERT(id >= AM_EVT_USER);
     AM_ASSERT(domain < AM_PAL_TICK_DOMAIN_MAX);
 
+    /* timer events are never deallocated */
     memset(event, 0, sizeof(*event));
     am_dlist_item_init(&event->item);
     event->event.id = id;
