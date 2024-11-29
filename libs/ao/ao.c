@@ -213,37 +213,37 @@ void am_ao_stop(struct am_ao *ao) {
     me->ao[ao->prio] = NULL;
 }
 
-static void am_ao_on_idle(void) {}
+static void am_ao_on_idle_stub(void) {}
 
-static void am_ao_debug(const struct am_ao *ao, const struct am_event *e) {
+static void am_ao_debug_stub(const struct am_ao *ao, const struct am_event *e) {
     (void)ao;
     (void)e;
 }
 
-static void am_ao_crit_enter(void) {}
-static void am_ao_crit_exit(void) {}
+static void am_ao_crit_enter_stub(void) {}
+static void am_ao_crit_exit_stub(void) {}
 
 void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     AM_ASSERT(cfg);
 
     struct am_ao_state *me = &g_am_ao_state;
-    memset(me, 0, sizeof(*me)); /* NOLINT */
+    memset(me, 0, sizeof(*me));
 
     me->on_idle = cfg->on_idle;
     if (!me->on_idle) {
-        me->on_idle = am_ao_on_idle;
+        me->on_idle = am_ao_on_idle_stub;
     }
     me->debug = cfg->debug;
     if (!me->debug) {
-        me->debug = am_ao_debug;
+        me->debug = am_ao_debug_stub;
     }
     me->crit_enter = cfg->crit_enter;
     if (!me->crit_enter) {
-        me->crit_enter = am_ao_crit_enter;
+        me->crit_enter = am_ao_crit_enter_stub;
     }
     me->crit_exit = cfg->crit_exit;
     if (!me->crit_exit) {
-        me->crit_exit = am_ao_crit_exit;
+        me->crit_exit = am_ao_crit_exit_stub;
     }
 
     struct am_event_cfg cfg_event = {
