@@ -91,14 +91,23 @@ struct am_event {
     unsigned reserved : 1;
 };
 
+typedef void (*am_event_push_front_fn)(
+    void *owner, const struct am_event *event
+);
+typedef void (*am_event_notify_queue_busy_fn)(void *owner);
+typedef void (*am_event_notify_queue_empty_fn)(void *owner);
+typedef void (*am_event_wait_queue_busy_fn)(void *owner);
+
 /** Event module configuration. */
 struct am_event_cfg {
     /** Push event to the front of owner event queue */
-    void (*push_front)(void *owner, const struct am_event *event);
+    am_event_push_front_fn push_front;
     /** Notify owner about event queue is busy. */
-    void (*notify_event_queue_busy)(void *owner);
+    am_event_notify_queue_busy_fn notify_event_queue_busy;
     /** Notify owner about event queue is empty. */
-    void (*notify_event_queue_empty)(void *owner);
+    am_event_notify_queue_empty_fn notify_event_queue_empty;
+    /** Wait owner notification about event queue is busy. */
+    am_event_wait_queue_busy_fn wait_event_queue_busy;
     /** Enter critical section. */
     void (*crit_enter)(void);
     /** Exit critical section. */

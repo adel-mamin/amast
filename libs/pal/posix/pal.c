@@ -69,6 +69,19 @@ struct am_pal_task {
     void *arg;
 };
 
+static struct am_pal_task *task_arr_[64] = {0};
+static int task_arr_len_ = 0;
+
+static int am_pal_index_from_task_id(int task_id) {
+    AM_ASSERT(task_id > 0);
+    return task_id - 1;
+}
+
+static int am_pal_task_id_from_index(int index) {
+    AM_ASSERT(index >= 0);
+    return index + 1;
+}
+
 static void *thread_entry_wrapper(void *arg) {
     AM_ASSERT(arg);
     struct am_pal_task *ctx = (struct am_pal_task *)arg;
@@ -90,7 +103,18 @@ void am_pal_crit_exit(void) {
     AM_ASSERT(0 == result);
 }
 
-void *am_pal_task_create(
+int am_pal_task_own_id(void) {
+    pthread_t thread = pthread_self();
+    for (int i = 0; i < task_arr_len_; ++i) {
+        if (task_arr_[i]->thread == thread) {
+            return am_pal_task_id_from_index(i);
+        }
+    }
+    AM_ASSERT(0);
+    return 0;
+}
+
+int am_pal_task_create(
     const char *name,
     const int priority,
     void *stack,
@@ -98,10 +122,10 @@ void *am_pal_task_create(
     void (*entry)(void *arg),
     void *arg
 ) {
-    AM_ASSERT(stack);
-    AM_ASSERT(stack_size > 0);
+    (void)stack;
     AM_ASSERT(entry);
     AM_ASSERT(priority >= 0);
+    AM_ASSERT(task_arr_len_ < AM_COUNTOF(task_arr_));
 
     pthread_attr_t attr;
     int ret = pthread_attr_init(&attr);
@@ -112,18 +136,20 @@ void *am_pal_task_create(
     );
     AM_ASSERT(0 == ret);
 
-    ret = pthread_attr_setschedpolicy(&attr, SCHED_RR);
+    ret = pthread_attr_setschedpolicy(&attr, SCHED_OTHER);
     AM_ASSERT(0 == ret);
 
-    int prio = priority + sched_get_priority_min(SCHED_RR);
-    struct sched_param param = {.sched_priority = prio};
-    ret = pthread_attr_setschedparam(&attr, &param);
-    AM_ASSERT(0 == ret);
+    /* int prio = priority + sched_get_priority_min(SCHED_OTHER); */
+    /* struct sched_param param = {.sched_priority = prio}; */
+    /* ret = pthread_attr_setschedparam(&attr, &param); */
+    /* AM_ASSERT(0 == ret); */
     ret = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
     AM_ASSERT(0 == ret);
 
     struct am_pal_task *task = malloc(sizeof(struct am_pal_task));
-    AM_ASSERT(0 == task);
+    AM_ASSERT(task);
+    int index = task_arr_len_++;
+    task_arr_[index] = task;
 
     task->entry = entry;
     task->arg = arg;
@@ -138,23 +164,28 @@ void *am_pal_task_create(
 
     pthread_setname_np(task->thread, name);
 
-    return task;
+    return am_pal_task_id_from_index(index);
 }
 
-void am_pal_task_notify(void *task) {
-    AM_ASSERT(task);
+void am_pal_task_notify(int task_id) {
+    AM_ASSERT(task_id != AM_PAL_TASK_ID_NONE);
 
-    struct am_pal_task *t = (struct am_pal_task *)task;
+    int index = am_pal_index_from_task_id(task_id);
+    struct am_pal_task *t = (struct am_pal_task *)task_arr_[index];
+    AM_ASSERT(t);
     pthread_mutex_lock(&t->mutex);
     t->notified = true;
     pthread_cond_signal(&t->cond);
     pthread_mutex_unlock(&t->mutex);
 }
 
-void am_pal_task_wait(void *task) {
-    AM_ASSERT(task);
-
-    struct am_pal_task *t = (struct am_pal_task *)task;
+void am_pal_task_wait(int task_id) {
+    if (AM_PAL_TASK_ID_NONE == task_id) {
+        task_id = am_pal_task_own_id();
+    }
+    int index = am_pal_index_from_task_id(task_id);
+    struct am_pal_task *t = (struct am_pal_task *)task_arr_[index];
+    AM_ASSERT(t);
     pthread_mutex_lock(&t->mutex);
     while (!t->notified) {
         pthread_cond_wait(&t->cond, &t->mutex);

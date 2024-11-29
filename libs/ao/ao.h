@@ -55,7 +55,8 @@ struct am_ao {
     const char *name;            /**< the human readable name of AO */
     struct am_queue event_queue; /**< the event queue */
     int last_event;              /**< last processed event */
-    void *task;                  /**< task handle */
+    int task_id;                 /**< task handle */
+    bool stopped;                /**< 1: AO was stopped, 0: AO wasn't stopped */
 };
 
 /** AO state configuration. */
@@ -197,7 +198,12 @@ void am_ao_start(
     const struct am_event *init_event
 );
 
-void am_ao_stop(const struct am_ao *ao);
+/**
+ * Stop an active object
+ *
+ * @param ao  the active object to stop
+ */
+void am_ao_stop(struct am_ao *ao);
 
 struct am_ao_cfg {
     /**

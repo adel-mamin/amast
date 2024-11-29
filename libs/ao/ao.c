@@ -38,6 +38,7 @@
 #include "event/event.h"
 #include "queue/queue.h"
 #include "bit/bit.h"
+#include "timer/timer.h"
 #include "ao/state.h"
 
 #include "ao/ao.h"
@@ -202,10 +203,12 @@ void am_ao_ctor(struct am_ao *ao, const struct am_hsm_state *state) {
     am_hsm_ctor(&ao->hsm, state);
 }
 
-void am_ao_stop(const struct am_ao *ao) {
+void am_ao_stop(struct am_ao *ao) {
     AM_ASSERT(ao);
     AM_ASSERT(ao->prio < AM_AO_NUM_MAX);
 
+    am_ao_unsubscribe_all(ao);
+    AM_ATOMIC_STORE_N(&ao->stopped, true);
     struct am_ao_state *me = &g_am_ao_state;
     me->ao[ao->prio] = NULL;
 }
@@ -242,9 +245,22 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     if (!me->crit_exit) {
         me->crit_exit = am_ao_crit_exit;
     }
+
+    struct am_event_cfg cfg_event = {
+        .push_front = (am_event_push_front_fn)am_ao_post_lifo,
+        .notify_event_queue_busy = am_ao_notify,
+        .wait_event_queue_busy = am_ao_wait
+    };
+    am_event_state_ctor(&cfg_event);
+
+    struct am_timer_cfg cfg_timer = {.post = (am_timer_post_fn)am_ao_post_fifo};
+    am_timer_state_ctor(&cfg_timer);
 }
 
-void am_ao_state_dtor(void) {}
+void am_ao_state_dtor(void) {
+    struct am_ao_state *me = &g_am_ao_state;
+    AM_ATOMIC_STORE_N(&me->ao_state_dtor_called, true);
+}
 
 void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub) {
     AM_ASSERT(sub);

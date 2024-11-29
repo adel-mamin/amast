@@ -22,57 +22,10 @@
  * SOFTWARE.
  */
 
-/**
- * @file
- *
- * Platform abstraction layer (PAL) API
- */
+#ifndef DPP_TABLE_H_INCLUDED
+#define DPP_TABLE_H_INCLUDED
 
-#ifndef AM_PAL_H_INCLUDED
-#define AM_PAL_H_INCLUDED
+extern struct am_ao *g_ao_table;
+void table_ctor(int nsession);
 
-#include <stdint.h>
-
-/** Invalid task ID */
-#define AM_PAL_TASK_ID_NONE 0
-
-/** Default tick domain */
-#define AM_PAL_TICK_DOMAIN_DEFAULT 0
-
-#ifndef AM_PAL_TICK_DOMAIN_MAX
-#define AM_PAL_TICK_DOMAIN_MAX 1 /** total number of tick domains */
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void am_pal_crit_enter(void);
-void am_pal_crit_exit(void);
-
-int am_pal_task_create(
-    const char *name,
-    int priority,
-    void *stack,
-    int stack_size,
-    void (*entry)(void *arg),
-    void *arg
-);
-
-void am_pal_task_notify(int task_id);
-void am_pal_task_wait(int task_id);
-int am_pal_task_own_id(void);
-
-uint32_t am_pal_time_get_ms(void);
-uint32_t am_pal_time_get_tick(int domain);
-uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms);
-uint32_t am_pal_time_get_ms_from_tick(int domain, uint32_t tick);
-
-void am_pal_sleep_ticks(int domain, int ticks);
-void am_pal_sleep_ms(int ms);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* AM_PAL_H_INCLUDED */
+#endif /* DPP_TABLE_H_INCLUDED */

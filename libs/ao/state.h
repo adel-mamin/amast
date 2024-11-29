@@ -61,11 +61,15 @@ struct am_ao_state {
 
     /** only used by cooperative AOs */
     struct am_bit_u64 ready_aos;
+
+    /** check if am_ao_state_dtor() was called */
+    bool ao_state_dtor_called;
 };
 
 extern struct am_ao_state g_am_ao_state;
 
 void am_ao_notify(void *ao);
+void am_ao_wait(void *ao);
 void am_ao_notify_event_queue_empty(void *ao);
 
 #ifdef __cplusplus

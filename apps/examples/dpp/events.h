@@ -22,57 +22,34 @@
  * SOFTWARE.
  */
 
-/**
- * @file
- *
- * Platform abstraction layer (PAL) API
- */
+#ifndef DPP_EVENTS_H_INCLUDED
+#define DPP_EVENTS_H_INCLUDED
 
-#ifndef AM_PAL_H_INCLUDED
-#define AM_PAL_H_INCLUDED
+enum events {
+    EVT_DONE = AM_EVT_USER,
+    EVT_EAT,
+    EVT_TIMEOUT,
 
-#include <stdint.h>
+    EVT_HUNGRY,
+    EVT_MAX
+};
 
-/** Invalid task ID */
-#define AM_PAL_TASK_ID_NONE 0
+#undef AM_AO_EVT_PUB_MAX
+#define AM_AO_EVT_PUB_MAX EVT_TIMEOUT
 
-/** Default tick domain */
-#define AM_PAL_TICK_DOMAIN_DEFAULT 0
+struct hungry {
+    struct am_event event;
+    int philo;
+};
 
-#ifndef AM_PAL_TICK_DOMAIN_MAX
-#define AM_PAL_TICK_DOMAIN_MAX 1 /** total number of tick domains */
-#endif
+struct done {
+    struct am_event event;
+    int philo;
+};
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+struct eat {
+    struct am_event event;
+    int philo;
+};
 
-void am_pal_crit_enter(void);
-void am_pal_crit_exit(void);
-
-int am_pal_task_create(
-    const char *name,
-    int priority,
-    void *stack,
-    int stack_size,
-    void (*entry)(void *arg),
-    void *arg
-);
-
-void am_pal_task_notify(int task_id);
-void am_pal_task_wait(int task_id);
-int am_pal_task_own_id(void);
-
-uint32_t am_pal_time_get_ms(void);
-uint32_t am_pal_time_get_tick(int domain);
-uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms);
-uint32_t am_pal_time_get_ms_from_tick(int domain, uint32_t tick);
-
-void am_pal_sleep_ticks(int domain, int ticks);
-void am_pal_sleep_ms(int ms);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* AM_PAL_H_INCLUDED */
+#endif /* #ifndef DPP_EVENTS_H_INCLUDED */

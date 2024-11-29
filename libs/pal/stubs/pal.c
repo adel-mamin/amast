@@ -39,7 +39,7 @@ void am_pal_crit_enter(void) {}
 
 void am_pal_crit_exit(void) {}
 
-void *am_pal_task_create(
+int am_pal_task_create(
     const char *name,
     int priority,
     void *stack,
@@ -54,12 +54,12 @@ void *am_pal_task_create(
     (void)entry;
     (void)arg;
 
-    return NULL;
+    return AM_PAL_TASK_ID_NONE;
 }
 
-void am_pal_task_notify(void *task) { (void)task; }
+void am_pal_task_notify(int task_id) { (void)task_id; }
 
-void am_pal_task_wait(void *task) { (void)task; }
+void am_pal_task_wait(int task_id) { (void)task_id; }
 
 uint32_t am_pal_time_get_ms(void) { return 0; }
 

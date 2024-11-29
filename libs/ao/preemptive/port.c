@@ -33,35 +33,36 @@
 #include "hsm/hsm.h"
 #include "queue/queue.h"
 #include "event/event.h"
+#include "timer/timer.h"
 #include "pal/pal.h"
 #include "ao/ao.h"
 #include "state.h"
 
-AM_NORETURN static void am_ao_task(void *param) {
+static void am_ao_task(void *param) {
     AM_ASSERT(param);
 
     struct am_ao *ao = (struct am_ao *)param;
 
-    for (;;) {
-        am_pal_task_wait(ao->task);
+    while (AM_LIKELY(!ao->stopped)) {
         const struct am_event *e = am_event_pop_front(ao, &ao->event_queue);
-        AM_ASSERT(e);
-        while (e) {
-            struct am_ao_state *me = &g_am_ao_state;
-            me->debug(ao, e);
+        struct am_ao_state *me = &g_am_ao_state;
+        me->debug(ao, e);
 
-            ao->last_event = e->id;
-            am_hsm_dispatch(&ao->hsm, e);
-            ao->last_event = AM_EVT_INVALID;
+        ao->last_event = e->id;
+        am_hsm_dispatch(&ao->hsm, e);
+        ao->last_event = AM_EVT_INVALID;
 
-            am_event_free(e);
-            e = am_event_pop_front(ao, &ao->event_queue);
-        }
+        am_event_free(e);
     }
 }
 
 bool am_ao_run_all(bool loop) {
+    const struct am_ao_state *me = &g_am_ao_state;
     (void)loop;
+    while (loop && AM_UNLIKELY(!me->ao_state_dtor_called)) {
+        am_pal_sleep_ticks(/*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ticks=*/1);
+        am_timer_tick(/*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT);
+    }
     return false;
 }
 
@@ -100,7 +101,7 @@ void am_ao_start(
     me->ao[prio] = ao;
     am_hsm_init(&ao->hsm, init_event);
 
-    ao->task = am_pal_task_create(
+    ao->task_id = am_pal_task_create(
         name,
         prio,
         stack,
@@ -108,6 +109,21 @@ void am_ao_start(
         /*entry=*/am_ao_task,
         /*arg=*/ao
     );
+}
+
+void am_ao_notify(void *ao) {
+    AM_ASSERT(ao);
+    const struct am_ao *ao_ = (struct am_ao *)ao;
+    if (AM_PAL_TASK_ID_NONE == ao_->task_id) {
+        return;
+    }
+    am_pal_task_notify(ao_->task_id);
+}
+
+void am_ao_wait(void *ao) {
+    AM_ASSERT(ao);
+    const struct am_ao *ao_ = (struct am_ao *)ao;
+    am_pal_task_wait(ao_->task_id);
 }
 
 #endif /* AMAST_AO_PREEMPTIVE */

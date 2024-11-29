@@ -42,3 +42,19 @@ e = executable(
         'hsm' / 'submachine' / 'calc' / 'example.c'
     ],
     dependencies: [libhsm_dep, libstr_dep])
+
+e = executable(
+    'dpp-example',
+    [
+        'dpp' / 'main.c',
+        'dpp' / 'philo.c',
+        'dpp' / 'table.c'
+    ],
+    dependencies: [
+        libhsm_dep,
+        libstr_dep,
+        libpal_dep,
+        libao_dep,
+        libevent_dep,
+        libtimer_dep,
+        libbit_dep])
