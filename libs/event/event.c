@@ -37,8 +37,6 @@
 #include "blk/blk.h"
 #include "event.h"
 
-#define AM_EVENT_IS_STATIC(event) (0 == (event)->pool_index_plus_one)
-
 /** Event internal state. */
 struct am_event_state {
     /** user defined event memory pools  */
@@ -154,13 +152,11 @@ struct am_event *am_event_allocate(int id, int size, int margin) {
         AM_ASSERT(event);
 
         /* event pointer is guaranteeed to be non-NULL here */
-        AM_DISABLE_WARNING(AM_W_NULL_DEREFERENCE);
         memset(event, 0, sizeof(*event));
         event->id = id;
         event->pool_index_plus_one =
             (unsigned)i & ((1U << AM_EVENT_POOL_INDEX_BITS) - 1);
         event->pool_index_plus_one += 1;
-        AM_ENABLE_WARNING(AM_W_NULL_DEREFERENCE);
 
         return event;
     }
@@ -174,7 +170,7 @@ void am_event_free(const struct am_event *event) {
     if (NULL == event) {
         return;
     }
-    if (AM_EVENT_IS_STATIC(event)) {
+    if (am_event_is_static(event)) {
         return; /* the event is statically allocated */
     }
 
