@@ -120,11 +120,12 @@ typedef int ssize_t;
 
 /**
  * The parameter `si` specifies which argument is the format string argument
- * (starting from 1), while `ftc` is the number of the first argument to check
- * against the format string. For functions where the arguments are not
- * available to be checked (such as vprintf), specify the third parameter as
- * zero. In this case the compiler only checks the format string for
- * consistency.
+ * (starting from 1), while `ftc` is the 1-based index of the first argument
+ * to check against the format string.
+ *
+ * For functions where the arguments are not available to be checked
+ * (such as vprintf), specify the third parameter as zero.
+ * In this case the compiler only checks the format string for consistency.
  */
 #define AM_PRINTF(si, ftc) __attribute__((format(printf, (si), (ftc))))
 #define AM_ATTR(...) __attribute__((__VA_ARGS__))
