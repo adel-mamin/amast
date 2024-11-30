@@ -30,12 +30,14 @@
 
 #ifdef AMAST_PAL_POSIX
 
-#include <stdbool.h>
-
 #define _GNU_SOURCE
 
+#include <stdarg.h> /* IWYU pragma: keep */
+#include <stdbool.h>
+#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+/* IWYU pragma: no_include <__stdarg_va_arg.h> */
 
 #define _POSIX_C_SOURCE 200809L
 
@@ -238,6 +240,16 @@ void am_pal_sleep_ms(int ms) {
                           .tv_nsec = (ms % 1000) * 1000000
     };
     nanosleep(&ts, /*rmtp=*/NULL);
+}
+
+int am_pal_printf(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    am_pal_crit_enter();
+    int rc = vprintf(fmt, args);
+    am_pal_crit_exit();
+    va_end(args);
+    return rc;
 }
 
 void am_pal_ctor(void) {}

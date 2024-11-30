@@ -73,6 +73,8 @@ uint32_t am_pal_time_get_ms_from_tick(int domain, uint32_t tick);
 void am_pal_sleep_ticks(int domain, int ticks);
 void am_pal_sleep_ms(int ms);
 
+AM_PRINTF(1, 2) int am_pal_printf(const char *fmt, ...);
+
 #ifdef __cplusplus
 }
 #endif
