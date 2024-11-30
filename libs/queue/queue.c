@@ -43,7 +43,7 @@ void am_queue_init(
     AM_ASSERT(hnd);
     AM_ASSERT(isize > 0);
     AM_ASSERT(alignment > 0);
-    AM_ASSERT(AM_IS_POWER_OF_TWO((unsigned)alignment));
+    AM_ASSERT(AM_IS_POW2((unsigned)alignment));
     AM_ASSERT(blk);
     AM_ASSERT(blk->ptr);
     AM_ASSERT(blk->size > 0);

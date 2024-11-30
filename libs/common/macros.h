@@ -79,7 +79,7 @@ AM_NORETURN void am_assert_failure(
     AM_LIKELY(x) ? (void)(0) : am_assert_failure(#x, AM_FILE_NAME, __LINE__)
 
 /** Checks if #x is a power of two */
-#define AM_IS_POWER_OF_TWO(x) (0 == (((x) - 1u) & (x)))
+#define AM_IS_POW2(x) (0 == (((x) - 1u) & (x)))
 
 /** Check if a floating point number is NaN */
 #define AM_ISNAN(x) ((x) != (x))
