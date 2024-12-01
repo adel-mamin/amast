@@ -204,49 +204,49 @@ void am_pal_task_wait(int task_id) {
 }
 
 int am_pal_mutex_create(void) {
-   int mutex = -1;
-   pthread_mutex_t *hnd = NULL;
-   for (int i = 0; i < AM_COUNTOF(mutex_arr_); ++i) {
-       if (!mutex_arr_[i].valid) {
-           mutex = i;
-           hnd = &mutex_arr_[i].mutex;
-           mutex_arr_[i].valid = true;
-           break;
-       }
-   }
-   AM_ASSERT(hnd && (mutex >= 0));
+    int mutex = -1;
+    pthread_mutex_t *hnd = NULL;
+    for (int i = 0; i < AM_COUNTOF(mutex_arr_); ++i) {
+        if (!mutex_arr_[i].valid) {
+            mutex = i;
+            hnd = &mutex_arr_[i].mutex;
+            mutex_arr_[i].valid = true;
+            break;
+        }
+    }
+    AM_ASSERT(hnd && (mutex >= 0));
 
-   pthread_mutexattr_t attr;
-   pthread_mutexattr_init(&attr);
-   pthread_mutexattr_setprotocol(&attr, PTHREAD_PRIO_INHERIT);
-   pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_setprotocol(&attr, PTHREAD_PRIO_INHERIT);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
 
-   int rc = pthread_mutex_init(hnd, &attr);
-   AM_ASSERT(0 == rc);
+    int rc = pthread_mutex_init(hnd, &attr);
+    AM_ASSERT(0 == rc);
 
-   return mutex;
+    return mutex;
 }
 
 void am_pal_mutex_lock(int mutex) {
-   AM_ASSERT(mutex < AM_COUNTOF(mutex_arr_));
-   AM_ASSERT(mutex_arr_[mutex].valid);
-   int rc = pthread_mutex_lock(&mutex_arr_[mutex].mutex);
-   AM_ASSERT(0 == rc);
+    AM_ASSERT(mutex < AM_COUNTOF(mutex_arr_));
+    AM_ASSERT(mutex_arr_[mutex].valid);
+    int rc = pthread_mutex_lock(&mutex_arr_[mutex].mutex);
+    AM_ASSERT(0 == rc);
 }
 
 void am_pal_mutex_unlock(int mutex) {
-   AM_ASSERT(mutex < AM_COUNTOF(mutex_arr_));
-   AM_ASSERT(mutex_arr_[mutex].valid);
-   int rc = pthread_mutex_lock(&mutex_arr_[mutex].mutex);
-   AM_ASSERT(0 == rc);
+    AM_ASSERT(mutex < AM_COUNTOF(mutex_arr_));
+    AM_ASSERT(mutex_arr_[mutex].valid);
+    int rc = pthread_mutex_lock(&mutex_arr_[mutex].mutex);
+    AM_ASSERT(0 == rc);
 }
 
 void am_pal_mutex_destroy(int mutex) {
-   AM_ASSERT(mutex < AM_COUNTOF(mutex_arr_));
-   AM_ASSERT(mutex_arr_[mutex].valid);
-   int rc = pthread_mutex_destroy(&mutex_arr_[mutex].mutex);
-   AM_ASSERT(0 == rc);
-   mutex_arr_[mutex].valid = false;
+    AM_ASSERT(mutex < AM_COUNTOF(mutex_arr_));
+    AM_ASSERT(mutex_arr_[mutex].valid);
+    int rc = pthread_mutex_destroy(&mutex_arr_[mutex].mutex);
+    AM_ASSERT(0 == rc);
+    mutex_arr_[mutex].valid = false;
 }
 
 uint32_t am_pal_time_get_ms(void) {
@@ -308,6 +308,11 @@ int am_pal_printf(const char *fmt, ...) {
 void am_pal_ctor(void) {}
 
 void am_pal_dtor(void) {
+    for (int i = 0; i < AM_COUNTOF(mutex_arr_); ++i) {
+        if (mutex_arr_[i].valid) {
+            am_pal_mutex_destroy(i);
+        }
+    }
 }
 
 #endif /* AMAST_PAL_POSIX */
