@@ -47,8 +47,10 @@ struct am_ao_state {
     struct am_ao_subscribe_list *sub;
     /** User defined pubsub list length. */
     int nsub;
-    /** User defined active objects, or NULL if not defined */
+    /** User defined active objects, or NULL if not defined. */
     struct am_ao *ao[AM_AO_NUM_MAX];
+    /** Ensure simultaneous start of all active objects. */
+    int startup_mutex;
     /** User callback on idle state, when no AO is running. */
     void (*on_idle)(void);
     /** Debug callback. */

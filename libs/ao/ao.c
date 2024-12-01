@@ -230,6 +230,9 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     struct am_ao_state *me = &g_am_ao_state;
     memset(me, 0, sizeof(*me));
 
+    me->startup_mutex = am_pal_mutex_create();
+    am_pal_mutex_lock(me->startup_mutex);
+
     me->on_idle = cfg->on_idle;
     if (!me->on_idle) {
         me->on_idle = am_ao_on_idle_stub;

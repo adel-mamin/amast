@@ -59,6 +59,8 @@ static void am_ao_task(void *param) {
 bool am_ao_run_all(bool loop) {
     const struct am_ao_state *me = &g_am_ao_state;
     (void)loop;
+    /* start all AOs */
+    am_pal_mutex_unlock(me->startup_mutex);
     while (loop && AM_UNLIKELY(!me->ao_state_dtor_called)) {
         am_pal_sleep_ticks(/*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ticks=*/1);
         am_timer_tick(/*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT);

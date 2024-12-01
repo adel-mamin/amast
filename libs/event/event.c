@@ -147,11 +147,11 @@ struct am_event *am_event_allocate(int id, int size, int margin) {
         }
         struct am_event *event =
             (struct am_event *)am_onesize_allocate(osz, size);
+
         me->crit_exit();
 
         AM_ASSERT(event);
 
-        /* event pointer is guaranteeed to be non-NULL here */
         memset(event, 0, sizeof(*event));
         event->id = id;
         event->pool_index_plus_one =
