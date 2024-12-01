@@ -48,9 +48,15 @@ extern "C" {
 #endif
 
 void am_pal_ctor(void);
+void am_pal_dtor(void);
 
 void am_pal_crit_enter(void);
 void am_pal_crit_exit(void);
+
+int am_pal_mutex_create(void);
+void am_pal_mutex_lock(int mutex);
+void am_pal_mutex_unlock(int mutex);
+void am_pal_mutex_destroy(int mutex);
 
 int am_pal_task_create(
     const char *name,
