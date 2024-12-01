@@ -74,6 +74,17 @@ int main(void) {
         "philo0", "philo1", "philo2", "philo3", "philo4"
     };
 
+    am_ao_start(
+        g_ao_table,
+        /*prio=*/AM_AO_PRIO_MAX,
+        /*queue=*/m_queue_table,
+        /*nqueue=*/AM_COUNTOF(m_queue_table), /* NOLINT */
+        /*stack=*/NULL,
+        /*stack_size=*/0,
+        /*name=*/"table",
+        /*init_event=*/NULL
+    );
+
     for (int i = 0; i < AM_COUNTOF(names); i++) {
         am_ao_start(
             g_ao_philo[i],
@@ -86,17 +97,6 @@ int main(void) {
             /*init_event=*/NULL
         );
     }
-
-    am_ao_start(
-        g_ao_table,
-        /*prio=*/AM_AO_PRIO_MAX,
-        /*queue=*/m_queue_table,
-        /*nqueue=*/AM_COUNTOF(m_queue_table), /* NOLINT */
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*name=*/"table",
-        /*init_event=*/NULL
-    );
 
     am_ao_run_all(/*loop=*/1);
 
