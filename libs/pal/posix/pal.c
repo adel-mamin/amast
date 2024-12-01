@@ -36,7 +36,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
 /* IWYU pragma: no_include <__stdarg_va_arg.h> */
 
 #define _POSIX_C_SOURCE 200809L
@@ -97,7 +96,9 @@ static void *thread_entry_wrapper(void *arg) {
     struct am_pal_task *ctx = (struct am_pal_task *)arg;
     AM_ASSERT(ctx->entry);
     ctx->entry(ctx->arg);
-    free(ctx);  // Clean up allocated memory
+    ctx->valid = false;
+    int rc = pthread_mutex_destroy(&ctx->mutex);
+    AM_ASSERT(0 == rc);
     return NULL;
 }
 
@@ -124,6 +125,8 @@ int am_pal_task_own_id(void) {
     return 0;
 }
 
+static void am_pal_mutex_init(pthread_mutex_t *hnd);
+
 int am_pal_task_create(
     const char *name,
     const int priority,
@@ -147,6 +150,8 @@ int am_pal_task_create(
         }
     }
     AM_ASSERT(task && (index >= 0));
+
+    am_pal_mutex_init(&task->mutex);
 
     pthread_attr_t attr;
     int ret = pthread_attr_init(&attr);
@@ -210,6 +215,18 @@ void am_pal_task_wait(int task_id) {
     pthread_mutex_unlock(&t->mutex);
 }
 
+static void am_pal_mutex_init(pthread_mutex_t *hnd) {
+    AM_ASSERT(hnd);
+
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_setprotocol(&attr, PTHREAD_PRIO_INHERIT);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+
+    int rc = pthread_mutex_init(hnd, &attr);
+    AM_ASSERT(0 == rc);
+}
+
 int am_pal_mutex_create(void) {
     int mutex = -1;
     pthread_mutex_t *hnd = NULL;
@@ -223,13 +240,7 @@ int am_pal_mutex_create(void) {
     }
     AM_ASSERT(hnd && (mutex >= 0));
 
-    pthread_mutexattr_t attr;
-    pthread_mutexattr_init(&attr);
-    pthread_mutexattr_setprotocol(&attr, PTHREAD_PRIO_INHERIT);
-    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-
-    int rc = pthread_mutex_init(hnd, &attr);
-    AM_ASSERT(0 == rc);
+    am_pal_mutex_init(hnd);
 
     return mutex;
 }
