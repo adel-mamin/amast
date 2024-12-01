@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-#include <stdio.h>
 #include <string.h>
 
 #include "common/macros.h"
@@ -58,7 +57,7 @@ static int philo_eating(struct philo *me, const struct am_event *event);
 static int philo_thinking(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:
-        printf("philo %d is thinking\n", me->id);
+        am_pal_printf("philo %d is thinking\n", me->id);
         me->cnt++;
         int ticks = (int)am_pal_time_get_tick_from_ms(
             /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/20
@@ -83,7 +82,7 @@ static int philo_thinking(struct philo *me, const struct am_event *event) {
 static int philo_hungry(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:
-        printf("philo %d is hungry\n", me->id);
+        am_pal_printf("philo %d is hungry\n", me->id);
         return AM_HSM_HANDLED();
 
     case EVT_EAT: {
@@ -102,7 +101,7 @@ static int philo_hungry(struct philo *me, const struct am_event *event) {
 static int philo_eating(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:
-        printf("philo %d is eating\n", me->id);
+        am_pal_printf("philo %d is eating\n", me->id);
         int ticks = (int)am_pal_time_get_tick_from_ms(
             /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/20
         );

@@ -44,6 +44,14 @@ static const struct am_event *m_queue_table[2 * PHILO_NUM];
 static char m_event_pool[2 * PHILO_NUM][128] AM_ALIGNED(AM_ALIGNOF_MAX);
 static struct am_ao_subscribe_list m_pubsub_list[AM_AO_EVT_PUB_MAX];
 
+const char *event_to_str(int id) {
+    if (EVT_DONE == id) return "DONE";
+    if (EVT_EAT == id) return "EAT";
+    if (EVT_TIMEOUT == id) return "TIMEOUT";
+    if (EVT_HUNGRY == id) return "HUNGRY";
+    AM_ASSERT(0);
+}
+
 int main(void) {
     struct am_ao_state_cfg cfg_ao = {0};
     am_ao_state_ctor(&cfg_ao);
@@ -63,13 +71,13 @@ int main(void) {
     table_ctor(/*nsession=*/100);
 
     static const char *names[PHILO_NUM] = {
-        "philo1", "philo2", "philo3", "philo4", "philo5"
+        "philo0", "philo1", "philo2", "philo3", "philo4"
     };
 
     for (int i = 0; i < AM_COUNTOF(names); i++) {
         am_ao_start(
             g_ao_philo[i],
-            /*prio=*/i,
+            /*prio=*/AM_AO_PRIO_MIN + i,
             /*queue=*/m_queue_philo[i],
             /*nqueue=*/AM_COUNTOF(m_queue_philo[i]), /* NOLINT */
             /*stack=*/NULL,

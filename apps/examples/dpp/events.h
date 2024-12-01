@@ -25,6 +25,8 @@
 #ifndef DPP_EVENTS_H_INCLUDED
 #define DPP_EVENTS_H_INCLUDED
 
+#include "common/macros.h"
+
 enum events {
     EVT_DONE = AM_EVT_USER,
     EVT_EAT,
@@ -33,6 +35,8 @@ enum events {
     EVT_HUNGRY,
     EVT_MAX
 };
+
+const char* event_to_str(int id);
 
 #undef AM_AO_EVT_PUB_MAX
 #define AM_AO_EVT_PUB_MAX EVT_TIMEOUT
