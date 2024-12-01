@@ -138,7 +138,7 @@ int am_pal_task_create(
 
     int index = -1;
     struct am_pal_task *task = NULL;
-    for (int i = 0; i < AM_COUNTOF(mutex_arr_); ++i) {
+    for (int i = 0; i < AM_COUNTOF(task_arr_); ++i) {
         if (!task_arr_[i].valid) {
             index = i;
             task = &task_arr_[i];
