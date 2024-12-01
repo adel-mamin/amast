@@ -181,8 +181,8 @@ struct am_hsm {
     /** active state */
     struct am_hsm_state state;
     /**
-     * While am_hsm::state::ifn maintans state instance of active state,
-     * am_hsm::ifn maintans the transitive instance that may differ
+     * While am_hsm::state::ifn maintains state instance of active state,
+     * am_hsm::ifn maintains the transitive instance that may differ
      * from am_hsm::state::ifn, when an event is propagated up
      * from substates to superstates.
      * Returned by am_hsm_instance().
