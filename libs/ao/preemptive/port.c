@@ -43,9 +43,12 @@ static void am_ao_task(void *param) {
 
     struct am_ao *ao = (struct am_ao *)param;
 
+    struct am_ao_state *me = &g_am_ao_state;
+    am_pal_mutex_lock(me->startup_mutex);
+    am_pal_mutex_unlock(me->startup_mutex);
+
     while (AM_LIKELY(!ao->stopped)) {
         const struct am_event *e = am_event_pop_front(ao, &ao->event_queue);
-        struct am_ao_state *me = &g_am_ao_state;
         me->debug(ao, e);
 
         ao->last_event = e->id;
