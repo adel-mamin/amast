@@ -324,7 +324,7 @@ in **me->history** it can be achieved by doing this:
 So, that is essentially all about it.
 
 Another example of the usage of the transition to history technique can be seen
-in **test/history.c** unit test.
+in **tests/history.c** unit test.
 
 SUBMACHINES
 ===========
@@ -334,8 +334,8 @@ The more complex submachines can be multistate interconnected HSMs.
 
 The main purpose of submachines is code reuse.
 
-Here is an example of submachine with one reusable state S1.
-It shows two instances of S1 called S1/0 and S1/1.
+Here is an example of submachine with one reusable state s1.
+It shows two instances of s1 called s1/0 and s1/1.
 
 ::
 
@@ -418,7 +418,7 @@ with explicit specification of state instance, which can be retrieved by
 calling **am_hsm_instance()** API.
 
 The complete implementation of the given submachine example can be found
-in **test/submachine/basic/test.c**
+in **tests/submachine/basic/test.c**
 
 It is useful sometimes to instantiate a standalone submachine for the purpose
 of unit testing, for example. To achieve this the transition tables outside of

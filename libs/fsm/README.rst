@@ -221,4 +221,4 @@ in **me->history** it can be achieved by doing this:
 So, that is essentially all about it.
 
 Another example of the usage of the transition to history technique can be seen
-in **test/history.c** unit test.
+in **tests/history.c** unit test.
