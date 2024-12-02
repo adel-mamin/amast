@@ -254,7 +254,7 @@ HSM CODING RULES
    For example, the first argument can be **struct foo *me**, where
    **struct foo** is defined like this:
 
-   .. code-block:: C
+.. code-block:: C
 
    struct foo {
        struct am_hsm hsm;
