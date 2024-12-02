@@ -81,9 +81,9 @@ struct am_pal_mutex {
 
 static struct am_pal_mutex mutex_arr_[2] = {0};
 
-static int am_pal_index_from_id(int task_id) {
-    AM_ASSERT(task_id > 0);
-    return task_id - 1;
+static int am_pal_index_from_id(int id) {
+    AM_ASSERT(id > 0);
+    return id - 1;
 }
 
 static int am_pal_id_from_index(int index) {
@@ -242,27 +242,30 @@ int am_pal_mutex_create(void) {
 
     am_pal_mutex_init(hnd);
 
-    return mutex;
+    return am_pal_id_from_index(mutex);
 }
 
 void am_pal_mutex_lock(int mutex) {
-    AM_ASSERT(mutex < AM_COUNTOF(mutex_arr_));
-    AM_ASSERT(mutex_arr_[mutex].valid);
-    int rc = pthread_mutex_lock(&mutex_arr_[mutex].mutex);
+    int index = am_pal_index_from_id(mutex);
+    AM_ASSERT(index < AM_COUNTOF(mutex_arr_));
+    AM_ASSERT(mutex_arr_[index].valid);
+    int rc = pthread_mutex_lock(&mutex_arr_[index].mutex);
     AM_ASSERT(0 == rc);
 }
 
 void am_pal_mutex_unlock(int mutex) {
-    AM_ASSERT(mutex < AM_COUNTOF(mutex_arr_));
-    AM_ASSERT(mutex_arr_[mutex].valid);
-    int rc = pthread_mutex_lock(&mutex_arr_[mutex].mutex);
+    int index = am_pal_index_from_id(mutex);
+    AM_ASSERT(index < AM_COUNTOF(mutex_arr_));
+    AM_ASSERT(mutex_arr_[index].valid);
+    int rc = pthread_mutex_unlock(&mutex_arr_[index].mutex);
     AM_ASSERT(0 == rc);
 }
 
 void am_pal_mutex_destroy(int mutex) {
-    AM_ASSERT(mutex < AM_COUNTOF(mutex_arr_));
-    AM_ASSERT(mutex_arr_[mutex].valid);
-    int rc = pthread_mutex_destroy(&mutex_arr_[mutex].mutex);
+    int index = am_pal_index_from_id(mutex);
+    AM_ASSERT(index < AM_COUNTOF(mutex_arr_));
+    AM_ASSERT(mutex_arr_[index].valid);
+    int rc = pthread_mutex_destroy(&mutex_arr_[index].mutex);
     AM_ASSERT(0 == rc);
     mutex_arr_[mutex].valid = false;
 }
