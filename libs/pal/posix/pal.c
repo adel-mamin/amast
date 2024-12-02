@@ -153,8 +153,11 @@ int am_pal_task_create(
 
     am_pal_mutex_init(&task->mutex);
 
+    int ret = pthread_cond_init(&task->cond, /*attr=*/NULL);
+    AM_ASSERT(0 == ret);
+
     pthread_attr_t attr;
-    int ret = pthread_attr_init(&attr);
+    ret = pthread_attr_init(&attr);
     AM_ASSERT(0 == ret);
 
     ret = pthread_attr_setstacksize(
@@ -330,8 +333,19 @@ void am_pal_ctor(void) {}
 
 void am_pal_dtor(void) {
     for (int i = 0; i < AM_COUNTOF(mutex_arr_); ++i) {
-        if (mutex_arr_[i].valid) {
+        const struct am_pal_mutex *mutex = &mutex_arr_[i];
+        if (mutex->valid) {
             am_pal_mutex_destroy(i);
+        }
+    }
+    for (int i = 0; i < AM_COUNTOF(task_arr_); ++i) {
+        struct am_pal_task *task = &task_arr_[i];
+        if (task->valid) {
+            int rc = pthread_mutex_destroy(&task->mutex);
+            AM_ASSERT(0 == rc);
+            rc = pthread_cond_destroy(&task->cond);
+            AM_ASSERT(0 == rc);
+            task->valid = false;
         }
     }
 }
