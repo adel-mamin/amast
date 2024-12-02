@@ -195,7 +195,7 @@ void am_pal_task_notify(int task_id) {
     struct am_pal_task *t = &task_arr_[index];
     AM_ASSERT(t);
     pthread_mutex_lock(&t->mutex);
-    t->notified = true;
+    AM_ATOMIC_STORE_N(&t->notified, true);
     pthread_cond_signal(&t->cond);
     pthread_mutex_unlock(&t->mutex);
 }
@@ -211,7 +211,7 @@ void am_pal_task_wait(int task_id) {
     while (!t->notified) {
         pthread_cond_wait(&t->cond, &t->mutex);
     }
-    t->notified = false;
+    AM_ATOMIC_STORE_N(&t->notified, false);
     pthread_mutex_unlock(&t->mutex);
 }
 
