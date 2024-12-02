@@ -54,6 +54,7 @@ Below is an example of a simple FSM with three states
 (`Idle`, `Processing`, and `Completed`) and basic transitions:
 
 ::
+
           * Initial State
           |
       +---v------+    Start     +------------+
