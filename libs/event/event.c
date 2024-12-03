@@ -45,12 +45,6 @@ struct am_event_state {
     int npool;
     /** push event to the front of owner event queue */
     void (*push_front)(void *owner, const struct am_event *event);
-    /** notify owner about event queue is busy */
-    void (*notify_event_queue_busy)(void *owner);
-    /** notify owner about event queue is empty */
-    void (*notify_event_queue_empty)(void *owner);
-    /** wait owner notification about event queue is busy */
-    void (*wait_event_queue_busy)(void *owner);
     /** enter critical section */
     void (*crit_enter)(void);
     /** exit critical section */
@@ -63,9 +57,6 @@ static void am_push_front_stub(void *owner, const struct am_event *event) {
     (void)owner;
     (void)event;
 }
-static void am_notify_event_queue_busy_stub(void *owner) { (void)owner; }
-static void am_notify_event_queue_empty_stub(void *owner) { (void)owner; }
-static void am_wait_event_queue_busy_stub(void *owner) { (void)owner; }
 static void am_event_crit_enter_stub(void) {}
 static void am_event_crit_exit_stub(void) {}
 
@@ -76,23 +67,11 @@ void am_event_state_ctor(const struct am_event_cfg *cfg) {
     memset(me, 0, sizeof(*me));
 
     me->push_front = cfg->push_front;
-    me->notify_event_queue_busy = cfg->notify_event_queue_busy;
-    me->notify_event_queue_empty = cfg->notify_event_queue_empty;
-    me->wait_event_queue_busy = cfg->wait_event_queue_busy;
     me->crit_enter = cfg->crit_enter;
     me->crit_exit = cfg->crit_exit;
 
     if (!me->push_front) {
         me->push_front = am_push_front_stub;
-    }
-    if (!me->notify_event_queue_busy) {
-        me->notify_event_queue_busy = am_notify_event_queue_busy_stub;
-    }
-    if (!me->notify_event_queue_empty) {
-        me->notify_event_queue_empty = am_notify_event_queue_empty_stub;
-    }
-    if (!me->wait_event_queue_busy) {
-        me->wait_event_queue_busy = am_wait_event_queue_busy_stub;
     }
     if (!me->crit_enter || !me->crit_exit) {
         me->crit_enter = am_event_crit_enter_stub;
@@ -303,10 +282,7 @@ int am_event_get_ref_cnt(const struct am_event *event) {
 }
 
 bool am_event_push_back_x(
-    void *owner,
-    struct am_queue *queue,
-    const struct am_event *event,
-    int margin
+    struct am_queue *queue, const struct am_event *event, int margin
 ) {
     AM_ASSERT(queue);
     AM_ASSERT(event);
@@ -329,33 +305,24 @@ bool am_event_push_back_x(
         am_event_inc_ref_cnt(AM_CAST(struct am_event *, event));
     }
 
-    bool wasempty = am_queue_is_empty(queue);
     bool rc = am_queue_push_back(queue, &event, sizeof(event));
-    AM_ASSERT(true == rc);
-
-    if (wasempty && owner) {
-        me->notify_event_queue_busy(owner);
-    }
 
     me->crit_exit();
+
+    AM_ASSERT(true == rc);
 
     return true;
 }
 
-void am_event_push_back(
-    void *owner, struct am_queue *queue, const struct am_event *event
-) {
+void am_event_push_back(struct am_queue *queue, const struct am_event *event) {
     AM_ASSERT(queue);
     AM_ASSERT(event);
 
-    (void)am_event_push_back_x(owner, queue, event, /*margin=*/0);
+    (void)am_event_push_back_x(queue, event, /*margin=*/0);
 }
 
 bool am_event_push_front_x(
-    void *owner,
-    struct am_queue *queue,
-    const struct am_event *event,
-    int margin
+    struct am_queue *queue, const struct am_event *event, int margin
 ) {
     AM_ASSERT(queue);
     AM_ASSERT(event);
@@ -378,44 +345,38 @@ bool am_event_push_front_x(
         am_event_inc_ref_cnt(AM_CAST(struct am_event *, event));
     }
 
-    bool wasempty = am_queue_is_empty(queue);
     bool rc = am_queue_push_front(queue, &event, sizeof(event));
-    AM_ASSERT(true == rc);
-
-    if (wasempty && owner) {
-        me->notify_event_queue_busy(owner);
-    }
 
     me->crit_exit();
+
+    AM_ASSERT(true == rc);
 
     return true;
 }
 
-void am_event_push_front(
-    void *owner, struct am_queue *queue, const struct am_event *event
-) {
+void am_event_push_front(struct am_queue *queue, const struct am_event *event) {
     AM_ASSERT(queue);
     AM_ASSERT(event);
 
-    (void)am_event_push_front_x(owner, queue, event, /*margin=*/0);
+    (void)am_event_push_front_x(queue, event, /*margin=*/0);
 }
 
-const struct am_event *am_event_pop_front(void *owner, struct am_queue *queue) {
+const struct am_event *am_event_pop_front(struct am_queue *queue) {
     AM_ASSERT(queue);
 
     struct am_event_state *me = &event_state_;
+
     me->crit_enter();
-    me->wait_event_queue_busy(owner);
 
     const struct am_event **e;
     e = (const struct am_event **)am_queue_pop_front(queue);
-    if (am_queue_is_empty(queue)) {
-        me->notify_event_queue_empty(owner);
-    }
 
     me->crit_exit();
 
-    AM_ASSERT(e);
+    if (!e) {
+        return NULL;
+    }
+
     AM_ASSERT(*e);
 
     return *e;
@@ -425,7 +386,7 @@ void am_event_defer(struct am_queue *queue, const struct am_event *event) {
     AM_ASSERT(queue);
     AM_ASSERT(event);
 
-    am_event_push_back(/*owner=*/NULL, queue, event);
+    am_event_push_back(queue, event);
 }
 
 void am_event_defer_x(
@@ -438,7 +399,7 @@ void am_event_defer_x(
     const int capacity = am_queue_capacity(queue);
     AM_ASSERT(margin < capacity);
 
-    am_event_push_back_x(/*owner=*/NULL, queue, event, margin);
+    am_event_push_back_x(queue, event, margin);
 }
 
 const struct am_event *am_event_recall(void *owner, struct am_queue *queue) {

@@ -94,20 +94,11 @@ struct am_event {
 typedef void (*am_event_push_front_fn)(
     void *owner, const struct am_event *event
 );
-typedef void (*am_event_notify_queue_busy_fn)(void *owner);
-typedef void (*am_event_notify_queue_empty_fn)(void *owner);
-typedef void (*am_event_wait_queue_busy_fn)(void *owner);
 
 /** Event module configuration. */
 struct am_event_cfg {
     /** Push event to the front of owner event queue */
     am_event_push_front_fn push_front;
-    /** Notify owner about event queue is busy. */
-    am_event_notify_queue_busy_fn notify_event_queue_busy;
-    /** Notify owner about event queue is empty. */
-    am_event_notify_queue_empty_fn notify_event_queue_empty;
-    /** Wait owner notification about event queue is busy. */
-    am_event_wait_queue_busy_fn wait_event_queue_busy;
     /** Enter critical section. */
     void (*crit_enter)(void);
     /** Exit critical section. */
@@ -259,10 +250,8 @@ int am_event_get_ref_cnt(const struct am_event *event);
 /**
  * Push event to the back of event queue.
  *
- * Notify owner (if set) if it is the first event in the queue.
  * Does not assert if margin is non-zero and the event was not posted.
  *
- * @param owner   the event queue owner (optional)
  * @param queue   the event queue
  * @param event   the event to pst
  * @param margin  free event queue slots to be available after event was posted
@@ -270,33 +259,24 @@ int am_event_get_ref_cnt(const struct am_event *event);
  * @retval false  the event was not posted
  */
 bool am_event_push_back_x(
-    void *owner,
-    struct am_queue *queue,
-    const struct am_event *event,
-    int margin
+    struct am_queue *queue, const struct am_event *event, int margin
 );
 
 /**
  * Push event to the back of event queue.
  *
- * Notify owner (if set) if it is the first event in the queue.
  * Assert if the event was not posted.
  *
- * @param owner   the event queue owner (optional)
  * @param queue   the event queue
  * @param event   the event to post
  */
-void am_event_push_back(
-    void *owner, struct am_queue *queue, const struct am_event *event
-);
+void am_event_push_back(struct am_queue *queue, const struct am_event *event);
 
 /**
  * Push event to the front of event queue.
  *
- * Notify owner (if set) if it is the first event in the queue.
  * Does not assert if margin is non-zero and the event was not posted.
  *
- * @param owner   the event queue owner (optional)
  * @param queue   the event queue
  * @param event   the event to pst
  * @param margin  free event queue slots to be available after event was posted
@@ -304,35 +284,27 @@ void am_event_push_back(
  * @retval false  the event was not posted
  */
 bool am_event_push_front_x(
-    void *owner,
-    struct am_queue *queue,
-    const struct am_event *event,
-    int margin
+    struct am_queue *queue, const struct am_event *event, int margin
 );
 
 /**
  * Push event to the front of event queue.
  *
- * Notify owner (if set) if it is the first event in the queue.
  * Assert if the event was not posted.
  *
- * @param owner   the event queue owner (optional)
  * @param queue   the event queue
  * @param event   the event to post
  */
-void am_event_push_front(
-    void *owner, struct am_queue *queue, const struct am_event *event
-);
+void am_event_push_front(struct am_queue *queue, const struct am_event *event);
 
 /**
  * Pop event from the front of event queue.
  *
- * @param owner   the event queue owner (optional)
  * @param queue   the event queue
  *
  * @return the popped event. Cannot be NULL.
  */
-const struct am_event *am_event_pop_front(void *owner, struct am_queue *queue);
+const struct am_event *am_event_pop_front(struct am_queue *queue);
 
 /**
  * Defer an event.

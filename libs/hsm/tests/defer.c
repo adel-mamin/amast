@@ -133,7 +133,7 @@ static void defer_hsm_log(const char *fmt, ...) {
 
 static void defer_push_front(void *owner, const struct am_event *event) {
     struct test_defer *me = (struct test_defer *)owner;
-    am_event_push_front(owner, &me->event_queue, event);
+    am_event_push_front(&me->event_queue, event);
 }
 
 static void defer_commit(void) {

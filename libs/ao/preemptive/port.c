@@ -48,7 +48,15 @@ static void am_ao_task(void *param) {
     am_pal_mutex_unlock(me->startup_mutex);
 
     while (AM_LIKELY(!ao->stopped)) {
-        const struct am_event *e = am_event_pop_front(ao, &ao->event_queue);
+        me->crit_enter();
+        while (am_queue_is_empty(&ao->event_queue)) {
+            me->crit_exit();
+            am_pal_task_wait(ao->task_id);
+            me->crit_enter();
+        }
+        me->crit_exit();
+        const struct am_event *e = am_event_pop_front(&ao->event_queue);
+        AM_ASSERT(e);
         me->debug(ao, e);
 
         ao->last_event = e->id;

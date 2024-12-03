@@ -47,6 +47,14 @@
 /** Active object (AO) module internal state instance. */
 struct am_ao_state g_am_ao_state;
 
+static bool am_ao_event_queue_is_empty(struct am_ao *ao) {
+    struct am_ao_state *me = &g_am_ao_state;
+    me->crit_enter();
+    bool empty = am_queue_is_empty(&ao->event_queue);
+    me->crit_exit();
+    return empty;
+}
+
 bool am_ao_publish_x(const struct am_event *event, int margin) {
     AM_ASSERT(event);
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
@@ -84,9 +92,13 @@ bool am_ao_publish_x(const struct am_event *event, int margin) {
             int ind = 8 * i + msb;
             struct am_ao *ao = me->ao[ind];
             AM_ASSERT(ao);
-            bool pushed =
-                am_event_push_back_x(ao, &ao->event_queue, event, margin);
-            if (!pushed) {
+            bool was_empty = am_queue_is_empty(&ao->event_queue);
+            bool pushed = am_event_push_back_x(&ao->event_queue, event, margin);
+            if (pushed) {
+                if (was_empty) {
+                    am_ao_notify(ao);
+                }
+            } else {
                 rc = false;
             }
         }
@@ -114,7 +126,11 @@ void am_ao_publish(const struct am_event *event) {
 void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event) {
     AM_ASSERT(ao);
     AM_ASSERT(event);
-    am_event_push_back(ao, &ao->event_queue, event);
+    bool was_empty = am_ao_event_queue_is_empty(ao);
+    am_event_push_back(&ao->event_queue, event);
+    if (was_empty) {
+        am_ao_notify(ao);
+    }
 }
 
 bool am_ao_post_fifo_x(
@@ -123,13 +139,22 @@ bool am_ao_post_fifo_x(
     AM_ASSERT(ao);
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
-    return am_event_push_back_x(ao, &ao->event_queue, event, margin);
+    bool was_empty = am_ao_event_queue_is_empty(ao);
+    bool posted = am_event_push_back_x(&ao->event_queue, event, margin);
+    if (posted && was_empty) {
+        am_ao_notify(ao);
+    }
+    return posted;
 }
 
 void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event) {
     AM_ASSERT(ao);
     AM_ASSERT(event);
-    am_event_push_front(ao, &ao->event_queue, event);
+    bool was_empty = am_ao_event_queue_is_empty(ao);
+    am_event_push_front(&ao->event_queue, event);
+    if (was_empty) {
+        am_ao_notify(ao);
+    }
 }
 
 bool am_ao_post_lifo_x(
@@ -138,7 +163,12 @@ bool am_ao_post_lifo_x(
     AM_ASSERT(ao);
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
-    return am_event_push_front_x(ao, &ao->event_queue, event, margin);
+    bool was_empty = am_ao_event_queue_is_empty(ao);
+    bool posted = am_event_push_front_x(&ao->event_queue, event, margin);
+    if (posted && was_empty) {
+        am_ao_notify(ao);
+    }
+    return posted;
 }
 
 void am_ao_subscribe(const struct am_ao *ao, int event) {
@@ -254,8 +284,6 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
 
     struct am_event_cfg cfg_event = {
         .push_front = (am_event_push_front_fn)am_ao_post_lifo,
-        .notify_event_queue_busy = am_ao_notify,
-        .wait_event_queue_busy = am_ao_wait
     };
     am_event_state_ctor(&cfg_event);
 
