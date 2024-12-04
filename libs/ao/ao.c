@@ -63,8 +63,6 @@ bool am_ao_publish_x(const struct am_event *event, int margin) {
 
     struct am_ao_state *me = &g_am_ao_state;
 
-    me->crit_enter();
-
     if (!am_event_is_static(event)) {
         /*
          * To avoid a potential race condition if higher priority
@@ -73,8 +71,6 @@ bool am_ao_publish_x(const struct am_event *event, int margin) {
          */
         am_event_inc_ref_cnt(event);
     }
-
-    me->crit_exit();
 
     bool rc = true;
 
@@ -107,7 +103,7 @@ bool am_ao_publish_x(const struct am_event *event, int margin) {
     /*
      * Tries to free the event.
      * It is needed to balance the ref counter increment at the beginning of
-     * am_ao_publish(). Also takes care of the case when no active objects
+     * the function. Also takes care of the case when no active objects
      * subscribed to this event.
      */
     am_event_free(event);

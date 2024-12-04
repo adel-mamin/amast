@@ -266,19 +266,29 @@ void am_event_inc_ref_cnt(const struct am_event *event) {
     AM_ASSERT(event);
     AM_ASSERT(event->ref_counter < AM_EVENT_REF_COUNTER_MASK);
     struct am_event *e = AM_CAST(struct am_event *, event);
+    struct am_event_state *me = &event_state_;
+    me->crit_enter();
     ++e->ref_counter;
+    me->crit_exit();
 }
 
 void am_event_dec_ref_cnt(const struct am_event *event) {
     AM_ASSERT(event);
     AM_ASSERT(event->ref_counter > 0);
     struct am_event *e = AM_CAST(struct am_event *, event);
+    struct am_event_state *me = &event_state_;
+    me->crit_enter();
     --e->ref_counter;
+    me->crit_exit();
 }
 
 int am_event_get_ref_cnt(const struct am_event *event) {
     AM_ASSERT(event);
-    return event->ref_counter;
+    struct am_event_state *me = &event_state_;
+    me->crit_enter();
+    int cnt = event->ref_counter;
+    me->crit_exit();
+    return cnt;
 }
 
 bool am_event_push_back_x(
@@ -302,7 +312,8 @@ bool am_event_push_back_x(
     }
 
     if (!am_event_is_static(event)) {
-        am_event_inc_ref_cnt(AM_CAST(struct am_event *, event));
+        struct am_event *e = AM_CAST(struct am_event *, event);
+        ++e->ref_counter;
     }
 
     bool rc = am_queue_push_back(queue, &event, sizeof(event));
@@ -342,7 +353,8 @@ bool am_event_push_front_x(
     }
 
     if (!am_event_is_static(event)) {
-        am_event_inc_ref_cnt(AM_CAST(struct am_event *, event));
+        struct am_event *e = AM_CAST(struct am_event *, event);
+        ++e->ref_counter;
     }
 
     bool rc = am_queue_push_front(queue, &event, sizeof(event));
@@ -418,12 +430,8 @@ const struct am_event *am_event_recall(void *owner, struct am_queue *queue) {
         return e;
     }
 
-    me->crit_enter();
-
     AM_ASSERT(am_event_get_ref_cnt(e) > 1);
     am_event_dec_ref_cnt(e);
-
-    me->crit_exit();
 
     return e;
 }
