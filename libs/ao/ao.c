@@ -80,7 +80,9 @@ bool am_ao_publish_x(const struct am_event *event, int margin) {
      */
     struct am_ao_subscribe_list *sub = &me->sub[event->id];
     for (int i = AM_COUNTOF(sub->list) - 1; i >= 0; i--) {
+        me->crit_enter();
         unsigned list = sub->list[i];
+        me->crit_exit();
         while (list) {
             int msb = am_bit_u8_msb((uint8_t)list);
             list &= ~(1U << (unsigned)msb);
@@ -88,7 +90,7 @@ bool am_ao_publish_x(const struct am_event *event, int margin) {
             int ind = 8 * i + msb;
             struct am_ao *ao = me->ao[ind];
             AM_ASSERT(ao);
-            bool was_empty = am_queue_is_empty(&ao->event_queue);
+            bool was_empty = am_ao_event_queue_is_empty(ao);
             bool pushed = am_event_push_back_x(&ao->event_queue, event, margin);
             if (pushed) {
                 if (was_empty) {
@@ -314,8 +316,10 @@ void am_ao_dump_event_queues(
             continue;
         }
         struct am_queue *q = &ao->event_queue;
+        me->crit_enter();
         int len = am_queue_length(q);
         int cap = am_queue_capacity(q);
+        me->crit_exit();
         int tnum = AM_MIN(num, len);
         if (0 == tnum) {
             log(ao->name, 0, len, cap, /*event=*/-1);

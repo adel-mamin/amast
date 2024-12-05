@@ -90,7 +90,7 @@ int main(void) {
             g_ao_philo[i],
             /*prio=*/AM_AO_PRIO_MIN + i,
             /*queue=*/m_queue_philo[i],
-            /*nqueue=*/AM_COUNTOF(m_queue_philo[i]), /* NOLINT */
+            /*nqueue=*/AM_COUNTOF(m_queue_philo[i]),
             /*stack=*/NULL,
             /*stack_size=*/0,
             /*name=*/names[i],
