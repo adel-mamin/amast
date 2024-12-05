@@ -34,7 +34,7 @@ if unit_test
     e = executable(
         'timer',
         ['timer.c', 'test.c', dlist_src],
-        dependencies : [libassert_dep],
+        dependencies : [libassert_dep, libpal_dep],
         include_directories: inc)
     test('timer', e)
 endif

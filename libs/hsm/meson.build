@@ -145,7 +145,7 @@ if unit_test
         [
             'tests' / 'event_queue.c',
         ],
-        dependencies: [libstr_dep, libhsm_dep, libevent_dep],
+        dependencies: [libstr_dep, libhsm_dep, libevent_dep, libpal_dep],
         include_directories: [include_directories('tests')])
     test('event_queue', e, suite: 'hsm')
 
@@ -154,7 +154,7 @@ if unit_test
         [
             'tests' / 'defer.c',
         ],
-        dependencies: [libstr_dep, libhsm_dep, libevent_dep],
+        dependencies: [libstr_dep, libhsm_dep, libevent_dep, libpal_dep],
         include_directories: [include_directories('tests')])
     test('defer', e, suite: 'hsm')
 endif

@@ -249,11 +249,10 @@ static void am_ao_debug_stub(const struct am_ao *ao, const struct am_event *e) {
     (void)e;
 }
 
-static void am_ao_crit_enter_stub(void) {}
-static void am_ao_crit_exit_stub(void) {}
-
 void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     AM_ASSERT(cfg);
+    AM_ASSERT(cfg->crit_enter);
+    AM_ASSERT(cfg->crit_exit);
 
     struct am_ao_state *me = &g_am_ao_state;
     memset(me, 0, sizeof(*me));
@@ -270,22 +269,22 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
         me->debug = am_ao_debug_stub;
     }
     me->crit_enter = cfg->crit_enter;
-    if (!me->crit_enter) {
-        me->crit_enter = am_ao_crit_enter_stub;
-    }
     me->crit_exit = cfg->crit_exit;
-    if (!me->crit_exit) {
-        me->crit_exit = am_ao_crit_exit_stub;
-    }
 
     am_pal_ctor();
 
     struct am_event_cfg cfg_event = {
         .push_front = (am_event_push_front_fn)am_ao_post_lifo,
+        .crit_enter = cfg->crit_enter,
+        .crit_exit = cfg->crit_exit,
     };
     am_event_state_ctor(&cfg_event);
 
-    struct am_timer_cfg cfg_timer = {.post = (am_timer_post_fn)am_ao_post_fifo};
+    struct am_timer_cfg cfg_timer = {
+        .post = (am_timer_post_fn)am_ao_post_fifo,
+        .crit_enter = cfg->crit_enter,
+        .crit_exit = cfg->crit_exit,
+    };
     am_timer_state_ctor(&cfg_timer);
 }
 

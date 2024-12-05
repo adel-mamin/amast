@@ -41,6 +41,7 @@
 #include "event/event.h"
 #include "queue/queue.h"
 #include "strlib/strlib.h"
+#include "pal/pal.h"
 #include "fsm/fsm.h"
 
 #define AM_EVT_A AM_EVT_USER
@@ -134,7 +135,10 @@ static enum am_fsm_rc fsmq_b(struct am_fsmq *me, const struct am_event *event) {
 }
 
 int main(void) {
-    struct am_event_cfg cfg = {0};
+    struct am_event_cfg cfg = {
+        .crit_enter = am_pal_crit_enter,
+        .crit_exit = am_pal_crit_exit,
+    };
     am_event_state_ctor(&cfg);
 
     {

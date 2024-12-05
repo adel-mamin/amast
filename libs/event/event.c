@@ -57,11 +57,11 @@ static void am_push_front_stub(void *owner, const struct am_event *event) {
     (void)owner;
     (void)event;
 }
-static void am_event_crit_enter_stub(void) {}
-static void am_event_crit_exit_stub(void) {}
 
 void am_event_state_ctor(const struct am_event_cfg *cfg) {
     AM_ASSERT(cfg);
+    AM_ASSERT(cfg->crit_enter);
+    AM_ASSERT(cfg->crit_exit);
 
     struct am_event_state *me = &event_state_;
     memset(me, 0, sizeof(*me));
@@ -72,10 +72,6 @@ void am_event_state_ctor(const struct am_event_cfg *cfg) {
 
     if (!me->push_front) {
         me->push_front = am_push_front_stub;
-    }
-    if (!me->crit_enter || !me->crit_exit) {
-        me->crit_enter = am_event_crit_enter_stub;
-        me->crit_exit = am_event_crit_exit_stub;
     }
 }
 

@@ -49,12 +49,11 @@ struct am_timer {
 
 static struct am_timer m_timer;
 
-static void am_timer_crit_enter(void) {}
-static void am_timer_crit_exit(void) {}
-
 void am_timer_state_ctor(const struct am_timer_cfg *cfg) {
     AM_ASSERT(cfg);
     AM_ASSERT(cfg->post || cfg->publish);
+    AM_ASSERT(cfg->crit_enter);
+    AM_ASSERT(cfg->crit_exit);
 
     struct am_timer *me = &m_timer;
     memset(me, 0, sizeof(*me));
@@ -62,10 +61,6 @@ void am_timer_state_ctor(const struct am_timer_cfg *cfg) {
         am_dlist_init(&me->domains[i]);
     }
     me->cfg = *cfg;
-    if (!me->cfg.crit_enter || !me->cfg.crit_exit) {
-        me->cfg.crit_enter = am_timer_crit_enter;
-        me->cfg.crit_exit = am_timer_crit_exit;
-    }
 }
 
 void am_timer_event_ctor(struct am_event_timer *event, int id, int domain) {
@@ -161,10 +156,14 @@ void am_timer_tick(int domain) {
         }
         if (t->event.pubsub_time) {
             AM_ASSERT(me->cfg.publish);
+            me->cfg.crit_exit();
             me->cfg.publish(&t->event);
+            me->cfg.crit_enter();
         } else {
             AM_ASSERT(me->cfg.post);
+            me->cfg.crit_exit();
             me->cfg.post(t->owner, &t->event);
+            me->cfg.crit_enter();
         }
     }
     me->cfg.crit_exit();

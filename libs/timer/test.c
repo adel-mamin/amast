@@ -33,6 +33,7 @@
 #include "common/macros.h"
 #include "event/event.h"
 #include "timer/timer.h"
+#include "pal/pal.h"
 
 #define EVT_TEST AM_EVT_USER
 
@@ -52,7 +53,11 @@ static void post_cb(void *owner, const struct am_event *event) {
 static void test_arm(void) {
     memset(&m_owner, 0, sizeof(m_owner));
     struct am_timer_cfg cfg = {
-        .post = post_cb, .publish = NULL, .update = NULL
+        .post = post_cb,
+        .publish = NULL,
+        .update = NULL,
+        .crit_enter = am_pal_crit_enter,
+        .crit_exit = am_pal_crit_exit,
     };
     am_timer_state_ctor(&cfg);
 

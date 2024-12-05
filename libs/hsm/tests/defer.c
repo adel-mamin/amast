@@ -35,6 +35,7 @@
 #include "common.h"
 #include "blk/blk.h"
 #include "queue/queue.h"
+#include "pal/pal.h"
 
 struct test_defer {
     struct am_hsm hsm;
@@ -147,7 +148,11 @@ static void defer_commit(void) {
 }
 
 static void test_defer(void) {
-    struct am_event_cfg cfg = {.push_front = defer_push_front};
+    struct am_event_cfg cfg = {
+        .push_front = defer_push_front,
+        .crit_enter = am_pal_crit_enter,
+        .crit_exit = am_pal_crit_exit
+    };
     am_event_state_ctor(&cfg);
 
     {

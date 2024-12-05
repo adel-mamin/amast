@@ -33,6 +33,7 @@
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "event/event.h"
+#include "pal/pal.h"
 #include "ao/ao.h"
 
 #include "philo.h"
@@ -53,7 +54,9 @@ const char *event_to_str(int id) {
 }
 
 int main(void) {
-    struct am_ao_state_cfg cfg_ao = {0};
+    struct am_ao_state_cfg cfg_ao = {
+        .crit_enter = am_pal_crit_enter, .crit_exit = am_pal_crit_exit
+    };
     am_ao_state_ctor(&cfg_ao);
 
     am_event_add_pool(
