@@ -117,6 +117,7 @@ void am_event_state_ctor(const struct am_event_cfg *cfg);
  * Add an event memory pool.
  *
  * Event memory pools must be added in the order of increasing block sizes.
+ * Not thread safe. Expected to be called at initialization.
  *
  * @param pool        the memory pool pointer
  * @param size        the memory pool size [bytes]
@@ -176,9 +177,11 @@ struct am_event *am_event_allocate(int id, int size, int margin);
 /**
  * Free the event allocated earlier with am_event_allocate().
  *
- * @param event  the event to free
+ * The pointer to the event is set to NULL to catch double free cases.
+ *
+ * @param event  the event to free.
  */
-void am_event_free(const struct am_event *event);
+void am_event_free(const struct am_event **event);
 
 /**
  * Duplicate an event.

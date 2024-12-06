@@ -63,7 +63,7 @@ static void am_ao_task(void *param) {
         am_hsm_dispatch(&ao->hsm, e);
         AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
 
-        am_event_free(e);
+        am_event_free(&e);
     }
 }
 

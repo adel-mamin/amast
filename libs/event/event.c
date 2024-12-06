@@ -111,8 +111,7 @@ struct am_event *am_event_allocate(int id, int size, int margin) {
             me->crit_exit();
             continue;
         }
-        struct am_event *event =
-            (struct am_event *)am_onesize_allocate(osz, size);
+        struct am_event *event = am_onesize_allocate(osz, size);
 
         me->crit_exit();
 
@@ -132,27 +131,31 @@ struct am_event *am_event_allocate(int id, int size, int margin) {
     return NULL;
 }
 
-void am_event_free(const struct am_event *event) {
-    if (NULL == event) {
-        return;
-    }
-    if (am_event_is_static(event)) {
+void am_event_free(const struct am_event **event) {
+    AM_ASSERT(event);
+    AM_ASSERT(*event); /* double free? */
+
+    struct am_event *e = AM_CAST(struct am_event *, *event);
+    AM_ASSERT(e->pool_index_plus_one <= AM_EVENT_POOL_NUM_MAX);
+
+    if (am_event_is_static(e)) {
         return; /* the event is statically allocated */
     }
 
     struct am_event_state *me = &event_state_;
     me->crit_enter();
 
-    if (event->ref_counter > 1) {
-        --AM_CAST(struct am_event *, event)->ref_counter;
+    if (e->ref_counter > 1) {
+        --e->ref_counter;
         me->crit_exit();
         return;
     }
 
-    AM_ASSERT(event->pool_index_plus_one <= AM_EVENT_POOL_NUM_MAX);
-    am_onesize_free(&event_state_.pool[event->pool_index_plus_one - 1], event);
+    am_onesize_free(&event_state_.pool[e->pool_index_plus_one - 1], e);
 
     me->crit_exit();
+
+    *event = NULL;
 }
 
 int am_event_get_pool_min_nfree(int index) {
@@ -294,7 +297,7 @@ bool am_event_push_back_x(
     AM_ASSERT(capacity >= len);
     if (margin && ((capacity - len) <= margin)) {
         me->crit_exit();
-        am_event_free(event);
+        am_event_free(&event);
         return false;
     }
 
@@ -335,7 +338,7 @@ bool am_event_push_front_x(
     AM_ASSERT(capacity >= len);
     if (margin && ((capacity - len) <= margin)) {
         me->crit_exit();
-        am_event_free(event);
+        am_event_free(&event);
         return false;
     }
 
@@ -437,7 +440,7 @@ int am_event_flush_queue(struct am_queue *queue) {
         cnt++;
         const struct am_event *e = *event;
         AM_ASSERT(e);
-        am_event_free(e);
+        am_event_free(&e);
         me->crit_enter();
     }
 

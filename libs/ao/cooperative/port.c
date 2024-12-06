@@ -59,7 +59,7 @@ bool am_ao_run_all(bool loop) {
         AM_ATOMIC_STORE_N(&ao->last_event, e->id);
         am_hsm_dispatch(&ao->hsm, e);
         AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
-        am_event_free(e);
+        am_event_free(&e);
         processed = true;
     } while (loop);
 
