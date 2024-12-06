@@ -83,7 +83,10 @@ void am_timer_arm(
     AM_ASSERT(event);
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
     /* make sure it wasn't already armed */
-    AM_ASSERT(!am_dlist_item_is_linked(&event->item));
+    me->cfg.crit_enter();
+    bool armed = am_dlist_item_is_linked(&event->item);
+    me->cfg.crit_exit();
+    AM_ASSERT(!armed);
     AM_ASSERT(event->event.id > 0);
     AM_ASSERT(event->event.tick_domain < AM_COUNTOF(me->domains));
     AM_ASSERT(ticks >= 0);
@@ -120,7 +123,11 @@ bool am_timer_disarm(struct am_event_timer *event) {
 bool am_timer_is_armed(const struct am_event_timer *event) {
     AM_ASSERT(event);
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
-    return am_dlist_item_is_linked(&event->item);
+    struct am_timer *me = &m_timer;
+    me->cfg.crit_enter();
+    bool armed = am_dlist_item_is_linked(&event->item);
+    me->cfg.crit_exit();
+    return armed;
 }
 
 void am_timer_tick(int domain) {
@@ -147,7 +154,9 @@ void am_timer_tick(int domain) {
         }
         struct am_event_timer *t = timer;
         if (me->cfg.update) {
+            me->cfg.crit_exit();
             t = me->cfg.update(timer);
+            me->cfg.crit_enter();
         }
         if (t->interval_ticks) {
             t->shot_in_ticks = t->interval_ticks;
@@ -183,5 +192,8 @@ bool am_timer_domain_is_empty(int domain) {
     struct am_timer *me = &m_timer;
     AM_ASSERT(domain >= 0);
     AM_ASSERT(domain < AM_COUNTOF(me->domains));
-    return am_dlist_is_empty(&me->domains[domain]);
+    me->cfg.crit_enter();
+    bool empty = am_dlist_is_empty(&me->domains[domain]);
+    me->cfg.crit_exit();
+    return empty;
 }
