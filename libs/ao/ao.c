@@ -330,6 +330,7 @@ void am_ao_dump_event_queues(
             AM_ASSERT(*e);
             log(ao->name, j, len, cap, (*e)->id);
         }
+        me->crit_exit();
     }
 }
 
