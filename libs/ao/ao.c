@@ -92,12 +92,12 @@ bool am_ao_publish_x(const struct am_event *event, int margin) {
             AM_ASSERT(ao);
             bool was_empty = am_ao_event_queue_is_empty(ao);
             bool pushed = am_event_push_back_x(&ao->event_queue, event, margin);
-            if (pushed) {
-                if (was_empty) {
-                    am_ao_notify(ao);
-                }
-            } else {
+            if (!pushed) {
                 rc = false;
+                continue;
+            }
+            if (was_empty) {
+                am_ao_notify(ao);
             }
         }
     }
