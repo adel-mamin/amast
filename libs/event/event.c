@@ -53,11 +53,6 @@ struct am_event_state {
 
 static struct am_event_state event_state_;
 
-static void am_push_front_stub(void *owner, const struct am_event *event) {
-    (void)owner;
-    (void)event;
-}
-
 void am_event_state_ctor(const struct am_event_cfg *cfg) {
     AM_ASSERT(cfg);
     AM_ASSERT(cfg->crit_enter);
@@ -69,10 +64,6 @@ void am_event_state_ctor(const struct am_event_cfg *cfg) {
     me->push_front = cfg->push_front;
     me->crit_enter = cfg->crit_enter;
     me->crit_exit = cfg->crit_exit;
-
-    if (!me->push_front) {
-        me->push_front = am_push_front_stub;
-    }
 }
 
 void am_event_add_pool(void *pool, int size, int block_size, int alignment) {
@@ -412,6 +403,8 @@ void am_event_defer_x(
 
 const struct am_event *am_event_recall(void *owner, struct am_queue *queue) {
     struct am_event_state *me = &event_state_;
+    AM_ASSERT(me->push_front);
+
     me->crit_enter();
 
     struct am_event **event = (struct am_event **)am_queue_pop_front(queue);
