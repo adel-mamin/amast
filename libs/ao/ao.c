@@ -315,12 +315,12 @@ void am_ao_dump_event_queues(
             continue;
         }
         struct am_queue *q = &ao->event_queue;
+        int cap = am_queue_capacity(q);
         me->crit_enter();
         int len = am_queue_length(q);
-        int cap = am_queue_capacity(q);
-        me->crit_exit();
         int tnum = AM_MIN(num, len);
         if (0 == tnum) {
+            me->crit_exit();
             log(ao->name, 0, len, cap, /*event=*/AM_EVT_INVALID);
             continue;
         }
