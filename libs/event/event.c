@@ -293,15 +293,23 @@ int am_event_get_ref_cnt(const struct am_event *event) {
     return cnt;
 }
 
-bool am_event_push_back_x(
-    struct am_queue *queue, const struct am_event *event, int margin
+typedef bool (*am_push_fn)(struct am_queue *hnd, const void *ptr, int size);
+
+static bool am_event_push_x(
+    struct am_queue *queue,
+    const struct am_event **event,
+    int margin,
+    am_push_fn push
 ) {
     AM_ASSERT(queue);
     AM_ASSERT(event);
+    AM_ASSERT(*event);
     AM_ASSERT(margin >= 0);
     const int capacity = am_queue_capacity(queue);
     AM_ASSERT(margin < capacity);
+    AM_ASSERT(push);
 
+    struct am_event *e = AM_CAST(struct am_event *, *event);
     struct am_event_state *me = &event_state_;
     me->crit_enter();
 
@@ -309,70 +317,47 @@ bool am_event_push_back_x(
     AM_ASSERT(capacity >= len);
     if (margin && ((capacity - len) <= margin)) {
         me->crit_exit();
-        am_event_free(&event);
+        am_event_free(event);
         return false;
     }
 
-    if (!am_event_is_static(event)) {
-        struct am_event *e = AM_CAST(struct am_event *, event);
+    if (!am_event_is_static(e)) {
         ++e->ref_counter;
     }
 
-    bool rc = am_queue_push_back(queue, &event, sizeof(event));
+    bool rc = push(queue, event, sizeof(struct am_event));
 
     me->crit_exit();
 
     AM_ASSERT(true == rc);
 
     return true;
+}
+
+bool am_event_push_back_x(
+    struct am_queue *queue, const struct am_event **event, int margin
+) {
+    return am_event_push_x(queue, event, margin, am_queue_push_back);
 }
 
 void am_event_push_back(struct am_queue *queue, const struct am_event *event) {
     AM_ASSERT(queue);
     AM_ASSERT(event);
 
-    (void)am_event_push_back_x(queue, event, /*margin=*/0);
+    (void)am_event_push_back_x(queue, &event, /*margin=*/0);
 }
 
 bool am_event_push_front_x(
-    struct am_queue *queue, const struct am_event *event, int margin
+    struct am_queue *queue, const struct am_event **event, int margin
 ) {
-    AM_ASSERT(queue);
-    AM_ASSERT(event);
-    AM_ASSERT(margin >= 0);
-    const int capacity = am_queue_capacity(queue);
-    AM_ASSERT(margin < capacity);
-
-    struct am_event_state *me = &event_state_;
-    me->crit_enter();
-
-    const int len = am_queue_length(queue);
-    AM_ASSERT(capacity >= len);
-    if (margin && ((capacity - len) <= margin)) {
-        me->crit_exit();
-        am_event_free(&event);
-        return false;
-    }
-
-    if (!am_event_is_static(event)) {
-        struct am_event *e = AM_CAST(struct am_event *, event);
-        ++e->ref_counter;
-    }
-
-    bool rc = am_queue_push_front(queue, &event, sizeof(event));
-
-    me->crit_exit();
-
-    AM_ASSERT(true == rc);
-
-    return true;
+    return am_event_push_x(queue, event, margin, am_queue_push_front);
 }
 
 void am_event_push_front(struct am_queue *queue, const struct am_event *event) {
     AM_ASSERT(queue);
     AM_ASSERT(event);
 
-    (void)am_event_push_front_x(queue, event, /*margin=*/0);
+    (void)am_event_push_front_x(queue, &event, /*margin=*/0);
 }
 
 const struct am_event *am_event_pop_front(struct am_queue *queue) {
@@ -403,8 +388,8 @@ void am_event_defer(struct am_queue *queue, const struct am_event *event) {
     am_event_push_back(queue, event);
 }
 
-void am_event_defer_x(
-    struct am_queue *queue, const struct am_event *event, int margin
+bool am_event_defer_x(
+    struct am_queue *queue, const struct am_event **event, int margin
 ) {
     AM_ASSERT(queue);
     AM_ASSERT(event);
@@ -413,7 +398,7 @@ void am_event_defer_x(
     const int capacity = am_queue_capacity(queue);
     AM_ASSERT(margin < capacity);
 
-    am_event_push_back_x(queue, event, margin);
+    return am_event_push_back_x(queue, event, margin);
 }
 
 const struct am_event *am_event_recall(void *owner, struct am_queue *queue) {

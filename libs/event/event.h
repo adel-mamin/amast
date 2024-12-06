@@ -255,50 +255,56 @@ int am_event_get_ref_cnt(const struct am_event *event);
 /**
  * Push event to the back of event queue.
  *
- * Does not assert if margin is non-zero and the event was not posted.
+ * Does not assert if margin is non-zero and the event was not pushed.
+ *
+ * Tries to free the event, if it was not pushed.
+ * *event is set to NULL, if the event was freed.
  *
  * @param queue   the event queue
  * @param event   the event to pst
- * @param margin  free event queue slots to be available after event was posted
- * @retval true   the event was posted
- * @retval false  the event was not posted
+ * @param margin  free event queue slots to be available after event was pushed
+ * @retval true   the event was pushed
+ * @retval false  the event was not pushed
  */
 bool am_event_push_back_x(
-    struct am_queue *queue, const struct am_event *event, int margin
+    struct am_queue *queue, const struct am_event **event, int margin
 );
 
 /**
  * Push event to the back of event queue.
  *
- * Assert if the event was not posted.
+ * Assert if the event was not pushed.
  *
  * @param queue   the event queue
- * @param event   the event to post
+ * @param event   the event to push
  */
 void am_event_push_back(struct am_queue *queue, const struct am_event *event);
 
 /**
  * Push event to the front of event queue.
  *
- * Does not assert if margin is non-zero and the event was not posted.
+ * Does not assert if margin is non-zero and the event was not pushed.
+ *
+ * Tries to free the event, if it was not pushed.
+ * *event is set to NULL, if the event was freed.
  *
  * @param queue   the event queue
- * @param event   the event to pst
- * @param margin  free event queue slots to be available after event was posted
- * @retval true   the event was posted
- * @retval false  the event was not posted
+ * @param event   the event to push
+ * @param margin  free event queue slots to be available after event was pushed
+ * @retval true   the event was pushed
+ * @retval false  the event was not pushed
  */
 bool am_event_push_front_x(
-    struct am_queue *queue, const struct am_event *event, int margin
+    struct am_queue *queue, const struct am_event **event, int margin
 );
 
 /**
  * Push event to the front of event queue.
  *
- * Assert if the event was not posted.
+ * Assert if the event was not pushed.
  *
  * @param queue   the event queue
- * @param event   the event to post
+ * @param event   the event to push
  */
 void am_event_push_front(struct am_queue *queue, const struct am_event *event);
 
@@ -324,12 +330,17 @@ void am_event_defer(struct am_queue *queue, const struct am_event *event);
 /**
  * Defer an event.
  *
+ * Tries to free event, if defer fails. If event is freed, then
+ * *event is set to NULL.
+ *
  * @param queue   the queue to store the deferred event
  * @param event   the event to defer
  * @param margin  free event queue slots to be available after event is deferred
+ * @retval true   the event was deferred
+ * @retval false  the event was not deferred
  */
-void am_event_defer_x(
-    struct am_queue *queue, const struct am_event *event, int margin
+bool am_event_defer_x(
+    struct am_queue *queue, const struct am_event **event, int margin
 );
 
 /**

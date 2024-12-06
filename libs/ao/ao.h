@@ -102,12 +102,15 @@ void am_ao_publish(const struct am_event *event);
 /**
  * Publish event.
  *
+ * Tries to free the event, if it was not delivered to any subscriber.
+ * *event is set to NULL, if the event was freed.
+ *
  * @param event   the event to publish
  * @param margin  free event queue slots to be available after event is pushed
  * @retval true   success
  * @retval false  at least one delivery has failed
  */
-bool am_ao_publish_x(const struct am_event *event, int margin);
+bool am_ao_publish_x(const struct am_event **event, int margin);
 
 /**
  * Post event to the back of AO event queue.
@@ -126,6 +129,9 @@ void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
  * If AO event queue is full and margin is >0 the API fails gracefully.
  * The event is handled asynchronously.
  *
+ * Tries to free the event, if it was not posted.
+ * *event is set to NULL, if the event was freed.
+ *
  * @param ao      the event is posted to this AO
  * @param event   the event to post
  * @param margin  free event queue slots to be available after event is posted
@@ -133,7 +139,7 @@ void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
  * @retval false  the event was not posted
  */
 bool am_ao_post_fifo_x(
-    struct am_ao *ao, const struct am_event *event, int margin
+    struct am_ao *ao, const struct am_event **event, int margin
 );
 
 /**
@@ -153,6 +159,9 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
  * If AO event queue is full and margin is >0 the API fails gracefully.
  * The event is handled asynchronously.
  *
+ * Tries to free the event, if it was not posted.
+ * *event is set to NULL, if the event was freed.
+ *
  * @param ao      the event is posted to this AO
  * @param event   the event to post
  * @param margin  free event queue slots to be available after event is posted
@@ -160,7 +169,7 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
  * @retval false  the event was not posted
  */
 bool am_ao_post_lifo_x(
-    struct am_ao *ao, const struct am_event *event, int margin
+    struct am_ao *ao, const struct am_event **event, int margin
 );
 
 /**
