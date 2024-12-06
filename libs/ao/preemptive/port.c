@@ -47,7 +47,7 @@ static void am_ao_task(void *param) {
     am_pal_mutex_lock(me->startup_mutex);
     am_pal_mutex_unlock(me->startup_mutex);
 
-    while (AM_LIKELY(!ao->stopped)) {
+    while (AM_LIKELY(!AM_ATOMIC_LOAD_N(&ao->stopped))) {
         me->crit_enter();
         while (am_queue_is_empty(&ao->event_queue)) {
             me->crit_exit();
@@ -59,9 +59,9 @@ static void am_ao_task(void *param) {
         AM_ASSERT(e);
         me->debug(ao, e);
 
-        ao->last_event = e->id;
+        AM_ATOMIC_STORE_N(&ao->last_event, e->id);
         am_hsm_dispatch(&ao->hsm, e);
-        ao->last_event = AM_EVT_INVALID;
+        AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
 
         am_event_free(e);
     }

@@ -56,9 +56,9 @@ bool am_ao_run_all(bool loop) {
 
         const struct am_event *e = am_event_pop_front(ao, &ao->event_queue);
         me->debug(ao, e);
-        ao->last_event = e->id;
+        AM_ATOMIC_STORE_N(&ao->last_event, e->id);
         am_hsm_dispatch(&ao->hsm, e);
-        ao->last_event = AM_EVT_INVALID;
+        AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
         am_event_free(e);
         processed = true;
     } while (loop);

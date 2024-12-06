@@ -211,7 +211,7 @@ void am_pal_task_wait(int task_id) {
     struct am_pal_task *t = &task_arr_[index];
     AM_ASSERT(t);
     pthread_mutex_lock(&t->mutex);
-    while (!t->notified) {
+    while (!AM_ATOMIC_LOAD_N(&t->notified)) {
         pthread_cond_wait(&t->cond, &t->mutex);
     }
     AM_ATOMIC_STORE_N(&t->notified, false);

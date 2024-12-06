@@ -586,6 +586,7 @@ AM_ASSERT_STATIC(LONG_MAX == ((1ULL << (unsigned)(LONG_BITS - 1)) - 1));
     })
 
 #define AM_ATOMIC_STORE_N(ptr, val) __atomic_store_n(ptr, val, __ATOMIC_SEQ_CST)
+#define AM_ATOMIC_LOAD_N(ptr) __atomic_load_n(ptr, __ATOMIC_SEQ_CST)
 
 int am_compiler_alignment(void);
 

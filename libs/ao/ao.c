@@ -321,7 +321,7 @@ void am_ao_dump_event_queues(
         me->crit_exit();
         int tnum = AM_MIN(num, len);
         if (0 == tnum) {
-            log(ao->name, 0, len, cap, /*event=*/-1);
+            log(ao->name, 0, len, cap, /*event=*/AM_EVT_INVALID);
             continue;
         }
         for (int j = 0; j < tnum; j++) {
@@ -342,6 +342,6 @@ void am_ao_log_last_events(void (*log)(const char *name, int event)) {
         if (!ao) {
             continue;
         }
-        log(ao->name, /*event=*/ao->last_event);
+        log(ao->name, /*event=*/AM_ATOMIC_LOAD_N(&ao->last_event));
     }
 }
