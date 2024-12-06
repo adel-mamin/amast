@@ -31,9 +31,7 @@
  * Increases the size of struct am_hsm by the size of a function
  * pointer.
  */
-#ifndef AM_HSM_SPY
-#define AM_HSM_SPY
-#endif
+/* #define AM_HSM_SPY */
 
 /**
  * Enable am_fsm_set_spy() API to register user callback
@@ -41,38 +39,28 @@
  * Increases the size of struct am_fsm by the size of a function
  * pointer.
  */
-#ifndef AM_FSM_SPY
-#define AM_FSM_SPY
-#endif
+/* #define AM_FSM_SPY */
 
 /**
  * Enable PAL stubs.
  * Useful for unit tests.
  * There should only be one AM_PAL_... defined at a time.
  */
-#ifndef AM_PAL_STUBS
-#define AM_PAL_STUBS
-#endif
+/* #define AM_PAL_STUBS */
 
 /**
  * Enable PAL API implementation for FreeRTOS.
  * There should only be one AM_PAL_... defined at a time.
  */
-#ifndef AM_PAL_FREERTOS
-#define AM_PAL_FREERTOS
-#endif
+/* #define AM_PAL_FREERTOS */
 
 /**
  * Enable PAL API implementation for posix.
  * There should only be one AM_PAL_... defined at a time.
  */
-#ifndef AM_PAL_POSIX
-#define AM_PAL_POSIX
-#endif
+/* #define AM_PAL_POSIX */
 
 /** Enable am_assert_failure() implementation */
-#ifndef AM_ASSERT_FAILURE
-#define AM_ASSERT_FAILURE
-#endif
+/* #define AM_ASSERT_FAILURE */
 
 #endif /* AMAST_CONFIG_H_INCLUDED */
