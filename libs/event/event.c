@@ -162,21 +162,30 @@ int am_event_get_pool_min_nfree(int index) {
     struct am_event_state *me = &event_state_;
     AM_ASSERT(index >= 0);
     AM_ASSERT(index < me->npool);
-    return am_onesize_get_min_nfree(&me->pool[index]);
+    me->crit_enter();
+    int nfree = am_onesize_get_min_nfree(&me->pool[index]);
+    me->crit_exit();
+    return nfree;
 }
 
 int am_event_get_pool_nfree_now(int index) {
     struct am_event_state *me = &event_state_;
     AM_ASSERT(index >= 0);
     AM_ASSERT(index < me->npool);
-    return am_onesize_get_nfree(&me->pool[index]);
+    me->crit_enter();
+    int nfree = am_onesize_get_nfree(&me->pool[index]);
+    me->crit_exit();
+    return nfree;
 }
 
 int am_event_get_pool_nblocks(int index) {
     struct am_event_state *me = &event_state_;
     AM_ASSERT(index >= 0);
     AM_ASSERT(index < me->npool);
-    return am_onesize_get_nblocks(&me->pool[index]);
+    me->crit_enter();
+    int nblocks = am_onesize_get_nblocks(&me->pool[index]);
+    me->crit_exit();
+    return nblocks;
 }
 
 int am_event_get_pools_num(void) { return event_state_.npool; }
@@ -191,11 +200,10 @@ struct am_event *am_event_dup(
     AM_ASSERT(event->id >= AM_EVT_USER);
     AM_ASSERT(margin >= 0);
 
-    // cppcheck-suppress nullPointerRedundantCheck
     struct am_event *dup = am_event_allocate(event->id, size, margin);
     if (dup && (size > (int)sizeof(struct am_event))) {
-        char *dst = (char *)dup + sizeof(*dup);
-        const char *src = (const char *)event + sizeof(*event);
+        char *dst = (char *)dup + sizeof(struct am_event);
+        const char *src = (const char *)event + sizeof(struct am_event);
         int sz = size - (int)sizeof(struct am_event);
         memcpy(dst, src, (size_t)sz);
     }
@@ -210,7 +218,9 @@ struct am_event_log_ctx {
 };
 
 /**
- * A helper callback to be the type am_onesize_iterate_func
+ * A helper callback of type am_onesize_iterate_func.
+ *
+ * Expected to be used together with am_onesize_iterate_over_allocated()
  *
  * @param ctx    an instance of struct am_event_log_ctx
  * @param index  the index of event buffer to log
@@ -241,9 +251,11 @@ void am_event_log_pools(int num, am_event_log_func cb) {
     struct am_event_log_ctx ctx = {.cb = cb};
     for (int i = 0; i < me->npool; i++) {
         ctx.pool_ind = i;
+        me->crit_enter();
         am_onesize_iterate_over_allocated(
             &me->pool[i], num, &ctx, am_event_log_cb
         );
+        me->crit_exit();
     }
 }
 

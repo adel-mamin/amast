@@ -213,7 +213,9 @@ typedef void (*am_event_log_func)(
 );
 
 /**
- * Log event content of the first num events in each event pool.
+ * Log events content of the first num events in each event pool.
+ *
+ * To be used for debugging purposes.
  *
  * @param num  the number of events to log in each pool (if <0, then log all)
  * @param cb   the logging callback
