@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-#ifdef AMAST_AO_PREEMPTIVE
+#ifdef AM_AO_PREEMPTIVE
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -138,4 +138,4 @@ void am_ao_wait(void *ao) {
     am_pal_task_wait(ao_->task_id);
 }
 
-#endif /* AMAST_AO_PREEMPTIVE */
+#endif /* AM_AO_PREEMPTIVE */

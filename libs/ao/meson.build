@@ -26,10 +26,10 @@ ao_src = [files('ao.c')]
 ao_c_args = []
 if ao_type == 'cooperative'
     ao_src += [files('cooperative' / 'port.c')]
-    ao_c_args += ['-DAMAST_AO_COOPERATIVE']
+    ao_c_args += ['-DAM_AO_COOPERATIVE']
 elif ao_type == 'preemptive'
     ao_src += [files('preemptive' / 'port.c')]
-    ao_c_args += ['-DAMAST_AO_PREEMPTIVE']
+    ao_c_args += ['-DAM_AO_PREEMPTIVE']
 endif
 src += ao_src
 

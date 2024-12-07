@@ -28,7 +28,7 @@
  * Platform abstraction layer (PAL) API posix implementation
  */
 
-#ifdef AMAST_PAL_POSIX
+#ifdef AM_PAL_POSIX
 
 #define _GNU_SOURCE
 
@@ -350,4 +350,4 @@ void am_pal_dtor(void) {
     }
 }
 
-#endif /* AMAST_PAL_POSIX */
+#endif /* AM_PAL_POSIX */

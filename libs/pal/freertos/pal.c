@@ -28,7 +28,7 @@
  * Platform abstraction layer (PAL) API implementation for FreeRTOS
  */
 
-#ifdef AMAST_PAL_FREERTOS
+#ifdef AM_PAL_FREERTOS
 
 #include "FreeRTOS.h"
 
@@ -134,4 +134,4 @@ void am_pal_sleep_ms(int ms) {
     vTaskDelay(ticks);
 }
 
-#endif /* AMAST_PAL_FREERTOS */
+#endif /* AM_PAL_FREERTOS */

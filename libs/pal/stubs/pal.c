@@ -28,7 +28,7 @@
  * Platform abstraction layer (PAL) API stubs
  */
 
-#ifdef AMAST_PAL_STUBS
+#ifdef AM_PAL_STUBS
 
 #include <stddef.h>
 #include <stdint.h>
@@ -81,4 +81,4 @@ void am_pal_sleep_ticks(int domain, int ticks) {
 
 void am_pal_sleep_ms(int ms) { (void)ms; }
 
-#endif /* AMAST_PAL_STUBS */
+#endif /* AM_PAL_STUBS */
