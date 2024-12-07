@@ -73,10 +73,6 @@ int main(void) {
     }
     table_ctor(/*nsession=*/100);
 
-    static const char *names[PHILO_NUM] = {
-        "philo0", "philo1", "philo2", "philo3", "philo4"
-    };
-
     am_ao_start(
         g_ao_table,
         /*prio=*/AM_AO_PRIO_MAX,
@@ -87,6 +83,10 @@ int main(void) {
         /*name=*/"table",
         /*init_event=*/NULL
     );
+
+    static const char *names[PHILO_NUM] = {
+        "philo0", "philo1", "philo2", "philo3", "philo4"
+    };
 
     for (int i = 0; i < AM_COUNTOF(names); i++) {
         am_ao_start(
