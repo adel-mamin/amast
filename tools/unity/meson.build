@@ -55,10 +55,15 @@ amast_src = custom_target(
     'amast_src',
     input : [files_txt],
     output : [
-        'amast.c',
-        'amast_test.c',
-        'amast.h',
-        'amast_test.h'
+        'amast.c',              # 0
+        'amast_test.c',         # 1
+        'amast_freertos.c',     # 2
+        'amast_posix.c',        # 3
+        'amast_stubs.c',        # 4
+        'amast_cooperative.c',  # 5
+        'amast_preemptive.c',   # 6
+        'amast.h',              # 7
+        'amast_test.h'          # 8
     ],
     command : [
         amast_exe, '-f', '@INPUT@', '-o', '@OUTDIR@' , '&&',
@@ -71,7 +76,11 @@ amast_src = custom_target(
 if unit_test
     e = executable(
         'unity',
-        amast_src,
+        [
+            amast_src[0], # 'amast.c'
+            amast_src[1], # 'amast_test.c'
+            amast_src[4], # 'amast_stubs.c'
+        ],
         include_directories: libs_inc,
         c_args: [
             '-DAM_HSM_SPY',

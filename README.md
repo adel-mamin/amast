@@ -28,6 +28,12 @@ Run `pixi run all`.
 
 Include `amast.h`, `amast_config.h` and `amast.c` from the latest release to your project.
 
+If you want to use Amast features that require porting, then also add one of the following
+ports to you project:
+
+- `amast_posix.c`
+- `amast_freertos.c`
+
 If you want to run Amast unit tests, then also include `amast_test.h` and `amast_test.c`.
 
 `Makefile` is available for optional use. Run `make test` to run unit tests.
