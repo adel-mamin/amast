@@ -155,11 +155,11 @@ static void db_init(struct db *db, const char *db_fname, const char *odir) {
         }
         if (strstr(fname, ".h") != NULL) {
             if (strstr(fname, "test") != NULL) {
-                assert(db->hdr_test.len < AM_COUNTOF(db->hdr_test.content));
+                AM_ASSERT(db->hdr_test.len < AM_COUNTOF(db->hdr_test.content));
                 read_file(&db->hdr_test, fname);
                 db->hdr_test.len++;
             } else {
-                assert(db->hdr.len < AM_COUNTOF(db->hdr.content));
+                AM_ASSERT(db->hdr.len < AM_COUNTOF(db->hdr.content));
                 read_file(&db->hdr, fname);
                 db->hdr.len++;
             }
@@ -168,7 +168,7 @@ static void db_init(struct db *db, const char *db_fname, const char *odir) {
         if ('\0' == fname[0]) {
             continue;
         }
-        assert(0);
+        AM_ASSERT(0);
     }
 
     fclose(file);
@@ -263,7 +263,7 @@ static void file_append(
 
 static const char *get_repo_fname(const char *fname) {
     const char *src = strstr(fname, "/amast/");
-    assert(src);
+    AM_ASSERT(src);
     return src + 1;
 }
 
