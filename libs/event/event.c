@@ -244,18 +244,16 @@ static void am_event_log_cb(void *ctx, int index, const char *buf, int size) {
 }
 
 void am_event_log_pools(int num, am_event_log_func cb) {
-    AM_ASSERT(num > 0);
+    AM_ASSERT(num != 0);
     AM_ASSERT(cb);
 
     struct am_event_state *me = &event_state_;
     struct am_event_log_ctx ctx = {.cb = cb};
     for (int i = 0; i < me->npool; i++) {
         ctx.pool_ind = i;
-        me->crit_enter();
         am_onesize_iterate_over_allocated(
             &me->pool[i], num, &ctx, am_event_log_cb
         );
-        me->crit_exit();
     }
 }
 
