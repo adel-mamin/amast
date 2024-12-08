@@ -39,7 +39,6 @@ src += [hsm_src]
 libhsm = library(
     'hsm',
     [hsm_src],
-    link_with: libassert,
     include_directories: [inc, hsm_inc]
 )
 libhsm_dep = declare_dependency(
@@ -53,7 +52,7 @@ if unit_test
         [
             'tests' / 'regular' / 'test.c'
         ],
-        dependencies: [libhsm_dep, libstr_dep],
+        dependencies: [libhsm_dep, libstr_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('regular', e, suite: 'hsm')
 
@@ -62,7 +61,7 @@ if unit_test
         [
             'tests' / 'hsm_top_as_nca.c'
         ],
-        dependencies: [libhsm_dep, libstr_dep],
+        dependencies: [libhsm_dep, libstr_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('hsm_top_as_nca', e, suite: 'hsm')
 
@@ -71,7 +70,7 @@ if unit_test
         [
             'tests'/ 'redispatch.c'
         ],
-        dependencies: [libhsm_dep, libstr_dep],
+        dependencies: [libhsm_dep, libstr_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('redispatch', e, suite: 'hsm')
 
@@ -80,7 +79,7 @@ if unit_test
         [
             'tests'/ 'dtor.c'
         ],
-        dependencies: [libhsm_dep, libstr_dep],
+        dependencies: [libhsm_dep, libstr_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('dtor', e, suite: 'hsm')
 
@@ -89,7 +88,7 @@ if unit_test
         [
             'tests' / 'history.c'
         ],
-        dependencies: [libhsm_dep, libstr_dep],
+        dependencies: [libhsm_dep, libstr_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('history', e, suite: 'hsm')
 
@@ -98,7 +97,7 @@ if unit_test
         [
             'tests' / 'submachine' / 'basic' / 'test.c'
         ],
-        dependencies: [libhsm_dep, libstr_dep],
+        dependencies: [libhsm_dep, libstr_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('submachine-basic', e, suite: 'hsm')
 
@@ -107,7 +106,7 @@ if unit_test
         [
             'tests' / 'submachine' / 'complex' / 'test.c'
         ],
-        dependencies: [libhsm_dep, libstr_dep],
+        dependencies: [libhsm_dep, libstr_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('submachine-complex', e, suite: 'hsm')
 
@@ -116,7 +115,7 @@ if unit_test
         [
             'tests' / 'submachine' / 'calc' / 'test.c'
         ],
-        dependencies: [libhsm_dep, libstr_dep, libm_dep],
+        dependencies: [libhsm_dep, libstr_dep, libm_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('submachine-calc', e, suite: 'hsm')
 
@@ -127,7 +126,7 @@ if unit_test
             hsm_src,
         ],
         c_args: ['-DAM_HSM_SPY'],
-        dependencies: [libstr_dep, libassert_dep],
+        dependencies: [libstr_dep, libassert_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('spy', e, suite: 'hsm')
 
@@ -136,7 +135,7 @@ if unit_test
         [
             'tests' / 'reenter.c',
         ],
-        dependencies: [libstr_dep, libhsm_dep],
+        dependencies: [libstr_dep, libhsm_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('reenter', e, suite: 'hsm')
 
@@ -145,7 +144,7 @@ if unit_test
         [
             'tests' / 'event_queue.c',
         ],
-        dependencies: [libstr_dep, libhsm_dep, libevent_dep, libpal_dep],
+        dependencies: [libstr_dep, libhsm_dep, libevent_dep, libpal_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('event_queue', e, suite: 'hsm')
 
@@ -154,7 +153,7 @@ if unit_test
         [
             'tests' / 'defer.c',
         ],
-        dependencies: [libstr_dep, libhsm_dep, libevent_dep, libpal_dep],
+        dependencies: [libstr_dep, libhsm_dep, libevent_dep, libpal_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('defer', e, suite: 'hsm')
 endif

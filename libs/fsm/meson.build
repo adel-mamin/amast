@@ -28,7 +28,6 @@ src += fsm_src
 libfsm = library(
     'fsm',
     [fsm_src],
-    link_with: libassert,
     include_directories : [inc]
 )
 libfsm_dep = declare_dependency(
@@ -42,7 +41,7 @@ if unit_test
         [
             'tests' / 'history.c'
         ],
-        dependencies: [libfsm_dep],
+        dependencies: [libfsm_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('history', e, suite: 'fsm')
 
@@ -51,7 +50,7 @@ if unit_test
         [
             'tests'/ 'redispatch.c'
         ],
-        dependencies: [libfsm_dep],
+        dependencies: [libfsm_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('redispatch', e, suite: 'fsm')
 
@@ -60,7 +59,7 @@ if unit_test
         [
             'tests'/ 'dtor.c'
         ],
-        dependencies: [libfsm_dep],
+        dependencies: [libfsm_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('dtor', e, suite: 'fsm')
 
@@ -80,7 +79,7 @@ if unit_test
         [
             'tests' / 'reenter.c',
         ],
-        dependencies: [libfsm_dep, libstr_dep],
+        dependencies: [libfsm_dep, libstr_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('reenter', e, suite: 'fsm')
 
@@ -89,7 +88,7 @@ if unit_test
         [
             'tests' / 'event_queue.c',
         ],
-        dependencies: [libstr_dep, libfsm_dep, libevent_dep, libpal_dep],
+        dependencies: [libstr_dep, libfsm_dep, libevent_dep, libpal_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('event_queue', e, suite: 'fsm')
 endif

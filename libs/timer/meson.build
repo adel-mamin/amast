@@ -27,7 +27,7 @@ src += timer_src
 
 libtimer = library('timer', [timer_src], include_directories: inc)
 libtimer_dep = declare_dependency(
-    link_with : [libtimer, libdlist, libassert],
+    link_with : [libtimer, libdlist],
     include_directories : inc)
 
 if unit_test

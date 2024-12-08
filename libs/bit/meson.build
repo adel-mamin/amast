@@ -28,7 +28,6 @@ src += bit_src
 libbit = library(
     'bit',
     [bit_src],
-    link_with: libassert,
     include_directories : [inc]
 )
 libbit_dep = declare_dependency(
@@ -40,7 +39,7 @@ if unit_test
     e = executable(
         'bit',
         ['test.c'],
-        dependencies: libbit_dep,
+        dependencies: [libbit_dep, libassert_dep],
         include_directories: inc
     )
     test('bit', e)

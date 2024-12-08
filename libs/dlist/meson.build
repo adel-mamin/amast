@@ -27,7 +27,7 @@ src += [dlist_src]
 
 libdlist = library('dlist', [dlist_src], include_directories: inc)
 libdlist_dep = declare_dependency(
-    link_with : [libdlist, libassert],
+    link_with : [libdlist],
     include_directories : inc
 )
 

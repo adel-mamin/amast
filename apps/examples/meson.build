@@ -27,21 +27,21 @@ e = executable(
     [
         'hsm' / 'regular' / 'example.c'
     ],
-    dependencies: [libhsm_dep, libstr_dep])
+    dependencies: [libhsm_dep, libstr_dep, libassert_dep])
 
 e = executable(
     'submachine-example',
     [
         'hsm' / 'submachine' / 'complex' / 'example.c'
     ],
-    dependencies: [libhsm_dep, libstr_dep])
+    dependencies: [libhsm_dep, libstr_dep, libassert_dep])
 
 e = executable(
     'calc-example',
     [
         'hsm' / 'submachine' / 'calc' / 'example.c'
     ],
-    dependencies: [libhsm_dep, libstr_dep])
+    dependencies: [libhsm_dep, libstr_dep, libassert_dep])
 
 e = executable(
     'dpp-example',
@@ -57,4 +57,5 @@ e = executable(
         libao_dep,
         libevent_dep,
         libtimer_dep,
-        libbit_dep])
+        libbit_dep,
+        libassert_dep])
