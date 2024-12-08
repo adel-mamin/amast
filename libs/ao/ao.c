@@ -28,6 +28,7 @@
  * Active Object (AO) API implementation.
  */
 
+#include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -306,9 +307,17 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub) {
 }
 
 void am_ao_dump_event_queues(
-    int num, void (*log)(const char *name, int i, int len, int cap, int event)
+    int num,
+    void (*log)(
+        const char *name, int i, int len, int cap, const struct am_event *event
+    )
 ) {
+    AM_ASSERT(num != 0);
     AM_ASSERT(log);
+
+    if (num < 0) {
+        num = INT_MAX;
+    }
 
     struct am_ao_state *me = &g_am_ao_state;
     for (int i = 0; i < AM_COUNTOF(me->ao); i++) {
@@ -318,11 +327,9 @@ void am_ao_dump_event_queues(
         }
         struct am_queue *q = &ao->event_queue;
         int cap = am_queue_capacity(q);
-        me->crit_enter();
         int len = am_queue_length(q);
         int tnum = AM_MIN(num, len);
         if (0 == tnum) {
-            me->crit_exit();
             log(ao->name, 0, len, cap, /*event=*/AM_EVT_INVALID);
             continue;
         }
@@ -330,9 +337,8 @@ void am_ao_dump_event_queues(
             struct am_event **e = (struct am_event **)am_queue_pop_front(q);
             AM_ASSERT(e);
             AM_ASSERT(*e);
-            log(ao->name, j, len, cap, (*e)->id);
+            log(ao->name, j, len, cap, *e);
         }
-        me->crit_exit();
     }
 }
 
