@@ -39,7 +39,7 @@ configure_file(
 amast_exe = executable(
     'amast-unity',
     ['unity.c', str_src],
-    dependencies : [libassert_dep],
+    dependencies : [libassert_dep, libpal_dep],
     c_args: ['-std=gnu99', '-ggdb', '-fno-lto'],
     include_directories: libs_inc
 )
