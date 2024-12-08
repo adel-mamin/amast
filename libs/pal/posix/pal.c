@@ -327,6 +327,8 @@ int am_pal_printf(const char *fmt, ...) {
     return rc;
 }
 
+void am_pal_flush(void) { fflush(stdout); }
+
 void am_pal_ctor(void) {}
 
 void am_pal_dtor(void) {

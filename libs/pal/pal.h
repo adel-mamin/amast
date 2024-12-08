@@ -80,6 +80,7 @@ void am_pal_sleep_ticks(int domain, int ticks);
 void am_pal_sleep_ms(int ms);
 
 AM_PRINTF(1, 2) int am_pal_printf(const char *fmt, ...);
+void am_pal_flush(void);
 
 #ifdef __cplusplus
 }
