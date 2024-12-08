@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-#include <assert.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
@@ -51,7 +50,6 @@ struct db {
     struct files src_test;
     struct files src_freertos;
     struct files src_posix;
-    struct files src_stubs;
     struct files src_cooperative;
     struct files src_preemptive;
     struct files hdr;
@@ -142,7 +140,7 @@ static void db_init(struct db *db, const char *db_fname, const char *odir) {
             } else if (strstr(fname, "/libs/pal/posix/") != NULL) {
                 files = &db->src_posix;
             } else if (strstr(fname, "/libs/pal/stubs/") != NULL) {
-                files = &db->src_stubs;
+                files = &db->src_test;
             } else if (strstr(fname, "/libs/ao/cooperative/") != NULL) {
                 files = &db->src_cooperative;
             } else if (strstr(fname, "/libs/ao/preemptive/") != NULL) {
@@ -486,26 +484,6 @@ static void create_amast_posix_c_file(
     create_amast_file(&cfg);
 }
 
-static void create_amast_stubs_c_file(
-    struct db *db, int *ntests, char (*tests)[PATH_MAX], int tests_max
-) {
-    static const char inc[][PATH_MAX] = {
-        "#include \"amast_config.h\"", "#include \"amast.h\""
-    };
-    struct amast_file_cfg cfg = {
-        .db = db,
-        .ntests = ntests,
-        .tests = tests,
-        .tests_max = tests_max,
-        .files = &db->src_stubs,
-        .inc = inc,
-        .ninc = AM_COUNTOF(inc),
-        .amast_fname = "amast_stubs.c",
-        .note = "source"
-    };
-    create_amast_file(&cfg);
-}
-
 static void create_amast_cooperative_c_file(
     struct db *db, int *ntests, char (*tests)[PATH_MAX], int tests_max
 ) {
@@ -593,7 +571,6 @@ static void create_amast_files(struct db *db) {
     create_amast_c_file(db, &ntests, tests, AM_COUNTOF(tests));
     create_amast_freertos_c_file(db, &ntests, tests, AM_COUNTOF(tests));
     create_amast_posix_c_file(db, &ntests, tests, AM_COUNTOF(tests));
-    create_amast_stubs_c_file(db, &ntests, tests, AM_COUNTOF(tests));
     create_amast_cooperative_c_file(db, &ntests, tests, AM_COUNTOF(tests));
     create_amast_preemptive_c_file(db, &ntests, tests, AM_COUNTOF(tests));
 

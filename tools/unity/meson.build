@@ -59,11 +59,10 @@ amast_src = custom_target(
         'amast_test.c',         # 1
         'amast_freertos.c',     # 2
         'amast_posix.c',        # 3
-        'amast_stubs.c',        # 4
-        'amast_cooperative.c',  # 5
-        'amast_preemptive.c',   # 6
-        'amast.h',              # 7
-        'amast_test.h'          # 8
+        'amast_cooperative.c',  # 4
+        'amast_preemptive.c',   # 5
+        'amast.h',              # 6
+        'amast_test.h'          # 7
     ],
     command : [
         amast_exe, '-f', '@INPUT@', '-o', '@OUTDIR@' , '&&',
@@ -79,13 +78,11 @@ if unit_test
         [
             amast_src[0], # 'amast.c'
             amast_src[1], # 'amast_test.c'
-            amast_src[4], # 'amast_stubs.c'
         ],
         include_directories: libs_inc,
         c_args: [
             '-DAM_HSM_SPY',
             '-DAM_FSM_SPY',
-            '-DAM_PAL_STUBS',
             '-ffunction-sections', '-fdata-sections'
         ],
         link_args: ['-Wl,--gc-sections'],

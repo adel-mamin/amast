@@ -67,7 +67,6 @@ CFLAGS += -Wcast-align
 CFLAGS += -Wno-declaration-after-statement
 CFLAGS += -DAM_HSM_SPY
 CFLAGS += -DAM_FSM_SPY
-CFLAGS += -DAM_PAL_STUBS
 CFLAGS += -DAM_ASSERT_FAILURE
 CFLAGS += -pthread
 
@@ -75,8 +74,8 @@ LDFLAGS = -Wl,--gc-sections -flto=auto
 AR = ar
 ARFLAGS = rcs
 
-SRC = amast.c amast_test.c amast_stubs.c
-OBJ = amast.o amast_test.o amast_stubs.o
+SRC = amast.c amast_test.c
+OBJ = amast.o amast_test.o
 HEADER = amast.h amast_test.h
 
 LIB = libamast.a

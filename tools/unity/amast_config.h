@@ -41,25 +41,6 @@
  */
 /* #define AM_FSM_SPY */
 
-/**
- * Enable PAL stubs.
- * Useful for unit tests.
- * There should only be one AM_PAL_... defined at a time.
- */
-/* #define AM_PAL_STUBS */
-
-/**
- * Enable PAL API implementation for FreeRTOS.
- * There should only be one AM_PAL_... defined at a time.
- */
-/* #define AM_PAL_FREERTOS */
-
-/**
- * Enable PAL API implementation for posix.
- * There should only be one AM_PAL_... defined at a time.
- */
-/* #define AM_PAL_POSIX */
-
 /** Enable am_assert_failure() implementation */
 /* #define AM_ASSERT_FAILURE */
 

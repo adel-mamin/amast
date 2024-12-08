@@ -28,8 +28,6 @@
  * Platform abstraction layer (PAL) API posix implementation
  */
 
-#ifdef AM_PAL_POSIX
-
 #define _GNU_SOURCE
 
 #include <stdarg.h> /* IWYU pragma: keep */
@@ -349,5 +347,3 @@ void am_pal_dtor(void) {
         }
     }
 }
-
-#endif /* AM_PAL_POSIX */
