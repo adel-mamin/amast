@@ -42,7 +42,7 @@
 
 static const struct am_event *m_queue_philo[PHILO_NUM][2 * PHILO_NUM];
 static const struct am_event *m_queue_table[2 * PHILO_NUM];
-static char m_event_pool[2 * PHILO_NUM][128] AM_ALIGNED(AM_ALIGNOF_MAX);
+static char m_event_pool[3 * PHILO_NUM][128] AM_ALIGNED(AM_ALIGNOF_MAX);
 static struct am_ao_subscribe_list m_pubsub_list[AM_AO_EVT_PUB_MAX];
 
 const char *event_to_str(int id) {
