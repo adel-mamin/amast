@@ -109,6 +109,7 @@ static int philo_eating(struct philo *me, const struct am_event *event) {
         return AM_HSM_HANDLED();
 
     case EVT_TIMEOUT: {
+        am_pal_printf("philo %d publishing DONE\n", me->id);
         struct done *msg = (struct done *)am_event_allocate(
             EVT_DONE, sizeof(struct done), /*margin=*/0
         );

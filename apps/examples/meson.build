@@ -57,5 +57,4 @@ e = executable(
         libao_dep,
         libevent_dep,
         libtimer_dep,
-        libbit_dep,
-        libassert_dep])
+        libbit_dep])

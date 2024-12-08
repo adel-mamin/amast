@@ -31,6 +31,7 @@
 #include <stddef.h>
 
 #include "common/compiler.h"
+#include "common/constants.h"
 #include "common/macros.h"
 #include "event/event.h"
 #include "pal/pal.h"
@@ -51,6 +52,47 @@ const char *event_to_str(int id) {
     if (EVT_TIMEOUT == id) return "TIMEOUT";
     if (EVT_HUNGRY == id) return "HUNGRY";
     AM_ASSERT(0);
+}
+
+static void log_pool(
+    int pool_index, int event_index, const struct am_event *event, int size
+) {
+    (void)size;
+    am_pal_printf(
+        "pool %d index %d event %s\n",
+        pool_index,
+        event_index,
+        event_to_str(event->id)
+    );
+}
+
+static void log_queue(
+    const char *name, int i, int len, int cap, const struct am_event *event
+) {
+    am_pal_printf(
+        "name %s, index %d, len %d cap %d event %s\n",
+        name,
+        i,
+        len,
+        cap,
+        event_to_str(event->id)
+    );
+}
+
+AM_NORETURN void am_assert_failure(
+    const char *assertion, const char *file, int line
+) {
+    am_pal_printf(
+        AM_COLOR_RED "ASSERT: %s (%s:%d)(task %d)\n" AM_COLOR_RESET,
+        assertion,
+        file,
+        line,
+        am_pal_task_own_id()
+    );
+    am_event_log_pools(/*num=*/-1, log_pool);
+    am_ao_dump_event_queues(/*num=*/-1, log_queue);
+    am_pal_flush();
+    __builtin_trap();
 }
 
 int main(void) {

@@ -28,6 +28,7 @@
 #include "common/macros.h"
 #include "event/event.h"
 #include "hsm/hsm.h"
+#include "pal/pal.h"
 #include "ao/ao.h"
 
 #include "events.h"
@@ -92,11 +93,13 @@ static void table_serve(int philo) {
         EVT_EAT, sizeof(struct eat), /*margin=*/0
     );
     eat->philo = philo;
+    am_pal_printf("table serving philo %d\n", philo);
     am_ao_publish(&eat->event);
     philo_mark_eating(philo);
 
     if (m_table.nsession) {
         --m_table.nsession;
+        am_pal_printf("table session %d\n", m_table.nsession);
     }
     if (!m_table.nsession) {
         exit(0);
@@ -118,6 +121,7 @@ static int table_serving(struct table *me, const struct am_event *event) {
     case EVT_DONE: {
         const struct done *done = (const struct done *)event;
         AM_ASSERT(philo_is_eating(done->philo));
+        am_pal_printf("table: philo %d is done\n", done->philo);
         philo_mark_done(done->philo);
         int left = LEFT(done->philo);
         if (philo_is_hungry(left)) {
