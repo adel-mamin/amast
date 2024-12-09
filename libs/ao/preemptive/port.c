@@ -129,9 +129,3 @@ void am_ao_notify(void *ao) {
     }
     am_pal_task_notify(ao_->task_id);
 }
-
-void am_ao_wait(void *ao) {
-    AM_ASSERT(ao);
-    const struct am_ao *ao_ = (struct am_ao *)ao;
-    am_pal_task_wait(ao_->task_id);
-}
