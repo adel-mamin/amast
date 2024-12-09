@@ -32,6 +32,7 @@
 #include "hsm/hsm.h"
 #include "queue/queue.h"
 #include "event/event.h"
+#include "pal/pal.h"
 #include "ao/ao.h"
 #include "state.h"
 
@@ -45,7 +46,7 @@ bool am_ao_run_all(bool loop) {
 
         while (am_bit_u64_is_empty(&am_ready_aos)) {
             me->crit_exit();
-            am_pal_task_wait(ao->task_id);
+            me->on_idle();
             me->crit_enter();
         }
         int msb = am_bit_u64_msb(&am_ready_aos);
@@ -54,7 +55,7 @@ bool am_ao_run_all(bool loop) {
 
         me->crit_exit();
 
-        const struct am_event *e = am_event_pop_front(ao, &ao->event_queue);
+        const struct am_event *e = am_event_pop_front(&ao->event_queue);
         if (!e) {
             am_bit_u64_clear(&am_ready_aos, ao->prio);
             continue;
