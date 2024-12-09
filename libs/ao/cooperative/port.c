@@ -22,8 +22,6 @@
  * SOFTWARE.
  */
 
-#ifdef AM_AO_COOPERATIVE
-
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -112,5 +110,3 @@ void am_ao_notify(void *ao) {
 void am_ao_notify_event_queue_empty(void *ao) {
     am_bit_u64_clear(&g_am_ao_state.ready_aos, ((struct am_ao *)ao)->prio);
 }
-
-#endif /* AM_AO_COOPERATIVE */

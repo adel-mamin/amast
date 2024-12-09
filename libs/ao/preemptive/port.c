@@ -22,8 +22,6 @@
  * SOFTWARE.
  */
 
-#ifdef AM_AO_PREEMPTIVE
-
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -137,5 +135,3 @@ void am_ao_wait(void *ao) {
     const struct am_ao *ao_ = (struct am_ao *)ao;
     am_pal_task_wait(ao_->task_id);
 }
-
-#endif /* AM_AO_PREEMPTIVE */
