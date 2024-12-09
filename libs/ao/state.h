@@ -71,7 +71,6 @@ struct am_ao_state {
 extern struct am_ao_state g_am_ao_state;
 
 void am_ao_notify(void *ao);
-void am_ao_notify_event_queue_empty(void *ao);
 
 #ifdef __cplusplus
 }

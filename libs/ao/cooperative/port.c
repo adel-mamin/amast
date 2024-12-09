@@ -41,10 +41,10 @@ bool am_ao_run_all(bool loop) {
     do {
         me->crit_enter();
 
-        if (am_bit_u64_is_empty(&me->ready_aos)) {
-            me->on_idle();
+        while (am_bit_u64_is_empty(&me->ready_aos)) {
             me->crit_exit();
-            continue;
+            am_pal_task_wait(ao->task_id);
+            me->crit_enter();
         }
         int msb = am_bit_u64_msb(&me->ready_aos);
         struct am_ao *ao = me->ao[msb];
@@ -53,13 +53,17 @@ bool am_ao_run_all(bool loop) {
         me->crit_exit();
 
         const struct am_event *e = am_event_pop_front(ao, &ao->event_queue);
+        if (!e) {
+            am_bit_u64_clear(&me->ready_aos, ao->prio);
+            continue;
+        }
         me->debug(ao, e);
         AM_ATOMIC_STORE_N(&ao->last_event, e->id);
         am_hsm_dispatch(&ao->hsm, e);
         AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
         am_event_free(&e);
         processed = true;
-    } while (loop);
+    } while (loop && AM_UNLIKELY(!AM_ATOMIC_LOAD_N(&me->ao_state_dtor_called)));
 
     return processed;
 }
@@ -104,9 +108,14 @@ void am_ao_start(
 }
 
 void am_ao_notify(void *ao) {
-    am_bit_u64_set(&g_am_ao_state.ready_aos, ((struct am_ao *)ao)->prio);
-}
+    AM_ASSERT(ao);
+    const struct am_ao *ao_ = (struct am_ao *)ao;
+    if (AM_PAL_TASK_ID_NONE == ao_->task_id) {
+        return;
+    }
+    struct am_ao_state *me = &g_am_ao_state;
 
-void am_ao_notify_event_queue_empty(void *ao) {
-    am_bit_u64_clear(&g_am_ao_state.ready_aos, ((struct am_ao *)ao)->prio);
+    me->crit_enter();
+    am_bit_u64_set(&meready_aos, ((struct am_ao *)ao)->prio);
+    me->crit_exit();
 }
