@@ -35,18 +35,20 @@
 #include "ao/ao.h"
 #include "state.h"
 
+static struct am_bit_u64 am_ready_aos = {0};
+
 bool am_ao_run_all(bool loop) {
     struct am_ao_state *me = &g_am_ao_state;
     bool processed = false;
     do {
         me->crit_enter();
 
-        while (am_bit_u64_is_empty(&me->ready_aos)) {
+        while (am_bit_u64_is_empty(&am_ready_aos)) {
             me->crit_exit();
             am_pal_task_wait(ao->task_id);
             me->crit_enter();
         }
-        int msb = am_bit_u64_msb(&me->ready_aos);
+        int msb = am_bit_u64_msb(&am_ready_aos);
         struct am_ao *ao = me->ao[msb];
         AM_ASSERT(ao);
 
@@ -54,7 +56,7 @@ bool am_ao_run_all(bool loop) {
 
         const struct am_event *e = am_event_pop_front(ao, &ao->event_queue);
         if (!e) {
-            am_bit_u64_clear(&me->ready_aos, ao->prio);
+            am_bit_u64_clear(&am_ready_aos, ao->prio);
             continue;
         }
         me->debug(ao, e);
@@ -116,6 +118,6 @@ void am_ao_notify(void *ao) {
     struct am_ao_state *me = &g_am_ao_state;
 
     me->crit_enter();
-    am_bit_u64_set(&meready_aos, ((struct am_ao *)ao)->prio);
+    am_bit_u64_set(&am_ready_aos, ((struct am_ao *)ao)->prio);
     me->crit_exit();
 }
