@@ -75,7 +75,7 @@ bool am_ao_publish_x(const struct am_event **event, int margin) {
         am_event_inc_ref_cnt(e);
     }
 
-    bool rc = true;
+    bool all_published = true;
 
     /*
      * The event publishing is done for higher priority
@@ -93,13 +93,12 @@ bool am_ao_publish_x(const struct am_event **event, int margin) {
             int ind = 8 * i + msb;
             struct am_ao *ao = me->ao[ind];
             AM_ASSERT(ao);
-            bool was_empty = am_ao_event_queue_is_empty(ao);
-            bool pushed = am_event_push_back_x(&ao->event_queue, event, margin);
-            if (!pushed) {
-                rc = false;
+            enum am_event_rc rc = am_event_push_back_x(&ao->event_queue, event, margin);
+            if (AM_EVENT_RC_ERR == rc) {
+                all_published = false;
                 continue;
             }
-            if (was_empty) {
+            if (AM_EVENT_RC_OK_WAS_EMPTY == rc) {
                 am_ao_notify(ao);
             }
         }
@@ -113,7 +112,7 @@ bool am_ao_publish_x(const struct am_event **event, int margin) {
      */
     am_event_free(event);
 
-    return rc;
+    return all_published;
 }
 
 void am_ao_publish(const struct am_event *event) {
@@ -127,9 +126,8 @@ void am_ao_publish(const struct am_event *event) {
 void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event) {
     AM_ASSERT(ao);
     AM_ASSERT(event);
-    bool was_empty = am_ao_event_queue_is_empty(ao);
-    am_event_push_back(&ao->event_queue, event);
-    if (was_empty) {
+    enum am_event_rc rc = am_event_push_back(&ao->event_queue, event);
+    if (AM_EVENT_RC_OK_WAS_EMPTY == rc) {
         am_ao_notify(ao);
     }
 }
@@ -140,20 +138,18 @@ bool am_ao_post_fifo_x(
     AM_ASSERT(ao);
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
-    bool was_empty = am_ao_event_queue_is_empty(ao);
-    bool posted = am_event_push_back_x(&ao->event_queue, event, margin);
-    if (posted && was_empty) {
+    enum am_event_rc rc = am_event_push_back_x(&ao->event_queue, event, margin);
+    if (AM_EVENT_RC_OK_WAS_EMPTY == rc) {
         am_ao_notify(ao);
     }
-    return posted;
+    return (AM_EVENT_RC_OK == rc) || (AM_EVENT_RC_OK_WAS_EMPTY == rc);
 }
 
 void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event) {
     AM_ASSERT(ao);
     AM_ASSERT(event);
-    bool was_empty = am_ao_event_queue_is_empty(ao);
-    am_event_push_front(&ao->event_queue, event);
-    if (was_empty) {
+    enum am_event_rc rc = am_event_push_front(&ao->event_queue, event);
+    if (AM_EVENT_RC_OK_WAS_EMPTY == rc) {
         am_ao_notify(ao);
     }
 }
@@ -164,12 +160,11 @@ bool am_ao_post_lifo_x(
     AM_ASSERT(ao);
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
-    bool was_empty = am_ao_event_queue_is_empty(ao);
-    bool posted = am_event_push_front_x(&ao->event_queue, event, margin);
-    if (posted && was_empty) {
+    enum am_event_rc rc = am_event_push_front_x(&ao->event_queue, event, margin);
+    if (AM_EVENT_RC_OK_WAS_EMPTY == rc) {
         am_ao_notify(ao);
     }
-    return posted;
+    return (AM_EVENT_RC_OK == rc) || (AM_EVENT_RC_OK_WAS_EMPTY == rc);
 }
 
 void am_ao_subscribe(const struct am_ao *ao, int event) {

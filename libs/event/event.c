@@ -293,7 +293,7 @@ int am_event_get_ref_cnt(const struct am_event *event) {
 
 typedef bool (*am_push_fn)(struct am_queue *hnd, const void *ptr, int size);
 
-static bool am_event_push_x(
+static enum am_event_rc am_event_push_x(
     struct am_queue *queue,
     const struct am_event **event,
     int margin,
@@ -309,6 +309,7 @@ static bool am_event_push_x(
 
     struct am_event *e = AM_CAST(struct am_event *, *event);
     struct am_event_state *me = &event_state_;
+
     me->crit_enter();
 
     const int len = am_queue_length(queue);
@@ -316,7 +317,7 @@ static bool am_event_push_x(
     if (margin && ((capacity - len) <= margin)) {
         me->crit_exit();
         am_event_free(event);
-        return false;
+        return AM_EVENT_RC_ERR;
     }
 
     if (!am_event_is_static(e)) {
@@ -329,33 +330,33 @@ static bool am_event_push_x(
 
     AM_ASSERT(true == rc);
 
-    return true;
+    return len ? AM_EVENT_RC_OK : AM_EVENT_RC_OK_WAS_EMPTY;
 }
 
-bool am_event_push_back_x(
+enum am_event_rc am_event_push_back_x(
     struct am_queue *queue, const struct am_event **event, int margin
 ) {
     return am_event_push_x(queue, event, margin, am_queue_push_back);
 }
 
-void am_event_push_back(struct am_queue *queue, const struct am_event *event) {
+enum am_event_rc am_event_push_back(struct am_queue *queue, const struct am_event *event) {
     AM_ASSERT(queue);
     AM_ASSERT(event);
 
-    (void)am_event_push_back_x(queue, &event, /*margin=*/0);
+    return am_event_push_back_x(queue, &event, /*margin=*/0);
 }
 
-bool am_event_push_front_x(
+enum am_event_rc am_event_push_front_x(
     struct am_queue *queue, const struct am_event **event, int margin
 ) {
     return am_event_push_x(queue, event, margin, am_queue_push_front);
 }
 
-void am_event_push_front(struct am_queue *queue, const struct am_event *event) {
+enum am_event_rc am_event_push_front(struct am_queue *queue, const struct am_event *event) {
     AM_ASSERT(queue);
     AM_ASSERT(event);
 
-    (void)am_event_push_front_x(queue, &event, /*margin=*/0);
+    return am_event_push_front_x(queue, &event, /*margin=*/0);
 }
 
 const struct am_event *am_event_pop_front(struct am_queue *queue) {

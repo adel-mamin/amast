@@ -59,10 +59,11 @@ static void log_pool(
 ) {
     (void)size;
     am_pal_printf(
-        "pool %d index %d event %s\n",
+        "pool %d index %d event %s (%p)\n",
         pool_index,
         event_index,
-        event_to_str(event->id)
+        event_to_str(event->id),
+        (const void*)event
     );
 }
 
