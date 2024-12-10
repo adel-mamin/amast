@@ -283,6 +283,16 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
 bool am_ao_run_all(bool loop);
 
 /**
+ * Check if AO event queue is empty.
+ *
+ * @param ao  check the event queue of this AO.
+ *
+ * @retval true   the queue is empty
+ * @retval false  the queue is not empty
+ */
+bool am_ao_event_queue_is_empty(struct am_ao *ao);
+
+/**
  * Log the content of the first num events in each event queue of every AO.
  *
  * @param num  the number of events to log. Use -1 to log all events.

@@ -48,7 +48,7 @@
 /** Active object (AO) module internal state instance. */
 struct am_ao_state g_am_ao_state;
 
-static bool am_ao_event_queue_is_empty(struct am_ao *ao) {
+bool am_ao_event_queue_is_empty(struct am_ao *ao) {
     struct am_ao_state *me = &g_am_ao_state;
     me->crit_enter();
     bool empty = am_queue_is_empty(&ao->event_queue);
