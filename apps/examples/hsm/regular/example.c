@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
+#include <stdarg.h>
 #include <stdio.h>
-/* IWYU pragma: no_include <__stdarg_va_arg.h> */
 
 #include "common/constants.h"
 #include "common/macros.h"

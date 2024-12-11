@@ -27,11 +27,23 @@
  * Singly linked list implementation.
  */
 
-#include <stdlib.h>
+#include <stddef.h>
 #include <stdbool.h>
 
 #include "common/macros.h"
 #include "slist/slist.h"
+
+struct am_alignof_slist {
+    char c;            /* cppcheck-suppress unusedStructMember */
+    struct am_slist d; /* cppcheck-suppress unusedStructMember */
+};
+const int am_alignof_slist = offsetof(struct am_alignof_slist, d);
+
+struct am_alignof_slist_item {
+    char c;                 /* cppcheck-suppress unusedStructMember */
+    struct am_slist_item d; /* cppcheck-suppress unusedStructMember */
+};
+const int am_alignof_slist_item = offsetof(struct am_alignof_slist_item, d);
 
 void am_slist_init(struct am_slist *hnd) {
     AM_ASSERT(hnd);

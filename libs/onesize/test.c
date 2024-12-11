@@ -46,7 +46,7 @@ int main(void) {
     struct am_onesize_cfg cfg = {
         .pool = &blk,
         .block_size = sizeof(struct test),
-        .alignment = AM_ALIGNOF(struct test)
+        .alignment = AM_ALIGN_MAX
     };
     am_onesize_ctor(&ma, &cfg);
 

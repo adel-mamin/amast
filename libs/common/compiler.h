@@ -111,13 +111,6 @@ typedef int ssize_t;
 /** alignment compiler instruction */
 #define AM_ALIGNED(x) __attribute__((aligned(x)))
 
-/** maximum alignment */
-#if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L))
-#define AM_ALIGNOF_MAX AM_ALIGNOF(max_align_t)
-#else
-#define AM_ALIGNOF_MAX 16
-#endif
-
 /**
  * The parameter `si` specifies which argument is the format string argument
  * (starting from 1), while `ftc` is the 1-based index of the first argument

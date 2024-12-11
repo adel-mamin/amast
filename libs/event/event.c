@@ -53,6 +53,18 @@ struct am_event_state {
 
 static struct am_event_state event_state_;
 
+struct am_alignof_event {
+    char c;            /* cppcheck-suppress unusedStructMember */
+    struct am_event d; /* cppcheck-suppress unusedStructMember */
+};
+const int am_alignof_event = offsetof(struct am_alignof_event, d);
+
+struct am_alignof_event_ptr {
+    char c;             /* cppcheck-suppress unusedStructMember */
+    struct am_event *d; /* cppcheck-suppress unusedStructMember */
+};
+const int am_alignof_event_ptr = offsetof(struct am_alignof_event_ptr, d);
+
 void am_event_state_ctor(const struct am_event_cfg *cfg) {
     AM_ASSERT(cfg);
     AM_ASSERT(cfg->crit_enter);
@@ -230,7 +242,7 @@ struct am_event_log_ctx {
 static void am_event_log_cb(void *ctx, int index, const char *buf, int size) {
     AM_ASSERT(ctx);
     AM_ASSERT(buf);
-    AM_ASSERT(AM_ALIGNOF_PTR(buf) >= AM_ALIGNOF(struct am_event));
+    AM_ASSERT(AM_ALIGNOF_PTR(buf) >= AM_ALIGNOF_EVENT);
     AM_ASSERT(size >= (int)sizeof(struct am_event));
 
     struct am_event_log_ctx *log = (struct am_event_log_ctx *)ctx;
@@ -339,7 +351,9 @@ enum am_event_rc am_event_push_back_x(
     return am_event_push_x(queue, event, margin, am_queue_push_back);
 }
 
-enum am_event_rc am_event_push_back(struct am_queue *queue, const struct am_event *event) {
+enum am_event_rc am_event_push_back(
+    struct am_queue *queue, const struct am_event *event
+) {
     AM_ASSERT(queue);
     AM_ASSERT(event);
 
@@ -352,7 +366,9 @@ enum am_event_rc am_event_push_front_x(
     return am_event_push_x(queue, event, margin, am_queue_push_front);
 }
 
-enum am_event_rc am_event_push_front(struct am_queue *queue, const struct am_event *event) {
+enum am_event_rc am_event_push_front(
+    struct am_queue *queue, const struct am_event *event
+) {
     AM_ASSERT(queue);
     AM_ASSERT(event);
 

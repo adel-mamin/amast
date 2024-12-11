@@ -34,7 +34,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
-/* IWYU pragma: no_include <__stdarg_va_arg.h> */
 
 #define _POSIX_C_SOURCE 200809L
 

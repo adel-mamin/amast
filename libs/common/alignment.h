@@ -24,7 +24,8 @@
 
 /**
  * @file
- * alignment API declaration
+ *
+ * Alignment API declaration.
  */
 
 #ifndef AM_ALIGNMENT_H_INCLUDED
@@ -37,18 +38,8 @@
 #define AM_ALIGN_MAX 16
 #endif
 
-#define AM_ALIGNOF(type)                         \
-    AM_DISABLE_WARNING_GNU_OFFSETOF_EXTENSIONS() \
-    ((int)offsetof(                              \
-        struct {                                 \
-            char c;                              \
-            type d;                              \
-        },                                       \
-        d                                        \
-    )) AM_ENABLE_WARNING_GNU_OFFSETOF_EXTENSIONS()
-
 #define AM_ALIGNOF_PTR(ptr) \
-    (1U << (unsigned)__builtin_ctz(AM_CAST(unsigned, ptr)))
+    ((int)(1U << (unsigned)__builtin_ctz(AM_CAST(unsigned, ptr))))
 
 #define AM_ALIGN_PTR_UP(ptr, align)                           \
     ((void *)(((uintptr_t)(ptr) + (uintptr_t)((align) - 1)) & \

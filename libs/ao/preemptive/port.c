@@ -26,7 +26,7 @@
 #include <stddef.h>
 
 #include "blk/blk.h"
-#include "common/alignment.h"
+#include "common/compiler.h"
 #include "common/macros.h"
 #include "hsm/hsm.h"
 #include "queue/queue.h"
@@ -97,10 +97,7 @@ void am_ao_start(
     };
 
     am_queue_init(
-        &ao->event_queue,
-        sizeof(struct am_event *),
-        AM_ALIGNOF(struct am_event *),
-        &blk
+        &ao->event_queue, sizeof(struct am_event *), AM_ALIGNOF_EVENT_PTR, &blk
     );
 
     ao->prio = prio;

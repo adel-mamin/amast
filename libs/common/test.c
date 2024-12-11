@@ -30,8 +30,9 @@
 #include <stdint.h>
 #include <stddef.h>/* IWYU pragma: keep */
 
-#include "common/macros.h"
-#include "common/alignment.h"
+#include "compiler.h"
+#include "macros.h"
+#include "alignment.h"
 
 struct test_align {
     /* cppcheck-suppress unusedStructMember */
@@ -44,7 +45,6 @@ struct test_align {
     unsigned long long d;
 };
 
-AM_ASSERT_STATIC(AM_ALIGNOF(struct test_align) >= sizeof(unsigned long long));
 AM_ASSERT_STATIC(16 == AM_ALIGN_SIZE(1u, 16u));
 AM_ASSERT_STATIC(16 == AM_ALIGN_SIZE(16u, 16u));
 

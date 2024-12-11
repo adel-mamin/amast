@@ -100,10 +100,7 @@ void am_ao_start(
     };
 
     am_queue_init(
-        &ao->event_queue,
-        sizeof(struct am_event *),
-        AM_ALIGNOF(struct am_event *),
-        &blk
+        &ao->event_queue, sizeof(struct am_event *), AM_ALIGNOF_EVENT_PTR, &blk
     );
 
     ao->prio = prio;

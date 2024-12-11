@@ -30,13 +30,13 @@
  * transition to state fsm_b, where the event B is processed.
  */
 
-#include <stdio.h>
+#include <stdarg.h>
 #include <stddef.h>
 #include <string.h>
-/* IWYU pragma: no_include <__stdarg_va_arg.h> */
 
-#include "common/macros.h"
 #include "common/alignment.h"
+#include "common/compiler.h"
+#include "common/macros.h"
 #include "blk/blk.h"
 #include "event/event.h"
 #include "queue/queue.h"
@@ -98,7 +98,7 @@ static void fsmq_ctor(void (*log)(const char *fmt, ...)) {
     am_queue_init(
         &me->queue,
         /*isize=*/sizeof(pool[0]),
-        AM_ALIGNOF(struct am_event *),
+        AM_ALIGNOF_EVENT_PTR,
         &blk
     );
 }
@@ -143,13 +143,13 @@ int main(void) {
 
     {
         static char pool[1 * AM_EVENT_BLOCK_SIZE(struct am_event)] AM_ALIGNED(
-            AM_EVENT_BLOCK_ALIGNMENT(struct am_event)
+            AM_ALIGN_MAX
         );
         am_event_add_pool(
             pool,
             (int)sizeof(pool),
             AM_EVENT_BLOCK_SIZE(struct am_event),
-            AM_EVENT_BLOCK_ALIGNMENT(struct am_event)
+            AM_EVENT_BLOCK_ALIGNMENT(AM_ALIGNOF_EVENT)
         );
         AM_ASSERT(1 == am_event_get_pool_nblocks(/*index=*/0));
     }

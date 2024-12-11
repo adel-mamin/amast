@@ -38,7 +38,6 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <complex.h>
-/* IWYU pragma: no_include <__stdarg_va_arg.h> */
 
 #include "common/macros.h"
 #include "strlib/strlib.h"

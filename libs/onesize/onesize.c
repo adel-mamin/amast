@@ -31,6 +31,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "common/compiler.h"
 #include "common/macros.h"
 #include "common/alignment.h"
 #include "slist/slist.h"
@@ -137,7 +138,7 @@ void am_onesize_iterate_over_allocated(
     num = AM_MIN(num, total);
     hnd->crit_enter();
     for (int i = 0; (i < total) && (iterated < num); i++) {
-        AM_ASSERT(AM_ALIGNOF_PTR(ptr) >= AM_ALIGNOF(struct am_slist_item));
+        AM_ASSERT(AM_ALIGNOF_PTR(ptr) >= AM_ALIGNOF_SLIST_ITEM);
         struct am_slist_item *item = AM_CAST(struct am_slist_item *, ptr);
         if (am_slist_owns(&impl->fl, item)) {
             continue; /* the item is free */
@@ -182,7 +183,7 @@ void am_onesize_ctor(struct am_onesize *hnd, struct am_onesize_cfg *cfg) {
     AM_ASSERT(cfg->pool->ptr);
     AM_ASSERT(cfg->pool->size > 0);
     AM_ASSERT(cfg->pool->size >= cfg->block_size);
-    AM_ASSERT(cfg->alignment >= AM_ALIGNOF(struct am_slist_item));
+    AM_ASSERT(cfg->alignment >= AM_ALIGNOF_SLIST_ITEM);
 
     memset(hnd, 0, sizeof(*hnd));
 

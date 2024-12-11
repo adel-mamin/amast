@@ -23,10 +23,10 @@ all = { depends-on = ["posix", "posix_cooperative"] }
 meson = ">=1.6.0,<2"
 ninja = ">=1.12.1,<2"
 gcc = ">=14.2.0,<14.3"
-cppcheck = ">=2.16.0,<2.17"
-clang = ">=18.1.8,<=18.1.8"
-make = ">=4.4.1,<4.5"
-include-what-you-use = ">=0.22,<0.23"
+cppcheck = ">=2.16.0,<3"
+clang = ">=19.1.5,<20"
+make = ">=4.4.1,<5"
+include-what-you-use = ">=0.23,<0.24"
 
 [pypi-dependencies]
 setuptools-scm = ">=8.1.0, <9"

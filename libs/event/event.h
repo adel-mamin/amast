@@ -72,7 +72,13 @@
 #define AM_EVENT_POOL_INDEX_MASK ((1U << AM_EVENT_POOL_INDEX_BITS) - 1U)
 
 #define AM_EVENT_BLOCK_SIZE(t) AM_ONESIZE_BLOCK_SIZE(t)
-#define AM_EVENT_BLOCK_ALIGNMENT(t) AM_ONESIZE_BLOCK_ALIGNMENT(t)
+#define AM_EVENT_BLOCK_ALIGNMENT(a) AM_ONESIZE_BLOCK_ALIGNMENT(a)
+
+extern const int am_alignof_event;
+extern const int am_alignof_event_ptr;
+
+#define AM_ALIGNOF_EVENT am_alignof_event
+#define AM_ALIGNOF_EVENT_PTR am_alignof_event_ptr
 
 /** Event API return codes */
 enum am_event_rc {
@@ -291,7 +297,9 @@ enum am_event_rc am_event_push_back_x(
  * @retval AM_EVENT_RC_OK_WAS_EMPTY   the event was pushed, queue was empty
  * @retval AM_EVENT_RC_ERR            the event was not pushed
  */
-enum am_event_rc am_event_push_back(struct am_queue *queue, const struct am_event *event);
+enum am_event_rc am_event_push_back(
+    struct am_queue *queue, const struct am_event *event
+);
 
 /**
  * Push event to the front of event queue.
@@ -326,7 +334,9 @@ enum am_event_rc am_event_push_front_x(
  * @retval AM_EVENT_RC_OK_WAS_EMPTY   the event was pushed, queue was empty
  * @retval AM_EVENT_RC_ERR            the event was not pushed
  */
-enum am_event_rc am_event_push_front(struct am_queue *queue, const struct am_event *event);
+enum am_event_rc am_event_push_front(
+    struct am_queue *queue, const struct am_event *event
+);
 
 /**
  * Pop event from the front of event queue.

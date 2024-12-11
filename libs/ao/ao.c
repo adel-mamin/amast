@@ -93,7 +93,8 @@ bool am_ao_publish_x(const struct am_event **event, int margin) {
             int ind = 8 * i + msb;
             struct am_ao *ao = me->ao[ind];
             AM_ASSERT(ao);
-            enum am_event_rc rc = am_event_push_back_x(&ao->event_queue, event, margin);
+            enum am_event_rc rc =
+                am_event_push_back_x(&ao->event_queue, event, margin);
             if (AM_EVENT_RC_ERR == rc) {
                 all_published = false;
                 continue;
@@ -160,7 +161,8 @@ bool am_ao_post_lifo_x(
     AM_ASSERT(ao);
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
-    enum am_event_rc rc = am_event_push_front_x(&ao->event_queue, event, margin);
+    enum am_event_rc rc =
+        am_event_push_front_x(&ao->event_queue, event, margin);
     if (AM_EVENT_RC_OK_WAS_EMPTY == rc) {
         am_ao_notify(ao);
     }

@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h> /* IWYU pragma: keep */
-/* IWYU pragma: no_include <__stdarg_va_arg.h> */
 
 #include "common/macros.h"
 #include "strlib/strlib.h"

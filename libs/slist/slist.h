@@ -36,6 +36,12 @@
 extern "C" {
 #endif
 
+extern const int am_alignof_slist;
+extern const int am_alignof_slist_item;
+
+#define AM_ALIGNOF_SLIST am_alignof_slist
+#define AM_ALIGNOF_SLIST_ITEM am_alignof_slist_item
+
 /**
  * Singly linked item.
  * There are at least two ways to make an arbitrary structure `struct foo`

@@ -30,6 +30,7 @@
 
 #include <stddef.h>
 
+#include "common/alignment.h"
 #include "common/compiler.h"
 #include "common/constants.h"
 #include "common/macros.h"
@@ -43,7 +44,7 @@
 
 static const struct am_event *m_queue_philo[PHILO_NUM][2 * PHILO_NUM];
 static const struct am_event *m_queue_table[2 * PHILO_NUM];
-static char m_event_pool[3 * PHILO_NUM][128] AM_ALIGNED(AM_ALIGNOF_MAX);
+static char m_event_pool[3 * PHILO_NUM][128] AM_ALIGNED(AM_ALIGN_MAX);
 static struct am_ao_subscribe_list m_pubsub_list[AM_AO_EVT_PUB_MAX];
 
 const char *event_to_str(int id) {
@@ -63,7 +64,7 @@ static void log_pool(
         pool_index,
         event_index,
         event_to_str(event->id),
-        (const void*)event
+        (const void *)event
     );
 }
 
@@ -106,7 +107,7 @@ int main(void) {
         m_event_pool,
         sizeof(m_event_pool),
         sizeof(m_event_pool[0]),
-        AM_ALIGNOF_MAX
+        AM_ALIGN_MAX
     );
 
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));

@@ -25,7 +25,6 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdarg.h>
-/* IWYU pragma: no_include <__stdarg_va_arg.h> */
 
 #include "common/macros.h"
 #include "event/event.h"
