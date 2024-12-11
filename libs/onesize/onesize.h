@@ -127,7 +127,7 @@ typedef void (*am_onesize_iterate_func)(
  *
  * Could be used for inspection of allocated memory for debugging.
  * @param hnd  the allocator
- * @param num  the number of allocated blocks to interate over
+ * @param num  the number of allocated blocks to iterate over
  * @param ctx  the caller's specific context to be used with the callback
  * @param cb   the callback to call for each allocated memory block
  */

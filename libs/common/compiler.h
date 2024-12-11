@@ -100,7 +100,7 @@ typedef int ssize_t;
 #define SSIZE_MIN INT_MIN /*!< ssize_t minimum value */
 #endif
 
-/* Optimisation hints. */
+/* Optimization hints. */
 #if (AM_COMPILER_ID == AM_COMPILER_GCC) || (AM_COMPILER_ID == AM_COMPILER_CLANG)
 /** the condition x is likely */
 #define AM_LIKELY(x) __builtin_expect(!!(x), 1)

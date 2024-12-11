@@ -31,7 +31,7 @@
 /**
  * Test state machine with the following topology.
  * Note that s is a substate of hsm_top - the HSM top superstate of
- * am_hsm_top(). It was ommitted from the diagram for brevity.
+ * am_hsm_top(). It was omitted from the diagram for brevity.
  *
  * +---------------------------------------------------------------------------+
  * |                                   s                                       |

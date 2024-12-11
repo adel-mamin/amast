@@ -274,7 +274,7 @@ int am_event_get_ref_cnt(const struct am_event *event);
  * *event is set to NULL, if the event was freed.
  *
  * @param queue   the event queue
- * @param event   the event to pst
+ * @param event   the event to push
  * @param margin  free event queue slots to be available after event was pushed
  *
  * @retval AM_EVENT_RC_OK             the event was pushed
@@ -350,7 +350,7 @@ const struct am_event *am_event_pop_front(struct am_queue *queue);
 /**
  * Defer an event.
  *
- * Assert if the event was not defered.
+ * Assert if the event was not deferred.
  *
  * @param queue  the queue to store the deferred event
  * @param event  the event to defer

@@ -72,7 +72,7 @@ struct am_ao_state_cfg {
     void (*crit_exit)(void);
 };
 
-/** The minumum AO priority level. */
+/** The minimum AO priority level. */
 #define AM_AO_PRIO_MIN 0
 /** The maximum AO priority level. */
 #define AM_AO_PRIO_MAX 63

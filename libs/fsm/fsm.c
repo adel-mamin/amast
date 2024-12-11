@@ -24,7 +24,7 @@
 
 /**
  * @file
- * Finate State Machine (FSM) API implementation.
+ * Finite State Machine (FSM) API implementation.
  */
 
 #include <stdbool.h>

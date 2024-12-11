@@ -104,7 +104,7 @@ void am_slist_push_after(
 /**
  * Pop the item after the given item.
  * The provided item must be part of the list.
- * Otherwise the behaviour is undefined.
+ * Otherwise the behavior is undefined.
  * @param hnd   the list handler
  * @param item  the item after this item is popped
  * @return The popped item or NULL if nothing to remove
