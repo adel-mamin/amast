@@ -93,7 +93,7 @@ void am_ao_start(
     AM_ASSERT(queue_size > 0);
 
     struct am_blk blk = {
-        .ptr = queue, .size = (int)sizeof(queue[0]) * queue_size
+        .ptr = queue, .size = (int)sizeof(struct am_event *) * queue_size
     };
 
     am_queue_init(
