@@ -50,14 +50,19 @@ bool am_ao_run_all(bool loop) {
             me->crit_enter();
         }
         int msb = am_bit_u64_msb(&am_ready_aos);
-        struct am_ao *ao = me->ao[msb];
-        AM_ASSERT(ao);
 
         me->crit_exit();
 
+        struct am_ao *ao = me->ao[msb];
+        AM_ASSERT(ao);
+
         const struct am_event *e = am_event_pop_front(&ao->event_queue);
         if (!e) {
-            am_bit_u64_clear(&am_ready_aos, ao->prio);
+            me->crit_enter();
+            if (am_queue_is_empty(&ao->event_queue)) {
+                am_bit_u64_clear(&am_ready_aos, ao->prio);
+            }
+            me->crit_exit();
             continue;
         }
         me->debug(ao, e);
@@ -119,6 +124,6 @@ void am_ao_notify(void *ao) {
     struct am_ao_state *me = &g_am_ao_state;
 
     me->crit_enter();
-    am_bit_u64_set(&am_ready_aos, ((struct am_ao *)ao)->prio);
+    am_bit_u64_set(&am_ready_aos, ao_->prio);
     me->crit_exit();
 }
