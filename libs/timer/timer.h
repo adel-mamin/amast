@@ -39,13 +39,13 @@ extern "C" {
 AM_ASSERT_STATIC(AM_EVENT_TICK_DOMAIN_MASK >= AM_PAL_TICK_DOMAIN_MAX);
 
 /**
- * Expired events are posted using this callback.
- * Posting is one-to-one event delivery mechanism.
+ * Expired timer events are posted using this callback.
+ * Posting is a one-to-one event delivery mechanism.
  */
 typedef void (*am_timer_post_fn)(void *owner, const struct am_event *event);
 /**
- * Expired events are published using this callback.
- * Publishing is one-to-many event delivery mechanism.
+ * Expired timer events are published using this callback.
+ * Publishing is a one-to-many event delivery mechanism.
  */
 typedef void (*am_timer_publish_fn)(const struct am_event *event);
 
@@ -54,20 +54,20 @@ struct am_timer_cfg {
     /** either post or publish callback must be non-NULL */
 
     /**
-     * Expired events are posted using this callback.
-     * Posting is one-to-one event delivery mechanism.
+     * Expired timer events are posted using this callback.
+     * Posting is a one-to-one event delivery mechanism.
      */
     am_timer_post_fn post;
     /**
-     * Expired events are published using this callback.
-     * Publishing is one-to-many event delivery mechanism.
+     * Expired timer events are published using this callback.
+     * Publishing is a one-to-many event delivery mechanism.
      */
     am_timer_publish_fn publish;
     /**
-     * Custom update the content of the event.
+     * Update the content of the given timer event.
      * Optional, can be NULL.
-     * @param event  the event to update
-     * @return the updated event
+     * @param event  the timer event to update
+     * @return the updated timer event
      */
     struct am_event_timer *(*update)(struct am_event_timer *event);
     /** Enter critical section. */
@@ -80,13 +80,13 @@ struct am_timer_cfg {
 struct am_event_timer {
     /** event descriptor */
     struct am_event event;
-    /** to link time events together */
+    /** to link timer events together */
     struct am_dlist_item item;
-    /** the object, who receives the event */
+    /** the object, who receives the timer event */
     void *owner;
-    /** the event is sent after this many ticks */
+    /** the timer event is sent after this many ticks */
     int shot_in_ticks;
-    /** the event is re-sent after this many ticks */
+    /** the timer event is re-sent after this many ticks */
     int interval_ticks;
 };
 
@@ -138,43 +138,43 @@ void am_timer_tick(int domain);
  *
  * @param event     the timer event to arm
  * @param owner     the timer event's owner that gets the posted event.
- *                  Can be NULL, in which case the time event is published.
+ *                  Can be NULL, in which case the timer event is published.
  * @param ticks     the timer event is to be sent in these many ticks
  * @param interval  the timer event is to be re-sent in these many ticks
  *                  after the event is sent for the fist time.
- *                  Can be 0, in which case the event is one shot.
+ *                  Can be 0, in which case the timer event is one shot.
  */
 void am_timer_arm(
     struct am_event_timer *event, void *owner, int ticks, int interval
 );
 
 /**
- * Disarm timer.
+ * Disarm timer event.
  *
- * @param event   the timer to disarm
+ * @param event   the timer event to disarm
  *
- * @retval true   the timer was armed
- * @retval false  the timer was not armed
+ * @retval true   the timer event was armed
+ * @retval false  the timer event was not armed
  */
 bool am_timer_disarm(struct am_event_timer *event);
 
 /**
- * Check if timer is armed.
+ * Check if timer event is armed.
  *
- * @param event   the timer to check
+ * @param event   the timere event to check
  *
- * @retval true   the timer is armed
- * @retval false  the timer is not armed
+ * @retval true   the timer event is armed
+ * @retval false  the timer event is not armed
  */
 bool am_timer_is_armed(const struct am_event_timer *event);
 
 /**
- * Check if timer domain has armed timers.
+ * Check if timer domain has armed timer events.
  *
  * @param domain  the domain to check
  *
  * @retval true   the timer domain is empty
- * @retval false  the timer domain has armed timers
+ * @retval false  the timer domain has armed timer events
  */
 bool am_timer_domain_is_empty(int domain);
 
