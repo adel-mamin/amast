@@ -342,7 +342,7 @@ static enum am_event_rc am_event_push_x(
 
     AM_ASSERT(true == rc);
 
-    return len ? AM_EVENT_RC_OK : AM_EVENT_RC_OK_WAS_EMPTY;
+    return len ? AM_EVENT_RC_OK : AM_EVENT_RC_OK_QUEUE_WAS_EMPTY;
 }
 
 enum am_event_rc am_event_push_back_x(

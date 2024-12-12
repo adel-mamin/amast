@@ -84,7 +84,7 @@ extern const int am_alignof_event_ptr;
 enum am_event_rc {
     AM_EVENT_RC_ERR = -1,
     AM_EVENT_RC_OK = 0,
-    AM_EVENT_RC_OK_WAS_EMPTY
+    AM_EVENT_RC_OK_QUEUE_WAS_EMPTY
 };
 
 /** Event descriptor */
@@ -280,9 +280,9 @@ int am_event_get_ref_cnt(const struct am_event *event);
  * @param event   the event to push
  * @param margin  free event queue slots to be available after event was pushed
  *
- * @retval AM_EVENT_RC_OK             the event was pushed
- * @retval AM_EVENT_RC_OK_WAS_EMPTY   the event was pushed, queue was empty
- * @retval AM_EVENT_RC_ERR            the event was not pushed
+ * @retval AM_EVENT_RC_OK                  the event was pushed
+ * @retval AM_EVENT_RC_OK_QUEUE_WAS_EMPTY  the event was pushed, queue was empty
+ * @retval AM_EVENT_RC_ERR                 the event was not pushed
  */
 enum am_event_rc am_event_push_back_x(
     struct am_queue *queue, const struct am_event **event, int margin
@@ -296,9 +296,9 @@ enum am_event_rc am_event_push_back_x(
  * @param queue   the event queue
  * @param event   the event to push
  *
- * @retval AM_EVENT_RC_OK             the event was pushed
- * @retval AM_EVENT_RC_OK_WAS_EMPTY   the event was pushed, queue was empty
- * @retval AM_EVENT_RC_ERR            the event was not pushed
+ * @retval AM_EVENT_RC_OK                  the event was pushed
+ * @retval AM_EVENT_RC_OK_QUEUE_WAS_EMPTY  the event was pushed, queue was empty
+ * @retval AM_EVENT_RC_ERR                 the event was not pushed
  */
 enum am_event_rc am_event_push_back(
     struct am_queue *queue, const struct am_event *event
@@ -316,9 +316,9 @@ enum am_event_rc am_event_push_back(
  * @param event   the event to push
  * @param margin  free event queue slots to be available after event was pushed
  *
- * @retval AM_EVENT_RC_OK             the event was pushed
- * @retval AM_EVENT_RC_OK_WAS_EMPTY   the event was pushed, queue was empty
- * @retval AM_EVENT_RC_ERR            the event was not pushed
+ * @retval AM_EVENT_RC_OK                  the event was pushed
+ * @retval AM_EVENT_RC_OK_QUEUE_WAS_EMPTY  the event was pushed, queue was empty
+ * @retval AM_EVENT_RC_ERR                 the event was not pushed
  */
 enum am_event_rc am_event_push_front_x(
     struct am_queue *queue, const struct am_event **event, int margin
@@ -332,9 +332,9 @@ enum am_event_rc am_event_push_front_x(
  * @param queue   the event queue
  * @param event   the event to push
  *
- * @retval AM_EVENT_RC_OK             the event was pushed
- * @retval AM_EVENT_RC_OK_WAS_EMPTY   the event was pushed, queue was empty
- * @retval AM_EVENT_RC_ERR            the event was not pushed
+ * @retval AM_EVENT_RC_OK                  the event was pushed
+ * @retval AM_EVENT_RC_OK_QUEUE_WAS_EMPTY  the event was pushed, queue was empty
+ * @retval AM_EVENT_RC_ERR                 the event was not pushed
  */
 enum am_event_rc am_event_push_front(
     struct am_queue *queue, const struct am_event *event
