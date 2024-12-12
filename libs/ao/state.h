@@ -61,9 +61,6 @@ struct am_ao_state {
     /** Exit critical section. */
     void (*crit_exit)(void);
 
-    /** only used by cooperative AOs */
-    struct am_bit_u64 ready_aos;
-
     /** check if am_ao_state_dtor() was called */
     bool ao_state_dtor_called;
 };
