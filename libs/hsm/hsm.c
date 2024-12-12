@@ -196,6 +196,7 @@ static enum am_hsm_rc hsm_dispatch(
     /* the event triggered state transition */
 
     struct am_hsm_state dst = hsm->state;
+    AM_ASSERT(dst.fn != am_hsm_top); /* transition to am_hsm_top() is invalid */
     hsm_set_state(hsm, &state);
 
     if (!am_hsm_state_is_eq(hsm, &src)) {
