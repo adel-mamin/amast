@@ -104,14 +104,8 @@ struct am_event {
     unsigned reserved : 1;
 };
 
-typedef void (*am_event_push_front_fn)(
-    void *owner, const struct am_event *event
-);
-
 /** Event module configuration. */
 struct am_event_cfg {
-    /** Push event to the front of owner event queue */
-    am_event_push_front_fn push_front;
     /** Enter critical section. */
     void (*crit_enter)(void);
     /** Exit critical section. */
@@ -376,18 +370,20 @@ bool am_event_defer_x(
     struct am_queue *queue, const struct am_event **event, int margin
 );
 
+/** The type of a callback used to handle recalled events */
+typedef void (*am_event_recall_fn)(void *ctx, const struct am_event *event);
+
 /**
  * Recall deferred event.
  *
- * @param owner  event owner
  * @param queue  queue of deferred events
+ * @param cb     the recalled event is provided to this callback
+ * @param ctx    the callback context
  *
- * @retval non-NULL the recalled event.
- *         DO NOT USE IT FOR ANYTHING BUT FOR THE REFERENCE.
- *         For example, do not push it to any event queue or free it.
- * @retval NULL no recalled events
+ * @retval true   an event was recalled
+ * @retval false  no event was recalled
  */
-const struct am_event *am_event_recall(void *owner, struct am_queue *queue);
+bool am_event_recall(struct am_queue *queue, am_event_recall_fn cb, void *ctx);
 
 /**
  * Flush all event from event queue.

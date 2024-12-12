@@ -43,8 +43,6 @@ struct am_event_state {
     struct am_onesize pool[AM_EVENT_POOL_NUM_MAX];
     /** the number of user defined event memory pools */
     int npool;
-    /** push event to the front of owner event queue */
-    void (*push_front)(void *owner, const struct am_event *event);
     /** enter critical section */
     void (*crit_enter)(void);
     /** exit critical section */
@@ -73,7 +71,6 @@ void am_event_state_ctor(const struct am_event_cfg *cfg) {
     struct am_event_state *me = &event_state_;
     memset(me, 0, sizeof(*me));
 
-    me->push_front = cfg->push_front;
     me->crit_enter = cfg->crit_enter;
     me->crit_exit = cfg->crit_exit;
 }
@@ -416,28 +413,31 @@ bool am_event_defer_x(
     return am_event_push_back_x(queue, event, margin);
 }
 
-const struct am_event *am_event_recall(void *owner, struct am_queue *queue) {
+bool am_event_recall(struct am_queue *queue, am_event_recall_fn cb, void *ctx) {
+    AM_ASSERT(queue);
+    AM_ASSERT(cb);
+
     struct am_event_state *me = &event_state_;
-    AM_ASSERT(me->push_front);
 
     me->crit_enter();
 
-    struct am_event **event = (struct am_event **)am_queue_pop_front(queue);
+    const struct am_event **event =
+        (const struct am_event **)am_queue_pop_front(queue);
     me->crit_exit();
     if (NULL == event) {
-        return NULL;
+        return false;
     }
-    struct am_event *e = *event;
+    const struct am_event *e = *event;
     AM_ASSERT(e);
-    me->push_front(owner, e);
+    cb(ctx, e);
+
     if (am_event_is_static(e)) {
-        return e;
+        return true;
     }
 
-    AM_ASSERT(am_event_get_ref_cnt(e) > 1);
-    am_event_dec_ref_cnt(e);
+    am_event_free(event);
 
-    return e;
+    return true;
 }
 
 int am_event_flush_queue(struct am_queue *queue) {

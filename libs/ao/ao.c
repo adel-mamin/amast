@@ -274,7 +274,6 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     am_pal_ctor();
 
     struct am_event_cfg cfg_event = {
-        .push_front = (am_event_push_front_fn)am_ao_post_lifo,
         .crit_enter = cfg->crit_enter,
         .crit_exit = cfg->crit_exit,
     };
