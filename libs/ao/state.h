@@ -39,7 +39,7 @@ extern "C" {
  * @retval false  the event does not have user event ID
  */
 #define AM_EVENT_HAS_PUBSUB_ID(event) \
-    (((const struct am_event *)(event))->id < g_am_ao_state.nsub)
+    (((const struct am_event *)(event))->id < am_ao_state_.nsub)
 
 /** Active object module internal state. */
 struct am_ao_state {
@@ -68,7 +68,7 @@ struct am_ao_state {
     bool ao_state_dtor_called;
 };
 
-extern struct am_ao_state g_am_ao_state;
+extern struct am_ao_state am_ao_state_;
 
 void am_ao_notify(void *ao);
 

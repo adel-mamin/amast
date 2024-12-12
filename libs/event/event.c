@@ -49,7 +49,7 @@ struct am_event_state {
     void (*crit_exit)(void);
 };
 
-static struct am_event_state event_state_;
+static struct am_event_state am_event_state_;
 
 struct am_alignof_event {
     char c;            /* cppcheck-suppress unusedStructMember */
@@ -68,7 +68,7 @@ void am_event_state_ctor(const struct am_event_cfg *cfg) {
     AM_ASSERT(cfg->crit_enter);
     AM_ASSERT(cfg->crit_exit);
 
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
     memset(me, 0, sizeof(*me));
 
     me->crit_enter = cfg->crit_enter;
@@ -76,7 +76,7 @@ void am_event_state_ctor(const struct am_event_cfg *cfg) {
 }
 
 void am_event_add_pool(void *pool, int size, int block_size, int alignment) {
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
     AM_ASSERT(me->npool < AM_EVENT_POOL_NUM_MAX);
     if (me->npool > 0) {
         int prev_size = am_onesize_get_block_size(&me->pool[me->npool - 1]);
@@ -96,7 +96,7 @@ void am_event_add_pool(void *pool, int size, int block_size, int alignment) {
 }
 
 struct am_event *am_event_allocate(int id, int size, int margin) {
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
     AM_ASSERT(size > 0);
     AM_ASSERT(me->npool);
     AM_ASSERT(size <= am_onesize_get_block_size(&me->pool[me->npool - 1]));
@@ -151,7 +151,7 @@ void am_event_free(const struct am_event **event) {
         return; /* the event is statically allocated */
     }
 
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
     me->crit_enter();
 
     if (e->ref_counter > 1) {
@@ -160,7 +160,7 @@ void am_event_free(const struct am_event **event) {
         return;
     }
 
-    am_onesize_free(&event_state_.pool[e->pool_index_plus_one - 1], e);
+    am_onesize_free(&am_event_state_.pool[e->pool_index_plus_one - 1], e);
 
     me->crit_exit();
 
@@ -168,7 +168,7 @@ void am_event_free(const struct am_event **event) {
 }
 
 int am_event_get_pool_min_nfree(int index) {
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
     AM_ASSERT(index >= 0);
     AM_ASSERT(index < me->npool);
     me->crit_enter();
@@ -178,7 +178,7 @@ int am_event_get_pool_min_nfree(int index) {
 }
 
 int am_event_get_pool_nfree_now(int index) {
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
     AM_ASSERT(index >= 0);
     AM_ASSERT(index < me->npool);
     me->crit_enter();
@@ -188,7 +188,7 @@ int am_event_get_pool_nfree_now(int index) {
 }
 
 int am_event_get_pool_nblocks(int index) {
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
     AM_ASSERT(index >= 0);
     AM_ASSERT(index < me->npool);
     me->crit_enter();
@@ -197,14 +197,14 @@ int am_event_get_pool_nblocks(int index) {
     return nblocks;
 }
 
-int am_event_get_pools_num(void) { return event_state_.npool; }
+int am_event_get_pools_num(void) { return am_event_state_.npool; }
 
 struct am_event *am_event_dup(
     const struct am_event *event, int size, int margin
 ) {
     AM_ASSERT(event);
     AM_ASSERT(size >= (int)sizeof(struct am_event));
-    const struct am_event_state *me = &event_state_;
+    const struct am_event_state *me = &am_event_state_;
     AM_ASSERT(me->npool > 0);
     AM_ASSERT(event->id >= AM_EVT_USER);
     AM_ASSERT(margin >= 0);
@@ -256,7 +256,7 @@ void am_event_log_pools(int num, am_event_log_func cb) {
     AM_ASSERT(num != 0);
     AM_ASSERT(cb);
 
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
     struct am_event_log_ctx ctx = {.cb = cb};
     for (int i = 0; i < me->npool; i++) {
         ctx.pool_ind = i;
@@ -275,7 +275,7 @@ void am_event_inc_ref_cnt(const struct am_event *event) {
     AM_ASSERT(event);
     AM_ASSERT(event->ref_counter < AM_EVENT_REF_COUNTER_MASK);
     struct am_event *e = AM_CAST(struct am_event *, event);
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
     me->crit_enter();
     ++e->ref_counter;
     me->crit_exit();
@@ -285,7 +285,7 @@ void am_event_dec_ref_cnt(const struct am_event *event) {
     AM_ASSERT(event);
     AM_ASSERT(event->ref_counter > 0);
     struct am_event *e = AM_CAST(struct am_event *, event);
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
     me->crit_enter();
     --e->ref_counter;
     me->crit_exit();
@@ -293,7 +293,7 @@ void am_event_dec_ref_cnt(const struct am_event *event) {
 
 int am_event_get_ref_cnt(const struct am_event *event) {
     AM_ASSERT(event);
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
     me->crit_enter();
     int cnt = event->ref_counter;
     me->crit_exit();
@@ -317,7 +317,7 @@ static enum am_event_rc am_event_push_x(
     AM_ASSERT(push);
 
     struct am_event *e = AM_CAST(struct am_event *, *event);
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
 
     me->crit_enter();
 
@@ -375,7 +375,7 @@ enum am_event_rc am_event_push_front(
 const struct am_event *am_event_pop_front(struct am_queue *queue) {
     AM_ASSERT(queue);
 
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
 
     me->crit_enter();
 
@@ -417,7 +417,7 @@ bool am_event_recall(struct am_queue *queue, am_event_recall_fn cb, void *ctx) {
     AM_ASSERT(queue);
     AM_ASSERT(cb);
 
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
 
     me->crit_enter();
 
@@ -443,7 +443,7 @@ bool am_event_recall(struct am_queue *queue, am_event_recall_fn cb, void *ctx) {
 int am_event_flush_queue(struct am_queue *queue) {
     struct am_event **event = NULL;
     int cnt = 0;
-    struct am_event_state *me = &event_state_;
+    struct am_event_state *me = &am_event_state_;
 
     me->crit_enter();
 

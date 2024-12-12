@@ -47,7 +47,7 @@ struct am_timer {
     struct am_timer_cfg cfg;
 };
 
-static struct am_timer m_timer;
+static struct am_timer am_timer_;
 
 void am_timer_state_ctor(const struct am_timer_cfg *cfg) {
     AM_ASSERT(cfg);
@@ -55,7 +55,7 @@ void am_timer_state_ctor(const struct am_timer_cfg *cfg) {
     AM_ASSERT(cfg->crit_enter);
     AM_ASSERT(cfg->crit_exit);
 
-    struct am_timer *me = &m_timer;
+    struct am_timer *me = &am_timer_;
     memset(me, 0, sizeof(*me));
     for (int i = 0; i < AM_COUNTOF(me->domains); ++i) {
         am_dlist_init(&me->domains[i]);
@@ -78,7 +78,7 @@ void am_timer_event_ctor(struct am_event_timer *event, int id, int domain) {
 void am_timer_arm(
     struct am_event_timer *event, void *owner, int ticks, int interval
 ) {
-    struct am_timer *me = &m_timer;
+    struct am_timer *me = &am_timer_;
 
     AM_ASSERT(event);
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
@@ -110,7 +110,7 @@ bool am_timer_disarm(struct am_event_timer *event) {
     AM_ASSERT(event);
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
 
-    struct am_timer *me = &m_timer;
+    struct am_timer *me = &am_timer_;
 
     me->cfg.crit_enter();
     bool was_armed = am_dlist_pop(&event->item);
@@ -123,7 +123,7 @@ bool am_timer_disarm(struct am_event_timer *event) {
 bool am_timer_is_armed(const struct am_event_timer *event) {
     AM_ASSERT(event);
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
-    struct am_timer *me = &m_timer;
+    struct am_timer *me = &am_timer_;
     me->cfg.crit_enter();
     bool armed = am_dlist_item_is_linked(&event->item);
     me->cfg.crit_exit();
@@ -131,7 +131,7 @@ bool am_timer_is_armed(const struct am_event_timer *event) {
 }
 
 void am_timer_tick(int domain) {
-    struct am_timer *me = &m_timer;
+    struct am_timer *me = &am_timer_;
 
     AM_ASSERT(domain < AM_COUNTOF(me->domains));
 
@@ -189,7 +189,7 @@ struct am_event_timer *am_timer_event_allocate(int id, int size, int domain) {
 }
 
 bool am_timer_domain_is_empty(int domain) {
-    struct am_timer *me = &m_timer;
+    struct am_timer *me = &am_timer_;
     AM_ASSERT(domain >= 0);
     AM_ASSERT(domain < AM_COUNTOF(me->domains));
     me->cfg.crit_enter();

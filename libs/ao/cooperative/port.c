@@ -36,20 +36,20 @@
 #include "ao/ao.h"
 #include "state.h"
 
-static struct am_bit_u64 am_ready_aos = {0};
+static struct am_bit_u64 am_ready_aos_ = {0};
 
 bool am_ao_run_all(bool loop) {
-    struct am_ao_state *me = &g_am_ao_state;
+    struct am_ao_state *me = &am_ao_state_;
     bool processed = false;
     do {
         me->crit_enter();
 
-        while (am_bit_u64_is_empty(&am_ready_aos)) {
+        while (am_bit_u64_is_empty(&am_ready_aos_)) {
             me->crit_exit();
             me->on_idle();
             me->crit_enter();
         }
-        int msb = am_bit_u64_msb(&am_ready_aos);
+        int msb = am_bit_u64_msb(&am_ready_aos_);
 
         me->crit_exit();
 
@@ -60,7 +60,7 @@ bool am_ao_run_all(bool loop) {
         if (!e) {
             me->crit_enter();
             if (am_queue_is_empty(&ao->event_queue)) {
-                am_bit_u64_clear(&am_ready_aos, ao->prio);
+                am_bit_u64_clear(&am_ready_aos_, ao->prio);
             }
             me->crit_exit();
             continue;
@@ -106,7 +106,7 @@ void am_ao_start(
     ao->prio = prio;
     ao->name = name;
 
-    struct am_ao_state *me = &g_am_ao_state;
+    struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(NULL == me->ao[prio]);
     me->ao[prio] = ao;
     am_hsm_init(&ao->hsm, init_event);
@@ -118,9 +118,9 @@ void am_ao_notify(void *ao) {
     if (AM_PAL_TASK_ID_NONE == ao_->task_id) {
         return;
     }
-    struct am_ao_state *me = &g_am_ao_state;
+    struct am_ao_state *me = &am_ao_state_;
 
     me->crit_enter();
-    am_bit_u64_set(&am_ready_aos, ao_->prio);
+    am_bit_u64_set(&am_ready_aos_, ao_->prio);
     me->crit_exit();
 }

@@ -41,7 +41,7 @@ static void am_ao_task(void *param) {
 
     struct am_ao *ao = (struct am_ao *)param;
 
-    struct am_ao_state *me = &g_am_ao_state;
+    struct am_ao_state *me = &am_ao_state_;
     am_pal_mutex_lock(me->startup_mutex);
     am_pal_mutex_unlock(me->startup_mutex);
 
@@ -66,7 +66,7 @@ static void am_ao_task(void *param) {
 }
 
 bool am_ao_run_all(bool loop) {
-    const struct am_ao_state *me = &g_am_ao_state;
+    const struct am_ao_state *me = &am_ao_state_;
     /* start all AOs */
     am_pal_mutex_unlock(me->startup_mutex);
     while (loop && AM_UNLIKELY(!AM_ATOMIC_LOAD_N(&me->ao_state_dtor_called))) {
@@ -103,7 +103,7 @@ void am_ao_start(
     ao->prio = prio;
     ao->name = name;
 
-    struct am_ao_state *me = &g_am_ao_state;
+    struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(NULL == me->ao[prio]);
     me->ao[prio] = ao;
     am_hsm_init(&ao->hsm, init_event);
