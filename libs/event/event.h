@@ -164,6 +164,7 @@ int am_event_get_pool_nfree_now(int index);
  * The number of blocks in the pool with the given index.
  *
  * @param index  the pool index
+ *
  * @return the number of blocks
  */
 int am_event_get_pool_nblocks(int index);
@@ -192,7 +193,7 @@ struct am_event *am_event_allocate(int id, int size, int margin);
  *
  * The pointer to the event is set to NULL to catch double free cases.
  *
- * @param event  the event to free.
+ * @param event  the event to free
  */
 void am_event_free(const struct am_event **event);
 
@@ -207,7 +208,7 @@ void am_event_free(const struct am_event **event);
  * @param size    the event size [bytes]
  * @param margin  free memory blocks to be available after the allocation
  *
- * @return the newly allocated event.
+ * @return the newly allocated event
  */
 struct am_event *am_event_dup(
     const struct am_event *event, int size, int margin
@@ -238,8 +239,9 @@ void am_event_log_pools(int num, am_event_log_func cb);
 /**
  * Check if event is static.
  * @param e  the event to check
- * @return true   the event is static
- * @return false  the event is not static
+ *
+ * @retval true   the event is static
+ * @retval false  the event is not static
  */
 bool am_event_is_static(const struct am_event *event);
 
@@ -261,6 +263,7 @@ void am_event_dec_ref_cnt(const struct am_event *event);
  * Return event reference counter.
  *
  * @param event  the event, which reference counter is to be returned
+ *
  * @return the event reference counter
  */
 int am_event_get_ref_cnt(const struct am_event *event);
@@ -316,7 +319,6 @@ enum am_event_rc am_event_push_back(
  * @retval AM_EVENT_RC_OK             the event was pushed
  * @retval AM_EVENT_RC_OK_WAS_EMPTY   the event was pushed, queue was empty
  * @retval AM_EVENT_RC_ERR            the event was not pushed
- * @retval   the event was not pushed
  */
 enum am_event_rc am_event_push_front_x(
     struct am_queue *queue, const struct am_event **event, int margin
@@ -341,7 +343,7 @@ enum am_event_rc am_event_push_front(
 /**
  * Pop event from the front of event queue.
  *
- * @param queue   the event queue
+ * @param queue  the event queue
  *
  * @return the popped event. Cannot be NULL.
  */
@@ -366,6 +368,7 @@ void am_event_defer(struct am_queue *queue, const struct am_event *event);
  * @param queue   the queue to store the deferred event
  * @param event   the event to defer
  * @param margin  free event queue slots to be available after event is deferred
+ *
  * @retval true   the event was deferred
  * @retval false  the event was not deferred
  */
@@ -378,6 +381,7 @@ bool am_event_defer_x(
  *
  * @param owner  event owner
  * @param queue  queue of deferred events
+ *
  * @retval non-NULL the recalled event.
  *         DO NOT USE IT FOR ANYTHING BUT FOR THE REFERENCE.
  *         For example, do not push it to any event queue or free it.
@@ -387,7 +391,9 @@ const struct am_event *am_event_recall(void *owner, struct am_queue *queue);
 
 /**
  * Flush all event from event queue.
+ *
  * @param queue  the queue to flush
+ *
  * @return the number of events flushed
  */
 int am_event_flush_queue(struct am_queue *queue);

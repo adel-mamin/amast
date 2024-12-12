@@ -152,6 +152,7 @@ void am_timer_arm(
  * Disarm timer.
  *
  * @param event   the timer to disarm
+ *
  * @retval true   the timer was armed
  * @retval false  the timer was not armed
  */
@@ -161,6 +162,7 @@ bool am_timer_disarm(struct am_event_timer *event);
  * Check if timer is armed.
  *
  * @param event   the timer to check
+ *
  * @retval true   the timer is armed
  * @retval false  the timer is not armed
  */
@@ -170,6 +172,7 @@ bool am_timer_is_armed(const struct am_event_timer *event);
  * Check if timer domain has armed timers.
  *
  * @param domain  the domain to check
+ *
  * @retval true   the timer domain is empty
  * @retval false  the timer domain has armed timers
  */

@@ -107,6 +107,7 @@ void am_ao_publish(const struct am_event *event);
  *
  * @param event   the event to publish
  * @param margin  free event queue slots to be available after event is pushed
+ *
  * @retval true   success
  * @retval false  at least one delivery has failed
  */
@@ -135,6 +136,7 @@ void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
  * @param ao      the event is posted to this AO
  * @param event   the event to post
  * @param margin  free event queue slots to be available after event is posted
+ *
  * @retval true   the event was posted
  * @retval false  the event was not posted
  */
@@ -165,6 +167,7 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
  * @param ao      the event is posted to this AO
  * @param event   the event to post
  * @param margin  free event queue slots to be available after event is posted
+ *
  * @retval true   the event was posted
  * @retval false  the event was not posted
  */
@@ -285,7 +288,7 @@ bool am_ao_run_all(bool loop);
 /**
  * Check if AO event queue is empty.
  *
- * @param ao  check the event queue of this AO.
+ * @param ao  check the event queue of this AO
  *
  * @retval true   the queue is empty
  * @retval false  the queue is not empty
