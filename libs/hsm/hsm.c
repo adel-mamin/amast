@@ -165,6 +165,67 @@ static void hsm_enter_and_init(struct am_hsm *hsm, struct am_hsm_path *path) {
     hsm_set_state(hsm, &path->state[0]);
 }
 
+/**
+ * Transition from source to destination state.
+ *
+ * @param hsm  transition the state of this HSM
+ * @param src  the source state
+ * @param dst  the destination state
+ */
+static void hsm_transition(
+    struct am_hsm *hsm, struct am_hsm_state src, struct am_hsm_state dst
+) {
+    if (!am_hsm_state_is_eq(hsm, &src)) {
+        hsm_exit(hsm, /*until=*/&src);
+        hsm_set_state(hsm, &src);
+    }
+
+    struct am_hsm_path path;
+
+    if ((src.fn == dst.fn) && (src.ifn == dst.ifn)) {
+        /* transition to itself */
+        path.state[0] = dst;
+        path.len = 1;
+        hsm_exit_state(hsm);
+        hsm_enter_and_init(hsm, &path);
+        return;
+    }
+
+    struct am_hsm_state until = AM_HSM_STATE_CTOR(am_hsm_top);
+    hsm_build(hsm, &path, /*from=*/&dst, &until, /*till=*/&src);
+    const struct am_hsm_state *end = &path.state[path.len - 1];
+    if ((end->fn == src.fn) && (end->ifn == src.ifn)) {
+        /* src is LCA */
+        --path.len;
+        hsm_enter_and_init(hsm, &path);
+        return;
+    }
+
+    /*
+     * Exit states from src till am_hsm_top() and search LCA along the way.
+     * Once LCA is found, do not exit it. Enter all LCA substates down to dst.
+     * If dst requests initial transition - enter and init the dst substates.
+     */
+    while (hsm->state.fn != am_hsm_top) {
+        if (hsm->hierarchy_level <= path.len) {
+            /*
+             * path has higher hierarchy level states
+             * at lower indices (reversed order)
+             */
+            int i = path.len - hsm->hierarchy_level;
+            if (am_hsm_state_is_eq(hsm, &path.state[i])) {
+                /* LCA is found and it is not am_hsm_top() */
+                path.len = i;
+                hsm_enter_and_init(hsm, &path);
+                return;
+            }
+        }
+        hsm_exit_state(hsm);
+    }
+    /* LCA is am_hsm_top() */
+    hsm_enter_and_init(hsm, &path);
+}
+
 static enum am_hsm_rc hsm_dispatch(
     struct am_hsm *hsm, const struct am_event *event
 ) {
@@ -185,12 +246,10 @@ static enum am_hsm_rc hsm_dispatch(
         AM_ASSERT(cnt); /* HSM hierarchy depth exceeds HSM_HIERARCHY_DEPTH_MAX*/
     } while (AM_HSM_RC_SUPER == rc);
 
-    {
-        bool tran = (AM_HSM_RC_TRAN == rc) || (AM_HSM_RC_TRAN_REDISPATCH == rc);
-        if (!tran) { /* event was handled or ignored */
-            hsm_set_state(hsm, &state);
-            return rc;
-        }
+    bool tran = (AM_HSM_RC_TRAN == rc) || (AM_HSM_RC_TRAN_REDISPATCH == rc);
+    if (!tran) { /* event was handled or ignored */
+        hsm_set_state(hsm, &state);
+        return rc;
     }
 
     /* the event triggered state transition */
@@ -199,55 +258,7 @@ static enum am_hsm_rc hsm_dispatch(
     AM_ASSERT(dst.fn != am_hsm_top); /* transition to am_hsm_top() is invalid */
     hsm_set_state(hsm, &state);
 
-    if (!am_hsm_state_is_eq(hsm, &src)) {
-        hsm_exit(hsm, /*until=*/&src);
-        hsm_set_state(hsm, &src);
-    }
-
-    struct am_hsm_path path;
-
-    if ((src.fn == dst.fn) && (src.ifn == dst.ifn)) {
-        /* transition to itself */
-        path.state[0] = dst;
-        path.len = 1;
-        hsm_exit_state(hsm);
-        hsm_enter_and_init(hsm, &path);
-        return rc;
-    }
-
-    struct am_hsm_state until = AM_HSM_STATE_CTOR(am_hsm_top);
-    hsm_build(hsm, &path, /*from=*/&dst, &until, /*till=*/&src);
-    const struct am_hsm_state *end = &path.state[path.len - 1];
-    if ((end->fn == src.fn) && (end->ifn == src.ifn)) {
-        /* src is LCA */
-        --path.len;
-        hsm_enter_and_init(hsm, &path);
-        return rc;
-    }
-
-    /*
-     * Exit states from src till am_hsm_top() and search LCA along the way.
-     * Once LCA is found, do not exit it. Enter all LCA substates down to dst.
-     * If dst requests initial transition - enter and init the dst substates.
-     */
-    while (hsm->state.fn != am_hsm_top) {
-        if (hsm->hierarchy_level <= path.len) {
-            /*
-             * path has higher hierarchy level states
-             * at lower indices (reversed order)
-             */
-            int i = path.len - hsm->hierarchy_level;
-            if (am_hsm_state_is_eq(hsm, &path.state[i])) {
-                /* LCA is found and it is not am_hsm_top() */
-                path.len = i;
-                hsm_enter_and_init(hsm, &path);
-                return rc;
-            }
-        }
-        hsm_exit_state(hsm);
-    }
-    /* LCA is am_hsm_top() */
-    hsm_enter_and_init(hsm, &path);
+    hsm_transition(hsm, src, dst);
 
     return rc;
 }
