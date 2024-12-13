@@ -166,7 +166,9 @@ struct am_hsm_state {
     AM_GET_MACRO_2_(__VA_ARGS__, AM_STATE2_, AM_STATE1_, _)(__VA_ARGS__)
 
 /** HSM hierarchy maximum depth */
+#ifndef HSM_HIERARCHY_DEPTH_MAX
 #define HSM_HIERARCHY_DEPTH_MAX 16
+#endif
 
 /** HSM hierarchy level representation bits number */
 #define AM_HSM_HIERARCHY_LEVEL_BITS 5
