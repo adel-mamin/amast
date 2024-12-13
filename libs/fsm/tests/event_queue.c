@@ -40,6 +40,7 @@
 #include "blk/blk.h"
 #include "event/event.h"
 #include "queue/queue.h"
+#include "onesize/onesize.h"
 #include "strlib/strlib.h"
 #include "pal/pal.h"
 #include "fsm/fsm.h"
@@ -142,14 +143,14 @@ int main(void) {
     am_event_state_ctor(&cfg);
 
     {
-        static char pool[1 * AM_EVENT_BLOCK_SIZE(struct am_event)] AM_ALIGNED(
+        static char pool[1 * AM_POOL_BLOCK_SIZEOF(struct am_event)] AM_ALIGNED(
             AM_ALIGN_MAX
         );
         am_event_add_pool(
             pool,
             (int)sizeof(pool),
-            AM_EVENT_BLOCK_SIZE(struct am_event),
-            AM_EVENT_BLOCK_ALIGNMENT(AM_ALIGNOF_EVENT)
+            AM_POOL_BLOCK_SIZEOF(struct am_event),
+            AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF_EVENT)
         );
         AM_ASSERT(1 == am_event_get_pool_nblocks(/*index=*/0));
     }
