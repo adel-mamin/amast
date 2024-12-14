@@ -22,23 +22,26 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
-src = []
+ringbuf_src = [files('ringbuf.c')]
+src += ringbuf_src
 
-subdir('common')
-subdir('pal')
-subdir('blk')
-subdir('crc')
-subdir('slist')
-subdir('dlist')
-subdir('bit')
-subdir('queue')
-subdir('strlib')
-subdir('onesize')
-subdir('event')
-subdir('timer')
-subdir('async')
-subdir('ringbuf')
-subdir('fsm')
-subdir('hsm')
-subdir('ao')
+libringbuf = library(
+    'ringbuf',
+    [ringbuf_src],
+    include_directories : [inc]
+)
+librignbuf_dep = declare_dependency(
+    link_with : libringbuf,
+    include_directories : [inc]
+)
+
+# if unit_test
+#     e = executable(
+#         'ringbuf',
+#         [
+#             'tests' / 'ringbuf.c'
+#         ],
+#         dependencies: [libringbuf_dep, libassert_dep],
+#         include_directories: [include_directories('tests')])
+#     test('ringbuf', e, suite: 'ringbuf')
+# endif
