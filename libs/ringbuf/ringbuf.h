@@ -45,8 +45,27 @@ struct am_ringbuf_desc {
 extern "C" {
 #endif
 
+/**
+ * Construct ring buffer.
+ *
+ * @param desc      the ring buffer descriptor
+ * @param buf       the ring buffer
+ * @param buf_size  the ring buffer size [bytes]
+ */
 void am_ringbuf_ctor(struct am_ringbuf_desc *desc, void *buf, int buf_size);
 
+/**
+ * Return ring buffer read data pointer.
+ *
+ * The caller can do anything with the data behind the read pointer.
+ * Call am_ringbuf_seek() to inform writer that the data reading is complete.
+ * Until then writer will not be able to write to the memory.
+ *
+ * @param desc  the ring buffer descriptor
+ * @param ptr   the read data pointer is returned here. Can be NULL.
+ *
+ * @return the byte size of the memory pointed to by *ptr
+ */
 int am_ringbuf_get_read_ptr(const struct am_ringbuf_desc *desc, unsigned char **ptr);
 int am_ringbuf_get_write_ptr(struct am_ringbuf_desc *desc, unsigned char **ptr, int size);
 int am_ringbuf_flush(const struct am_ringbuf_desc *desc, int offset);

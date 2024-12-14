@@ -66,13 +66,27 @@ int am_ringbuf_get_write_ptr(struct am_ringbuf_desc *desc, unsigned char **ptr, 
     AM_ASSERT(desc);
     AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
     AM_ASSERT(ptr);
-    (void)size;
+    AM_ASSERT(size <= desc->buf_size);
 
     int rd = AM_ATOMIC_LOAD_N(&desc->read_offset);
     int wr = desc->write_offset;
-    if (wr == rd) {
-        ;
+    if (wr >= rd) {
+        int avail = desc->buf_size - wr;
+        if (avail >= size) {
+            *ptr = &desc->buf[wr];
+            return avail;
+        }
+        AM_ATOMIC_STORE_N(&desc->read_skip, avail);
+        AM_ATOMIC_STORE_N(&desc->write_offset, 0);
+        wr = 0;
     }
+    AM_ASSERT(wr < rd);
+    int avail = rd - wr - 1;
+    if (avail >= size) {
+        *ptr = &desc->buf[wr];
+        return avail;
+    }
+    *ptr = NULL;
     return 0;
 }
 
