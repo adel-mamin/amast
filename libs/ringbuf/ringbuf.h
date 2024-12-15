@@ -111,6 +111,13 @@ void am_ringbuf_flush(struct am_ringbuf_desc *desc, int offset);
  */
 void am_ringbuf_seek(struct am_ringbuf_desc *desc, int offset);
 
+/**
+ * Return total amount of data available for reading.
+ *
+ * @param desc  the ring buffer descriptor
+ *
+ * @return the number of data bytes available for reading
+ */
 int am_ringbuf_get_data_size(const struct am_ringbuf_desc *desc);
 int am_ringbuf_get_free_size(const struct am_ringbuf_desc *desc);
 

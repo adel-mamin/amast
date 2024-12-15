@@ -146,7 +146,16 @@ void am_ringbuf_seek(struct am_ringbuf_desc *desc, int offset) {
 int am_ringbuf_get_data_size(const struct am_ringbuf_desc *desc) {
     AM_ASSERT(desc);
     AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
-    return 0;
+
+    int rd = desc->read_offset;
+    int wr = AM_ATOMIC_LOAD_N(&desc->write_offset);
+
+    if (rd <= wr) {
+        return wr - rd;
+    }
+    int rds = AM_ATOMIC_LOAD_N(&desc->read_skip);
+    AM_ASSERT((rd + rds) <= desc->buf_size);
+    return desc->buf_size - rd - rds + wr;
 }
 
 int am_ringbuf_get_free_size(const struct am_ringbuf_desc *desc) {
