@@ -31,13 +31,15 @@
 #ifndef AM_RINGBUF_H_INCLUDED
 #define AM_RINGBUF_H_INCLUDED
 
+#include <stdint.h>
+
 struct am_ringbuf_desc {
     unsigned status;
     int read_offset;
     int read_skip;
     int write_offset;
 
-    unsigned char *buf;
+    uint8_t *buf;
     int buf_size;
 };
 
@@ -64,11 +66,38 @@ void am_ringbuf_ctor(struct am_ringbuf_desc *desc, void *buf, int buf_size);
  * @param desc  the ring buffer descriptor
  * @param ptr   the read data pointer is returned here. Can be NULL.
  *
- * @return the byte size of the memory pointed to by *ptr
+ * @return the byte size of the memory pointed to by *ptr. Can be 0.
  */
-int am_ringbuf_get_read_ptr(const struct am_ringbuf_desc *desc, unsigned char **ptr);
-int am_ringbuf_get_write_ptr(struct am_ringbuf_desc *desc, unsigned char **ptr, int size);
-int am_ringbuf_flush(const struct am_ringbuf_desc *desc, int offset);
+int am_ringbuf_get_read_ptr(const struct am_ringbuf_desc *desc, uint8_t **ptr);
+
+/**
+ * Return ring buffer write data pointer.
+ *
+ * The caller can do anything with the memory pointed to by the write pointer.
+ * Call am_ringbuf_flush() to inform reader that data writing is complete.
+ * Until then reader will not be able to read the memory.
+ *
+ * @param desc  the ring buffer descriptor
+ * @param ptr   the write data pointer is returned here. Can be NULL.
+ * @param size  the requested memory size behind the write date pointer
+ *
+ * @return the byte size of all the available memory pointed to by *ptr
+ *         Can be 0 or more than the requested size.
+ */
+int am_ringbuf_get_write_ptr(struct am_ringbuf_desc *desc, uint8_t **ptr, int size);
+
+/**
+ * Increase by offset bytes the amount of written data available to readers.
+ *
+ * Called once or many times after calling am_ringbuf_get_write_ptr().
+ * The offset or sum of offsets of multile calls to this function must not
+ * exceed the size returned by the last call to am_ringbuf_get_write_ptr().
+ *
+ * @param desc    the ring buffer descriptor
+ * @param offset  the bytes of write data available to readers
+ */
+void am_ringbuf_flush(struct am_ringbuf_desc *desc, int offset);
+
 int am_ringbuf_seek(const struct am_ringbuf_desc *desc, int offset);
 
 int am_ringbuf_get_data_size(const struct am_ringbuf_desc *desc);

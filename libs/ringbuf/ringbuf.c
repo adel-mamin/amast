@@ -30,6 +30,7 @@
 
 #include <stddef.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "common/macros.h"
 #include "ringbuf/ringbuf.h"
@@ -41,7 +42,7 @@ void am_ringbuf_ctor(struct am_ringbuf_desc *desc, void *buf, int buf_size) {
     desc->buf_size = buf_size;
 }
 
-int am_ringbuf_get_read_ptr(const struct am_ringbuf_desc *desc, unsigned char **ptr) {
+int am_ringbuf_get_read_ptr(const struct am_ringbuf_desc *desc, uint8_t **ptr) {
     AM_ASSERT(desc);
     AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
     AM_ASSERT(ptr);
@@ -62,18 +63,19 @@ int am_ringbuf_get_read_ptr(const struct am_ringbuf_desc *desc, unsigned char **
     return wr - rd;
 }
 
-int am_ringbuf_get_write_ptr(struct am_ringbuf_desc *desc, unsigned char **ptr, int size) {
+int am_ringbuf_get_write_ptr(struct am_ringbuf_desc *desc, uint8_t **ptr, int size) {
     AM_ASSERT(desc);
     AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
     AM_ASSERT(ptr);
-    AM_ASSERT(size <= desc->buf_size);
+    AM_ASSERT(size <= (desc->buf_size - 1));
 
     int rd = AM_ATOMIC_LOAD_N(&desc->read_offset);
     int wr = desc->write_offset;
     if (wr >= rd) {
-        int avail = desc->buf_size - wr;
+        int avail = (0 == wr) ? desc->buf_size - 1 : desc->buf_size - wr;
         if (avail >= size) {
             *ptr = &desc->buf[wr];
+            AM_ATOMIC_STORE_N(&desc->read_skip, 0);
             return avail;
         }
         AM_ATOMIC_STORE_N(&desc->read_skip, avail);
@@ -90,11 +92,22 @@ int am_ringbuf_get_write_ptr(struct am_ringbuf_desc *desc, unsigned char **ptr, 
     return 0;
 }
 
-int am_ringbuf_flush(const struct am_ringbuf_desc *desc, int offset) {
+void am_ringbuf_flush(struct am_ringbuf_desc *desc, int offset) {
     AM_ASSERT(desc);
     AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
-    (void)offset;
-    return 0;
+
+    int rd = AM_ATOMIC_LOAD_N(&desc->read_offset);
+    int wr = desc->write_offset;
+    if (wr >= rd) {
+        int avail = (0 == wr) ? desc->buf_size - 1 : desc->buf_size - wr;
+        AM_ASSERT(offset <= avail);
+        wr = (wr + offset) % desc->buf_size;
+    } else {
+        int avail = rd - wr - 1;
+        AM_ASSERT(offset <= avail);
+        wr += offset;
+    }
+    AM_ATOMIC_STORE_N(&desc->write_offset, wr);
 }
 
 int am_ringbuf_seek(const struct am_ringbuf_desc *desc, int offset) {
