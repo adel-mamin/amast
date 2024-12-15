@@ -34,7 +34,7 @@
 #include <stdint.h>
 
 struct am_ringbuf_desc {
-    unsigned status;
+    unsigned dropped;
     int read_offset;
     int read_skip;
     int write_offset;
@@ -129,9 +129,29 @@ int am_ringbuf_get_data_size(const struct am_ringbuf_desc *desc);
  */
 int am_ringbuf_get_free_size(const struct am_ringbuf_desc *desc);
 
-void am_ringbuf_add_dropped(const struct am_ringbuf_desc *desc, int dropped);
-int am_ringbuf_get_dropped(const struct am_ringbuf_desc *desc);
-void am_ringbuf_clear_dropped(const struct am_ringbuf_desc *desc);
+/**
+ * Add to the number of dropped bytes.
+ *
+ * @param desc     the ring buffer descriptor
+ * @param dropped  add this many dropped bytes
+ */
+void am_ringbuf_add_dropped(struct am_ringbuf_desc *desc, int dropped);
+
+/**
+ * Get the number of dropped bytes.
+ *
+ * @param desc     the ring buffer descriptor
+ *
+ * @return the number of dropped bytes
+ */
+unsigned am_ringbuf_get_dropped(const struct am_ringbuf_desc *desc);
+
+/**
+ * Clear the number of dropped bytes.
+ *
+ * @param desc     the ring buffer descriptor
+ */
+void am_ringbuf_clear_dropped(struct am_ringbuf_desc *desc);
 
 #ifdef __cplusplus
 }

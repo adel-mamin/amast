@@ -170,20 +170,27 @@ int am_ringbuf_get_free_size(const struct am_ringbuf_desc *desc) {
     return rd - wr - 1;
 }
 
-void am_ringbuf_add_dropped(const struct am_ringbuf_desc *desc, int dropped) {
+void am_ringbuf_add_dropped(struct am_ringbuf_desc *desc, int dropped) {
     AM_ASSERT(desc);
     AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
-    (void)dropped;
+    AM_ASSERT(dropped >= 0);
+
+    unsigned d = AM_ATOMIC_LOAD_N(&desc->dropped);
+    d += (unsigned)dropped;
+    AM_ATOMIC_STORE_N(&desc->dropped, d);
 }
 
-int am_ringbuf_get_dropped(const struct am_ringbuf_desc *desc) {
+unsigned am_ringbuf_get_dropped(const struct am_ringbuf_desc *desc) {
     AM_ASSERT(desc);
     AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
-    return 0;
+
+    return AM_ATOMIC_LOAD_N(&desc->dropped);
 }
 
-void am_ringbuf_clear_dropped(const struct am_ringbuf_desc *desc) {
+void am_ringbuf_clear_dropped(struct am_ringbuf_desc *desc) {
     AM_ASSERT(desc);
     AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
+
+    AM_ATOMIC_STORE_N(&desc->dropped, 0);
 }
 
