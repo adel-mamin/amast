@@ -47,7 +47,7 @@ void am_ringbuf_ctor(struct am_ringbuf_desc *desc, void *buf, int buf_size) {
 
 int am_ringbuf_get_read_ptr(const struct am_ringbuf_desc *desc, uint8_t **ptr) {
     AM_ASSERT(desc);
-    AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
+    AM_ASSERT(desc->buf);
     AM_ASSERT(ptr);
 
     int rd = AM_ATOMIC_LOAD_N(&desc->read_offset);
@@ -67,7 +67,7 @@ int am_ringbuf_get_read_ptr(const struct am_ringbuf_desc *desc, uint8_t **ptr) {
 
 int am_ringbuf_get_write_ptr(struct am_ringbuf_desc *desc, uint8_t **ptr, int size) {
     AM_ASSERT(desc);
-    AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
+    AM_ASSERT(desc->buf);
     AM_ASSERT(ptr);
     AM_ASSERT(size >= 0);
     AM_ASSERT(size <= (desc->buf_size - 1));
@@ -97,7 +97,7 @@ int am_ringbuf_get_write_ptr(struct am_ringbuf_desc *desc, uint8_t **ptr, int si
 
 void am_ringbuf_flush(struct am_ringbuf_desc *desc, int offset) {
     AM_ASSERT(desc);
-    AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
+    AM_ASSERT(desc->buf);
     AM_ASSERT(offset >= 0);
 
     int rd = AM_ATOMIC_LOAD_N(&desc->read_offset);
@@ -116,7 +116,7 @@ void am_ringbuf_flush(struct am_ringbuf_desc *desc, int offset) {
 
 void am_ringbuf_seek(struct am_ringbuf_desc *desc, int offset) {
     AM_ASSERT(desc);
-    AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
+    AM_ASSERT(desc->buf);
     AM_ASSERT(offset >= 0);
 
     if (0 == offset) {
@@ -145,7 +145,7 @@ void am_ringbuf_seek(struct am_ringbuf_desc *desc, int offset) {
 
 int am_ringbuf_get_data_size(const struct am_ringbuf_desc *desc) {
     AM_ASSERT(desc);
-    AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
+    AM_ASSERT(desc->buf);
 
     int rd = AM_ATOMIC_LOAD_N(&desc->read_offset);
     int wr = AM_ATOMIC_LOAD_N(&desc->write_offset);
@@ -160,7 +160,7 @@ int am_ringbuf_get_data_size(const struct am_ringbuf_desc *desc) {
 
 int am_ringbuf_get_free_size(const struct am_ringbuf_desc *desc) {
     AM_ASSERT(desc);
-    AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
+    AM_ASSERT(desc->buf);
 
     int rd = AM_ATOMIC_LOAD_N(&desc->read_offset);
     int wr = AM_ATOMIC_LOAD_N(&desc->write_offset);
@@ -172,7 +172,7 @@ int am_ringbuf_get_free_size(const struct am_ringbuf_desc *desc) {
 
 void am_ringbuf_add_dropped(struct am_ringbuf_desc *desc, int dropped) {
     AM_ASSERT(desc);
-    AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
+    AM_ASSERT(desc->buf);
     AM_ASSERT(dropped >= 0);
 
     unsigned d = AM_ATOMIC_LOAD_N(&desc->dropped);
@@ -182,14 +182,14 @@ void am_ringbuf_add_dropped(struct am_ringbuf_desc *desc, int dropped) {
 
 unsigned am_ringbuf_get_dropped(const struct am_ringbuf_desc *desc) {
     AM_ASSERT(desc);
-    AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
+    AM_ASSERT(desc->buf);
 
     return AM_ATOMIC_LOAD_N(&desc->dropped);
 }
 
 void am_ringbuf_clear_dropped(struct am_ringbuf_desc *desc) {
     AM_ASSERT(desc);
-    AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
+    AM_ASSERT(desc->buf);
 
     AM_ATOMIC_STORE_N(&desc->dropped, 0);
 }
