@@ -161,7 +161,13 @@ int am_ringbuf_get_data_size(const struct am_ringbuf_desc *desc) {
 int am_ringbuf_get_free_size(const struct am_ringbuf_desc *desc) {
     AM_ASSERT(desc);
     AM_ASSERT(desc->buf); /* was am_ringbuf_ctor() called? */
-    return 0;
+
+    int rd = AM_ATOMIC_LOAD_N(&desc->read_offset);
+    int wr = desc->write_offset;
+    if (wr >= rd) {
+        return desc->buf_size - 1 - wr + rd;
+    }
+    return rd - wr - 1;
 }
 
 void am_ringbuf_add_dropped(const struct am_ringbuf_desc *desc, int dropped) {
