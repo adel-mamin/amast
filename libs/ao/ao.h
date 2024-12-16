@@ -270,6 +270,8 @@ void am_ao_unsubscribe_all(const struct am_ao *ao);
 /**
  * Initialize the AO subscribe list.
  *
+ * Optional. Only needed if AO pub/sub functionality is used.
+ *
  * @param sub   the array of AO subscribe lists
  * @param nsub  the number of elements in sub array
  */

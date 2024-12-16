@@ -63,8 +63,8 @@ bool am_ao_publish_x(const struct am_event **event, int margin) {
     AM_ASSERT(AM_EVENT_HAS_USER_ID(e));
     AM_ASSERT(AM_EVENT_HAS_PUBSUB_ID(e));
     AM_ASSERT(margin >= 0);
-
     struct am_ao_state *me = &am_ao_state_;
+    AM_ASSERT(me->sub);
 
     if (!am_event_is_static(e)) {
         /*
@@ -176,6 +176,7 @@ void am_ao_subscribe(const struct am_ao *ao, int event) {
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(event < me->nsub);
     AM_ASSERT(me->ao[ao->prio] == ao);
+    AM_ASSERT(me->sub);
 
     int i = ao->prio / 8;
 
@@ -193,6 +194,7 @@ void am_ao_unsubscribe(const struct am_ao *ao, int event) {
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(event < me->nsub);
     AM_ASSERT(me->ao[ao->prio] == ao);
+    AM_ASSERT(me->sub);
 
     int ind = event - AM_EVT_USER;
     int i = ao->prio / 8;
@@ -209,8 +211,9 @@ void am_ao_unsubscribe(const struct am_ao *ao, int event) {
 void am_ao_unsubscribe_all(const struct am_ao *ao) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao));
-
     struct am_ao_state *me = &am_ao_state_;
+    AM_ASSERT(me->sub);
+
     AM_ASSERT(me->ao[ao->prio] == ao);
 
     int j = ao->prio / 8;
