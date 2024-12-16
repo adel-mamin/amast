@@ -68,7 +68,7 @@ void am_ringbuf_ctor(struct am_ringbuf_desc *desc, void *buf, int buf_size);
  *
  * @return the byte size of the memory pointed to by *ptr. Can be 0.
  */
-int am_ringbuf_get_read_ptr(const struct am_ringbuf_desc *desc, uint8_t **ptr);
+int am_ringbuf_get_read_ptr(struct am_ringbuf_desc *desc, uint8_t **ptr);
 
 /**
  * Return ring buffer write data pointer.

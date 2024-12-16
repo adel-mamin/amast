@@ -45,7 +45,7 @@ void am_ringbuf_ctor(struct am_ringbuf_desc *desc, void *buf, int buf_size) {
     desc->buf_size = buf_size;
 }
 
-int am_ringbuf_get_read_ptr(const struct am_ringbuf_desc *desc, uint8_t **ptr) {
+int am_ringbuf_get_read_ptr(struct am_ringbuf_desc *desc, uint8_t **ptr) {
     AM_ASSERT(desc);
     AM_ASSERT(desc->buf);
     AM_ASSERT(ptr);
@@ -57,12 +57,18 @@ int am_ringbuf_get_read_ptr(const struct am_ringbuf_desc *desc, uint8_t **ptr) {
         return 0;
     }
     *ptr = &desc->buf[rd];
-    if (rd > wr) {
-        int rds = AM_ATOMIC_LOAD_N(&desc->read_skip);
-        AM_ASSERT((rd + rds) <= desc->buf_size);
-        return desc->buf_size - rd - rds;
+    if (rd <= wr) {
+        return wr - rd;
     }
-    return wr - rd;
+    int rds = AM_ATOMIC_LOAD_N(&desc->read_skip);
+    int avail = desc->buf_size - rd - rds;
+    AM_ASSERT(avail >= 0);
+    if (avail) {
+        return avail;
+    }
+    AM_ATOMIC_STORE_N(&desc->read_offset, 0);
+    *ptr = &desc->buf[0];
+    return wr;
 }
 
 int am_ringbuf_get_write_ptr(struct am_ringbuf_desc *desc, uint8_t **ptr, int size) {

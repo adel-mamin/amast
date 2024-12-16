@@ -30,18 +30,18 @@ libringbuf = library(
     [ringbuf_src],
     include_directories : [inc]
 )
-librignbuf_dep = declare_dependency(
+libringbuf_dep = declare_dependency(
     link_with : libringbuf,
     include_directories : [inc]
 )
 
-# if unit_test
-#     e = executable(
-#         'ringbuf',
-#         [
-#             'tests' / 'ringbuf.c'
-#         ],
-#         dependencies: [libringbuf_dep, libassert_dep],
-#         include_directories: [include_directories('tests')])
-#     test('ringbuf', e, suite: 'ringbuf')
-# endif
+if unit_test
+    e = executable(
+        'ringbuf',
+        [
+            'test.c'
+        ],
+        dependencies: [libringbuf_dep, libassert_dep],
+        include_directories: [include_directories('.')])
+    test('ringbuf', e, suite: 'ringbuf')
+endif
