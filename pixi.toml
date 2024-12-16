@@ -9,12 +9,13 @@ version = "0.1.0"
 [tasks]
 setup_posix = "meson setup builds/posix -Dunit_test=true -Dpal=posix -Dao_type=preemptive"
 style_posix = "meson compile -C builds/posix style"
+cspell = "meson compile -C builds/posix cspell"
 cppcheck_posix = "meson compile -C builds/posix cppcheck"
 tidy_posix = "meson compile -C builds/posix tidy"
 test_posix = "meson test -C builds/posix"
 libs_posix = "meson compile -C builds/posix"
 iwyu_posix = "meson compile -C builds/posix iwyu"
-posix = { depends-on = ["setup_posix", "libs_posix", "style_posix", "cppcheck_posix", "tidy_posix", "iwyu_posix", "test_posix"] }
+posix = { depends-on = ["setup_posix", "libs_posix", "style_posix", "cspell", "cppcheck_posix", "tidy_posix", "iwyu_posix", "test_posix"] }
 setup_posix_cooperative = "meson setup builds/cooperative -Dunit_test=true -Dpal=posix -Dao_type=cooperative"
 posix_cooperative = { depends-on = ["setup_posix_cooperative", "libs_posix", "style_posix", "cppcheck_posix", "tidy_posix", "iwyu_posix", "test_posix"] }
 all = { depends-on = ["posix", "posix_cooperative"] }
@@ -27,6 +28,7 @@ cppcheck = ">=2.16.0,<3"
 clang = ">=19.1.5,<20"
 make = ">=4.4.1,<5"
 include-what-you-use = ">=0.23,<0.24"
+cspell = ">=6.17.0,<7"
 
 [pypi-dependencies]
 setuptools-scm = ">=8.1.0, <9"

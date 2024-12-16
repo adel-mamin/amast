@@ -65,7 +65,7 @@ struct am_pal_task {
     bool valid;
     /* entry function */
     void (*entry)(void *arg);
-    /* entry function argumement */
+    /* entry function argument */
     void *arg;
 };
 

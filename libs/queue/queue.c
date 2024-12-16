@@ -50,11 +50,11 @@ void am_queue_init(
 
     memset(hnd, 0, sizeof(*hnd));
 
-    void *alignedptr = AM_ALIGN_PTR_UP(blk->ptr, alignment);
-    int affix = (int)((uintptr_t)alignedptr - (uintptr_t)blk->ptr);
+    void *aligned_ptr = AM_ALIGN_PTR_UP(blk->ptr, alignment);
+    int affix = (int)((uintptr_t)aligned_ptr - (uintptr_t)blk->ptr);
     AM_ASSERT(affix < blk->size);
     blk->size -= affix;
-    blk->ptr = alignedptr;
+    blk->ptr = aligned_ptr;
 
     hnd->isize = AM_MAX(isize, alignment);
 

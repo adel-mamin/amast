@@ -300,7 +300,7 @@ The user code stores the current state in a local variable of type
        switch (event->id) {
        case AM_HSM_EVT_ENTRY:
            me->history  = am_hsm_state(&me->hsm);
-           return AM_HSM_HANLDED();
+           return AM_HSM_HANDLED();
        ...
        }
        return AM_HSM_SUPER(A);
@@ -330,7 +330,7 @@ SUBMACHINES
 ===========
 
 Submachines are reusable HSMs. They can be as simple as one reusable state.
-The more complex submachines can be multistate interconnected HSMs.
+The more complex submachines can be multi state interconnected HSMs.
 
 The main purpose of submachines is code reuse.
 

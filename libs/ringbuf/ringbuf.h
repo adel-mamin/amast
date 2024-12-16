@@ -91,7 +91,7 @@ int am_ringbuf_get_write_ptr(struct am_ringbuf_desc *desc, uint8_t **ptr, int si
  * Increase by offset bytes by the amount of written data available to reader.
  *
  * Called once or many times after calling am_ringbuf_get_write_ptr().
- * The offset or sum of offsets of multile calls to this function must not
+ * The offset or sum of offsets of multiple calls to this function must not
  * exceed the size returned by the last call to am_ringbuf_get_write_ptr().
  *
  * @param desc    the ring buffer descriptor
@@ -103,7 +103,7 @@ void am_ringbuf_flush(struct am_ringbuf_desc *desc, int offset);
  * Increase by offset bytes by the amount of data available to writer.
  *
  * Called once or many times after calling am_ringbuf_get_read_ptr().
- * The offset or sum of offsets of multile calls to this function must not
+ * The offset or sum of offsets of multiple calls to this function must not
  * exceed the size returned by the last call to am_ringbuf_get_read_ptr().
  *
  * @param desc    the ring buffer descriptor

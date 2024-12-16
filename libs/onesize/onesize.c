@@ -187,11 +187,11 @@ void am_onesize_ctor(struct am_onesize *hnd, struct am_onesize_cfg *cfg) {
 
     memset(hnd, 0, sizeof(*hnd));
 
-    void *alignedptr = AM_ALIGN_PTR_UP(cfg->pool->ptr, cfg->alignment);
-    int affix = (int)((uintptr_t)alignedptr - (uintptr_t)cfg->pool->ptr);
+    void *aligned_ptr = AM_ALIGN_PTR_UP(cfg->pool->ptr, cfg->alignment);
+    int affix = (int)((uintptr_t)aligned_ptr - (uintptr_t)cfg->pool->ptr);
     AM_ASSERT(affix < cfg->pool->size);
     cfg->pool->size -= affix;
-    cfg->pool->ptr = alignedptr;
+    cfg->pool->ptr = aligned_ptr;
 
     cfg->block_size =
         AM_MAX(cfg->block_size, (int)sizeof(struct am_slist_item));

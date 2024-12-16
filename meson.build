@@ -124,6 +124,7 @@ CPPCHECK = find_program('cppcheck', required: false, disabler: true)
 FIND = find_program('find', required: false, disabler: true)
 PYTHON = find_program('python3')
 IWYU = find_program('include-what-you-use', required: false, disabler: true)
+CSPELL = find_program('cspell', required: false, disabler: true)
 
 unit_test = get_option('unit_test')
 pal = get_option('pal')
@@ -239,5 +240,19 @@ run_target(
         '--no_comments',
         '-Xiwyu',
         '--no_fwd_decls'
+    ],
+)
+
+run_target(
+    'cspell',
+    command: [
+        CSPELL,
+        '--root',
+        meson.project_source_root(),
+        '--unique',
+        '--color',
+        '--cache',
+        '--config',
+        meson.project_source_root() / 'cspell.json',
     ],
 )

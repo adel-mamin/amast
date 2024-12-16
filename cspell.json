@@ -1,0 +1,96 @@
+// cspell configuration
+{
+    "version": "0.2",
+    "language": "en",
+    "ignorePaths": [
+        "libs/rbtree/**",
+        "libs/base64/**",
+        "libs/bit/bit-all.h",
+        "libs/bit/bit-all.c",
+        "tools/unity/Makefile"
+    ],
+    "files": [
+        "libs/**/*",
+        "apps/**/*",
+        "tools/**/*",
+    ],
+    // list of words to be always considered correct
+    "words": [
+        "Adel", "Mamin", "Hartlage", "Ahern", "Przemo", "Nowaczyk", "Sustrik", "Samek",
+        "amast", "AMAST", "ffunction", "fdata", "OUTDIR",
+
+        "libassert", "libtimer", "libdlist", "libpal", "lib", "libbit",
+        "libasync", "libhsm", "libringbuf", "libstr", "libevent", "libslist",
+        "libonesize", "libm", "libqueue", "libfsm", "libao",
+
+        "submachine", "submachines",
+        "substate", "substates",
+        "REDISP1","REDISP2",
+
+        "cppcheck",
+        "COUNTOF",
+        "CITT",
+        "dlist",
+        "isbool",
+        "ringbuf", "RINGBUF",
+        "onesize",
+        "memaccess", "MEMACCESS",
+        "ggdb",
+        "struct",
+        "redispatch",
+        "stackless",
+        "elif", "endcond",
+        "JOINSTR",
+        "isize",
+        "slist",
+        "Protothreads",
+        "moduloofone",
+        "Statecharts",
+        "redispatches",
+        "posix",
+        "delimeters",
+        "binstr",
+
+        "lstrip", "rstrip", "lcpy", "lcat", "lcat", "vlcatf", "lcat", "lcatf",
+
+        "outsz",
+        "lltoa", "ulltoa",
+        "newitem",
+
+        "ICPC", "IBMC", "IBMCPP", "PGCC", "PGCPP", "MINXS",
+
+        "VCAST", "STRLIB",
+        "nonliteral", "NONLITERAL",
+        "rdtsc",
+        "NOLINTNEXTLINE",
+        "isintmax",
+        "isdelim",
+        "tnum",
+        "reent",
+        "fsmq", "hsmq",
+        "fnames",
+
+        "nfree", "nblocks", "nqueue", "npool", "nsession", "ntcb", "ntests",
+        "ninc", "npost", "ndelim", "ndot",
+
+        "bufptr",
+        "strsz",
+        "prefixsz"
+    ],
+    // flagWords - list of words to be always considered incorrect
+    // This is useful for offensive words and common spelling errors.
+    // For example "hte" should be "the"
+    "flagWords": [
+        "hte"
+    ],
+    "languageSettings": [
+    {
+        "languageId": "c",
+        "dictionaries": ["cpp"],
+        "ignoreRegExpList": [
+            "string",
+            "\\b[a-z]+(_[a-z0-9]+)+\\b"
+        ]
+    }
+  ]
+}

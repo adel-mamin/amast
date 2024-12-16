@@ -161,7 +161,7 @@ bool am_timer_disarm(struct am_event_timer *event);
 /**
  * Check if timer event is armed.
  *
- * @param event   the timere event to check
+ * @param event   the timer event to check
  *
  * @retval true   the timer event is armed
  * @retval false  the timer event is not armed

@@ -197,7 +197,7 @@ The user code stores the current state in a local variable of type
        switch (event->id) {
        case AM_FSM_EVT_ENTRY:
            me->history = am_fsm_state(&me->fsm);
-           return AM_FSM_HANLDED();
+           return AM_FSM_HANDLED();
        ...
        }
        return AM_FSM_HANDLED();

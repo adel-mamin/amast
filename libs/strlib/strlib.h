@@ -154,7 +154,7 @@ bool str_to_double(const char *str, double *val, char **endptr);
 /**
  * Check if all characters are in the range '0'-'9'.
  * @param str     the string to analyze
- * @retval false  not all charachters are decimal digits
+ * @retval false  not all characters are decimal digits
  * @retval true   all characters are decimal digits
  */
 bool str_is_all_decimal_digits(const char *str);
@@ -163,7 +163,7 @@ bool str_is_all_decimal_digits(const char *str);
  * Check if string starts with '0x' and all characters are in the range
  * '0'-'9', 'a'-'f', 'A'-'F'.
  * @param str  the string to analyze
- * @retval false  not all charachters are hexadecimal digits
+ * @retval false  not all characters are hexadecimal digits
  * @retval true   all characters are hexadecimal digits
  */
 bool str_is_all_hexadecimal_digits(const char *str);
