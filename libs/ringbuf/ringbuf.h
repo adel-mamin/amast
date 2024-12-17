@@ -85,7 +85,9 @@ int am_ringbuf_get_read_ptr(struct am_ringbuf_desc *desc, uint8_t **ptr);
  * @return the byte size of all the available memory pointed to by *ptr
  *         Can be 0 or more than the requested size.
  */
-int am_ringbuf_get_write_ptr(struct am_ringbuf_desc *desc, uint8_t **ptr, int size);
+int am_ringbuf_get_write_ptr(
+    struct am_ringbuf_desc *desc, uint8_t **ptr, int size
+);
 
 /**
  * Increase by offset bytes by the amount of written data available to reader.

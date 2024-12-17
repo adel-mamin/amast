@@ -32,6 +32,7 @@
 #include <string.h>
 #include <stdint.h>
 
+#include "common/compiler.h"
 #include "common/macros.h"
 #include "ringbuf/ringbuf.h"
 
@@ -71,7 +72,9 @@ int am_ringbuf_get_read_ptr(struct am_ringbuf_desc *desc, uint8_t **ptr) {
     return wr;
 }
 
-int am_ringbuf_get_write_ptr(struct am_ringbuf_desc *desc, uint8_t **ptr, int size) {
+int am_ringbuf_get_write_ptr(
+    struct am_ringbuf_desc *desc, uint8_t **ptr, int size
+) {
     AM_ASSERT(desc);
     AM_ASSERT(desc->buf);
     AM_ASSERT(ptr);

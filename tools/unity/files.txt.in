@@ -47,6 +47,7 @@
 
 @SRC_ROOT@/libs/ringbuf/ringbuf.h
 @SRC_ROOT@/libs/ringbuf/ringbuf.c
+@SRC_ROOT@/libs/ringbuf/test.c
 
 @SRC_ROOT@/libs/fsm/fsm.h
 @SRC_ROOT@/libs/fsm/fsm.c

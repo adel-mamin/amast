@@ -160,6 +160,7 @@ files_to_check = run_command(
     meson.project_source_root() / 'libs' / 'slist',
     meson.project_source_root() / 'libs' / 'strlib',
     meson.project_source_root() / 'libs' / 'timer',
+    meson.project_source_root() / 'libs' / 'ringbuf',
     meson.project_source_root() / 'apps',
     meson.project_source_root() / 'tools',
     '-name',

@@ -71,4 +71,5 @@ static void test_ringbuf_1(void) {
 
 int main(void) {
     test_ringbuf_1();
+    return 0;
 }
