@@ -58,6 +58,7 @@ void am_queue_init(
 
     hnd->isize = AM_MAX(isize, alignment);
 
+    /* queue requires at least two slots */
     AM_ASSERT(blk->size >= (2 * hnd->isize));
 
     hnd->blk = *blk;

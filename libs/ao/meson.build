@@ -39,4 +39,20 @@ libao = library(
         inc,
     ]
 )
-libao_dep = declare_dependency(link_with: libao, include_directories: [inc])
+
+libao_dep = declare_dependency(
+    link_with: libao,
+    dependencies: [libevent_dep, libhsm_dep, libtimer_dep],
+    include_directories: [inc]
+)
+
+if unit_test
+    e = executable(
+        'minimal',
+        [
+            'tests' / 'minimal.c'
+        ],
+        dependencies: [libao_dep, libassert_dep, libpal_dep],
+        include_directories: [include_directories('tests')])
+    test('minimal', e, suite: 'ao')
+endif
