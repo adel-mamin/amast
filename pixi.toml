@@ -21,11 +21,11 @@ posix_cooperative = { depends-on = ["setup_posix_cooperative", "libs_posix", "st
 all = { depends-on = ["posix", "posix_cooperative"] }
 
 [dependencies]
-meson = ">=1.6.0,<2"
+meson = ">=1.6.1,<2"
 ninja = ">=1.12.1,<2"
 gcc = ">=14.2.0,<14.3"
 cppcheck = ">=2.16.0,<3"
-clang = ">=19.1.5,<20"
+clang = ">=19.1.6,<20"
 make = ">=4.4.1,<5"
 include-what-you-use = ">=0.23,<0.24"
 cspell = ">=6.17.0,<7"
