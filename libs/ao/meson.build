@@ -24,23 +24,36 @@
 
 ao_src = [files('ao.c')]
 ao_c_args = []
-if ao_type == 'cooperative'
-    ao_src += [files('cooperative' / 'port.c')]
-elif ao_type == 'preemptive'
-    ao_src += [files('preemptive' / 'port.c')]
-endif
 
-libao = library(
-    'ao',
-    [ao_src],
+ao_src_cooperative = [files('cooperative' / 'port.c')]
+ao_src_preemptive = [files('preemptive' / 'port.c')]
+
+libao_cooperative = library(
+    'ao_cooperative',
+    [ao_src, ao_src_cooperative],
     c_args: ao_c_args,
     include_directories: [
         inc,
     ]
 )
 
-libao_dep = declare_dependency(
-    link_with: libao,
+libao_preemptive = library(
+    'ao_preemptive',
+    [ao_src, ao_src_preemptive],
+    c_args: ao_c_args,
+    include_directories: [
+        inc,
+    ]
+)
+
+libao_cooperative_dep = declare_dependency(
+    link_with: libao_cooperative,
+    dependencies: [libevent_dep, libhsm_dep, libtimer_dep],
+    include_directories: [inc]
+)
+
+libao_preemptive_dep = declare_dependency(
+    link_with: libao_preemptive,
     dependencies: [libevent_dep, libhsm_dep, libtimer_dep],
     include_directories: [inc]
 )
@@ -51,7 +64,7 @@ if unit_test
         [
             'tests' / 'minimal.c'
         ],
-        dependencies: [libao_dep, libassert_dep, libpal_dep],
+        dependencies: [libao_preemptive_dep, libassert_dep, libpal_dep],
         include_directories: [include_directories('tests')])
     test('minimal', e, suite: 'ao')
 endif

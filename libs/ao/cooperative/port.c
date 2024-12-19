@@ -27,7 +27,7 @@
 
 #include "bit/bit.h"
 #include "blk/blk.h"
-#include "common/alignment.h"
+#include "common/compiler.h"
 #include "common/macros.h"
 #include "hsm/hsm.h"
 #include "queue/queue.h"

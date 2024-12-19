@@ -7,7 +7,7 @@ platforms = ["linux-64"]
 version = "0.1.0"
 
 [tasks]
-setup_posix = "meson setup builds/posix -Dunit_test=true -Dpal=posix -Dao_type=preemptive"
+setup_posix = "meson setup builds/posix -Dunit_test=true -Dpal=posix"
 style_posix = "meson compile -C builds/posix style"
 cspell = "meson compile -C builds/posix cspell"
 cppcheck_posix = "meson compile -C builds/posix cppcheck"
@@ -16,9 +16,7 @@ test_posix = "meson test -C builds/posix"
 libs_posix = "meson compile -C builds/posix"
 iwyu_posix = "meson compile -C builds/posix iwyu"
 posix = { depends-on = ["setup_posix", "libs_posix", "style_posix", "cspell", "cppcheck_posix", "tidy_posix", "iwyu_posix", "test_posix"] }
-setup_posix_cooperative = "meson setup builds/cooperative -Dunit_test=true -Dpal=posix -Dao_type=cooperative"
-posix_cooperative = { depends-on = ["setup_posix_cooperative", "libs_posix", "style_posix", "cppcheck_posix", "tidy_posix", "iwyu_posix", "test_posix"] }
-all = { depends-on = ["posix", "posix_cooperative"] }
+all = { depends-on = ["posix"] }
 
 [dependencies]
 meson = ">=1.6.1,<2"

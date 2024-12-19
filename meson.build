@@ -128,7 +128,6 @@ CSPELL = find_program('cspell', required: false, disabler: true)
 
 unit_test = get_option('unit_test')
 pal = get_option('pal')
-ao_type = get_option('ao_type')
 
 if unit_test
     add_project_arguments(['-DAMAST_PAL_STUBS'], language: 'c')

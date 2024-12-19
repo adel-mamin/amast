@@ -54,7 +54,7 @@ e = executable(
         libhsm_dep,
         libstr_dep,
         libpal_dep,
-        libao_dep,
+        libao_preemptive_dep,
         libevent_dep,
         libtimer_dep,
         libbit_dep])
@@ -67,7 +67,7 @@ ringbuf_example = executable(
         'ringbuf' / 'writer.c'
     ],
     dependencies: [
-        libao_dep,
+        libao_preemptive_dep,
         libpal_dep,
         libringbuf_dep,
         libassert_dep
