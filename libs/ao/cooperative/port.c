@@ -90,8 +90,8 @@ void am_ao_start(
     (void)stack_size;
 
     AM_ASSERT(ao);
-    AM_ASSERT(prio >= 0);
-    AM_ASSERT(prio < AM_AO_NUM_MAX);
+    AM_ASSERT(prio >= AM_AO_PRIO_MIN);
+    AM_ASSERT(prio <= AM_AO_PRIO_MAX);
     AM_ASSERT(queue);
     AM_ASSERT(queue_size > 0);
 
