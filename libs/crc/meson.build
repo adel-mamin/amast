@@ -22,8 +22,6 @@
 # SOFTWARE.
 #
 
-src += [files('crc.c')]
-
 if unit_test
     e = executable(
         'crc',

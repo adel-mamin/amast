@@ -23,7 +23,6 @@
 #
 
 ringbuf_src = [files('ringbuf.c')]
-src += ringbuf_src
 
 libringbuf = library(
     'ringbuf',

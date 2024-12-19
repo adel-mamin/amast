@@ -23,7 +23,6 @@
 #
 
 queue_src = [files('queue.c')]
-src += [queue_src]
 
 libqueue = library('queue', [queue_src], include_directories: [inc])
 libqueue_dep = declare_dependency(

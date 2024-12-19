@@ -23,7 +23,6 @@
 #
 
 pal_src = [files('pal.c')]
-src += pal_src
 
 libpal = library('pal', [pal_src], include_directories: inc)
 libpal_dep = declare_dependency(

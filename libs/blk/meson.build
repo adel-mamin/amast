@@ -23,7 +23,6 @@
 #
 
 blk_src = [files('blk.c')]
-src += blk_src
 
 if unit_test
     e = executable(

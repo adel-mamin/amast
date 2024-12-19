@@ -23,7 +23,6 @@
 #
 
 timer_src = [files('timer.c')]
-src += timer_src
 
 libtimer = library('timer', [timer_src], include_directories: inc)
 libtimer_dep = declare_dependency(

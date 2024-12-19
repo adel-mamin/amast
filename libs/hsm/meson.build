@@ -34,7 +34,6 @@ hsm_inc = include_directories(
     'tests' / 'regular',
     'tests',
 )
-src += [hsm_src]
 
 libhsm = library(
     'hsm',

@@ -23,7 +23,6 @@
 #
 
 str_src = [files('strlib.c')]
-src += str_src
 
 libstr = library('str', [str_src], include_directories: inc)
 libstr_dep = declare_dependency(link_with : libstr, include_directories : inc)

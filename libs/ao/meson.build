@@ -29,7 +29,6 @@ if ao_type == 'cooperative'
 elif ao_type == 'preemptive'
     ao_src += [files('preemptive' / 'port.c')]
 endif
-src += ao_src
 
 libao = library(
     'ao',

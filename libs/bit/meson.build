@@ -23,7 +23,6 @@
 #
 
 bit_src = [files('bit.c')]
-src += bit_src
 
 libbit = library(
     'bit',

@@ -23,7 +23,6 @@
 #
 
 inc = [include_directories('.')]
-src = []
 
 subdir('common')
 subdir('pal')

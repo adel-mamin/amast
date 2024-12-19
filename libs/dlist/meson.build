@@ -23,7 +23,6 @@
 #
 
 dlist_src = files('dlist.c')
-src += [dlist_src]
 
 libdlist = library('dlist', [dlist_src], include_directories: inc)
 libdlist_dep = declare_dependency(

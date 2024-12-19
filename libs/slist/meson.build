@@ -23,7 +23,6 @@
 #
 
 slist_src = [files('slist.c')]
-src += slist_src
 
 libslist = library('slist', [slist_src], include_directories: [inc])
 libslist_dep = declare_dependency(
