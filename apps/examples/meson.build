@@ -58,3 +58,21 @@ e = executable(
         libevent_dep,
         libtimer_dep,
         libbit_dep])
+
+ringbuf_example = executable(
+    'ringbuf-example',
+    [
+        'ringbuf' / 'main.c',
+        'ringbuf' / 'reader.c',
+        'ringbuf' / 'writer.c'
+    ],
+    dependencies: [
+        libao_dep,
+        libpal_dep,
+        libringbuf_dep,
+        libassert_dep
+    ])
+
+if unit_test
+    test('threaded', ringbuf_example, suite: 'ringbuf')
+endif
