@@ -67,7 +67,7 @@ struct am_ao_state {
 
 extern struct am_ao_state am_ao_state_;
 
-void am_ao_notify(void *ao);
+void am_ao_notify(const struct am_ao *ao);
 
 #ifdef __cplusplus
 }

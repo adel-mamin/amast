@@ -118,11 +118,10 @@ void am_ao_start(
     );
 }
 
-void am_ao_notify(void *ao) {
+void am_ao_notify(const struct am_ao *ao) {
     AM_ASSERT(ao);
-    const struct am_ao *ao_ = (struct am_ao *)ao;
-    if (AM_PAL_TASK_ID_NONE == ao_->task_id) {
+    if (AM_PAL_TASK_ID_NONE == ao->task_id) {
         return;
     }
-    am_pal_task_notify(ao_->task_id);
+    am_pal_task_notify(ao->task_id);
 }

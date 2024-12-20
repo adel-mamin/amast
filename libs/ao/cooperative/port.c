@@ -112,15 +112,15 @@ void am_ao_start(
     am_hsm_init(&ao->hsm, init_event);
 }
 
-void am_ao_notify(void *ao) {
+void am_ao_notify(const struct am_ao *ao) {
     AM_ASSERT(ao);
-    const struct am_ao *ao_ = (struct am_ao *)ao;
-    if (AM_PAL_TASK_ID_NONE == ao_->task_id) {
+
+    if (AM_PAL_TASK_ID_NONE == ao->task_id) {
         return;
     }
     struct am_ao_state *me = &am_ao_state_;
 
     me->crit_enter();
-    am_bit_u64_set(&am_ready_aos_, ao_->prio);
+    am_bit_u64_set(&am_ready_aos_, ao->prio);
     me->crit_exit();
 }
