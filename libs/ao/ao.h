@@ -39,6 +39,7 @@
 #include "event/event.h"
 #include "queue/queue.h"
 #include "hsm/hsm.h"
+#include "pal/pal.h"
 
 #ifndef AM_AO_EVT_PUB_MAX
 #define AM_AO_EVT_PUB_MAX AM_EVT_USER
@@ -86,6 +87,7 @@ struct am_ao_state_cfg {
 #endif
 
 AM_ASSERT_STATIC(AM_AO_NUM_MAX <= 64);
+AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_PAL_TASK_NUM_MAX);
 
 /** The subscribe list for one event. */
 struct am_ao_subscribe_list {

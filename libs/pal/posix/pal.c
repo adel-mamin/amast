@@ -69,7 +69,7 @@ struct am_pal_task {
     void *arg;
 };
 
-static struct am_pal_task task_arr_[64] = {0};
+static struct am_pal_task task_arr_[AM_PAL_TASK_NUM_MAX] = {0};
 
 struct am_pal_mutex {
     pthread_mutex_t mutex;

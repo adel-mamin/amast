@@ -33,6 +33,9 @@
 
 #include <stdint.h>
 
+/** Maximum number of PAL tasks */
+#define AM_PAL_TASK_NUM_MAX 64
+
 /** Invalid task ID */
 #define AM_PAL_TASK_ID_NONE 0
 
