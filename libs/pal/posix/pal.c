@@ -42,6 +42,7 @@
 #include <bits/local_lim.h>
 #include <sched.h>
 #include <features.h>
+#include <unistd.h>
 
 #include "common/compiler.h"
 #include "common/macros.h"
@@ -272,7 +273,7 @@ void am_pal_mutex_destroy(int mutex) {
 
 uint32_t am_pal_time_get_ms(void) {
     struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
+    clock_gettime(CLOCK_MONOTONIC, &ts);
     long ms = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
     return (uint32_t)ms;
 }
@@ -314,6 +315,24 @@ void am_pal_sleep_ms(int ms) {
                           .tv_nsec = (ms % 1000) * 1000000
     };
     nanosleep(&ts, /*rmtp=*/NULL);
+}
+
+void am_pal_sleep_till_ms(uint32_t ms) {
+    uint32_t now_ms = am_pal_time_get_ms();
+    uint32_t sleep_ms = ms - now_ms;
+    if (sleep_ms > UINT32_MAX) {
+        return;
+    }
+    usleep(sleep_ms * 1000);
+}
+
+void am_pal_sleep_till_ticks(int domain, uint32_t ticks) {
+    uint32_t now_ticks = am_pal_time_get_tick(domain);
+    uint32_t sleep_ticks = ticks - now_ticks;
+    if (sleep_ticks > UINT32_MAX) {
+        return;
+    }
+    usleep(sleep_ticks * AM_PAL_TICK_DOMAIN_DEFAULT_MS * 1000);
 }
 
 int am_pal_printf(const char *fmt, ...) {

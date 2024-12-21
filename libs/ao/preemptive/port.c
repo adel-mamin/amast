@@ -24,6 +24,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include "blk/blk.h"
 #include "common/compiler.h"
@@ -69,8 +70,13 @@ bool am_ao_run_all(bool loop) {
     const struct am_ao_state *me = &am_ao_state_;
     /* start all AOs */
     am_pal_mutex_unlock(me->startup_mutex);
+    uint32_t now_ticks =
+        am_pal_time_get_tick(/*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT);
     while (loop && AM_UNLIKELY(!AM_ATOMIC_LOAD_N(&me->ao_state_dtor_called))) {
-        am_pal_sleep_ticks(/*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ticks=*/1);
+        am_pal_sleep_till_ticks(
+            /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1
+        );
+        now_ticks += 1;
         am_timer_tick(/*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT);
     }
     return false;
