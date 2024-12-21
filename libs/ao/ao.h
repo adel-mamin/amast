@@ -91,7 +91,7 @@ AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_PAL_TASK_NUM_MAX);
 
 /** The subscribe list for one event. */
 struct am_ao_subscribe_list {
-    uint8_t list[AM_DIVIDE_ROUND_UP(AM_AO_NUM_MAX, 8)]; /* the bitmask */
+    uint8_t list[AM_DIV_CEIL(AM_AO_NUM_MAX, 8)]; /* the bitmask */
 };
 
 /**

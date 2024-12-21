@@ -118,7 +118,7 @@ uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms) {
     if (0 == ms) {
         return 0;
     }
-    return AM_MAX(1, AM_DIVIDE_ROUND_UP(ms, portTICK_PERIOD_MS));
+    return AM_MAX(1, AM_DIV_CEIL(ms, portTICK_PERIOD_MS));
 }
 
 void am_pal_sleep_ticks(int domain, int ticks) {

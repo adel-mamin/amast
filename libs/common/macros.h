@@ -109,10 +109,7 @@ AM_NORETURN void am_assert_failure(
 #define AM_RAD2DEG(x) ((x) * (180. / PI))
 
 /** Do division and round up the result */
-#define AM_DIVIDE_ROUND_UP(numerator, denominator) \
-    (((numerator) + ((denominator) - 1)) / (denominator))
-
-#define AM_ROUND_UP_TO_MULTIPLE_OF(n, m) (DIVIDE_ROUND_UP(n, m) * (m))
+#define AM_DIV_CEIL(n, d) ((n) / (d) + ((n) % (d) != 0))
 
 /** Return number of bits in the representation of the given parameter */
 #define AM_BITS_IN_REPRESENTATION(x) ((int)(sizeof(x) * CHAR_BIT))

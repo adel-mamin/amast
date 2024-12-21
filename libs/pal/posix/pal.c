@@ -281,12 +281,12 @@ uint32_t am_pal_time_get_tick(int domain) {
     AM_ASSERT(AM_PAL_TICK_DOMAIN_DEFAULT == domain);
 
     uint32_t ms = am_pal_time_get_ms();
-    return (uint32_t)AM_DIVIDE_ROUND_UP(ms, AM_PAL_TICK_DOMAIN_DEFAULT_MS);
+    return (uint32_t)AM_DIV_CEIL(ms, AM_PAL_TICK_DOMAIN_DEFAULT_MS);
 }
 
 uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms) {
     AM_ASSERT(AM_PAL_TICK_DOMAIN_DEFAULT == domain);
-    return (uint32_t)AM_DIVIDE_ROUND_UP(ms, AM_PAL_TICK_DOMAIN_DEFAULT_MS);
+    return (uint32_t)AM_DIV_CEIL(ms, AM_PAL_TICK_DOMAIN_DEFAULT_MS);
 }
 
 uint32_t am_pal_time_get_ms_from_tick(int domain, uint32_t tick) {
