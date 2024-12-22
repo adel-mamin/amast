@@ -41,12 +41,17 @@ static struct am_bit_u64 am_ready_aos_ = {0};
 bool am_ao_run_all(bool loop) {
     struct am_ao_state *me = &am_ao_state_;
     bool processed = false;
+    int task_id = am_pal_task_own_id();
     do {
         me->crit_enter();
 
         while (am_bit_u64_is_empty(&am_ready_aos_)) {
             me->crit_exit();
-            me->on_idle();
+            if (me->on_idle) {
+                me->on_idle();
+            } else {
+                am_pal_task_wait(task_id);
+            }
             me->crit_enter();
         }
         int msb = am_bit_u64_msb(&am_ready_aos_);
@@ -105,6 +110,7 @@ void am_ao_start(
 
     ao->prio = prio;
     ao->name = name;
+    ao->task_id = am_pal_task_own_id();
 
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(NULL == me->ao[prio]);
@@ -123,4 +129,6 @@ void am_ao_notify(const struct am_ao *ao) {
     me->crit_enter();
     am_bit_u64_set(&am_ready_aos_, ao->prio);
     me->crit_exit();
+
+    am_pal_task_notify(ao->task_id);
 }

@@ -39,6 +39,9 @@
 /** Invalid task ID */
 #define AM_PAL_TASK_ID_NONE 0
 
+/** Main task ID */
+#define AM_PAL_TASK_ID_MAIN -1
+
 /** Default tick domain */
 #define AM_PAL_TICK_DOMAIN_DEFAULT 0
 

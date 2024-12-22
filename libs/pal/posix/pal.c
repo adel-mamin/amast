@@ -70,6 +70,7 @@ struct am_pal_task {
     void *arg;
 };
 
+static struct am_pal_task task_main_ = {0};
 static struct am_pal_task task_arr_[AM_PAL_TASK_NUM_MAX] = {0};
 
 struct am_pal_mutex {
@@ -114,6 +115,9 @@ void am_pal_crit_exit(void) {
 
 int am_pal_task_own_id(void) {
     pthread_t thread = pthread_self();
+    if (task_main_.thread == thread) {
+        return AM_PAL_TASK_ID_MAIN;
+    }
     for (int i = 0; i < AM_COUNTOF(task_arr_); ++i) {
         if (task_arr_[i].thread == thread) {
             return am_pal_id_from_index(i);
@@ -192,8 +196,13 @@ int am_pal_task_create(
 void am_pal_task_notify(int task_id) {
     AM_ASSERT(task_id != AM_PAL_TASK_ID_NONE);
 
-    int index = am_pal_index_from_id(task_id);
-    struct am_pal_task *t = &task_arr_[index];
+    struct am_pal_task *t = NULL;
+    if (AM_PAL_TASK_ID_MAIN == task_id) {
+        t = &task_main_;
+    } else {
+        int index = am_pal_index_from_id(task_id);
+        t = &task_arr_[index];
+    }
     AM_ASSERT(t);
     pthread_mutex_lock(&t->mutex);
     AM_ATOMIC_STORE_N(&t->notified, true);
@@ -205,8 +214,15 @@ void am_pal_task_wait(int task_id) {
     if (AM_PAL_TASK_ID_NONE == task_id) {
         task_id = am_pal_task_own_id();
     }
-    int index = am_pal_index_from_id(task_id);
-    struct am_pal_task *t = &task_arr_[index];
+    AM_ASSERT(task_id != AM_PAL_TASK_ID_NONE);
+
+    struct am_pal_task *t = NULL;
+    if (AM_PAL_TASK_ID_MAIN == task_id) {
+        t = &task_main_;
+    } else {
+        int index = am_pal_index_from_id(task_id);
+        t = &task_arr_[index];
+    }
     AM_ASSERT(t);
     pthread_mutex_lock(&t->mutex);
     while (!AM_ATOMIC_LOAD_N(&t->notified)) {
@@ -347,7 +363,16 @@ int am_pal_printf(const char *fmt, ...) {
 
 void am_pal_flush(void) { fflush(stdout); }
 
-void am_pal_ctor(void) {}
+void am_pal_ctor(void) {
+    struct am_pal_task *task = &task_main_;
+
+    task->thread = pthread_self();
+    am_pal_mutex_init(&task->mutex);
+
+    int ret = pthread_cond_init(&task->cond, /*attr=*/NULL);
+    AM_ASSERT(0 == ret);
+    task->valid = true;
+}
 
 void am_pal_dtor(void) {
     for (int i = 0; i < AM_COUNTOF(mutex_arr_); ++i) {
