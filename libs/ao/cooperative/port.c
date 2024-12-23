@@ -38,47 +38,43 @@
 
 static struct am_bit_u64 am_ready_aos_ = {0};
 
-bool am_ao_run_all(bool loop) {
+bool am_ao_run_all(void) {
     struct am_ao_state *me = &am_ao_state_;
-    bool processed = false;
-    int task_id = am_pal_task_own_id();
-    do {
-        me->crit_enter();
+    me->crit_enter();
 
-        while (am_bit_u64_is_empty(&am_ready_aos_)) {
-            me->crit_exit();
-            if (me->on_idle) {
-                me->on_idle();
-            } else {
-                am_pal_task_wait(task_id);
-            }
-            me->crit_enter();
-        }
-        int msb = am_bit_u64_msb(&am_ready_aos_);
-
+    while (am_bit_u64_is_empty(&am_ready_aos_)) {
         me->crit_exit();
-
-        struct am_ao *ao = me->ao[msb];
-        AM_ASSERT(ao);
-
-        const struct am_event *e = am_event_pop_front(&ao->event_queue);
-        if (!e) {
-            me->crit_enter();
-            if (am_queue_is_empty(&ao->event_queue)) {
-                am_bit_u64_clear(&am_ready_aos_, ao->prio);
-            }
-            me->crit_exit();
-            continue;
+        if (me->on_idle) {
+            me->on_idle();
+        } else {
+            int task_id = am_pal_task_own_id();
+            am_pal_task_wait(task_id);
         }
-        me->debug(ao, e);
-        AM_ATOMIC_STORE_N(&ao->last_event, e->id);
-        am_hsm_dispatch(&ao->hsm, e);
-        AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
-        am_event_free(&e);
-        processed = true;
-    } while (loop && AM_UNLIKELY(!AM_ATOMIC_LOAD_N(&me->ao_state_dtor_called)));
+        me->crit_enter();
+    }
+    int msb = am_bit_u64_msb(&am_ready_aos_);
 
-    return processed;
+    me->crit_exit();
+
+    struct am_ao *ao = me->ao[msb];
+    AM_ASSERT(ao);
+
+    const struct am_event *e = am_event_pop_front(&ao->event_queue);
+    if (!e) {
+        me->crit_enter();
+        if (am_queue_is_empty(&ao->event_queue)) {
+            am_bit_u64_clear(&am_ready_aos_, ao->prio);
+        }
+        me->crit_exit();
+        return false;
+    }
+    me->debug(ao, e);
+    AM_ATOMIC_STORE_N(&ao->last_event, e->id);
+    am_hsm_dispatch(&ao->hsm, e);
+    AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
+    am_event_free(&e);
+
+    return true;
 }
 
 void am_ao_start(

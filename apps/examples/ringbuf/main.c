@@ -31,7 +31,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "common/compiler.h"
 #include "common/macros.h"
+#include "timer/timer.h"
 #include "ringbuf/ringbuf.h"
 #include "ao/ao.h"
 #include "pal/pal.h"
@@ -45,7 +47,7 @@ int g_ringbuf_data_len = AM_COUNTOF(g_ringbuf_data);
 static const struct am_event *m_queue_ringbuf_reader[2];
 static const struct am_event *m_queue_ringbuf_writer[2];
 
-static void test_ringbuf_threading(void) {
+AM_NORETURN static void test_ringbuf_threading(void) {
     uint8_t buf[32];
 
     am_ringbuf_ctor(&g_ringbuf, buf, AM_COUNTOF(buf));
@@ -80,7 +82,14 @@ static void test_ringbuf_threading(void) {
         /*init_event=*/NULL
     );
 
-    am_ao_run_all(/*loop=*/1);
+    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    for (;;) {
+        while (am_ao_run_all()) {
+        }
+        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        now_ticks += 1;
+        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    }
 }
 
 int main(void) {

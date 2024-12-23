@@ -282,12 +282,10 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
 /**
  * Run all active objects.
  *
- * @param loop  run active objects in loop (true: do not return)
- *
  * @retval true   processed at least one event
  * @retval false  processed no events
  */
-bool am_ao_run_all(bool loop);
+bool am_ao_run_all(void);
 
 /**
  * Check if AO event queue is empty.

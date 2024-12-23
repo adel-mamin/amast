@@ -29,12 +29,14 @@
  */
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include "common/alignment.h"
 #include "common/compiler.h"
 #include "common/constants.h"
 #include "common/macros.h"
 #include "event/event.h"
+#include "timer/timer.h"
 #include "pal/pal.h"
 #include "ao/ao.h"
 
@@ -145,7 +147,13 @@ int main(void) {
         );
     }
 
-    am_ao_run_all(/*loop=*/1);
+    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    for (;;) {
+        while (am_ao_run_all()) {}
+        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        now_ticks += 1;
+        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    }
 
     return 0;
 }

@@ -24,7 +24,6 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
 #include "blk/blk.h"
 #include "common/compiler.h"
@@ -32,7 +31,6 @@
 #include "hsm/hsm.h"
 #include "queue/queue.h"
 #include "event/event.h"
-#include "timer/timer.h"
 #include "pal/pal.h"
 #include "ao/ao.h"
 #include "state.h"
@@ -66,19 +64,15 @@ static void am_ao_task(void *param) {
     }
 }
 
-bool am_ao_run_all(bool loop) {
+bool am_ao_run_all(void) {
+    static bool started = false;
+    if (started) {
+        return false;
+    }
     const struct am_ao_state *me = &am_ao_state_;
     /* start all AOs */
     am_pal_mutex_unlock(me->startup_mutex);
-    uint32_t now_ticks =
-        am_pal_time_get_tick(/*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT);
-    while (loop && AM_UNLIKELY(!AM_ATOMIC_LOAD_N(&me->ao_state_dtor_called))) {
-        am_pal_sleep_till_ticks(
-            /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1
-        );
-        now_ticks += 1;
-        am_timer_tick(/*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT);
-    }
+    started = true;
     return false;
 }
 
