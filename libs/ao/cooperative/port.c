@@ -40,11 +40,14 @@ static struct am_bit_u64 am_ready_aos_ = {0};
 
 bool am_ao_run_all(void) {
     struct am_ao_state *me = &am_ao_state_;
-    me->crit_enter();
-
-    while (!am_bit_u64_is_empty(&am_ready_aos_)) {
+    bool dispatched = false;
+    do {
+        me->crit_enter();
+        if (am_bit_u64_is_empty(&am_ready_aos_)) {
+            me->crit_exit();
+            break;
+        }
         int msb = am_bit_u64_msb(&am_ready_aos_);
-
         me->crit_exit();
 
         struct am_ao *ao = me->ao[msb];
@@ -66,9 +69,10 @@ bool am_ao_run_all(void) {
         AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
         am_event_free(&e);
 
-        return true;
-    }
-    return false;
+        dispatched = true;
+    } while (!dispatched);
+
+    return dispatched;
 }
 
 void am_ao_start(

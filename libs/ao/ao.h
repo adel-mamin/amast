@@ -273,8 +273,11 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
 /**
  * Run all active objects.
  *
- * @retval true   processed at least one event
- * @retval false  processed no events
+ * Non blocking.
+ * Return after dispatching zero or one event.
+ *
+ * @retval true   dispatched one event
+ * @retval false  dispatched no events
  */
 bool am_ao_run_all(void);
 
