@@ -149,7 +149,8 @@ int main(void) {
 
     uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     for (;;) {
-        while (am_ao_run_all()) {}
+        while (am_ao_run_all()) {
+        }
         am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
         am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);

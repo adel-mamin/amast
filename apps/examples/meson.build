@@ -59,8 +59,8 @@ e = executable(
         libtimer_dep,
         libbit_dep])
 
-ringbuf_example = executable(
-    'ringbuf-example',
+ringbuf_preemptive_example = executable(
+    'ringbuf_preemptive_example',
     [
         'ringbuf' / 'main.c',
         'ringbuf' / 'reader.c',
@@ -73,6 +73,22 @@ ringbuf_example = executable(
         libassert_dep
     ])
 
+ringbuf_cooperative_example = executable(
+    'ringbuf_cooperative_example',
+    [
+        'ringbuf' / 'main.c',
+        'ringbuf' / 'reader.c',
+        'ringbuf' / 'writer.c'
+    ],
+    dependencies: [
+        libao_cooperative_dep,
+        libpal_dep,
+        libringbuf_dep,
+        libassert_dep,
+        libbit_dep
+    ])
+
 if unit_test
-    test('threaded', ringbuf_example, suite: 'ringbuf')
+    test('threaded_preemptive', ringbuf_preemptive_example, suite: 'ringbuf')
+    test('threaded_cooperative', ringbuf_cooperative_example, suite: 'ringbuf')
 endif

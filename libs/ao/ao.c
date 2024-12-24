@@ -245,8 +245,6 @@ void am_ao_stop(struct am_ao *ao) {
     me->ao[ao->prio] = NULL;
 }
 
-static void am_ao_on_idle_stub(void) {}
-
 static void am_ao_debug_stub(const struct am_ao *ao, const struct am_event *e) {
     (void)ao;
     (void)e;
@@ -263,10 +261,6 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     me->startup_mutex = am_pal_mutex_create();
     am_pal_mutex_lock(me->startup_mutex);
 
-    me->on_idle = cfg->on_idle;
-    if (!me->on_idle) {
-        me->on_idle = am_ao_on_idle_stub;
-    }
     me->debug = cfg->debug;
     if (!me->debug) {
         me->debug = am_ao_debug_stub;

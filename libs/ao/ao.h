@@ -62,8 +62,6 @@ struct am_ao {
 
 /** AO state configuration. */
 struct am_ao_state_cfg {
-    /** User callback on idle state, when no AO is running. */
-    void (*on_idle)(void);
     /** Debug callback. */
     void (*debug)(const struct am_ao *ao, const struct am_event *e);
 
@@ -220,13 +218,6 @@ void am_ao_start(
 void am_ao_stop(struct am_ao *ao);
 
 struct am_ao_cfg {
-    /**
-     * User callback for idle condition actions (e.g. sleep mode)
-     * The interrupts are disabled when the callback is called.
-     * The function must unlock interrupts internally, ideally
-     * atomically with a transition to a sleep mode.
-     */
-    void (*on_idle)(void);
     /** Debug callback. */
     void (*debug)(const struct am_ao *ao, const struct am_event *e);
     /** Enter critical section. */

@@ -42,39 +42,33 @@ bool am_ao_run_all(void) {
     struct am_ao_state *me = &am_ao_state_;
     me->crit_enter();
 
-    while (am_bit_u64_is_empty(&am_ready_aos_)) {
+    while (!am_bit_u64_is_empty(&am_ready_aos_)) {
+        int msb = am_bit_u64_msb(&am_ready_aos_);
+
         me->crit_exit();
-        if (me->on_idle) {
-            me->on_idle();
-        } else {
-            int task_id = am_pal_task_own_id();
-            am_pal_task_wait(task_id);
+
+        struct am_ao *ao = me->ao[msb];
+        AM_ASSERT(ao);
+        AM_ASSERT(ao->prio == msb);
+
+        const struct am_event *e = am_event_pop_front(&ao->event_queue);
+        if (!e) {
+            me->crit_enter();
+            if (am_queue_is_empty(&ao->event_queue)) {
+                am_bit_u64_clear(&am_ready_aos_, ao->prio);
+            }
+            me->crit_exit();
+            continue;
         }
-        me->crit_enter();
+        me->debug(ao, e);
+        AM_ATOMIC_STORE_N(&ao->last_event, e->id);
+        am_hsm_dispatch(&ao->hsm, e);
+        AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
+        am_event_free(&e);
+
+        return true;
     }
-    int msb = am_bit_u64_msb(&am_ready_aos_);
-
-    me->crit_exit();
-
-    struct am_ao *ao = me->ao[msb];
-    AM_ASSERT(ao);
-
-    const struct am_event *e = am_event_pop_front(&ao->event_queue);
-    if (!e) {
-        me->crit_enter();
-        if (am_queue_is_empty(&ao->event_queue)) {
-            am_bit_u64_clear(&am_ready_aos_, ao->prio);
-        }
-        me->crit_exit();
-        return false;
-    }
-    me->debug(ao, e);
-    AM_ATOMIC_STORE_N(&ao->last_event, e->id);
-    am_hsm_dispatch(&ao->hsm, e);
-    AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
-    am_event_free(&e);
-
-    return true;
+    return false;
 }
 
 void am_ao_start(

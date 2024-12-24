@@ -60,11 +60,22 @@ libao_preemptive_dep = declare_dependency(
 
 if unit_test
     e = executable(
-        'minimal',
+        'minimal_preemptive',
         [
             'tests' / 'minimal.c'
         ],
         dependencies: [libao_preemptive_dep, libassert_dep, libpal_dep],
         include_directories: [include_directories('tests')])
-    test('minimal', e, suite: 'ao')
+    test('minimal_preemptive', e, suite: 'ao')
+
+    e = executable(
+        'minimal_cooperative',
+        [
+            'tests' / 'minimal.c'
+        ],
+        dependencies: [
+            libao_cooperative_dep, libassert_dep, libpal_dep, libbit_dep
+        ],
+        include_directories: [include_directories('tests')])
+    test('minimal_cooperative', e, suite: 'ao')
 endif
