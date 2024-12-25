@@ -10,10 +10,12 @@ Amast is a minimalist asynchronous toolkit that makes it easier to develop C lan
 - finite state machine (FSM) ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/fsm/README.rst))
 - hierarchical state machine (HSM) with submachines support ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/hsm/README.rst), [examples](https://github.com/adel-mamin/amast/tree/main/apps/examples/hsm))
 - async/await ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/async/README.rst))
+- active object ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/ao/README.rst))
+- onesize memory allocator ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/onesize/README.rst))
+- timers ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/timer/README.rst))
+- events ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/event/README.rst))
+- ring buffer ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/ringbuf/README.rst))
 - doubly and singly linked lists
-- onesize memory allocator
-- timers
-- events
 
 ## How To Compile
 <a name="how-to-compile"></a>
@@ -26,7 +28,14 @@ Run `pixi run all`.
 ## How To Use
 <a name="how-to-use"></a>
 
-Include `amast.h`, `amast_config.h` and `amast.c` from the latest release to your project.
+Include
+
+- `amast.h`
+- `amast_config.h`
+- `amast.c`
+- `amast_preemptive.c` or `amast_cooperative.c`
+
+from the latest release to your project.
 
 If you want to use Amast features that require porting, then also add one of the following
 ports to you project:
