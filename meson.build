@@ -27,8 +27,8 @@ project('amast', 'c',
         default_options : [
             'c_std=c99',
             'warning_level=3',
-            'buildtype=debug',
-            # 'b_lto=true',
+            'buildtype=release',
+            'b_lto=true',
             'werror=true',
             'default_library=static',
         ],
@@ -99,7 +99,8 @@ endif
 add_project_arguments(
     [
         extra_warning_args,
-        '-fno-strict-aliasing',
+        '-fsanitize=address',
+        '-fsanitize=undefined',
         '-fmessage-length=0',
         '-fno-common',
         '-ffunction-sections',
@@ -113,6 +114,8 @@ add_project_arguments(
 
 add_project_link_arguments([
     '-Wl,--gc-sections',
+    '-fsanitize=address',
+    '-fsanitize=undefined',
     '-Wl,-Map=output.map'],
     language : 'c')
 
