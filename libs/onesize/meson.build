@@ -26,7 +26,7 @@
 
 onesize_src = [files('onesize.c')]
 
-libonesize = library('onesize', [onesize_src], c_args: ['-O0', '-fno-lto', '-ggdb'], include_directories: [inc])
+libonesize = library('onesize', [onesize_src], include_directories: [inc])
 libonesize_dep = declare_dependency(
     link_with: libonesize,
     dependencies: [libslist_dep],

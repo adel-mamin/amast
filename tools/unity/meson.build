@@ -42,7 +42,7 @@ amast_exe = executable(
     'amast-unity',
     ['unity.c', str_src],
     dependencies : [libassert_dep, libpal_dep],
-    c_args: ['-std=gnu99', '-ggdb', '-fno-lto'],
+    c_args: ['-std=gnu99', '-ggdb'],
     include_directories: libs_inc
 )
 
@@ -85,6 +85,8 @@ if unit_test
         c_args: [
             '-DAM_HSM_SPY',
             '-DAM_FSM_SPY',
+            '-flto=auto',
+            '-O2',
             '-ffunction-sections', '-fdata-sections'
         ],
         link_args: ['-Wl,--gc-sections'],

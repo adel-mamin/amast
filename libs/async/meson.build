@@ -34,7 +34,6 @@ if unit_test
         [
             'test.c'
         ],
-        c_args: ['-O0', '-fno-lto', '-ggdb'],
         dependencies: [libasync_dep, libassert_dep])
     test('async', e, suite: 'async')
 endif
