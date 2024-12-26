@@ -193,14 +193,14 @@ int am_pal_task_create(
     return am_pal_id_from_index(index);
 }
 
-void am_pal_task_notify(int task_id) {
-    AM_ASSERT(task_id != AM_PAL_TASK_ID_NONE);
+void am_pal_task_notify(int task) {
+    AM_ASSERT(task != AM_PAL_TASK_ID_NONE);
 
     struct am_pal_task *t = NULL;
-    if (AM_PAL_TASK_ID_MAIN == task_id) {
+    if (AM_PAL_TASK_ID_MAIN == task) {
         t = &task_main_;
     } else {
-        int index = am_pal_index_from_id(task_id);
+        int index = am_pal_index_from_id(task);
         t = &task_arr_[index];
     }
     AM_ASSERT(t);
@@ -210,17 +210,17 @@ void am_pal_task_notify(int task_id) {
     pthread_mutex_unlock(&t->mutex);
 }
 
-void am_pal_task_wait(int task_id) {
-    if (AM_PAL_TASK_ID_NONE == task_id) {
-        task_id = am_pal_task_own_id();
+void am_pal_task_wait(int task) {
+    if (AM_PAL_TASK_ID_NONE == task) {
+        task = am_pal_task_own_id();
     }
-    AM_ASSERT(task_id != AM_PAL_TASK_ID_NONE);
+    AM_ASSERT(task != AM_PAL_TASK_ID_NONE);
 
     struct am_pal_task *t = NULL;
-    if (AM_PAL_TASK_ID_MAIN == task_id) {
+    if (AM_PAL_TASK_ID_MAIN == task) {
         t = &task_main_;
     } else {
-        int index = am_pal_index_from_id(task_id);
+        int index = am_pal_index_from_id(task);
         t = &task_arr_[index];
     }
     AM_ASSERT(t);

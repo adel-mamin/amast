@@ -77,7 +77,8 @@
         "strsz",
         "prefixsz",
 
-        "bitmask", "PRIO", "deallocation"
+        "bitmask", "PRIO", "deallocation",
+        "pthread", "ALIGNOF"
     ],
     // flagWords - list of words to be always considered incorrect
     // This is useful for offensive words and common spelling errors.
