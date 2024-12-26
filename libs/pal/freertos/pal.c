@@ -3,6 +3,8 @@
  *
  * Copyright (c) Adel Mamin
  *
+ * Source: https://github.com/adel-mamin/amast
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -32,6 +34,26 @@
 
 #include "pal/pal.h"
 
+struct am_pal_task {
+    /* pthread data */
+    static StaticTask_t task;
+    /* mutex to protect condition variable */
+    pthread_mutex_t mutex;
+    /* condition variable for signaling */
+    pthread_cond_t cond;
+    /* flag to track notification state */
+    bool notified;
+    /* the task is valid */
+    bool valid;
+    /* entry function */
+    void (*entry)(void *arg);
+    /* entry function argument */
+    void *arg;
+};
+
+static struct am_pal_task task_main_ = {0};
+static struct am_pal_task task_arr_[AM_PAL_TASK_NUM_MAX] = {0};
+
 void am_pal_crit_enter(void) {
     if (xPortIsInsideInterrupt()) {
         taskENTER_CRITICAL_FROM_ISR();
@@ -48,6 +70,10 @@ void am_pal_crit_exit(void) {
     }
 }
 
+int am_pal_task_own_id(void) {
+    TaskHandle_t h = xTaskGetCurrentTaskHandle();
+}
+
 void *am_pal_task_create(
     const char *name,
     int priority,
@@ -58,11 +84,20 @@ void *am_pal_task_create(
 ) {
     AM_ASSERT(AM_ALIGNOF_PTR(stack) >= AM_ALIGNOF(StackType_t));
     AM_ASSERT(stack_size > 0);
+    AM_ASSERT(entry);
+    AM_ASSERT(priority >= 0);
 
-    static StaticTask_t tcb[1];
-    static int ntcb = 0;
-
-    AM_ASSERT(ntcb < AM_COUNTOF(tcb));
+    int index = -1;
+    struct am_pal_task *task = NULL;
+    for (int i = 0; i < AM_COUNTOF(task_arr_); ++i) {
+        if (!task_arr_[i].valid) {
+            index = i;
+            task = &task_arr_[i];
+            task_arr_[i].valid = true;
+            break;
+        }
+    }
+    AM_ASSERT(task && (index >= 0));
 
     TaskHandle_t h = xTaskCreateStatic(
         entry,
