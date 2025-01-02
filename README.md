@@ -17,7 +17,7 @@ Amast is a minimalist asynchronous toolkit that makes it easier to develop C lan
 - ring buffer ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/ringbuf/README.rst), [example](https://github.com/adel-mamin/amast/tree/main/apps/examples/ringbuf))
 - doubly and singly linked lists
 
-## How To Compile
+## How To Compile For Amast Development
 <a name="how-to-compile"></a>
 
 On Linux or WSL:
@@ -25,7 +25,7 @@ On Linux or WSL:
 Install [pixi](https://pixi.sh/latest/#installation).
 Run `pixi run all`.
 
-## How To Use
+## How To Use The Latest Amast Release
 <a name="how-to-use"></a>
 
 Include
