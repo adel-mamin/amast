@@ -70,6 +70,7 @@ static void test_regular(void) {
     };
     static const struct test2 in[] = {
         /* clang-format off */
+
         {HSM_EVT_G, "s21-G;s211-EXIT;s21-EXIT;s2-EXIT;s1-ENTRY;s1-INIT;s11-ENTRY;s11-INIT;"},
         {HSM_EVT_I, "s1-I;"},
         {HSM_EVT_A, "s1-A;s11-EXIT;s1-EXIT;s1-ENTRY;s1-INIT;s11-ENTRY;s11-INIT;"},
@@ -95,6 +96,7 @@ static void test_regular(void) {
         {HSM_EVT_F, "s2-F;s211-EXIT;s21-EXIT;s2-EXIT;s1-ENTRY;s11-ENTRY;s11-INIT;"},
         {HSM_EVT_C, "s1-C;s11-EXIT;s1-EXIT;s2-ENTRY;s2-INIT;s21-ENTRY;s211-ENTRY;s211-INIT;"},
         {HSM_EVT_I, "s-I;"}
+
         /* clang-format on */
     };
 

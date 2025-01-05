@@ -146,7 +146,7 @@ struct am_hsm_state {
 
 /** Helper macro. Not to be used directly. */
 #define AM_STATE1_(s) \
-    (struct am_hsm_state) { .fn = (am_hsm_state_fn)(s), .ifn = 0 }
+    (struct am_hsm_state){.fn = (am_hsm_state_fn)(s), .ifn = 0}
 
 /** Helper macro. Not to be used directly. */
 #define AM_STATE2_(s, i) \
