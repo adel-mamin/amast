@@ -30,10 +30,13 @@
  * Platform abstraction layer (PAL) API posix implementation
  */
 
-#define _GNU_SOURCE
-
 #include <stdarg.h> /* IWYU pragma: keep */
 #include <stdbool.h>
+
+/* amast-pragma: verbatim-include-std-on */
+
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -45,6 +48,8 @@
 #include <sched.h>
 #include <features.h>
 #include <unistd.h>
+
+/* amast-pragma: verbatim-include-std-off */
 
 #include "common/compiler.h"
 #include "common/macros.h"

@@ -61,6 +61,13 @@ struct db {
 
 static struct db m_db = {.src.len = 0, .hdr.len = 0};
 
+static bool is_pragma(const char *str, const char *pragma) {
+    if (NULL == strstr(str, "amast-pragma")) {
+        return false;
+    }
+    return strstr(str, pragma) != NULL;
+}
+
 /* check if the include already exists in the array */
 /* cppcheck-suppress-begin constParameter */
 static bool include_is_unique(
@@ -86,10 +93,14 @@ static void include_add_unique(
 }
 
 /* process a line and detect #include directives */
-static void process_content(struct files *db, const char *ln) {
+static void process_content(
+    struct files *db, const char *ln, bool verbatim_include_std
+) {
     char inc_file[PATH_MAX + 1];
 #define AM_LIM AM_STRINGIFY(PATH_MAX)
-    if (sscanf(ln, "#include <%" AM_LIM "[^>]>%*s", inc_file) == 1) {
+    if (verbatim_include_std) {
+        str_lcpy(db->includes_std[db->includes_std_num++], ln, PATH_MAX);
+    } else if (sscanf(ln, "#include <%" AM_LIM "[^>]>%*s", inc_file) == 1) {
         include_add_unique(db->includes_std, &db->includes_std_num, inc_file);
     } else if (sscanf(ln, "#include \"%" AM_LIM "[^\"]\"%*s", inc_file) == 1) {
         /* ignore user includes */;
@@ -107,8 +118,18 @@ static void read_file(struct files *db, const char *fname) {
     }
 
     char line[1024];
+    bool verbatim_include_std = false;
     while (fgets(line, sizeof(line), file)) {
-        process_content(db, line);
+        if (verbatim_include_std) {
+            if (is_pragma(line, "verbatim-include-std-off")) {
+                verbatim_include_std = false;
+                continue;
+            }
+        } else if (is_pragma(line, "verbatim-include-std-on")) {
+            verbatim_include_std = true;
+            continue;
+        }
+        process_content(db, line, verbatim_include_std);
     }
 
     fclose(file);
@@ -239,7 +260,7 @@ static void file_append(
     char (*tests)[PATH_MAX]
 ) {
     /*
-     * There must only be one main() in the resulting file.
+     * There must be only one main() in the resulting file.
      * So, replace main() with a unique function name
      */
     const char *main_fn = "int main(void) {";
@@ -290,7 +311,15 @@ static void add_amast_description(
 
 static void add_amast_includes_std(FILE *f, const struct files *db) {
     for (int i = 0; i < db->includes_std_num; ++i) {
-        fprintf(f, "#include <%s>\n", db->includes_std[i]);
+        if (strstr(db->includes_std[i], "#include") ||
+            /* verbatim inclusion */
+            strstr(db->includes_std[i], "#define")) {
+            fprintf(f, "%s", db->includes_std[i]);
+        } else if (db->includes_std[i][0] == '\n') {
+            fprintf(f, "\n");
+        } else {
+            fprintf(f, "#include <%s>\n", db->includes_std[i]);
+        }
     }
     fprintf(f, "\n");
 }
