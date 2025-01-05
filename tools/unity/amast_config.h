@@ -44,6 +44,6 @@
 /* #define AM_FSM_SPY */
 
 /** Enable am_assert_failure() implementation */
-/* #define AM_ASSERT_FAILURE */
+#define AM_ASSERT_FAILURE
 
 #endif /* AMAST_CONFIG_H_INCLUDED */
