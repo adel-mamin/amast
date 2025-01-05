@@ -80,7 +80,12 @@ struct am_pal_mutex {
     bool valid;
 };
 
-static struct am_pal_mutex mutex_arr_[2] = {0};
+/** Maximum number of mutexes */
+#ifndef AM_PAL_MUTEX_NUM_MAX
+#define AM_PAL_MUTEX_NUM_MAX 2
+#endif
+
+static struct am_pal_mutex mutex_arr_[AM_PAL_MUTEX_NUM_MAX] = {0};
 
 static int am_pal_index_from_id(int id) {
     AM_ASSERT(id > 0);
