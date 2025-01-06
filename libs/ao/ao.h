@@ -62,7 +62,7 @@ struct am_ao {
     bool stopped;                /**< 1: AO was stopped, 0: AO wasn't stopped */
 };
 
-/** AO state configuration. */
+/** Active object library state configuration. */
 struct am_ao_state_cfg {
     /** Debug callback. */
     void (*debug)(const struct am_ao *ao, const struct am_event *e);
@@ -97,18 +97,75 @@ struct am_ao_subscribe_list {
 /**
  * Publish event.
  *
- * @param event  the event to publish
+ * The event is delivered to event queues of all the active objects,
+ * which are subscribed to the event ID.
+ * The event is then handled asynchronously by the active objects.
+ *
+ * Use am_ao_subscribe() to subscribe an active object
+ * to an event ID. Also use am_ao_unsubscribe() or am_ao_unsubscribe_all()
+ * to unsubscribe it from the event ID.
+ *
+ * If any active object has full event queue and cannot
+ * accommodate the event, then the function crashes with assert.
+ *
+ * If your application is prepared for loosing the event,
+ * then use am_ao_publish_x() function instead.
+ *
+ * The event is added to active object event queue using am_event_push_back()
+ * function.
+ *
+ * Tries to free the event, if no active objects are subscribed to it.
+ * *event is set to NULL, if the event was freed.
+ *
+ * The library takes care of freeing the event once all
+ * subscribed active objects handled the event.
+ *
+ * Statically allocated events (events for which am_event_is_static()
+ * returns true) are never freed.
+ *
+ * The function is fast and thread safe and usable from
+ * interrupt service routines (ISR).
+ *
+ * @param event  the pointer to the event to publish
  */
-void am_ao_publish(const struct am_event *event);
+void am_ao_publish(const struct am_event **event);
 
 /**
  * Publish event.
  *
+ * The event is delivered to event queues of all the active objects,
+ * which are subscribed to the event ID.
+ * The event is then handled asynchronously by the active objects.
+ *
+ * Use am_ao_subscribe() to subscribe an active object
+ * to an event ID. Also use am_ao_unsubscribe() or am_ao_unsubscribe_all()
+ * to unsubscribe it from the event ID.
+ *
+ * If any active object has full event queue and cannot
+ * accommodate the event, then the function skips the event delivery
+ * to the active object.
+ *
+ * If your application is not prepared for loosing the event,
+ * then use am_ao_publish() function instead.
+ *
+ * The event is added to active object event queue using am_event_push_back()
+ * function.
+ *
  * Tries to free the event, if it was not delivered to any subscriber.
  * *event is set to NULL, if the event was freed.
  *
- * @param event   the event to publish
- * @param margin  free event queue slots to be available after event is pushed
+ * The library takes care of freeing the event once all
+ * subscribed active objects handled the event.
+ *
+ * Statically allocated events (events for which am_event_is_static()
+ * returns true) are never freed.
+ *
+ * The function is fast and thread safe and usable from
+ * interrupt service routines (ISR).
+ *
+ * @param event   the pointer to the event to publish
+ * @param margin  free event queue slots to be available in each subscribed
+ *                active object after the event is pushed to their event queues
  *
  * @retval true   success
  * @retval false  at least one delivery has failed
@@ -116,26 +173,38 @@ void am_ao_publish(const struct am_event *event);
 bool am_ao_publish_x(const struct am_event **event, int margin);
 
 /**
- * Post event to the back of AO event queue.
+ * Post event to the back of active object's event queue.
  *
- * If AO event queue is full the API asserts.
- * The event is handled asynchronously.
+ * The event is then handled asynchronously by the active object.
  *
- * @param ao      the event is posted to this AO
+ * If the active object's event queue is full the function asserts.
+ *
+ * The function is fast and thread safe and usable from
+ * interrupt service routines (ISR).
+ *
+ * @param ao      the event is posted to this active object
  * @param event   the event to post
  */
 void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
 
 /**
- * Post event to the back of AO event queue.
+ * Post event to the back of active object's event queue.
  *
- * If AO event queue is full and margin is >0 the API fails gracefully.
- * The event is handled asynchronously.
+ * The event is then handled asynchronously by the active object.
+ *
+ * If the active object's event queue is full and margin is >0,
+ * then the function fails gracefully.
  *
  * Tries to free the event, if it was not posted.
  * *event is set to NULL, if the event was freed.
  *
- * @param ao      the event is posted to this AO
+ * Statically allocated events (events for which am_event_is_static()
+ * returns true) are never freed.
+ *
+ * The function is fast and thread safe and usable from
+ * interrupt service routines (ISR).
+ *
+ * @param ao      the event is posted to this active object
  * @param event   the event to post
  * @param margin  free event queue slots to be available after event is posted
  *
@@ -147,12 +216,16 @@ bool am_ao_post_fifo_x(
 );
 
 /**
- * Post event to the front of AO event queue.
+ * Post event to the front of active object's event queue.
  *
- * If AO event queue is full the API asserts.
- * The event is handled asynchronously.
+ * The event is then handled asynchronously by the active object.
  *
- * @param ao      the event is posted to this AO
+ * If active object's event queue is full the function asserts.
+ *
+ * The function is fast and thread safe and usable from
+ * interrupt service routines (ISR).
+ *
+ * @param ao      the event is posted to this active object
  * @param event   the event to post
  */
 void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
@@ -160,13 +233,18 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
 /**
  * Post event to the front of AO event queue.
  *
- * If AO event queue is full and margin is >0 the API fails gracefully.
- * The event is handled asynchronously.
+ * The event is then handled asynchronously by the active object.
+ *
+ * If active object's event queue is full and margin is >0,
+ * then the function fails gracefully.
  *
  * Tries to free the event, if it was not posted.
  * *event is set to NULL, if the event was freed.
  *
- * @param ao      the event is posted to this AO
+ * Statically allocated events (events for which am_event_is_static()
+ * returns true) are never freed.
+ *
+ * @param ao      the event is posted to this active object
  * @param event   the event to post
  * @param margin  free event queue slots to be available after event is posted
  *
@@ -190,16 +268,20 @@ void am_ao_ctor(struct am_ao *ao, const struct am_hsm_state *state);
  *
  * The safest is to start active objects in the order of their priority,
  * beginning from the lowest priority active objects because they tend
- * to have the biggest event queues.
+ * to have the bigger event queues.
  *
  * @param ao          the active object to start
  * @param prio        priority level [0, AM_AO_PRIO_MAX]
  * @param queue       the active object's event queue
- * @param queue_size  the event queue size
+ * @param queue_size  the event queue size [sizeof(struct am_event*)]
  * @param stack       active object stack
  * @param stack_size  the stack size [bytes]
- * @param name        human readable name of active object
- * @param init_event  init event. Can be NULL. The event is not recycled.
+ * @param name        human readable name of active object.
+ *                    Not copied. Must remain valid after the call.
+ *                    Can be NULL.
+ * @param init_event  init event. Can be NULL.
+ *                    The event is not freed. The caller is responsible
+ *                    for freeing the event after the call.
  */
 void am_ao_start(
     struct am_ao *ao,
@@ -213,12 +295,13 @@ void am_ao_start(
 );
 
 /**
- * Stop an active object
+ * Stop an active object.
  *
  * @param ao  the active object to stop
  */
 void am_ao_stop(struct am_ao *ao);
 
+/** Active object library configuration. */
 struct am_ao_cfg {
     /** Debug callback. */
     void (*debug)(const struct am_ao *ao, const struct am_event *e);
@@ -229,18 +312,19 @@ struct am_ao_cfg {
 };
 
 /**
- * AO state constructor.
+ * Active object library state constructor.
  *
- * @param cfg  AO state configuration
- *             The AO module makes an internal copy of the configuration.
+ * @param cfg  active object library configuration
+ *             The active object module makes an internal copy of
+ *             the configuration.
  */
 void am_ao_state_ctor(const struct am_ao_state_cfg *cfg);
 
-/** Destroys the internal state of AO */
+/** Destroy the internal state of active object library */
 void am_ao_state_dtor(void);
 
 /**
- * Subscribes active object to event.
+ * Subscribe active object to event ID.
  *
  * @param ao     active object to subscribe
  * @param event  the event ID to subscribe to
@@ -248,7 +332,7 @@ void am_ao_state_dtor(void);
 void am_ao_subscribe(const struct am_ao *ao, int event);
 
 /**
- * Unsubscribes active object from the event.
+ * Unsubscribe active object from event ID.
  *
  * @param ao     active object to unsubscribe
  * @param event  the event ID to unsubscribe from
@@ -256,18 +340,21 @@ void am_ao_subscribe(const struct am_ao *ao, int event);
 void am_ao_unsubscribe(const struct am_ao *ao, int event);
 
 /**
- * Unsubscribes active object from all events.
+ * Unsubscribe active object from all events.
  *
  * @param ao  active object to unsubscribe
  */
 void am_ao_unsubscribe_all(const struct am_ao *ao);
 
 /**
- * Initialize the AO subscribe list.
+ * Initialize active object global subscribe list.
  *
- * Optional. Only needed if AO pub/sub functionality is used.
+ * Optional. Only needed if active object pub/sub functionality is used.
+ * The pub/sub functionality is provided by
+ * am_ao_publish(), am_ao_publish_x(),
+ * am_ao_subscribe(), am_ao_unsubscribe() and am_ao_unsubscribe_all() APIs.
  *
- * @param sub   the array of AO subscribe lists
+ * @param sub   the array of active object subscribe lists
  * @param nsub  the number of elements in sub array
  */
 void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
@@ -284,9 +371,9 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
 bool am_ao_run_all(void);
 
 /**
- * Check if AO event queue is empty.
+ * Check if active object event queue is empty.
  *
- * @param ao  check the event queue of this AO
+ * @param ao  check the event queue of this active object
  *
  * @retval true   the queue is empty
  * @retval false  the queue is not empty
@@ -307,7 +394,7 @@ void am_ao_dump_event_queues(
 );
 
 /**
- * Log last event of every AO.
+ * Log last event of every active object.
  *
  * @param log  the logging callback
  */

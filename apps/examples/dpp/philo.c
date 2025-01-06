@@ -26,6 +26,7 @@
 
 #include <string.h>
 
+#include "common/compiler.h"
 #include "common/macros.h"
 #include "hsm/hsm.h"
 #include "event/event.h"
@@ -116,7 +117,7 @@ static int philo_eating(struct philo *me, const struct am_event *event) {
             EVT_DONE, sizeof(struct done), /*margin=*/0
         );
         msg->philo = me->id;
-        am_ao_publish(&msg->event);
+        am_ao_publish(AM_CAST(const struct am_event **, &msg));
         return AM_HSM_TRAN(philo_thinking);
     }
     default:

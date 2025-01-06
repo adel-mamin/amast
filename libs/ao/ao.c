@@ -118,12 +118,13 @@ bool am_ao_publish_x(const struct am_event **event, int margin) {
     return all_published;
 }
 
-void am_ao_publish(const struct am_event *event) {
+void am_ao_publish(const struct am_event **event) {
     AM_ASSERT(event);
-    AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
-    AM_ASSERT(AM_EVENT_HAS_PUBSUB_ID(event));
+    AM_ASSERT(*event);
+    AM_ASSERT(AM_EVENT_HAS_USER_ID(*event));
+    AM_ASSERT(AM_EVENT_HAS_PUBSUB_ID(*event));
 
-    am_ao_publish_x(&event, /*margin=*/0);
+    am_ao_publish_x(event, /*margin=*/0);
 }
 
 void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event) {
