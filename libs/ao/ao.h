@@ -264,7 +264,7 @@ bool am_ao_post_lifo_x(
 void am_ao_ctor(struct am_ao *ao, const struct am_hsm_state *state);
 
 /**
- * Start an active object.
+ * Start active object.
  *
  * The safest is to start active objects in the order of their priority,
  * beginning from the lowest priority active objects because they tend
@@ -295,7 +295,7 @@ void am_ao_start(
 );
 
 /**
- * Stop an active object.
+ * Stop active object.
  *
  * @param ao  the active object to stop
  */
@@ -373,6 +373,8 @@ bool am_ao_run_all(void);
 /**
  * Check if active object event queue is empty.
  *
+ * Used for debugging.
+ *
  * @param ao  check the event queue of this active object
  *
  * @retval true   the queue is empty
@@ -382,6 +384,8 @@ bool am_ao_event_queue_is_empty(struct am_ao *ao);
 
 /**
  * Log the content of the first num events in each event queue of every AO.
+ *
+ * Used for debugging.
  *
  * @param num  the number of events to log. Use -1 to log all events.
  * @param log  the logging callback
@@ -395,6 +399,8 @@ void am_ao_dump_event_queues(
 
 /**
  * Log last event of every active object.
+ *
+ * Used for debugging.
  *
  * @param log  the logging callback
  */
