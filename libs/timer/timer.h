@@ -45,6 +45,7 @@ AM_ASSERT_STATIC(AM_EVENT_TICK_DOMAIN_MASK >= AM_PAL_TICK_DOMAIN_MAX);
  * Posting is a one-to-one event delivery mechanism.
  */
 typedef void (*am_timer_post_fn)(void *owner, const struct am_event *event);
+
 /**
  * Expired timer events are published using this callback.
  * Publishing is a one-to-many event delivery mechanism.
@@ -60,20 +61,27 @@ struct am_timer_cfg {
      * Posting is a one-to-one event delivery mechanism.
      */
     am_timer_post_fn post;
+
     /**
      * Expired timer events are published using this callback.
      * Publishing is a one-to-many event delivery mechanism.
      */
     am_timer_publish_fn publish;
+
     /**
      * Update the content of the given timer event.
+     *
      * Optional, can be NULL.
+     *
      * @param event  the timer event to update
+     *
      * @return the updated timer event
      */
     struct am_event_timer *(*update)(struct am_event_timer *event);
+
     /** Enter critical section. */
     void (*crit_enter)(void);
+
     /** Exit critical section. */
     void (*crit_exit)(void);
 };
@@ -82,12 +90,16 @@ struct am_timer_cfg {
 struct am_event_timer {
     /** event descriptor */
     struct am_event event;
+
     /** to link timer events together */
     struct am_dlist_item item;
+
     /** the object, who receives the timer event */
     void *owner;
+
     /** the timer event is sent after this many ticks */
     int shot_in_ticks;
+
     /** the timer event is re-sent after this many ticks */
     int interval_ticks;
 };
@@ -111,6 +123,7 @@ void am_timer_event_ctor(struct am_event_timer *event, int id, int domain);
 
 /**
  * Allocate and construct timer event.
+ *
  * Cannot fail. Cannot be freed. Never garbage collected.
  * The returned timer event is fully constructed.
  * No need to call am_timer_event_ctor() for it.
