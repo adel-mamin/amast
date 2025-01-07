@@ -61,7 +61,7 @@ struct am_async {
 /**
  * Mark the beginning of async function block.
  *
- * Should be called at the beginning of an async function.
+ * Should be called at the beginning of async function.
  *
  * @param me  pointer to the `struct am_async` managing the async state
  */
@@ -76,7 +76,7 @@ struct am_async {
 /**
  * Mark the end of async function and return completion.
  *
- * Resets the async state to the initial state and returns
+ * Reset the async state to the initial state and return
  * #AM_ASYNC_RC_DONE, indicating that the async operation has completed.
  */
 #define AM_ASYNC_EXIT()                                 \
@@ -86,10 +86,10 @@ struct am_async {
         return AM_ASYNC_RC_DONE
 
 /**
- * Mark the end of an async function block and handle any unexpected states.
+ * Mark the end of async function block and handle any unexpected states.
  *
  * Ensure proper handling for completed and unexpected states.
- * Call `AM_ASYNC_EXIT()` internally to reset the async state.
+ * Call AM_ASYNC_EXIT() internally to reset the async state.
  */
 #define AM_ASYNC_END()                                  \
         /* FALLTHROUGH */                               \
@@ -100,7 +100,7 @@ struct am_async {
     }
 
 /**
- * Set a label in the async function.
+ * Set label in async function.
  *
  * Store the current line number in the `state` field,
  * enabling the async function to resume from this point.
@@ -116,8 +116,8 @@ struct am_async {
 /**
  * Await a condition before proceeding.
  *
- * Check the provided condition `cond`. If the condition
- * is not met - return #AM_ASYNC_RC_BUSY, allowing
+ * Check the provided condition "cond". If the condition
+ * is not met (false) - return #AM_ASYNC_RC_BUSY, allowing
  * the caller to re-enter the function later.
  *
  * @param cond  the condition to check for continuation
@@ -149,12 +149,12 @@ struct am_async {
 /* clang-format on */
 
 /**
- * Initialize the `struct am_async`.
+ * Initialize async state.
  *
- * Set the async structure's state to #AM_ASYNC_STATE_INIT
- * preparing it for use in an async operation.
+ * Set the async state to #AM_ASYNC_STATE_INIT
+ * preparing it for use in async operation.
  *
- * @param me  pointer to the `struct am_async` structure to initialize
+ * @param me  the async state to initialize
  */
 static inline void am_async_init(struct am_async *me) {
     me->state = AM_ASYNC_STATE_INIT;
