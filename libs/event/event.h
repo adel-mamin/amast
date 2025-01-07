@@ -56,6 +56,7 @@
 
 /**
  * Check if event has a valid user event ID.
+ *
  * @param event   event to check
  * @retval true   the event has user event ID
  * @retval false  the event does not have user event ID
@@ -119,7 +120,7 @@ struct am_event_cfg {
 void am_event_state_ctor(const struct am_event_cfg *cfg);
 
 /**
- * Add an event memory pool.
+ * Add event memory pool.
  *
  * Event memory pools must be added in the order of increasing block sizes.
  * Not thread safe. Expected to be called at initialization.
@@ -134,6 +135,7 @@ void am_event_add_pool(void *pool, int size, int block_size, int alignment);
 /**
  * Get minimum number of free memory blocks available so far in the memory pool
  * with a given index.
+ *
  * Could be used to assess the usage of the underlying memory pool.
  *
  * @param index  memory pool index
@@ -169,8 +171,15 @@ int am_event_get_pool_nblocks(int index);
 int am_event_get_pools_num(void);
 
 /**
- * Allocate an event from the memory pools provided at initialization.
+ * Allocate event.
+ *
+ * The event is allocated from one of the memory pools provided
+ * with am_event_add_pool() function.
+ *
  * The allocation cannot fail, if margin is 0.
+ *
+ * The function asserts if the margin is 0 and there is no memory left
+ * to accommodate the event.
  *
  * @param id      the event identifier
  * @param size    the event size [bytes]
@@ -181,9 +190,16 @@ int am_event_get_pools_num(void);
 struct am_event *am_event_allocate(int id, int size, int margin);
 
 /**
- * Free the event allocated earlier with am_event_allocate().
+ * Try to free the event allocated earlier with am_event_allocate().
  *
- * The pointer to the event is set to NULL to catch double free cases.
+ * Decrement event reference counter by one and free the event,
+ * if the reference counter is zero.
+ *
+ * If the event is freed, then the pointer to the event is set to NULL
+ * to catch double free cases.
+ *
+ * The function does nothing for statically allocated events
+ * (events for which am_event_is_static() returns true).
  *
  * @param event  the event to free
  */
@@ -192,9 +208,13 @@ void am_event_free(const struct am_event **event);
 /**
  * Duplicate an event.
  *
- * Allocate it from memory pools provided at initialization and
- * then copy the content of the given event to it.
+ * Allocate it from memory pools provided at with am_event_add_pool() function
+ * and then copy the content of the given event to it.
+ *
  * The allocation cannot fail, if margin is 0.
+ *
+ * The function asserts if the margin is 0 and there is no memory left
+ * to accommodate the event.
  *
  * @param event   the event to duplicate
  * @param size    the event size [bytes]
@@ -230,6 +250,7 @@ void am_event_log_pools(int num, am_event_log_func cb);
 
 /**
  * Check if event is static.
+ *
  * @param e  the event to check
  *
  * @retval true   the event is static
@@ -261,12 +282,15 @@ void am_event_dec_ref_cnt(const struct am_event *event);
 int am_event_get_ref_cnt(const struct am_event *event);
 
 /**
- * Push event to the back of event queue.
+ * Push event to the back of event queue with margin.
  *
- * Does not assert if margin is non-zero and the event was not pushed.
+ * Do not assert if margin is non-zero and the event was not pushed.
  *
- * Tries to free the event, if it was not pushed.
+ * Try to free the event, if it was not pushed.
  * *event is set to NULL, if the event was freed.
+ *
+ * Statically allocated events (events for which am_event_is_static()
+ * returns true) are never freed.
  *
  * @param queue   the event queue
  * @param event   the event to push
@@ -297,12 +321,15 @@ enum am_event_rc am_event_push_back(
 );
 
 /**
- * Push event to the front of event queue.
+ * Push event to the front of event queue with margin.
  *
  * Does not assert if margin is non-zero and the event was not pushed.
  *
- * Tries to free the event, if it was not pushed.
+ * Try to free the event, if it was not pushed.
  * *event is set to NULL, if the event was freed.
+ *
+ * Statically allocated events (events for which am_event_is_static()
+ * returns true) are never freed.
  *
  * @param queue   the event queue
  * @param event   the event to push
@@ -342,7 +369,7 @@ enum am_event_rc am_event_push_front(
 const struct am_event *am_event_pop_front(struct am_queue *queue);
 
 /**
- * Defer an event.
+ * Defer event.
  *
  * Assert if the event was not deferred.
  *
@@ -352,10 +379,13 @@ const struct am_event *am_event_pop_front(struct am_queue *queue);
 void am_event_defer(struct am_queue *queue, const struct am_event *event);
 
 /**
- * Defer an event.
+ * Defer event with margin.
  *
- * Tries to free event, if defer fails. If event is freed, then
+ * Try to free event, if defer fails. If event is freed, then
  * *event is set to NULL.
+ *
+ * Statically allocated events (events for which am_event_is_static()
+ * returns true) are never freed.
  *
  * @param queue   the queue to store the deferred event
  * @param event   the event to defer
@@ -384,7 +414,7 @@ typedef void (*am_event_recall_fn)(void *ctx, const struct am_event *event);
 bool am_event_recall(struct am_queue *queue, am_event_recall_fn cb, void *ctx);
 
 /**
- * Flush all event from event queue.
+ * Flush all events from event queue.
  *
  * @param queue  the queue to flush
  *
