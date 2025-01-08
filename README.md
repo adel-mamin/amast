@@ -17,6 +17,24 @@ Amast is a minimalist asynchronous toolkit that makes it easier to develop C lan
 - ring buffer ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/ringbuf/README.rst), [example](https://github.com/adel-mamin/amast/tree/main/apps/examples/ringbuf))
 - doubly and singly linked lists
 
+## How Big Are Compile Sizes
+
+Some x86 size figures to get an idea:
+
+Library name | Code size [kB] | Data size [kB]
+-------------|----------------|---------------
+slist | 0.74 | 0.01
+dlist | 1.37 | 0.00
+queue | 1.30 | 0.00
+onesize | 1.36 | 0.00
+event | 3.30 | 0.24
+timer | 1.39 | 0.05
+ringbuf | 1.38 | 0.00
+fsm | 0.65 | 0.02
+hsm | 2.34 | 0.03
+ao_cooperative | 3.30 | 0.57
+ao_preemptive | 3.29 | 0.56
+
 ## How To Compile For Amast Development
 <a name="how-to-compile"></a>
 
