@@ -30,8 +30,9 @@ project('amast', 'c',
             'c_std=c99',
             'warning_level=3',
             'buildtype=release',
-             'werror=true',
+            'werror=true',
             'default_library=static',
+            'b_sanitize=address,undefined'
         ],
         meson_version: '>= 1.0.1')
 
@@ -100,8 +101,6 @@ endif
 add_project_arguments(
     [
         extra_warning_args,
-        '-fsanitize=address',
-        '-fsanitize=undefined',
         '-fmessage-length=0',
         '-fno-common',
         '-ffunction-sections',
@@ -115,8 +114,6 @@ add_project_arguments(
 
 add_project_link_arguments([
     '-Wl,--gc-sections',
-    '-fsanitize=address',
-    '-fsanitize=undefined',
     '-Wl,-Map=output.map'],
     language : 'c')
 
