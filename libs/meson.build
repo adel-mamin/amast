@@ -56,7 +56,7 @@ library_sizes_rst = custom_target(
     'library_sizes_rst',
     output: 'library_sizes.rst',
     command: [
-        GENERATE_SIZES_RST,
+        GENERATE_SIZES_TABLE,
         '@OUTPUT@'
     ] + library_paths,
     depends: libraries,

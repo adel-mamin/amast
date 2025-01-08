@@ -126,7 +126,7 @@ FIND = find_program('find', required: false, disabler: true)
 PYTHON = find_program('python3')
 IWYU = find_program('include-what-you-use', required: false, disabler: true)
 CSPELL = find_program('cspell', required: false, disabler: true)
-GENERATE_SIZES_RST = find_program('tools' / 'generate_sizes_rst.py')
+GENERATE_SIZES_TABLE = find_program('tools' / 'generate_sizes_table.py')
 
 unit_test = get_option('unit_test')
 pal = get_option('pal')
