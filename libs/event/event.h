@@ -99,8 +99,6 @@ struct am_event {
     unsigned tick_domain : AM_EVENT_TICK_DOMAIN_BITS;
     /** PUB/SUB time event */
     unsigned pubsub_time : 1;
-    /** n/a */
-    unsigned reserved : 1;
 };
 
 /** Event module configuration. */
