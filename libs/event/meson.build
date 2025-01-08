@@ -26,9 +26,17 @@
 
 event_src = [files('event.c')]
 
-libevent = library('event', [event_src], include_directories: [inc])
-libevent_dep = declare_dependency(
-    link_with: libevent,
-    dependencies: [libonesize_dep, libqueue_dep],
-    include_directories : [inc]
+libevent = library(
+    'event',
+    [event_src],
+    c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
+    include_directories: [inc]
 )
+
+libevent_dep = declare_dependency(
+    sources: [event_src],
+    dependencies: [libonesize_dep, libqueue_dep],
+    include_directories: [inc]
+)
+
+libraries += libevent

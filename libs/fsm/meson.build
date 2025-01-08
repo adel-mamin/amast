@@ -29,12 +29,16 @@ fsm_src = [files('fsm.c')]
 libfsm = library(
     'fsm',
     [fsm_src],
+    c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
     include_directories : [inc]
 )
+
 libfsm_dep = declare_dependency(
-    link_with : libfsm,
+    sources: fsm_src,
     include_directories : [inc]
 )
+
+libraries += libfsm
 
 if unit_test
     e = executable(

@@ -26,6 +26,8 @@
 
 inc = [include_directories('.')]
 
+libraries = []
+
 subdir('common')
 subdir('pal')
 subdir('blk')
@@ -43,3 +45,21 @@ subdir('ringbuf')
 subdir('fsm')
 subdir('hsm')
 subdir('ao')
+
+library_paths = []
+
+foreach library : libraries
+    library_paths += library.full_path()
+endforeach
+
+library_sizes_rst = custom_target(
+    'library_sizes_rst',
+    output: 'library_sizes.rst',
+    command: [
+        GENERATE_SIZES_RST,
+        '@OUTPUT@'
+    ] + library_paths,
+    depends: libraries,
+    build_by_default: true
+)
+

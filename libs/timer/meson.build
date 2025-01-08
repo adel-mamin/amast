@@ -26,10 +26,19 @@
 
 timer_src = [files('timer.c')]
 
-libtimer = library('timer', [timer_src], include_directories: inc)
+libtimer = library(
+    'timer',
+    [timer_src],
+    c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
+    include_directories: inc
+)
+
 libtimer_dep = declare_dependency(
-    link_with : [libtimer, libdlist],
+    link_with: [libdlist],
+    sources: timer_src,
     include_directories : inc)
+
+libraries += libtimer
 
 if unit_test
     e = executable(

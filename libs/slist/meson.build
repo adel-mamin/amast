@@ -26,11 +26,19 @@
 
 slist_src = [files('slist.c')]
 
-libslist = library('slist', [slist_src], include_directories: [inc])
+libslist = library(
+    'slist',
+    [slist_src],
+    c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
+    include_directories: [inc]
+)
+
 libslist_dep = declare_dependency(
-    link_with: libslist,
+    sources: slist_src,
     include_directories : [inc]
 )
+
+libraries += libslist
 
 if unit_test
     e = executable(

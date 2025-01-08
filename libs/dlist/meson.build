@@ -26,11 +26,19 @@
 
 dlist_src = files('dlist.c')
 
-libdlist = library('dlist', [dlist_src], include_directories: inc)
+libdlist = library(
+    'dlist',
+    [dlist_src],
+    c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
+    include_directories: inc
+)
+
 libdlist_dep = declare_dependency(
-    link_with : [libdlist],
+    sources: dlist_src,
     include_directories : inc
 )
+
+libraries += libdlist
 
 if unit_test
     e = executable(

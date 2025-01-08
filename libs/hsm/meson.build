@@ -24,12 +24,8 @@
 # SOFTWARE.
 #
 
-hsm_src = [files(
-    'hsm.c',
-    'tests' / 'regular' / 'regular.c',
-    'tests' / 'submachine' / 'calc' / 'calc.c',
-    'tests' / 'submachine' / 'complex' / 'submachine.c',
-)]
+hsm_src = [files('hsm.c')]
+
 hsm_inc = include_directories(
     'tests' / 'submachine' / 'complex',
     'tests' / 'submachine' / 'calc',
@@ -40,12 +36,23 @@ hsm_inc = include_directories(
 libhsm = library(
     'hsm',
     [hsm_src],
+    c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
     include_directories: [inc, hsm_inc]
 )
+
 libhsm_dep = declare_dependency(
-    link_with : libhsm,
-    include_directories : [inc, hsm_inc]
+    sources: [
+        hsm_src,
+        files(
+            'tests' / 'regular' / 'regular.c',
+            'tests' / 'submachine' / 'calc' / 'calc.c',
+            'tests' / 'submachine' / 'complex' / 'submachine.c'
+        ),
+    ],
+    include_directories: [inc, hsm_inc]
 )
+
+libraries += libhsm
 
 if unit_test
     e = executable(

@@ -26,11 +26,19 @@
 
 queue_src = [files('queue.c')]
 
-libqueue = library('queue', [queue_src], include_directories: [inc])
+libqueue = library(
+    'queue',
+    [queue_src],
+    c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
+    include_directories: [inc]
+)
+
 libqueue_dep = declare_dependency(
-    link_with: libqueue,
+    sources: queue_src,
     include_directories : [inc]
 )
+
+libraries += libqueue
 
 if unit_test
     e = executable(

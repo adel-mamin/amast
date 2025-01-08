@@ -29,12 +29,16 @@ ringbuf_src = [files('ringbuf.c')]
 libringbuf = library(
     'ringbuf',
     [ringbuf_src],
+    c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
     include_directories : [inc]
 )
+
 libringbuf_dep = declare_dependency(
-    link_with : libringbuf,
+    sources: ringbuf_src,
     include_directories : [inc]
 )
+
+libraries += libringbuf
 
 if unit_test
     e = executable(

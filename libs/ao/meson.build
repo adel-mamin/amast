@@ -25,7 +25,6 @@
 #
 
 ao_src = [files('ao.c')]
-ao_c_args = []
 
 ao_src_cooperative = [files('cooperative' / 'port.c')]
 ao_src_preemptive = [files('preemptive' / 'port.c')]
@@ -33,32 +32,31 @@ ao_src_preemptive = [files('preemptive' / 'port.c')]
 libao_cooperative = library(
     'ao_cooperative',
     [ao_src, ao_src_cooperative],
-    c_args: ao_c_args,
-    include_directories: [
-        inc,
-    ]
+    c_args : ['-fno-sanitize=all', '-Os', '-fno-trapv'],
+    include_directories: [inc, '.']
 )
 
 libao_preemptive = library(
     'ao_preemptive',
     [ao_src, ao_src_preemptive],
-    c_args: ao_c_args,
-    include_directories: [
-        inc,
-    ]
+    c_args : ['-fno-sanitize=all', '-Os', '-fno-trapv'],
+    include_directories: [inc, '.']
 )
 
 libao_cooperative_dep = declare_dependency(
-    link_with: libao_cooperative,
+    sources: [ao_src, ao_src_cooperative],
     dependencies: [libevent_dep, libhsm_dep, libtimer_dep],
-    include_directories: [inc]
+    include_directories: [inc, '.']
 )
 
 libao_preemptive_dep = declare_dependency(
-    link_with: libao_preemptive,
+    sources: [ao_src, ao_src_preemptive],
     dependencies: [libevent_dep, libhsm_dep, libtimer_dep],
-    include_directories: [inc]
+    include_directories: [inc, '.']
 )
+
+libraries += libao_cooperative
+libraries += libao_preemptive
 
 if unit_test
     e = executable(

@@ -26,12 +26,20 @@
 
 onesize_src = [files('onesize.c')]
 
-libonesize = library('onesize', [onesize_src], include_directories: [inc])
+libonesize = library(
+    'onesize',
+    [onesize_src],
+    c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
+    include_directories: [inc]
+)
+
 libonesize_dep = declare_dependency(
-    link_with: libonesize,
+    sources: onesize_src,
     dependencies: [libslist_dep],
     include_directories : [inc]
 )
+
+libraries += libonesize
 
 if unit_test
     e = executable(
