@@ -79,7 +79,12 @@
 
         "bitmask", "PRIO", "deallocation",
         "pthread", "ALIGNOF",
-        "flto"
+        "flto",
+
+        "endforeach", "strtonum", "pathlib", "repr",
+
+        "trapv",
+        "rodata",
     ],
     // flagWords - list of words to be always considered incorrect
     // This is useful for offensive words and common spelling errors.
