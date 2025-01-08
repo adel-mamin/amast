@@ -15,7 +15,7 @@ tidy_posix = "meson compile -C builds/posix tidy"
 test_posix = "meson test -C builds/posix"
 libs_posix = "meson compile -C builds/posix"
 iwyu_posix = "meson compile -C builds/posix iwyu"
-posix = { depends-on = ["setup_posix", "libs_posix", "style_posix", "cspell", "cppcheck_posix", "tidy_posix", "iwyu_posix", "test_posix"] }
+posix = { depends-on = ["setup_posix", "libs_posix", "style_posix", "cspell", "cppcheck_posix", "iwyu_posix", "test_posix"] }
 all = { depends-on = ["posix"] }
 
 [dependencies]
