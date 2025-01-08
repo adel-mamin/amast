@@ -31,9 +31,9 @@ event | 3.30 | 0.24
 timer | 1.39 | 0.05
 ringbuf | 1.38 | 0.00
 fsm | 0.65 | 0.02
-hsm | 2.34 | 0.03
-ao_cooperative | 3.30 | 0.57
-ao_preemptive | 3.29 | 0.56
+hsm | 2.35 | 0.03
+ao_cooperative | 3.28 | 0.57
+ao_preemptive | 3.27 | 0.56
 
 ## How To Compile For Amast Development
 <a name="how-to-compile"></a>
