@@ -69,35 +69,35 @@ static enum am_hsm_rc r_s(struct regular *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY: {
         me->log("s-ENTRY;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s)));
 
         struct am_hsm_state state = am_hsm_state(&me->hsm);
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &state));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, state));
 
         return AM_HSM_HANDLED();
     }
     case AM_HSM_EVT_INIT: {
         me->log("s-INIT;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s)));
 
         struct am_hsm_state state = am_hsm_state(&me->hsm);
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &state));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, state));
 
         return AM_HSM_TRAN(r_s11);
     }
     case AM_HSM_EVT_EXIT: {
         me->log("s-EXIT;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s)));
 
         struct am_hsm_state state = am_hsm_state(&me->hsm);
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &state));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, state));
 
         return AM_HSM_HANDLED();
     }
     case HSM_EVT_I: {
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(am_hsm_top)));
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(r_s211)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(am_hsm_top)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(r_s211)));
         if (me->foo) {
             me->foo = 0;
             me->log("s-I;");
@@ -107,8 +107,8 @@ static enum am_hsm_rc r_s(struct regular *me, const struct am_event *event) {
     }
     case HSM_EVT_E:
         AM_ASSERT(
-            (am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(r_s211))) ||
-            (am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(r_s11)))
+            (am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(r_s211))) ||
+            (am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(r_s11)))
         );
         me->foo = 0;
         me->log("s-E;");
@@ -129,35 +129,35 @@ static enum am_hsm_rc r_s1(struct regular *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY: {
         me->log("s1-ENTRY;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s1)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s1)));
         struct am_hsm_state state = am_hsm_state(&me->hsm);
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &state));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, state));
         return AM_HSM_HANDLED();
     }
     case AM_HSM_EVT_INIT: {
         me->log("s1-INIT;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s1)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s1)));
         struct am_hsm_state state = am_hsm_state(&me->hsm);
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &state));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, state));
         return AM_HSM_TRAN(r_s11);
     }
     case AM_HSM_EVT_EXIT: {
         me->log("s1-EXIT;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s1)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s1)));
         struct am_hsm_state state = am_hsm_state(&me->hsm);
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &state));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, state));
         return AM_HSM_HANDLED();
     }
     case HSM_EVT_I:
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s1)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(am_hsm_top)));
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(r_s11)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s1)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(am_hsm_top)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(r_s11)));
         me->log("s1-I;");
         return AM_HSM_HANDLED();
 
     case HSM_EVT_C:
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(r_s11)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(r_s11)));
         me->log("s1-C;");
         return AM_HSM_TRAN(r_s2);
 
@@ -167,7 +167,7 @@ static enum am_hsm_rc r_s1(struct regular *me, const struct am_event *event) {
 
     case HSM_EVT_A:
         me->log("s1-A;");
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(r_s11)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(r_s11)));
         return AM_HSM_TRAN(r_s1);
 
     case HSM_EVT_B:
@@ -175,7 +175,7 @@ static enum am_hsm_rc r_s1(struct regular *me, const struct am_event *event) {
         return AM_HSM_TRAN(r_s11);
 
     case HSM_EVT_D:
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(r_s11)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(r_s11)));
         if (!me->foo) {
             me->foo = 1;
             me->log("s1-D;");
@@ -194,25 +194,25 @@ static enum am_hsm_rc r_s11(struct regular *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:
         me->log("s11-ENTRY;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s11)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s11)));
         return AM_HSM_HANDLED();
 
     case AM_HSM_EVT_EXIT:
         me->log("s11-EXIT;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s11)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s11)));
         return AM_HSM_HANDLED();
 
     case AM_HSM_EVT_INIT:
         me->log("s11-INIT;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s11)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s11)));
         return AM_HSM_HANDLED();
 
     case HSM_EVT_G:
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s11)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s1)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(am_hsm_top)));
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(r_s11)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s11)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s1)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(am_hsm_top)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(r_s11)));
         me->log("s11-G;");
         return AM_HSM_TRAN(r_s211);
 
@@ -221,7 +221,7 @@ static enum am_hsm_rc r_s11(struct regular *me, const struct am_event *event) {
         return AM_HSM_TRAN(r_s);
 
     case HSM_EVT_D:
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(r_s11)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(r_s11)));
         if (me->foo) {
             me->foo = 0;
             me->log("s11-D;");
@@ -240,26 +240,26 @@ static enum am_hsm_rc r_s2(struct regular *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:
         me->log("s2-ENTRY;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s2)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s2)));
         return AM_HSM_HANDLED();
 
     case AM_HSM_EVT_INIT:
         me->log("s2-INIT;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s2)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s2)));
         return AM_HSM_TRAN(r_s211);
 
     case AM_HSM_EVT_EXIT:
         me->log("s2-EXIT;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s2)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s2)));
         return AM_HSM_HANDLED();
 
     case HSM_EVT_I:
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s11)));
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s1)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s2)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(am_hsm_top)));
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(r_s211)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s11)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s1)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s2)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(am_hsm_top)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(r_s211)));
         if (!me->foo) {
             me->foo = 1;
             me->log("s2-I;");
@@ -286,31 +286,31 @@ static enum am_hsm_rc r_s21(struct regular *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:
         me->log("s21-ENTRY;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s21)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s21)));
         return AM_HSM_HANDLED();
 
     case AM_HSM_EVT_INIT:
         me->log("s21-INIT;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s21)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s21)));
         return AM_HSM_TRAN(r_s211);
 
     case AM_HSM_EVT_EXIT:
         me->log("s21-EXIT;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s21)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s21)));
         return AM_HSM_HANDLED();
 
     case HSM_EVT_A: {
         me->log("s21-A;");
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s11)));
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s1)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s21)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s2)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(am_hsm_top)));
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(r_s211)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s11)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s1)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s21)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s2)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(am_hsm_top)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(r_s211)));
 
         struct am_hsm_state state = am_hsm_state(&me->hsm);
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &state));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, state));
 
         return AM_HSM_TRAN(r_s21);
     }
@@ -320,11 +320,11 @@ static enum am_hsm_rc r_s21(struct regular *me, const struct am_event *event) {
 
     case HSM_EVT_G:
         me->log("s21-G;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s21)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s2)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(am_hsm_top)));
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, &AM_HSM_STATE_CTOR(r_s211)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s21)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s2)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(am_hsm_top)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(r_s211)));
         return AM_HSM_TRAN(r_s1);
 
     default:
@@ -338,27 +338,27 @@ static enum am_hsm_rc r_s211(struct regular *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:
         me->log("s211-ENTRY;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s211)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s211)));
         return AM_HSM_HANDLED();
 
     case AM_HSM_EVT_EXIT:
         me->log("s211-EXIT;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s211)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s211)));
         return AM_HSM_HANDLED();
 
     case AM_HSM_EVT_INIT:
         me->log("s211-INIT;");
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s211)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s211)));
         return AM_HSM_HANDLED();
 
     case HSM_EVT_D:
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s11)));
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s1)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s211)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s21)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s2)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(r_s)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, &AM_HSM_STATE_CTOR(am_hsm_top)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s11)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s1)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s211)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s21)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s2)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(r_s)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(am_hsm_top)));
         me->log("s211-D;");
         return AM_HSM_TRAN(r_s21);
 
@@ -374,6 +374,6 @@ static enum am_hsm_rc r_s211(struct regular *me, const struct am_event *event) {
 
 void regular_ctor(void (*log)(const char *fmt, ...)) {
     struct regular *me = &m_regular;
-    am_hsm_ctor(&me->hsm, &AM_HSM_STATE_CTOR(regular_init));
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(regular_init));
     me->log = log;
 }

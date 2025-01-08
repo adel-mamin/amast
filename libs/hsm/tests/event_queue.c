@@ -92,7 +92,7 @@ static enum am_hsm_rc hsmq_init(
 
 static void hsmq_ctor(void (*log)(const char *fmt, ...)) {
     struct am_hsmq *me = &am_hsmq_;
-    am_hsm_ctor(&me->hsm, &AM_HSM_STATE_CTOR(hsmq_init));
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(hsmq_init));
     me->log = log;
 
     /* setup HSM event queue */

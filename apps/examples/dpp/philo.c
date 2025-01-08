@@ -140,7 +140,7 @@ void philo_ctor(int id) {
     memset(me, 0, sizeof(*me));
     me->cnt = 0;
     me->id = id;
-    am_ao_ctor(&me->ao, &AM_HSM_STATE_CTOR(philo_init));
+    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(philo_init));
 
     me->timer = (struct am_event_timer *)am_timer_event_allocate(
         /*id=*/EVT_TIMEOUT,

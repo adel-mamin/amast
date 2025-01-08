@@ -60,10 +60,10 @@ static enum am_hsm_rc dtor_hsm_sinit(
 
 static void dtor_hsm(void) {
     struct dtor_hsm *me = &m_dtor_hsm;
-    am_hsm_ctor(&me->hsm, &AM_HSM_STATE_CTOR(dtor_hsm_sinit));
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(dtor_hsm_sinit));
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
     am_hsm_dtor(&me->hsm);
-    AM_ASSERT(am_hsm_is_in(&me->hsm, NULL));
+    AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(NULL)));
 }
 
 int main(void) {

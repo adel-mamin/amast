@@ -158,6 +158,6 @@ void table_ctor(int nsession) {
     for (int i = 0; i < AM_COUNTOF(me->philo); i++) {
         me->philo[i] = PHILO_DONE;
     }
-    am_ao_ctor(&m_table.ao, &AM_HSM_STATE_CTOR(table_init));
+    am_ao_ctor(&m_table.ao, AM_HSM_STATE_CTOR(table_init));
     me->nsession = nsession;
 }

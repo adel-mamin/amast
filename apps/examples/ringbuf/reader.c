@@ -105,7 +105,7 @@ void ringbuf_reader_ctor(void) {
     struct ringbuf_reader *me = &m_ringbuf_reader;
     memset(me, 0, sizeof(*me));
     me->len = 1;
-    am_ao_ctor(&me->ao, &AM_HSM_STATE_CTOR(ringbuf_reader_init));
+    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(ringbuf_reader_init));
     am_timer_event_ctor(
         &me->timer_wait,
         /*id=*/AM_EVT_RINGBUF_WAIT,

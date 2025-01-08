@@ -97,7 +97,7 @@ void ringbuf_writer_ctor(void) {
     struct ringbuf_writer *me = &m_ringbuf_writer;
     memset(me, 0, sizeof(*me));
     me->len = 1;
-    am_ao_ctor(&me->ao, &AM_HSM_STATE_CTOR(ringbuf_writer_init));
+    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(ringbuf_writer_init));
     am_timer_event_ctor(
         &me->timer_wait,
         /*id=*/AM_EVT_RINGBUF_WAIT,

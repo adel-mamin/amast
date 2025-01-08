@@ -104,7 +104,7 @@ static enum am_hsm_rc defer_sinit(
 
 static void defer_ctor(void (*log)(const char *fmt, ...)) {
     struct test_defer *me = &m_test_defer;
-    am_hsm_ctor(&me->hsm, &AM_HSM_STATE_CTOR(defer_sinit));
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(defer_sinit));
     me->log = log;
 
     /* setup HSM event queue */

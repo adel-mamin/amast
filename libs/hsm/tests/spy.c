@@ -65,7 +65,7 @@ static enum am_hsm_rc spy_hsm_init(
 
 static void spy_ctor(void (*log)(const char *fmt, ...)) {
     struct spy_hsm *me = &m_spy_hsm;
-    am_hsm_ctor(&me->hsm, &AM_HSM_STATE_CTOR(spy_hsm_init));
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(spy_hsm_init));
     me->log = log;
 }
 

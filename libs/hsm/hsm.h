@@ -298,23 +298,21 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event);
  * @retval false  not in the state in the hierarchical sense
  * @retval true   in the state
  */
-bool am_hsm_is_in(struct am_hsm *hsm, const struct am_hsm_state *state);
+bool am_hsm_is_in(struct am_hsm *hsm, struct am_hsm_state state);
 
 /**
  * Check if active state equals to #state (not in hierarchical sense).
  *
  * If active state of hsm is S1, which is substate of S, then
- * am_hsm_state_is_eq(hsm, &AM_HSM_STATE_CTOR(S1)) is true, but
- * am_hsm_state_is_eq(hsm, &AM_HSM_STATE_CTOR(S)) is false.
+ * am_hsm_state_is_eq(hsm, AM_HSM_STATE_CTOR(S1)) is true, but
+ * am_hsm_state_is_eq(hsm, AM_HSM_STATE_CTOR(S)) is false.
  *
  * @param hsm     the HSM handler
  * @param state   the state to compare against
  * @retval true   the active HSM state equals #state
  * @retval false  the active HSM state DOES NOT equal #state
  */
-bool am_hsm_state_is_eq(
-    const struct am_hsm *hsm, const struct am_hsm_state *state
-);
+bool am_hsm_state_is_eq(const struct am_hsm *hsm, struct am_hsm_state state);
 
 /**
  * Get state instance.
@@ -348,7 +346,7 @@ struct am_hsm_state am_hsm_state(const struct am_hsm *hsm);
  *               The initial state must return
  *               AM_HSM_TRAN(s) or AM_HSM_TRAN(s, i)
  */
-void am_hsm_ctor(struct am_hsm *hsm, const struct am_hsm_state *state);
+void am_hsm_ctor(struct am_hsm *hsm, struct am_hsm_state state);
 
 /**
  * HSM destructor.

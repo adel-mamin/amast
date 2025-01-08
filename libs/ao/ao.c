@@ -232,9 +232,8 @@ void am_ao_unsubscribe_all(const struct am_ao *ao) {
     }
 }
 
-void am_ao_ctor(struct am_ao *ao, const struct am_hsm_state *state) {
+void am_ao_ctor(struct am_ao *ao, struct am_hsm_state state) {
     AM_ASSERT(ao);
-    AM_ASSERT(state);
     am_hsm_ctor(&ao->hsm, state);
 }
 

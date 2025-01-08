@@ -106,8 +106,8 @@ int main(void) {
     };
     am_ao_state_ctor(&cfg_ao);
 
-    am_ao_ctor(&m_loopback.ao, &AM_HSM_STATE_CTOR(loopback_init));
-    am_ao_ctor(&m_loopback_test.ao, &AM_HSM_STATE_CTOR(loopback_test_init));
+    am_ao_ctor(&m_loopback.ao, AM_HSM_STATE_CTOR(loopback_init));
+    am_ao_ctor(&m_loopback_test.ao, AM_HSM_STATE_CTOR(loopback_test_init));
 
     am_ao_start(
         &m_loopback.ao,

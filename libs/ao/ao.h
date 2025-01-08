@@ -261,7 +261,7 @@ bool am_ao_post_lifo_x(
  * @param ao     the active object to construct
  * @param state  the initial state of the active object
  */
-void am_ao_ctor(struct am_ao *ao, const struct am_hsm_state *state);
+void am_ao_ctor(struct am_ao *ao, struct am_hsm_state state);
 
 /**
  * Start active object.
