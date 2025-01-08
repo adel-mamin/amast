@@ -19,7 +19,7 @@ Amast is a minimalist asynchronous toolkit that makes it easier to develop C lan
 
 ## How Big Are Compile Sizes
 
-Some x86 size figures to get an idea:
+Some x86-64 size figures to get an idea:
 
 Library name | Code size [kB] | Data size [kB]
 -------------|----------------|---------------
