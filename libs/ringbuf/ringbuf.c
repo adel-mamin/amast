@@ -86,7 +86,7 @@ int am_ringbuf_get_write_ptr(
     AM_ASSERT(desc->buf);
     AM_ASSERT(ptr);
     AM_ASSERT(size >= 0);
-    AM_ASSERT(size <= (desc->buf_size - 1));
+    AM_ASSERT(size < desc->buf_size);
 
     int rd = AM_ATOMIC_LOAD_N(&desc->read_offset);
     int wr = AM_ATOMIC_LOAD_N(&desc->write_offset);
@@ -127,8 +127,8 @@ void am_ringbuf_flush(struct am_ringbuf_desc *desc, int offset) {
         AM_ASSERT(offset <= avail);
         wr = (wr + offset) % desc->buf_size;
     } else {
-        int avail = rd - wr - 1;
-        AM_ASSERT(offset <= avail);
+        int avail = rd - wr;
+        AM_ASSERT(offset < avail);
         wr += offset;
     }
     AM_ATOMIC_STORE_N(&desc->write_offset, wr);
