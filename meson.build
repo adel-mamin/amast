@@ -212,7 +212,7 @@ run_target(
     command: [
         CPPCHECK,
         '-j',
-        '@0@'.format(run_command('nproc').stdout().strip()),
+        '@0@'.format(run_command('nproc', check: true).stdout().strip()),
         '-D__cppcheck__',
         '--error-exitcode=2',
         '--enable=warning,style',
