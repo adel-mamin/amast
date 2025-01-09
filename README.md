@@ -9,16 +9,16 @@ Amast is a minimalist asynchronous toolkit that makes it easier to develop C lan
 
 Library name | Description
 -------------|------------
+ao | active object (preemptive and cooperative) ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/ao/README.rst), [example](https://github.com/adel-mamin/amast/tree/main/apps/examples/dpp))
+async | async/await ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/async/README.rst))
+dlist | doubly linked list
+event | events ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/event/README.rst))
 fsm | finite state machine (FSM) ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/fsm/README.rst))
 hsm | hierarchical state machine (HSM) with submachines support ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/hsm/README.rst), [examples](https://github.com/adel-mamin/amast/tree/main/apps/examples/hsm))
-async | async/await ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/async/README.rst))
-ao | active object (preemptive and cooperative) ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/ao/README.rst), [example](https://github.com/adel-mamin/amast/tree/main/apps/examples/dpp))
 onesize | onesize memory allocator ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/onesize/README.rst))
-timer | timers ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/timer/README.rst))
-event | events ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/event/README.rst))
 ringbuf | ring buffer ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/ringbuf/README.rst), [example](https://github.com/adel-mamin/amast/tree/main/apps/examples/ringbuf))
 slist | singly linked list
-dlist | doubly linked list
+timer | timers ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/timer/README.rst))
 
 ## How Big Are Compile Sizes
 
@@ -26,17 +26,17 @@ Some x86-64 size figures to get an idea:
 
 Library name | Code size [kB] | Data size [kB]
 -------------|----------------|---------------
-slist | 0.74 | 0.01
-dlist | 1.37 | 0.00
-queue | 1.30 | 0.00
-onesize | 1.36 | 0.00
-event | 3.30 | 0.24
-timer | 1.39 | 0.05
-ringbuf | 1.38 | 0.00
-fsm | 0.65 | 0.02
-hsm | 2.35 | 0.03
 ao_cooperative | 3.28 | 0.57
 ao_preemptive | 3.27 | 0.56
+dlist | 1.37 | 0.00
+event | 3.30 | 0.24
+fsm | 0.65 | 0.02
+hsm | 2.35 | 0.03
+onesize | 1.36 | 0.00
+queue | 1.30 | 0.00
+ringbuf | 1.38 | 0.00
+slist | 0.74 | 0.01
+timer | 1.39 | 0.05
 
 ## How To Compile For Amast Development
 <a name="how-to-compile"></a>

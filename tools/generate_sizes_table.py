@@ -83,6 +83,7 @@ def generate_rst_table(output_file, libraries):
         "-------------|----------------|---------------\n"
     )
 
+    libraries.sort()
     rows = []
     for library in libraries:
         library_name = extract_name(os.path.basename(library))
