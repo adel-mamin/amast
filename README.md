@@ -7,15 +7,18 @@ Amast is a minimalist asynchronous toolkit that makes it easier to develop C lan
 
 ## What Is Inside
 
-- finite state machine (FSM) ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/fsm/README.rst))
-- hierarchical state machine (HSM) with submachines support ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/hsm/README.rst), [examples](https://github.com/adel-mamin/amast/tree/main/apps/examples/hsm))
-- async/await ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/async/README.rst))
-- active object ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/ao/README.rst), [example](https://github.com/adel-mamin/amast/tree/main/apps/examples/dpp))
-- onesize memory allocator ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/onesize/README.rst))
-- timers ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/timer/README.rst))
-- events ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/event/README.rst))
-- ring buffer ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/ringbuf/README.rst), [example](https://github.com/adel-mamin/amast/tree/main/apps/examples/ringbuf))
-- doubly and singly linked lists
+Library name | Description
+-------------|------------
+fsm | finite state machine (FSM) ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/fsm/README.rst))
+hsm | hierarchical state machine (HSM) with submachines support ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/hsm/README.rst), [examples](https://github.com/adel-mamin/amast/tree/main/apps/examples/hsm))
+async | async/await ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/async/README.rst))
+ao | active object (preemptive and cooperative) ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/ao/README.rst), [example](https://github.com/adel-mamin/amast/tree/main/apps/examples/dpp))
+onesize | onesize memory allocator ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/onesize/README.rst))
+timer | timers ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/timer/README.rst))
+event | events ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/event/README.rst))
+ringbuf | ring buffer ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/ringbuf/README.rst), [example](https://github.com/adel-mamin/amast/tree/main/apps/examples/ringbuf))
+slist | singly linked list
+dlist | doubly linked list
 
 ## How Big Are Compile Sizes
 
