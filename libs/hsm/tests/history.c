@@ -73,7 +73,7 @@ static enum am_hsm_rc oven_hsm_open(
         return AM_HSM_HANDLED();
 
     case HSM_EVT_CLOSE:
-        return AM_HSM_TRAN(me->history.fn, me->history.ifn);
+        return AM_HSM_TRAN(me->history.fn, me->history.smi);
 
     default:
         break;

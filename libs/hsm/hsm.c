@@ -48,7 +48,7 @@ static const struct am_event m_hsm_evt_exit = {.id = AM_HSM_EVT_EXIT};
 
 static void hsm_set_state(struct am_hsm *hsm, struct am_hsm_state s) {
     hsm->state = s;
-    hsm->ifn = (unsigned char)s.ifn;
+    hsm->smi = (unsigned char)s.smi;
 }
 
 /**
@@ -72,7 +72,7 @@ static void hsm_build(
 ) {
     path->state[0] = *from;
     path->len = 1;
-    if (till && (till->fn == from->fn) && (till->ifn == from->ifn)) {
+    if (till && (till->fn == from->fn) && (till->smi == from->smi)) {
         return;
     }
     struct am_hsm hsm_ = *hsm;
@@ -184,7 +184,7 @@ static void hsm_transition(
 
     struct am_hsm_path path;
 
-    if ((src.fn == dst.fn) && (src.ifn == dst.ifn)) {
+    if ((src.fn == dst.fn) && (src.smi == dst.smi)) {
         /* transition to itself */
         path.state[0] = dst;
         path.len = 1;
@@ -196,7 +196,7 @@ static void hsm_transition(
     struct am_hsm_state until = AM_HSM_STATE_CTOR(am_hsm_top);
     hsm_build(hsm, &path, /*from=*/&dst, &until, /*till=*/&src);
     const struct am_hsm_state *end = &path.state[path.len - 1];
-    if ((end->fn == src.fn) && (end->ifn == src.ifn)) {
+    if ((end->fn == src.fn) && (end->smi == src.smi)) {
         /* src is LCA */
         --path.len;
         hsm_enter_and_init(hsm, &path);
@@ -231,7 +231,7 @@ static void hsm_transition(
 static enum am_hsm_rc hsm_dispatch(
     struct am_hsm *hsm, const struct am_event *event
 ) {
-    struct am_hsm_state src = {.fn = NULL, .ifn = 0};
+    struct am_hsm_state src = {.fn = NULL, .smi = 0};
     struct am_hsm_state state = hsm->state;
     enum am_hsm_rc rc = AM_HSM_RC_HANDLED;
     /*
@@ -242,7 +242,7 @@ static enum am_hsm_rc hsm_dispatch(
     do {
         src = hsm->state;
         hsm->state = state;
-        /* preserve hsm->ifn as the instance of src.fn */
+        /* preserve hsm->smi as the submachine instance of src.fn */
         rc = src.fn(hsm, event);
         --cnt;
         AM_ASSERT(cnt); /* HSM hierarchy depth exceeds HSM_HIERARCHY_DEPTH_MAX*/
@@ -316,12 +316,12 @@ bool am_hsm_state_is_eq(const struct am_hsm *hsm, struct am_hsm_state state) {
     if (NULL == state.fn) {
         return NULL == hsm->state.fn;
     }
-    return (hsm->state.fn == state.fn) && (hsm->state.ifn == state.ifn);
+    return (hsm->state.fn == state.fn) && (hsm->state.smi == state.smi);
 }
 
 int am_hsm_instance(const struct am_hsm *hsm) {
     AM_ASSERT(hsm);
-    return (int)hsm->ifn;
+    return (int)hsm->smi;
 }
 
 struct am_hsm_state am_hsm_state(const struct am_hsm *hsm) {

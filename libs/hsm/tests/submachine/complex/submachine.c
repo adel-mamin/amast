@@ -184,12 +184,12 @@ static enum am_hsm_rc cs_s1(
     }
     static const struct am_hsm_state ss[] = {
         [SM_0] = {.fn = (am_hsm_state_fn)cs_s},
-        [SM_1] = {.fn = (am_hsm_state_fn)cs_s1, .ifn = SM_0},
+        [SM_1] = {.fn = (am_hsm_state_fn)cs_s1, .smi = SM_0},
         [SM_2] = {.fn = (am_hsm_state_fn)cs_s}
     };
     AM_ASSERT(instance < AM_COUNTOF(ss));
     const struct am_hsm_state *super = &ss[instance];
-    return AM_HSM_SUPER(super->fn, super->ifn);
+    return AM_HSM_SUPER(super->fn, super->smi);
 }
 
 static enum am_hsm_rc cs_s11(
@@ -215,14 +215,14 @@ static enum am_hsm_rc cs_s11(
     case HSM_EVT_G:
         me->log("s11/%d-G;", instance);
         static const struct am_hsm_state tt[] = {
-            [SM_0] = {.fn = (am_hsm_state_fn)cs_s1, .ifn = SM_1},
-            [SM_1] = {.fn = (am_hsm_state_fn)cs_s1, .ifn = SM_2},
-            [SM_2] = {.fn = (am_hsm_state_fn)cs_s1, .ifn = SM_0}
+            [SM_0] = {.fn = (am_hsm_state_fn)cs_s1, .smi = SM_1},
+            [SM_1] = {.fn = (am_hsm_state_fn)cs_s1, .smi = SM_2},
+            [SM_2] = {.fn = (am_hsm_state_fn)cs_s1, .smi = SM_0}
         };
         AM_ASSERT(instance < AM_COUNTOF(tt));
         const struct am_hsm_state *tran = &tt[instance];
 
-        return AM_HSM_TRAN(tran->fn, tran->ifn);
+        return AM_HSM_TRAN(tran->fn, tran->smi);
 
     default:
         break;
@@ -283,14 +283,14 @@ static enum am_hsm_rc cs_s12(
     case HSM_EVT_F:
         me->log("s12/%d-F;", instance);
         static const struct am_hsm_state tt[] = {
-            [SM_0] = {.fn = (am_hsm_state_fn)cs_s12, .ifn = SM_1},
-            [SM_1] = {.fn = (am_hsm_state_fn)cs_s12, .ifn = SM_2},
-            [SM_2] = {.fn = (am_hsm_state_fn)cs_s12, .ifn = SM_0}
+            [SM_0] = {.fn = (am_hsm_state_fn)cs_s12, .smi = SM_1},
+            [SM_1] = {.fn = (am_hsm_state_fn)cs_s12, .smi = SM_2},
+            [SM_2] = {.fn = (am_hsm_state_fn)cs_s12, .smi = SM_0}
         };
         AM_ASSERT(instance < AM_COUNTOF(tt));
         const struct am_hsm_state *tran = &tt[instance];
 
-        return AM_HSM_TRAN(tran->fn, tran->ifn);
+        return AM_HSM_TRAN(tran->fn, tran->smi);
 
     default:
         break;

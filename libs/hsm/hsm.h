@@ -104,19 +104,19 @@ enum am_hsm_rc {
 struct am_hsm;
 
 /**
- * A state handler.
+ * HSM state (event handler) function type.
  *
  * One should not assume that a state handler would be invoked only for
  * processing event IDs enlisted in the case statement of internal
  * switch statement. Event handlers should avoid using any code outside
  * of the switch statement, especially code that has side effects.
  *
- * @param me     the state machine
+ * @param hsm    the HSM handler
  * @param event  the event to handle
  * @return return code
  */
 typedef enum am_hsm_rc (*am_hsm_state_fn)(
-    struct am_hsm *me, const struct am_event *event
+    struct am_hsm *hsm, const struct am_event *event
 );
 
 /**
@@ -128,40 +128,40 @@ typedef enum am_hsm_rc (*am_hsm_state_fn)(
  * Set by am_hsm_set_spy().
  * Only supported if hsm.c is compiled with #AM_HSM_SPY defined.
  *
- * @param me     the handler of HSM to spy
+ * @param hsm    the handler of HSM to spy
  * @param event  the event to spy
  */
-typedef void (*am_hsm_spy_fn)(struct am_hsm *me, const struct am_event *event);
+typedef void (*am_hsm_spy_fn)(struct am_hsm *hsm, const struct am_event *event);
 
 /** HSM state */
 struct am_hsm_state {
-    /** HSM state function  */
+    /** HSM state (event handler) function */
     am_hsm_state_fn fn;
     /**
-     * HSM state function instance. Used for submachines.
+     * HSM submachine instance.
      * Default is 0. Valid range [0,127].
      */
-    char ifn;
+    char smi;
 };
 
 /** Helper macro. Not to be used directly. */
 #define AM_STATE1_(s) \
-    (struct am_hsm_state){.fn = (am_hsm_state_fn)(s), .ifn = 0}
+    (struct am_hsm_state){.fn = (am_hsm_state_fn)(s), .smi = 0}
 
 /** Helper macro. Not to be used directly. */
 #define AM_STATE2_(s, i) \
-    (struct am_hsm_state) { .fn = (am_hsm_state_fn)(s), .ifn = (char)(i) }
+    (struct am_hsm_state) { .fn = (am_hsm_state_fn)(s), .smi = (char)(i) }
 
 /**
- * Get HSM state from event handler and optionally the event handler instance.
+ * Get HSM state from HSM event handler and optionally HSM submachine instance.
  *
  * AM_HSM_STATE_CTOR(s)     is converted to
- *                          (struct am_hsm_state){.fn = s, .ifn = 0}
+ *                          (struct am_hsm_state){.fn = s, .smi = 0}
  * AM_HSM_STATE_CTOR(s, i)  is converted to
- *                          (struct am_hsm_state){.fn = s, .ifn = i}
+ *                          (struct am_hsm_state){.fn = s, .smi = i}
  *
  * @param s  HSM event handler
- * @param i  HSM event handler instance. Used by submachines. Default is 0.
+ * @param i  HSM submachine instance. Default is 0.
  * @return HSM state structure
  */
 #define AM_HSM_STATE_CTOR(...) \
@@ -185,23 +185,24 @@ struct am_hsm {
     /** active state */
     struct am_hsm_state state;
     /**
-     * While am_hsm::state::ifn maintains state instance of active state,
-     * am_hsm::ifn maintains the transitive instance that may differ
-     * from am_hsm::state::ifn, when an event is propagated up
+     * While am_hsm::state::smi maintains submachine instance of active state,
+     * am_hsm::smi maintains the transitive submachine instance that may differ
+     * from am_hsm::state::smi, when an event is propagated up
      * from substates to superstates.
      * Returned by am_hsm_instance().
      */
-    unsigned char ifn;
+    unsigned char smi;
     /**
-     * active state hierarchy level [0,HSM_HIERARCHY_DEPTH_MAX]
-     * (level 0 is assigned to am_hsm_top())
+     * Active state hierarchy level [0,HSM_HIERARCHY_DEPTH_MAX]
+     * (level 0 is assigned to am_hsm_top()).
+     * Used internally to speed up state transitions.
      */
     unsigned char hierarchy_level : AM_HSM_HIERARCHY_LEVEL_BITS;
     /** safety net to catch missing am_hsm_ctor() call */
     unsigned char ctor_called : 1;
     /** safety net to catch missing am_hsm_init() call */
     unsigned char init_called : 1;
-    /** safety net to catch reentrant am_hsm_dispatch() call */
+    /** safety net to catch erroneous reentrant am_hsm_dispatch() call */
     unsigned char dispatch_in_progress : 1;
 #ifdef AM_HSM_SPY
     /** HSM spy callback */
@@ -210,8 +211,8 @@ struct am_hsm {
 };
 
 /**
- * Event processing is over. No transition was triggered.
- * Used as a return value from an event handler that handled
+ * Event processing is over. No state transition is triggered.
+ * Used as a return value from the event handler that handled
  * an event and wants to prevent the event propagation to
  * superstate(s).
  */
@@ -220,7 +221,7 @@ struct am_hsm {
 /** Helper macro. Not to be used directly. */
 #define AM_HSM_SET_(s, i)                                    \
     (((struct am_hsm *)me)->state = AM_HSM_STATE_CTOR(s, i), \
-     ((struct am_hsm *)me)->ifn = (unsigned char)i)
+     ((struct am_hsm *)me)->smi = (unsigned char)i)
 
 /** Helper macro. Not to be used directly. */
 #define AM_TRAN1_(s) (AM_HSM_SET_(s, 0), AM_HSM_RC_TRAN)
@@ -252,10 +253,11 @@ struct am_hsm {
  *
  * It should never be returned for #AM_HSM_EVT_ENTRY, #AM_HSM_EVT_EXIT or
  * #AM_HSM_EVT_INIT events.
- * Do not redispatch the same event more than once.
+ * Do not redispatch the same event more than once within same
+ * am_hsm_dispatch() call.
  *
- * @param s  the new state of type #am_hsm_state_fn (mandatory)
- * @param i  the new state submachine instance (optional, default is 0)
+ * @param s  the new HSM state of type #am_hsm_state_fn (mandatory)
+ * @param i  the new HSM state submachine instance (optional, default is 0)
  */
 #define AM_HSM_TRAN_REDISPATCH(...)                                     \
     AM_GET_MACRO_2_(__VA_ARGS__, AM_TRAN_REDISP2_, AM_TRAN_REDISP1_, _) \
@@ -315,14 +317,14 @@ bool am_hsm_is_in(struct am_hsm *hsm, struct am_hsm_state state);
 bool am_hsm_state_is_eq(const struct am_hsm *hsm, struct am_hsm_state state);
 
 /**
- * Get state instance.
+ * Get submachine instance.
  *
- * Always returns the instance of the calling state function.
+ * Always returns the submachine instance of the calling state function.
  * Calling the function from a state that is not part of any submachine
  * will always return 0.
  *
  * @param hsm  the HSM handler
- * @return the instance
+ * @return the submachine instance
  */
 int am_hsm_instance(const struct am_hsm *hsm);
 
