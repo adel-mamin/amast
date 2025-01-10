@@ -58,6 +58,7 @@ enum am_fsm_evt {
      * No state transition is allowed in response to this event.
      */
     AM_FSM_EVT_EXIT,
+
     /** FSM event with maximum value */
     AM_FSM_EVT_MAX = AM_FSM_EVT_EXIT
 };
@@ -83,9 +84,9 @@ enum am_fsm_rc {
 struct am_fsm;
 
 /**
- * A state handler.
+ * FSM state (event handler) function type.
  *
- * @param fsm    the state machine
+ * @param fsm    the FSM handler
  * @param event  the event to handle
  * @return return code
  */
@@ -108,7 +109,7 @@ typedef enum am_fsm_rc (*am_fsm_state_fn)(
 typedef void (*am_fsm_spy_fn)(struct am_fsm *fsm, const struct am_event *event);
 
 /**
- * Get FSM state from event handler.
+ * Get FSM state from FSM event handler.
  *
  * @param s  FSM event handler
  * @return FSM state
@@ -126,10 +127,8 @@ struct am_fsm {
 };
 
 /**
- * Event processing is over. No transition was taken.
- * Used as a return value from an event handler that handled
- * an event and wants to prevent the event propagation to
- * superstate(s).
+ * Event processing is over. No transition is taken.
+ * Used as a default return value from FSM event handlers.
  */
 #define AM_FSM_HANDLED() AM_FSM_RC_HANDLED
 
@@ -149,7 +148,8 @@ struct am_fsm {
  * Event redispatch is requested. Transition is taken.
  *
  * It should never be returned for #AM_FSM_EVT_ENTRY or #AM_FSM_EVT_EXIT events.
- * Do not redispatch the same event more than once.
+ * Do not redispatch the same event more than once within same
+ * am_fsm_dispatch() call.
  *
  * @param s  the new state of type #am_fsm_state_fn
  */
@@ -201,7 +201,7 @@ void am_fsm_dtor(struct am_fsm *fsm);
  * Perform FSM initial transition.
  *
  * Call the initial state set by am_fsm_ctor() with provided
- * optional initial event.
+ * optional init event.
  *
  * @param fsm         the FSM handler
  * @param init_event  the init event. Can be NULL.
@@ -211,7 +211,7 @@ void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event);
 /**
  * Set spy user callback as one place to catch all events for the given FSM.
  *
- * Is only available if fsm.c is compiled with #AM_FSM_SPY defined.
+ * It is only available if fsm.c is compiled with #AM_FSM_SPY defined.
  * Should only be used for debugging purposes.
  * Should only be called after calling am_fsm_ctor() and not during ongoing
  * FSM event processing.
