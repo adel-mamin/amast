@@ -24,43 +24,18 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
+cobs_src = [files('cobs.c')]
 
-libraries = []
-
-subdir('common')
-subdir('pal')
-subdir('blk')
-subdir('crc')
-subdir('slist')
-subdir('dlist')
-subdir('bit')
-subdir('cobs')
-subdir('queue')
-subdir('strlib')
-subdir('onesize')
-subdir('event')
-subdir('timer')
-subdir('async')
-subdir('ringbuf')
-subdir('fsm')
-subdir('hsm')
-subdir('ao')
-
-library_paths = []
-
-foreach library : libraries
-    library_paths += library.full_path()
-endforeach
-
-library_sizes_rst = custom_target(
-    'library_sizes_rst',
-    output: 'library_sizes.rst',
-    command: [
-        GENERATE_LIB_SIZES,
-        '@OUTPUT@'
-    ] + library_paths,
-    depends: libraries,
-    build_by_default: true
+libcobs = library(
+    'cobs',
+    [cobs_src],
+    c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
+    include_directories : [inc]
 )
 
+libcobs_dep = declare_dependency(
+    sources: cobs_src,
+    include_directories : [inc]
+)
+
+libraries += libcobs
