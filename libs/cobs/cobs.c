@@ -32,6 +32,7 @@ int am_cobs_encode(void *dst, int dst_size, const void *src, int src_size) {
     AM_ASSERT(dst_size > 0);
     AM_ASSERT(src);
     AM_ASSERT(src_size > 0);
+    AM_ASSERT(AM_COBS_ENCODED_SIZE_FOR(src_size) <= dst_size);
     ((uint8_t*)dst)[0] = 0;
     return 0;
 }
@@ -41,6 +42,7 @@ int am_cobs_decode(void *dst, int dst_size, const void *src, int src_size) {
     AM_ASSERT(dst_size > 0);
     AM_ASSERT(src);
     AM_ASSERT(src_size > 0);
+    AM_ASSERT(AM_COBS_DECODED_SIZE_FOR(src_size) <= dst_size);
     ((uint8_t*)dst)[0] = 0;
     return 0;
 }

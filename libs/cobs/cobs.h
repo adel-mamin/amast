@@ -33,6 +33,9 @@
 #ifndef AM_COBS_H_INCLUDED
 #define AM_COBS_H_INCLUDED
 
+#define AM_COBS_ENCODED_SIZE_FOR(n) ((n) + ((n) + 253) / 254)
+#define AM_COBS_DECODED_SIZE_FOR(n) (((n) <= 0) ? 0 : (n) - 1)
+
 int am_cobs_encode(void *dst, int dst_size, const void *src, int src_size);
 int am_cobs_decode(void *dst, int dst_size, const void *src, int src_size);
 
