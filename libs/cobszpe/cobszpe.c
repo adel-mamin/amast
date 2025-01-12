@@ -25,24 +25,51 @@
  */
 
 #include "common/macros.h"
-#include "cobs.h"
+#include "cobszpe.h"
 
-int am_cobs_encode(void *dst, int dst_size, const void *src, int src_size) {
+#define AM_FINISH_BLOCK(x) (*code_ptr = (x), code_ptr = dst_++, code = 0x01)
+
+int am_cobszpe_encode(void *dst, int dst_size, const void *src, int src_size) {
     AM_ASSERT(dst);
     AM_ASSERT(dst_size > 0);
     AM_ASSERT(src);
     AM_ASSERT(src_size > 0);
-    AM_ASSERT(AM_COBS_ENCODED_SIZE_FOR(src_size) <= dst_size);
-    ((uint8_t*)dst)[0] = 0;
-    return 0;
+    AM_ASSERT(AM_COBSZPE_ENCODED_SIZE_FOR(src_size) <= dst_size);
+
+    const unsigned char *src_ = src;
+    const unsigned char *end = src_ + src_size;
+    unsigned char *dst_ = dst;
+    unsigned char *code_ptr = dst_++;
+    unsigned char code = 0x01;
+    while (src_ < end) {
+        if (*src_) {
+            *dst_++ = *src_++;
+            code++;
+            if (code == 0xE0) {
+                AM_FINISH_BLOCK(code);
+            }
+            continue;
+        }
+        /* one zero */
+        src_++;
+        if (*src_ || (code >= 30) || (src_ >= end)) {
+            AM_FINISH_BLOCK(code);
+            continue;
+        }
+        /* two zeros - ZPE case */
+        AM_FINISH_BLOCK(code + 0xE0);
+    }
+    *dst_ = 0;
+
+    return (int)(dst_ - (unsigned char*)dst);
 }
 
-int am_cobs_decode(void *dst, int dst_size, const void *src, int src_size) {
+int am_cobszpe_decode(void *dst, int dst_size, const void *src, int src_size) {
     AM_ASSERT(dst);
     AM_ASSERT(dst_size > 0);
     AM_ASSERT(src);
     AM_ASSERT(src_size > 0);
-    AM_ASSERT(AM_COBS_DECODED_SIZE_FOR(src_size) <= dst_size);
+    AM_ASSERT(AM_COBSZPE_DECODED_SIZE_FOR(src_size) <= dst_size);
     ((uint8_t*)dst)[0] = 0;
     return 0;
 }

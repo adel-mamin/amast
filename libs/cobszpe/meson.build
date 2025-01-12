@@ -24,18 +24,28 @@
 # SOFTWARE.
 #
 
-cobs_src = [files('cobs.c')]
+cobszpe_src = [files('cobszpe.c')]
 
-libcobs = library(
-    'cobs',
-    [cobs_src],
+libcobszpe = library(
+    'cobszpe',
+    [cobszpe_src],
     c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
     include_directories : [inc]
 )
 
-libcobs_dep = declare_dependency(
-    sources: cobs_src,
+libcobszpe_dep = declare_dependency(
+    sources: cobszpe_src,
     include_directories : [inc]
 )
 
-libraries += libcobs
+libraries += libcobszpe
+
+if unit_test
+    e = executable(
+        'cobszpe',
+        ['test.c'],
+        dependencies: [libcobszpe_dep, libassert_dep],
+        include_directories: inc
+    )
+    test('cobszpe', e)
+endif

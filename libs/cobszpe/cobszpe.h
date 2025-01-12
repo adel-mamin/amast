@@ -27,17 +27,17 @@
 /**
  * @file
  *
- * Consistent overhead byte stuffing (COBS)
+ * Consistent overhead byte stuffing (COBS) with zero pair elimination (ZPE)
  */
 
-#ifndef AM_COBS_H_INCLUDED
-#define AM_COBS_H_INCLUDED
+#ifndef AM_COBSZPE_H_INCLUDED
+#define AM_COBSZPE_H_INCLUDED
 
-#define AM_COBS_ENCODED_SIZE_FOR(n) ((n) + ((n) + 253) / 254)
-#define AM_COBS_DECODED_SIZE_FOR(n) (((n) <= 0) ? 0 : (n) - 1)
+#define AM_COBSZPE_ENCODED_SIZE_FOR(n) ((n) + ((n) + 223) / 224)
+#define AM_COBSZPE_DECODED_SIZE_FOR(n) (((n) <= 0) ? 0 : (n) - 1)
 
-int am_cobs_encode(void *dst, int dst_size, const void *src, int src_size);
-int am_cobs_decode(void *dst, int dst_size, const void *src, int src_size);
+int am_cobszpe_encode(void *dst, int dst_size, const void *src, int src_size);
+int am_cobszpe_decode(void *dst, int dst_size, const void *src, int src_size);
 
-#endif /* AM_COBS_H_INCLUDED */
+#endif /* AM_COBSZPE_H_INCLUDED */
 
