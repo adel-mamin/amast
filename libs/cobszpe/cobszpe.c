@@ -27,7 +27,8 @@
 #include "common/macros.h"
 #include "cobszpe.h"
 
-#define AM_FINISH_BLOCK(x) (*code_ptr = (x), code_ptr = dst_++, code = 0x01)
+#define AM_FINISH_BLOCK(x) \
+    (*code_ptr = (x), code_ptr = dst_++, code = 0x01, zero_cnt = 0)
 
 int am_cobszpe_encode(void *dst, int dst_size, const void *src, int src_size) {
     AM_ASSERT(dst);
@@ -41,8 +42,12 @@ int am_cobszpe_encode(void *dst, int dst_size, const void *src, int src_size) {
     unsigned char *dst_ = dst;
     unsigned char *code_ptr = dst_++;
     unsigned char code = 0x01;
+    int zero_cnt = 0;
     while (src_ < end) {
         if (*src_) {
+            if (zero_cnt) {
+                AM_FINISH_BLOCK(code);
+            }
             *dst_++ = *src_++;
             code++;
             if (code == 0xE0) {
@@ -50,16 +55,19 @@ int am_cobszpe_encode(void *dst, int dst_size, const void *src, int src_size) {
             }
             continue;
         }
-        /* one zero */
+        zero_cnt++;
         src_++;
-        if (*src_ || (code >= 30) || (src_ >= end)) {
-            AM_FINISH_BLOCK(code);
+        if (zero_cnt < 2) {
             continue;
         }
-        /* two zeros - ZPE case */
-        AM_FINISH_BLOCK(code + 0xE0);
+        if (code >= 30) {
+            AM_FINISH_BLOCK(code);
+        } else { /* ZPE case */
+            AM_FINISH_BLOCK(code + 0xE0);
+        }
     }
     *dst_ = 0;
+    AM_FINISH_BLOCK(code);
 
     return (int)(dst_ - (unsigned char*)dst);
 }

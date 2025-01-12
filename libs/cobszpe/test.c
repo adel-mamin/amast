@@ -29,16 +29,35 @@
  * COBS/ZPE API unit tests.
  */
 
+#include <string.h>
+
 #include "common/macros.h"
 #include "cobszpe/cobszpe.h"
 
+static void test_cobszpe_encode_run(
+    const unsigned char *src, int src_size,
+    const unsigned char *expected, int expected_size
+    ) {
+    unsigned char dst[AM_COBSZPE_ENCODED_SIZE_FOR(src_size)];
+    int ret = am_cobszpe_encode(dst, (int)sizeof(dst), src, src_size);
+
+    AM_ASSERT(ret == expected_size);
+    AM_ASSERT(0 == memcmp(expected, dst, (size_t)expected_size));
+}
+
 static void test_cobszpe_encode(void) {
-    unsigned char src[] = {
-        0x45, 0x00, 0x00, 0x2c, 0x4c, 0x79, 0x00, 0x00, 0x40, 0x06, 0x4f, 0x37
+    static const unsigned char src_[] = {
+        0x45, 0x00, 0x00,
+        0x2c, 0x4c, 0x79, 0x00, 0x00,
+        0x40, 0x06, 0x4f, 0x37
     };
-    unsigned char dst[AM_COBSZPE_ENCODED_SIZE_FOR(AM_COUNTOF(src))];
-    int ret = am_cobszpe_decode(dst, (int)sizeof(dst), src, (int)sizeof(src));
-    AM_ASSERT(ret > 0);
+    static const unsigned char exp_[] = {
+        0xE2, 0x45,
+        0xE4, 0x2c, 0x4c, 0x79,
+        0x05, 0x40, 0x06, 0x4f, 0x37,
+        0x00
+    };
+    test_cobszpe_encode_run(src_, (int)sizeof(src_), exp_, (int)sizeof(exp_));
 }
 
 int main(void) {
