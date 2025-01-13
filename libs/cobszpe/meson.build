@@ -45,7 +45,6 @@ if unit_test
         'cobszpe',
         ['test.c'],
         dependencies: [libcobszpe_dep, libassert_dep],
-        c_args: ['-fno-sanitize=all', '-ggdb', '-O0', '-fno-lto', '-fno-trapv'],
         include_directories: inc
     )
     test('cobszpe', e)

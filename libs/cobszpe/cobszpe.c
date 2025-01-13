@@ -24,52 +24,67 @@
  * SOFTWARE.
  */
 
+#include <stdbool.h>
+#include <stdint.h>
+
 #include "common/macros.h"
 #include "cobszpe.h"
 
-#define AM_FINISH_BLOCK(x) \
-    (*code_ptr = (x), code_ptr = dst_++, code = 0x01, zero_cnt = 0)
+#define AM_FINISH_BLOCK(x)           \
+    (*code_ptr = (unsigned char)(x), \
+     code_ptr = dst++,               \
+     code = 0x01,                    \
+     zero_cnt = 0,                   \
+     block_finished = true)
 
-int am_cobszpe_encode(void *dst, int dst_size, const void *src, int src_size) {
-    AM_ASSERT(dst);
-    AM_ASSERT(dst_size > 0);
-    AM_ASSERT(src);
-    AM_ASSERT(src_size > 0);
-    AM_ASSERT(AM_COBSZPE_ENCODED_SIZE_FOR(src_size) <= dst_size);
+int am_cobszpe_encode(void *to, int to_size, const void *from, int from_size) {
+    AM_ASSERT(to);
+    AM_ASSERT(to_size > 0);
+    AM_ASSERT(from);
+    AM_ASSERT(from_size > 0);
+    AM_ASSERT(to_size > AM_COBSZPE_ENCODED_SIZE_FOR(from_size) - 1);
 
-    const unsigned char *src_ = src;
-    const unsigned char *end = src_ + src_size;
-    unsigned char *dst_ = dst;
-    unsigned char *code_ptr = dst_++;
-    unsigned char code = 0x01;
+    const unsigned char *src = from;
+    const unsigned char *end = src + from_size;
+    unsigned char *dst = to;
+    unsigned char *dst_orig = dst;
+    unsigned char *code_ptr = dst++;
+    unsigned char code = 1;
     int zero_cnt = 0;
-    while (src_ < end) {
-        if (*src_) {
-            if (zero_cnt) {
+    bool block_finished = false;
+    while (src < end) {
+        block_finished = false;
+        if (*src != 0) {
+            if (zero_cnt > 0) {
                 AM_FINISH_BLOCK(code);
             }
-            *dst_++ = *src_++;
+            *dst++ = *src++;
             code++;
-            if (code == 0xE0) {
+            if ((AM_COBSZPE_ZEROLESS_MAX + 1) == code) {
                 AM_FINISH_BLOCK(code);
             }
             continue;
         }
         zero_cnt++;
-        src_++;
+        src++;
+        if (code >= (UINT8_MAX - AM_COBSZPE_ZEROLESS_MAX)) {
+            AM_FINISH_BLOCK(code);
+            continue;
+        }
         if (zero_cnt < 2) {
             continue;
         }
-        if (code >= 30) {
-            AM_FINISH_BLOCK(code);
-        } else { /* ZPE case */
-            AM_FINISH_BLOCK(code + 0xE0);
-        }
+        /* ZPE case */
+        AM_FINISH_BLOCK(code + AM_COBSZPE_ZEROLESS_MAX + 1);
     }
-    *dst_ = 0;
-    AM_FINISH_BLOCK(code);
+    if (block_finished) {
+        *code_ptr = 0;
+    } else {
+        *code_ptr = code;
+        *dst++ = 0;
+    }
 
-    return (int)(dst_ - (unsigned char*)dst);
+    return (int)(dst - dst_orig);
 }
 
 int am_cobszpe_decode(void *dst, int dst_size, const void *src, int src_size) {
@@ -78,6 +93,6 @@ int am_cobszpe_decode(void *dst, int dst_size, const void *src, int src_size) {
     AM_ASSERT(src);
     AM_ASSERT(src_size > 0);
     AM_ASSERT(AM_COBSZPE_DECODED_SIZE_FOR(src_size) <= dst_size);
-    ((uint8_t*)dst)[0] = 0;
+    ((uint8_t *)dst)[0] = 0;
     return 0;
 }
