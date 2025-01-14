@@ -234,6 +234,7 @@ void am_ao_unsubscribe_all(const struct am_ao *ao) {
 
 void am_ao_ctor(struct am_ao *ao, struct am_hsm_state state) {
     AM_ASSERT(ao);
+    memset(ao, 0, sizeof(*ao));
     am_hsm_ctor(&ao->hsm, state);
 }
 

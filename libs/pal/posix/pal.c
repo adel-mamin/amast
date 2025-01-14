@@ -39,6 +39,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 #define _POSIX_C_SOURCE 200809L
 
@@ -377,6 +378,8 @@ void am_pal_flush(void) { fflush(stdout); }
 
 void am_pal_ctor(void) {
     struct am_pal_task *task = &task_main_;
+
+    memset(task, 0, sizeof(*task));
 
     task->thread = pthread_self();
     am_pal_mutex_init(&task->mutex);

@@ -31,6 +31,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
 
 #include "common/macros.h"
 #include "fsm/fsm.h"
