@@ -25,6 +25,14 @@
 #
 
 e = executable(
+    'hahi-example',
+    [
+        'hsm' / 'hahi' / 'hahi.c'
+    ],
+    c_args: ['-O0', '-fno-lto', '-g', '-ggdb', '-fno-sanitize=all'],
+    dependencies: [libhsm_dep, libstr_dep, libassert_dep])
+
+e = executable(
     'regular-example',
     [
         'hsm' / 'regular' / 'example.c'
