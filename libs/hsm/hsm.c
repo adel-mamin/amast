@@ -31,6 +31,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
 
 #include "common/macros.h"
 #include "hsm/hsm.h"
@@ -332,6 +333,7 @@ struct am_hsm_state am_hsm_state(const struct am_hsm *hsm) {
 void am_hsm_ctor(struct am_hsm *hsm, struct am_hsm_state state) {
     AM_ASSERT(hsm);
     AM_ASSERT(state.fn);
+    memset(hsm, 0, sizeof(*hsm));
     hsm_set_state(hsm, state);
     hsm->ctor_called = true;
 }
