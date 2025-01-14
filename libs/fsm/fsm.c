@@ -110,6 +110,7 @@ bool am_fsm_is_in(const struct am_fsm *fsm, const am_fsm_state_fn state) {
 void am_fsm_ctor(struct am_fsm *fsm, const am_fsm_state_fn state) {
     AM_ASSERT(fsm);
     AM_ASSERT(state);
+    memset(fsm, 0, sizeof(*fsm));
     fsm->state = state;
 }
 
