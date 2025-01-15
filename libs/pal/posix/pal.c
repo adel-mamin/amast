@@ -107,10 +107,12 @@ static void *thread_entry_wrapper(void *arg) {
     AM_ASSERT(arg);
     struct am_pal_task *ctx = (struct am_pal_task *)arg;
     AM_ASSERT(ctx->entry);
+
     ctx->entry(ctx->arg);
     ctx->valid = false;
     int rc = pthread_mutex_destroy(&ctx->mutex);
     AM_ASSERT(0 == rc);
+
     return NULL;
 }
 
@@ -279,6 +281,7 @@ void am_pal_mutex_lock(int mutex) {
     int index = am_pal_index_from_id(mutex);
     AM_ASSERT(index < AM_COUNTOF(mutex_arr_));
     AM_ASSERT(mutex_arr_[index].valid);
+
     int rc = pthread_mutex_lock(&mutex_arr_[index].mutex);
     AM_ASSERT(0 == rc);
 }
@@ -287,6 +290,7 @@ void am_pal_mutex_unlock(int mutex) {
     int index = am_pal_index_from_id(mutex);
     AM_ASSERT(index < AM_COUNTOF(mutex_arr_));
     AM_ASSERT(mutex_arr_[index].valid);
+
     int rc = pthread_mutex_unlock(&mutex_arr_[index].mutex);
     AM_ASSERT(0 == rc);
 }
@@ -295,6 +299,7 @@ void am_pal_mutex_destroy(int mutex) {
     int index = am_pal_index_from_id(mutex);
     AM_ASSERT(index < AM_COUNTOF(mutex_arr_));
     AM_ASSERT(mutex_arr_[index].valid);
+
     int rc = pthread_mutex_destroy(&mutex_arr_[index].mutex);
     AM_ASSERT(0 == rc);
     mutex_arr_[mutex].valid = false;
@@ -316,11 +321,13 @@ uint32_t am_pal_time_get_tick(int domain) {
 
 uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms) {
     AM_ASSERT(AM_PAL_TICK_DOMAIN_DEFAULT == domain);
+
     return (uint32_t)AM_DIV_CEIL(ms, AM_PAL_TICK_DOMAIN_DEFAULT_MS);
 }
 
 uint32_t am_pal_time_get_ms_from_tick(int domain, uint32_t tick) {
     AM_ASSERT(AM_PAL_TICK_DOMAIN_DEFAULT == domain);
+
     return (uint32_t)(tick * AM_PAL_TICK_DOMAIN_DEFAULT_MS);
 }
 

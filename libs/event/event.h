@@ -190,7 +190,7 @@ struct am_event *am_event_allocate(int id, int size, int margin);
 /**
  * Try to free the event allocated earlier with am_event_allocate().
  *
- * Decrement event reference counter by one and free the event,
+ * Decrements event reference counter by one and free the event,
  * if the reference counter is zero.
  *
  * If the event is freed, then the pointer to the event is set to NULL
@@ -206,7 +206,7 @@ void am_event_free(const struct am_event **event);
 /**
  * Duplicate an event.
  *
- * Allocate it from memory pools provided at with am_event_add_pool() function
+ * Allocates it from memory pools provided at with am_event_add_pool() function
  * and then copy the content of the given event to it.
  *
  * The allocation cannot fail, if margin is 0.
@@ -282,9 +282,9 @@ int am_event_get_ref_cnt(const struct am_event *event);
 /**
  * Push event to the back of event queue with margin.
  *
- * Do not assert if margin is non-zero and the event was not pushed.
+ * Does not assert if margin is non-zero and the event was not pushed.
  *
- * Try to free the event, if it was not pushed.
+ * Tries to free the event, if it was not pushed.
  * *event is set to NULL, if the event was freed.
  *
  * Statically allocated events (events for which am_event_is_static()
@@ -305,10 +305,10 @@ enum am_event_rc am_event_push_back_x(
 /**
  * Push event to the back of event queue.
  *
- * Assert if the event was not pushed.
+ * Asserts if the event was not pushed.
  *
- * @param queue   the event queue
- * @param event   the event to push
+ * @param queue  the event queue
+ * @param event  the event to push
  *
  * @retval AM_EVENT_RC_OK                  the event was pushed
  * @retval AM_EVENT_RC_OK_QUEUE_WAS_EMPTY  the event was pushed, queue was empty
@@ -323,7 +323,7 @@ enum am_event_rc am_event_push_back(
  *
  * Does not assert if margin is non-zero and the event was not pushed.
  *
- * Try to free the event, if it was not pushed.
+ * Tries to free the event, if it was not pushed.
  * *event is set to NULL, if the event was freed.
  *
  * Statically allocated events (events for which am_event_is_static()
@@ -344,7 +344,7 @@ enum am_event_rc am_event_push_front_x(
 /**
  * Push event to the front of event queue.
  *
- * Assert if the event was not pushed.
+ * Asserts if the event was not pushed.
  *
  * @param queue   the event queue
  * @param event   the event to push
@@ -369,7 +369,7 @@ const struct am_event *am_event_pop_front(struct am_queue *queue);
 /**
  * Defer event.
  *
- * Assert if the event was not deferred.
+ * Asserts if the event was not deferred.
  *
  * @param queue  the queue to store the deferred event
  * @param event  the event to defer
@@ -379,7 +379,7 @@ void am_event_defer(struct am_queue *queue, const struct am_event *event);
 /**
  * Defer event with margin.
  *
- * Try to free event, if defer fails. If event is freed, then
+ * Tries to free event, if defer fails. If event is freed, then
  * *event is set to NULL.
  *
  * Statically allocated events (events for which am_event_is_static()

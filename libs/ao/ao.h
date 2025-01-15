@@ -102,8 +102,8 @@ struct am_ao_subscribe_list {
  * The event is then handled asynchronously by the active objects.
  *
  * Use am_ao_subscribe() to subscribe an active object to an event ID.
- * Use am_ao_unsubscribe() or am_ao_unsubscribe_all() to unsubscribe it
- * from the event ID.
+ * Use am_ao_unsubscribe() to unsubscribe it from the event ID
+ * or am_ao_unsubscribe_all() to unsubscribe it from all event IDs.
  *
  * If any active object has full event queue and cannot
  * accommodate the event, then the function asserts.
@@ -111,10 +111,10 @@ struct am_ao_subscribe_list {
  * If your application is prepared for loosing the event,
  * then use am_ao_publish_x() function instead.
  *
- * The event is added to subscribed active object event queues
+ * Internally the event is added to subscribed active object event queues
  * using am_event_push_back() function.
  *
- * Try to free the event, if no active objects are subscribed to it.
+ * Tries to free the event, if no active objects are subscribed to it.
  * *event is set to NULL, if the event was freed.
  *
  * The library takes care of freeing the event once all
@@ -148,10 +148,10 @@ void am_ao_publish(const struct am_event **event);
  * If your application is not prepared for loosing the event,
  * then use am_ao_publish() function instead.
  *
- * The event is added to subscribed active object event queues
+ * Internally the event is added to subscribed active object event queues
  * using am_event_push_back() function.
  *
- * Try to free the event, if it was not delivered to any subscriber.
+ * Tries to free the event, if it was not delivered to any subscriber.
  * *event is set to NULL, if the event was freed.
  *
  * The library takes care of freeing the event once all
@@ -195,7 +195,7 @@ void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
  * If the active object's event queue is full and margin is >0,
  * then the function fails gracefully.
  *
- * Try to free the event, if it was not posted.
+ * Tries to free the event, if it was not posted.
  * *event is set to NULL, if the event was freed.
  *
  * Statically allocated events (events for which am_event_is_static()
@@ -238,7 +238,7 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
  * If active object's event queue is full and margin is >0,
  * then the function fails gracefully.
  *
- * Try to free the event, if it was not posted.
+ * Tries to free the event, if it was not posted.
  * *event is set to NULL, if the event was freed.
  *
  * Statically allocated events (events for which am_event_is_static()
@@ -301,16 +301,6 @@ void am_ao_start(
  */
 void am_ao_stop(struct am_ao *ao);
 
-/** Active object library configuration. */
-struct am_ao_cfg {
-    /** Debug callback. */
-    void (*debug)(const struct am_ao *ao, const struct am_event *e);
-    /** Enter critical section. */
-    void (*crit_enter)(void);
-    /** Exit critical section. */
-    void (*crit_exit)(void);
-};
-
 /**
  * Active object library state constructor.
  *
@@ -363,7 +353,7 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
  * Run all active objects.
  *
  * Non blocking.
- * Return after dispatching zero or one event.
+ * Returns after dispatching zero or one event.
  *
  * @retval true   dispatched one event
  * @retval false  dispatched no events

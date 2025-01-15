@@ -143,14 +143,14 @@ void am_pal_task_wait(int task);
 /**
  * Return task own ID.
  *
- * @return  task ID
+ * @return task ID
  */
 int am_pal_task_own_id(void);
 
 /**
  * Get current time in milliseconds.
  *
- * @return  current time [ms]
+ * @return current time [ms]
  */
 uint32_t am_pal_time_get_ms(void);
 
@@ -158,7 +158,8 @@ uint32_t am_pal_time_get_ms(void);
  * Get current time in ticks.
  *
  * @param domain  tick domain [0..AM_PAL_TICK_DOMAIN_MAX]
- * @return  current time [tick]
+ *
+ * @return current time [tick]
  */
 uint32_t am_pal_time_get_tick(int domain);
 
@@ -168,7 +169,7 @@ uint32_t am_pal_time_get_tick(int domain);
  * @param domain  tick domain [0..AM_PAL_TICK_DOMAIN_MAX]
  * @param ms      milliseconds to convert
  *
- * @return  time [tick]
+ * @return time [tick]
  */
 uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms);
 
@@ -208,7 +209,7 @@ void am_pal_sleep_ms(int ms);
 /**
  * Sleep till the given number of milliseconds.
  *
- * @param ms    sleep till this milliseconds value
+ * @param ms  sleep till this milliseconds value
  */
 void am_pal_sleep_till_ms(uint32_t ms);
 
@@ -217,7 +218,7 @@ void am_pal_sleep_till_ms(uint32_t ms);
  *
  * @param fmt  printf-like format string
  *
- * @return  printf-like return value
+ * @return printf-like return value
  */
 AM_PRINTF(1, 2) int am_pal_printf(const char *fmt, ...);
 

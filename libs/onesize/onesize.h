@@ -77,6 +77,7 @@ struct am_onesize_cfg {
 
 /**
  * Construct a new onesize allocator.
+ *
  * Allocation requests up to block_size bytes are
  * rounded up to block_size bytes and served from a singly-linked
  * list of buffers. Due to the simplicity of onesize allocator
@@ -88,19 +89,22 @@ struct am_onesize_cfg {
 void am_onesize_ctor(struct am_onesize *hnd, struct am_onesize_cfg *cfg);
 
 /**
- * Allocate memory if \p size is <= block_size. The block at the front
- * of the free list is removed from the list and returned.
- * Otherwise NULL is returned.
+ * Allocate memory if \p size is <= block_size.
+ *
+ * The block at the front of the free list is removed from
+ * the list and returned. Otherwise NULL is returned.
  *
  * @param hnd   the allocator
  * @param size  amount of memory to allocate [bytes]
+ *
  * @return the allocated memory or NULL, if allocation failed
  */
 void *am_onesize_allocate(struct am_onesize *hnd, int size);
 
 /**
  * Free a memory block.
- * Insert the block at the front of the free list.
+ *
+ * Inserts the block at the front of the free list.
  *
  * @param hnd  the allocator
  * @param ptr  memory block to free
@@ -109,12 +113,14 @@ void am_onesize_free(struct am_onesize *hnd, const void *ptr);
 
 /**
  * Reclaim all memory allocated so far.
+ *
  * @param hnd  the allocator
  */
 void am_onesize_free_all(struct am_onesize *hnd);
 
 /**
  * The type of callback to be used with am_onesize_iterate_over_allocated()
+ *
  * @param ctx    the caller's context
  * @param index  the buffer index
  * @param buf    the buffer pointer
@@ -128,6 +134,7 @@ typedef void (*am_onesize_iterate_func)(
  * Iterate over allocated memory blocks with a provided callback function.
  *
  * Could be used for inspection of allocated memory for debugging.
+ *
  * @param hnd  the allocator
  * @param num  the number of allocated blocks to iterate over
  * @param ctx  the caller's specific context to be used with the callback
@@ -139,14 +146,18 @@ void am_onesize_iterate_over_allocated(
 
 /**
  * Returns the number of free blocks available for allocation.
+ *
  * @param hnd  the allocator
+ *
  * @return the number of free blocks
  */
 int am_onesize_get_nfree(const struct am_onesize *hnd);
 
 /**
  * The minimum number of free memory blocks of size block_size available so far.
+ *
  * Could be used to assess the usage of the underlying memory pool.
+ *
  * @param hnd  the allocator
  * @return the minimum number of blocks of size block_size available so far
  */
@@ -154,13 +165,16 @@ int am_onesize_get_min_nfree(const struct am_onesize *hnd);
 
 /**
  * Returns the memory block size.
+ *
  * @param hnd  the allocator
+ *
  * @return the block size [bytes]
  */
 int am_onesize_get_block_size(const struct am_onesize *hnd);
 
 /**
  * Get total number of memory blocks - the total capacity of the allocator.
+ *
  * @return the total number of blocks
  */
 int am_onesize_get_nblocks(const struct am_onesize *hnd);
