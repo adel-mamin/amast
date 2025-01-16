@@ -47,10 +47,6 @@
 #define AM_AO_EVT_PUB_MAX AM_EVT_USER
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** The active object. */
 struct am_ao {
     struct am_hsm hsm;           /**< the state machine member */
@@ -93,6 +89,10 @@ AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_PAL_TASK_NUM_MAX);
 struct am_ao_subscribe_list {
     uint8_t list[AM_DIV_CEIL(AM_AO_NUM_MAX, 8)]; /* the bitmask */
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Publish event.

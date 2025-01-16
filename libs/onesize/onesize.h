@@ -33,15 +33,11 @@
 #define AM_ONESIZE_H_INCLUDED
 
 #include "common/macros.h"
-#include "blk/blk.h"
+#include "common/types.h"
 #include "slist/slist.h"
 
 #define AM_POOL_BLOCK_SIZEOF(t) AM_MAX(sizeof(struct am_slist), sizeof(t))
 #define AM_POOL_BLOCK_ALIGNMENT(a) AM_MAX(AM_ALIGNOF_SLIST, a)
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /** onesize memory allocator descriptor */
 struct am_onesize {
@@ -74,6 +70,10 @@ struct am_onesize_cfg {
     /** Exit critical section */
     void (*crit_exit)(void);
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Construct a new onesize allocator.

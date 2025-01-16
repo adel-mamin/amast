@@ -33,7 +33,7 @@
 
 #include "common/macros.h"
 #include "common/alignment.h"
-#include "blk/blk.h"
+#include "common/types.h"
 #include "onesize/onesize.h"
 
 int main(void) {

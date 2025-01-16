@@ -31,8 +31,8 @@
 #include <math.h> /* IWYU pragma: keep */
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "strlib/strlib.h"
-#include "blk/blk.h"
 #include "hsm/hsm.h"
 #include "calc.h"
 

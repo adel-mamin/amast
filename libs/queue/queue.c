@@ -36,7 +36,7 @@
 
 #include "common/macros.h"
 #include "common/alignment.h"
-#include "blk/blk.h"
+#include "common/types.h"
 #include "queue/queue.h"
 
 void am_queue_init(

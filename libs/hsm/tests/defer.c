@@ -31,12 +31,12 @@
 #include "common/alignment.h"
 #include "common/compiler.h"
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "onesize/onesize.h"
 #include "strlib/strlib.h"
 #include "hsm/hsm.h"
 #include "common.h"
-#include "blk/blk.h"
 #include "queue/queue.h"
 #include "pal/pal.h"
 

@@ -39,7 +39,7 @@
 #include "common/alignment.h"
 #include "common/compiler.h"
 #include "common/macros.h"
-#include "blk/blk.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "queue/queue.h"
 #include "onesize/onesize.h"

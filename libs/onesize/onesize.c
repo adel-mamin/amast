@@ -36,8 +36,8 @@
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "common/alignment.h"
+#include "common/types.h"
 #include "slist/slist.h"
-#include "blk/blk.h"
 #include "onesize/onesize.h"
 
 /**

@@ -148,7 +148,6 @@ files_to_check = run_command(
     meson.project_source_root() / 'libs' / 'ao',
     meson.project_source_root() / 'libs' / 'async',
     meson.project_source_root() / 'libs' / 'bit',
-    meson.project_source_root() / 'libs' / 'blk',
     meson.project_source_root() / 'libs' / 'common',
     meson.project_source_root() / 'libs' / 'crc',
     meson.project_source_root() / 'libs' / 'dlist',

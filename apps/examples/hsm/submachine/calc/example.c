@@ -30,7 +30,7 @@
 #include <ctype.h>
 
 #include "common/constants.h"
-#include "blk/blk.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "hsm/hsm.h"
 #include "calc.h"

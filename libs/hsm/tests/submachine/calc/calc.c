@@ -31,7 +31,7 @@
 #include <math.h>
 
 #include "common/macros.h"
-#include "blk/blk.h"
+#include "common/types.h"
 #include "hsm/hsm.h"
 #include "calc.h"
 

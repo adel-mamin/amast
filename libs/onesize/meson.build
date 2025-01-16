@@ -44,7 +44,7 @@ libraries += libonesize
 if unit_test
     e = executable(
         'onesize',
-        ['onesize.c', 'test.c', blk_src, slist_src],
+        ['onesize.c', 'test.c', slist_src],
         dependencies : [libassert_dep],
         include_directories: inc)
     test('onesize', e)

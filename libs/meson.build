@@ -30,7 +30,6 @@ libraries = []
 
 subdir('common')
 subdir('pal')
-subdir('blk')
 subdir('crc')
 subdir('slist')
 subdir('dlist')

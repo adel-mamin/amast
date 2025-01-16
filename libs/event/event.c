@@ -35,8 +35,8 @@
 
 #include "common/alignment.h"
 #include "common/macros.h"
+#include "common/types.h"
 #include "onesize/onesize.h"
-#include "blk/blk.h"
 #include "event.h"
 
 /** Event internal state. */

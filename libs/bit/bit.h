@@ -41,6 +41,10 @@ struct am_bit_u64 {
     unsigned char bits[8]; /**< the 64 bit array itself */
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Check if bit array has no bits set to 1.
  *
@@ -77,5 +81,9 @@ void am_bit_u64_set(struct am_bit_u64 *u64, int n);
  * @param n the index. Zero based. The valid range [0..63].
  */
 void am_bit_u64_clear(struct am_bit_u64 *u64, int n);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* AM_BIT_H_INCLUDED */

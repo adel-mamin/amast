@@ -33,7 +33,7 @@
 #define AM_QUEUE_H_INCLUDED
 
 #include <stdbool.h>
-#include "blk/blk.h"
+#include "common/types.h"
 
 #ifdef __cplusplus
 extern "C" {

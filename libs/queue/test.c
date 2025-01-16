@@ -31,8 +31,8 @@
 
 #include <stdbool.h>
 
-#include "blk/blk.h"
 #include "common/macros.h"
+#include "common/types.h"
 #include "queue/queue.h"
 
 static void test_am_queue(const int capacity, const int rdwr_num) {

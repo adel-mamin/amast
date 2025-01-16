@@ -29,7 +29,7 @@
 
 #include <stdbool.h>
 
-#include "blk/blk.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "hsm/hsm.h"
 
