@@ -52,7 +52,7 @@ bool am_ao_run_all(void) {
         int msb = am_bit_u64_msb(&am_ready_aos_);
         me->crit_exit();
 
-        struct am_ao *ao = me->ao[msb];
+        struct am_ao *ao = me->aos[msb];
         AM_ASSERT(ao);
         AM_ASSERT(ao->prio == msb);
 
@@ -109,8 +109,8 @@ void am_ao_start(
     ao->task_id = am_pal_task_own_id();
 
     struct am_ao_state *me = &am_ao_state_;
-    AM_ASSERT(NULL == me->ao[prio]);
-    me->ao[prio] = ao;
+    AM_ASSERT(NULL == me->aos[prio]);
+    me->aos[prio] = ao;
     am_hsm_init(&ao->hsm, init_event);
 }
 

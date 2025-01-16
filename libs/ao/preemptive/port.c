@@ -106,8 +106,8 @@ void am_ao_start(
     ao->name = name;
 
     struct am_ao_state *me = &am_ao_state_;
-    AM_ASSERT(NULL == me->ao[prio]);
-    me->ao[prio] = ao;
+    AM_ASSERT(NULL == me->aos[prio]);
+    me->aos[prio] = ao;
     am_hsm_init(&ao->hsm, init_event);
 
     ao->task_id = am_pal_task_create(

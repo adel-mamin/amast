@@ -93,7 +93,7 @@ bool am_ao_publish_x(const struct am_event **event, int margin) {
             list &= ~(1U << (unsigned)msb);
 
             int ind = 8 * i + msb;
-            struct am_ao *ao = me->ao[ind];
+            struct am_ao *ao = me->aos[ind];
             AM_ASSERT(ao);
             enum am_event_rc rc =
                 am_event_push_back_x(&ao->event_queue, event, margin);
@@ -182,7 +182,7 @@ void am_ao_subscribe(const struct am_ao *ao, int event) {
     AM_ASSERT(event >= AM_EVT_USER);
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(event < me->nsub);
-    AM_ASSERT(me->ao[ao->prio] == ao);
+    AM_ASSERT(me->aos[ao->prio] == ao);
     AM_ASSERT(me->sub);
 
     int i = ao->prio / 8;
@@ -200,7 +200,7 @@ void am_ao_unsubscribe(const struct am_ao *ao, int event) {
     AM_ASSERT(event >= AM_EVT_USER);
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(event < me->nsub);
-    AM_ASSERT(me->ao[ao->prio] == ao);
+    AM_ASSERT(me->aos[ao->prio] == ao);
     AM_ASSERT(me->sub);
 
     int ind = event - AM_EVT_USER;
@@ -221,7 +221,7 @@ void am_ao_unsubscribe_all(const struct am_ao *ao) {
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(me->sub);
 
-    AM_ASSERT(me->ao[ao->prio] == ao);
+    AM_ASSERT(me->aos[ao->prio] == ao);
 
     int j = ao->prio / 8;
 
@@ -250,7 +250,7 @@ void am_ao_stop(struct am_ao *ao) {
     am_ao_unsubscribe_all(ao);
     AM_ATOMIC_STORE_N(&ao->stopped, true);
     struct am_ao_state *me = &am_ao_state_;
-    me->ao[ao->prio] = NULL;
+    me->aos[ao->prio] = NULL;
 }
 
 static void am_ao_debug_stub(const struct am_ao *ao, const struct am_event *e) {
@@ -321,8 +321,8 @@ void am_ao_dump_event_queues(
     }
 
     struct am_ao_state *me = &am_ao_state_;
-    for (int i = 0; i < AM_COUNTOF(me->ao); i++) {
-        struct am_ao *ao = me->ao[i];
+    for (int i = 0; i < AM_COUNTOF(me->aos); i++) {
+        struct am_ao *ao = me->aos[i];
         if (!ao) {
             continue;
         }
@@ -347,8 +347,8 @@ void am_ao_log_last_events(void (*log)(const char *name, int event)) {
     AM_ASSERT(log);
 
     struct am_ao_state *me = &am_ao_state_;
-    for (int i = 0; i < AM_COUNTOF(me->ao); i++) {
-        struct am_ao *ao = me->ao[i];
+    for (int i = 0; i < AM_COUNTOF(me->aos); i++) {
+        struct am_ao *ao = me->aos[i];
         if (!ao) {
             continue;
         }
