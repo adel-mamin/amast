@@ -32,6 +32,10 @@
 #ifndef AM_CRC_H_INCLUDED
 #define AM_CRC_H_INCLUDED
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Compute CRC16.
  *
@@ -132,5 +136,9 @@ void crc_fletcher8(
     unsigned char *ck_a,
     unsigned char *ck_b
 );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* AM_CRC_H_INCLUDED */

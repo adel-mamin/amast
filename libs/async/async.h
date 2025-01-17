@@ -38,10 +38,6 @@
  * https://dunkels.com/adam/pt/
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** Init state of async function */
 #define AM_ASYNC_STATE_INIT 0
 
@@ -147,6 +143,10 @@ struct am_async {
     case __LINE__:
 
 /* clang-format on */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Initialize async state.

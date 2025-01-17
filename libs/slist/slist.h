@@ -34,16 +34,6 @@
 
 #include <stdbool.h>
 
-#if defined __cplusplus
-extern "C" {
-#endif
-
-extern const int am_alignof_slist;
-extern const int am_alignof_slist_item;
-
-#define AM_ALIGNOF_SLIST am_alignof_slist
-#define AM_ALIGNOF_SLIST_ITEM am_alignof_slist_item
-
 /**
  * Singly linked item.
  * There are at least two ways to make an arbitrary structure `struct foo`
@@ -76,6 +66,16 @@ struct am_slist_iterator {
     struct am_slist *hnd;      /**< list handler */
     struct am_slist_item *cur; /**< current item of the list */
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern const int am_alignof_slist;
+extern const int am_alignof_slist_item;
+
+#define AM_ALIGNOF_SLIST am_alignof_slist
+#define AM_ALIGNOF_SLIST_ITEM am_alignof_slist_item
 
 /**
  * Singly linked list initialization.
@@ -211,7 +211,7 @@ struct am_slist_item *am_slist_next_item(
     const struct am_slist *hnd, const struct am_slist_item *item
 );
 
-#if defined __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

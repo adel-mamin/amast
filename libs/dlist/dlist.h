@@ -34,10 +34,6 @@
 
 #include <stdbool.h>
 
-#if defined __cplusplus
-extern "C" {
-#endif
-
 /**
  * List iterator traverse direction.
  * Used together with list iterator API
@@ -85,6 +81,10 @@ struct am_dlist_iterator {
     struct am_dlist_item *cur;   /**< current item of the list */
     enum am_dlist_direction dir; /**< direction of traverse */
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * The list initialization.

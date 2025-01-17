@@ -42,6 +42,10 @@
 
 #include "common/macros.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Compare two strings in a case insensitive manner.
  * @param s1  the first string
@@ -327,5 +331,9 @@ void str_split_path(
  *         of delim and tail.
  */
 int str_lcat_path(char *dst, const char *src, int lim, char delim);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* AM_STRLIB_H_INCLUDED */

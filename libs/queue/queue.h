@@ -35,10 +35,6 @@
 #include <stdbool.h>
 #include "common/types.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** queue handler */
 struct am_queue {
     int isize;         /**< item size [bytes] */
@@ -46,6 +42,10 @@ struct am_queue {
     int wr;            /**< write index */
     struct am_blk blk; /**< queue memory block */
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Check if queue is empty.

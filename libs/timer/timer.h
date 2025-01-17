@@ -27,10 +27,6 @@
 #ifndef AM_TIMER_H_INCLUDED
 #define AM_TIMER_H_INCLUDED
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdbool.h>
 
 #include "common/macros.h"
@@ -103,6 +99,10 @@ struct am_event_timer {
     /** the timer event is re-sent after this many ticks */
     int interval_ticks;
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Timer state constructor.

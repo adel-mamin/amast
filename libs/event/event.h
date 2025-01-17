@@ -109,6 +109,10 @@ struct am_event_cfg {
     void (*crit_exit)(void);
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Event state constructor.
  *
@@ -432,5 +436,9 @@ bool am_event_recall(struct am_queue *queue, am_event_recall_fn cb, void *ctx);
  * @return the number of events flushed
  */
 int am_event_flush_queue(struct am_queue *queue);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* AM_EVENT_H_INCLUDED */
