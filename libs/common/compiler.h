@@ -517,7 +517,7 @@ static inline unsigned long long __rdtsc() {
 
 /** Compile time assert helper */
 #define AM_COMPILE_TIME_ASSERT3(cond, msg) \
-    typedef char static_assertion_##msg[(!!(cond)) * 2 - 1]
+    typedef char static_assertion_##msg[(cond) ? 1 : - 1]
 /** Compile time assert helper */
 #define AM_COMPILE_TIME_ASSERT2(cond, line) \
     AM_COMPILE_TIME_ASSERT3(cond, static_assertion_at_line_##line)
