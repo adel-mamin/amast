@@ -146,12 +146,12 @@ void am_event_free(const struct am_event **event) {
     AM_ASSERT(event);
     AM_ASSERT(*event); /* double free? */
 
-    struct am_event *e = AM_CAST(struct am_event *, *event);
-    AM_ASSERT(e->pool_index_plus_one <= AM_EVENT_POOL_NUM_MAX);
-
-    if (am_event_is_static(e)) {
+    if (am_event_is_static(*event)) {
         return; /* the event is statically allocated */
     }
+
+    struct am_event *e = AM_CAST(struct am_event *, *event);
+    AM_ASSERT(e->pool_index_plus_one <= AM_EVENT_POOL_NUM_MAX);
 
     struct am_event_state *me = &am_event_state_;
     me->crit_enter();
@@ -279,6 +279,11 @@ bool am_event_is_static(const struct am_event *event) {
 
 void am_event_inc_ref_cnt(const struct am_event *event) {
     AM_ASSERT(event);
+
+    if (am_event_is_static(event)) {
+        return;
+    }
+
     AM_ASSERT(event->ref_counter < AM_EVENT_REF_COUNTER_MASK);
 
     struct am_event *e = AM_CAST(struct am_event *, event);
@@ -288,15 +293,9 @@ void am_event_inc_ref_cnt(const struct am_event *event) {
     me->crit_exit();
 }
 
-void am_event_dec_ref_cnt(const struct am_event *event) {
+void am_event_dec_ref_cnt(const struct am_event **event) {
     AM_ASSERT(event);
-    AM_ASSERT(event->ref_counter > 0);
-
-    struct am_event *e = AM_CAST(struct am_event *, event);
-    struct am_event_state *me = &am_event_state_;
-    me->crit_enter();
-    --e->ref_counter;
-    me->crit_exit();
+    am_event_free(event);
 }
 
 int am_event_get_ref_cnt(const struct am_event *event) {
@@ -332,11 +331,13 @@ static enum am_event_rc am_event_push_x(
 
     const int len = am_queue_length(queue);
     AM_ASSERT(capacity >= len);
-    if (margin && ((capacity - len) <= margin)) {
+    int space = capacity - len;
+    if (margin && (space <= margin)) {
         me->crit_exit();
         am_event_free(event);
         return AM_EVENT_RC_ERR;
     }
+    AM_ASSERT(space > 0);
 
     if (!am_event_is_static(e)) {
         ++e->ref_counter;

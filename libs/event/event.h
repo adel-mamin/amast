@@ -257,18 +257,31 @@ void am_event_log_pools(int num, am_event_log_func cb);
 bool am_event_is_static(const struct am_event *event);
 
 /**
- * Increment event reference counter.
+ * Increment event reference counter by one.
+ *
+ * Incrementing the event reference prevents the automatic event disposal.
+ * Used to hold on to the event.
+ * Call am_event_dec_ref_cnt(), when the event is not needed anymore
+ * and can be disposed.
  *
  * @param event  the event
  */
 void am_event_inc_ref_cnt(const struct am_event *event);
 
 /**
- * Decrement event reference counter.
+ * Decrement event reference counter by one.
+ *
+ * Frees the event, if the reference counter drops to zero.
+ *
+ * If the event is freed, then the pointer to the event is set to NULL.
+ *
+ * The function does nothing for statically allocated events
+ * (events for which am_event_is_static() returns true).
+ * If reference cou
  *
  * @param event  the event
  */
-void am_event_dec_ref_cnt(const struct am_event *event);
+void am_event_dec_ref_cnt(const struct am_event **event);
 
 /**
  * Return event reference counter.
