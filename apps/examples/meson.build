@@ -53,8 +53,8 @@ e = executable(
     ],
     dependencies: [libhsm_dep, libstr_dep, libassert_dep])
 
-e = executable(
-    'dpp-example',
+libdpp = library(
+    'dpp',
     [
         'dpp' / 'main.c',
         'dpp' / 'philo.c',
@@ -64,41 +64,51 @@ e = executable(
         libhsm_dep,
         libstr_dep,
         libpal_dep,
-        libao_preemptive_dep,
         libevent_dep,
         libtimer_dep,
         libbit_dep])
 
-ringbuf_preemptive_example = executable(
+dpp_preemptive = executable(
+    'dpp_preemptive',
+    dependencies: libao_preemptive_dep,
+    link_with: libdpp)
+
+dpp_cooperative = executable(
+    'dpp_cooperative',
+    dependencies: libao_cooperative_dep,
+    link_with: libdpp)
+
+if unit_test
+    test('threaded_preemptive', dpp_preemptive, suite: 'dpp')
+    test('threaded_cooperative', dpp_cooperative, suite: 'dpp')
+endif
+
+libringbuf_example = library(
     'ringbuf_preemptive_example',
     [
-        'ringbuf' / 'main.c',
         'ringbuf' / 'reader.c',
         'ringbuf' / 'writer.c'
     ],
     dependencies: [
-        libao_preemptive_dep,
-        libpal_dep,
-        libringbuf_dep,
-        libassert_dep
-    ])
-
-ringbuf_cooperative_example = executable(
-    'ringbuf_cooperative_example',
-    [
-        'ringbuf' / 'main.c',
-        'ringbuf' / 'reader.c',
-        'ringbuf' / 'writer.c'
-    ],
-    dependencies: [
-        libao_cooperative_dep,
         libpal_dep,
         libringbuf_dep,
         libassert_dep,
-        libbit_dep
+        libbit_dep,
     ])
 
+ringbuf_preemptive = executable(
+    'ringbuf_preemptive',
+    ['ringbuf' / 'main.c'],
+    link_with: libringbuf_example,
+    dependencies: libao_preemptive_dep)
+
+ringbuf_cooperative = executable(
+    'ringbuf_cooperative',
+    ['ringbuf' / 'main.c'],
+    link_with: libringbuf_example,
+    dependencies: libao_cooperative_dep)
+
 if unit_test
-    test('threaded_preemptive', ringbuf_preemptive_example, suite: 'ringbuf')
-    test('threaded_cooperative', ringbuf_cooperative_example, suite: 'ringbuf')
+    test('threaded_preemptive', ringbuf_preemptive, suite: 'ringbuf')
+    test('threaded_cooperative', ringbuf_cooperative, suite: 'ringbuf')
 endif
