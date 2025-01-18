@@ -266,6 +266,8 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     struct am_ao_state *me = &am_ao_state_;
     memset(me, 0, sizeof(*me));
 
+    am_pal_ctor();
+
     me->startup_mutex = am_pal_mutex_create();
     am_pal_mutex_lock(me->startup_mutex);
 
@@ -275,8 +277,6 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     }
     me->crit_enter = cfg->crit_enter;
     me->crit_exit = cfg->crit_exit;
-
-    am_pal_ctor();
 
     struct am_event_state_cfg cfg_event = {
         .crit_enter = cfg->crit_enter,
