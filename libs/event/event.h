@@ -101,7 +101,7 @@ struct am_event {
     unsigned pubsub_time : 1;
 };
 
-/** Event module configuration. */
+/** Event module state configuration. */
 struct am_event_state_cfg {
     /** Enter critical section. */
     void (*crit_enter)(void);

@@ -48,7 +48,7 @@ typedef void (*am_timer_post_fn)(void *owner, const struct am_event *event);
  */
 typedef void (*am_timer_publish_fn)(const struct am_event *event);
 
-/** Timer module configuration. */
+/** Timer module state configuration. */
 struct am_timer_state_cfg {
     /** either post or publish callback must be non-NULL */
 
