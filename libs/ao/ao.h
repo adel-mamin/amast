@@ -355,6 +355,19 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
  * Non blocking.
  * Returns after dispatching zero or one event.
  *
+ * The function must be called again if one event is dispatched as there
+ * might be more events waiting for dispatching.
+ *
+ * If zero events were dispatched, then the event processor is in idle state.
+ * In this case the function returns with critical section being entered
+ * (struct am_ao_state_cfg::crit_enter()) to allow for race condition free
+ * transition to low power mode(s).
+ * The caller must exit the critical section in this case.
+ *
+ * Please read the article called
+ * "Use an MCU's low-power modes in foreground/background systems"
+ * by Miro Samek for more information.
+ *
  * @retval true   dispatched one event
  * @retval false  dispatched no events
  */

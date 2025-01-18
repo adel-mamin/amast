@@ -153,6 +153,7 @@ int main(void) {
     for (;;) {
         while (am_ao_run_all()) {
         }
+        am_pal_crit_exit();
         am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
         am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
