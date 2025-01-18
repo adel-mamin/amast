@@ -29,6 +29,7 @@ include-what-you-use = ">=0.23,<0.24"
 cspell = ">=8.17.2,<9"
 clang-tools = ">=19.1.7,<20"
 binutils = ">=2.43,<3"
+gdb = ">=15.1,<16"
 
 [pypi-dependencies]
 setuptools-scm = ">=8.1.0, <9"
