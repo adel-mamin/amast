@@ -336,7 +336,10 @@ void am_pal_sleep_ticks(int domain, int ticks) {
     if (0 == ticks) {
         return;
     }
-    AM_ASSERT(ticks > 0);
+    if (ticks < 0) {
+        am_pal_sleep_ms(-1);
+        return;
+    }
     am_pal_sleep_ms(ticks * AM_PAL_TICK_DOMAIN_DEFAULT_MS);
 }
 
@@ -344,7 +347,14 @@ void am_pal_sleep_ms(int ms) {
     if (0 == ms) {
         return;
     }
-    AM_ASSERT(ms > 0);
+    if (ms < 0) {
+        struct timespec req = {
+            .tv_sec = 86400, .tv_nsec = 0
+        };  // 1 day in seconds
+        while (1) {
+            nanosleep(&req, NULL);  // Sleep for 1 day at a time
+        }
+    }
     struct timespec ts = {/* convert milliseconds to seconds */
                           .tv_sec = ms / 1000,
                           /* remaining milliseconds to nanoseconds */
