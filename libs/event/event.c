@@ -65,7 +65,7 @@ struct am_alignof_event_ptr {
 };
 const int am_alignof_event_ptr = offsetof(struct am_alignof_event_ptr, d);
 
-void am_event_state_ctor(const struct am_event_cfg *cfg) {
+void am_event_state_ctor(const struct am_event_state_cfg *cfg) {
     AM_ASSERT(cfg);
     AM_ASSERT(cfg->crit_enter);
     AM_ASSERT(cfg->crit_exit);

@@ -138,7 +138,7 @@ static enum am_hsm_rc hsmq_b(struct am_hsmq *me, const struct am_event *event) {
 }
 
 int main(void) {
-    struct am_event_cfg cfg = {
+    struct am_event_state_cfg cfg = {
         .crit_enter = am_pal_crit_enter, .crit_exit = am_pal_crit_exit
     };
     am_event_state_ctor(&cfg);

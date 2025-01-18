@@ -102,7 +102,7 @@ struct am_event {
 };
 
 /** Event module configuration. */
-struct am_event_cfg {
+struct am_event_state_cfg {
     /** Enter critical section. */
     void (*crit_enter)(void);
     /** Exit critical section. */
@@ -119,7 +119,7 @@ extern "C" {
  * @param cfg  event state configuration
  *             The event module makes an internal copy of the configuration.
  */
-void am_event_state_ctor(const struct am_event_cfg *cfg);
+void am_event_state_ctor(const struct am_event_state_cfg *cfg);
 
 /**
  * Add event memory pool.

@@ -278,13 +278,13 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
 
     am_pal_ctor();
 
-    struct am_event_cfg cfg_event = {
+    struct am_event_state_cfg cfg_event = {
         .crit_enter = cfg->crit_enter,
         .crit_exit = cfg->crit_exit,
     };
     am_event_state_ctor(&cfg_event);
 
-    struct am_timer_cfg cfg_timer = {
+    struct am_timer_state_cfg cfg_timer = {
         .post = (am_timer_post_fn)am_ao_post_fifo,
         .crit_enter = cfg->crit_enter,
         .crit_exit = cfg->crit_exit,

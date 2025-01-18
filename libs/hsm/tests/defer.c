@@ -151,7 +151,7 @@ static void defer_commit(void) {
 }
 
 static void test_defer(void) {
-    struct am_event_cfg cfg = {
+    struct am_event_state_cfg cfg = {
         .crit_enter = am_pal_crit_enter, .crit_exit = am_pal_crit_exit
     };
     am_event_state_ctor(&cfg);

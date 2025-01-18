@@ -46,12 +46,12 @@ struct am_timer {
      */
     struct am_dlist domains[AM_PAL_TICK_DOMAIN_MAX];
     /** timer module configuration */
-    struct am_timer_cfg cfg;
+    struct am_timer_state_cfg cfg;
 };
 
 static struct am_timer am_timer_;
 
-void am_timer_state_ctor(const struct am_timer_cfg *cfg) {
+void am_timer_state_ctor(const struct am_timer_state_cfg *cfg) {
     AM_ASSERT(cfg);
     AM_ASSERT(cfg->post || cfg->publish);
     AM_ASSERT(cfg->crit_enter);

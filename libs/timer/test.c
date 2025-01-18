@@ -54,7 +54,7 @@ static void post_cb(void *owner, const struct am_event *event) {
 
 static void test_arm(void) {
     memset(&m_owner, 0, sizeof(m_owner));
-    struct am_timer_cfg cfg = {
+    struct am_timer_state_cfg cfg = {
         .post = post_cb,
         .publish = NULL,
         .update = NULL,
