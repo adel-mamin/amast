@@ -101,6 +101,16 @@ AM_NORETURN void am_assert_failure(
     __builtin_trap();
 }
 
+AM_NORETURN static void ticker_task(void *param) {
+    (void)param;
+    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    for (;;) {
+        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        now_ticks += 1;
+        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    }
+}
+
 int main(void) {
     struct am_ao_state_cfg cfg_ao = {
         .crit_enter = am_pal_crit_enter, .crit_exit = am_pal_crit_exit
@@ -149,14 +159,19 @@ int main(void) {
         );
     }
 
-    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    am_pal_task_create(
+        "ticker",
+        AM_AO_PRIO_MIN,
+        /*stack=*/NULL,
+        /*stack_size=*/0,
+        /*entry=*/ticker_task,
+        /*arg=*/NULL
+    );
+
     for (;;) {
         while (am_ao_run_all()) {
         }
         am_pal_crit_exit();
-        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
-        now_ticks += 1;
-        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     }
 
     return 0;

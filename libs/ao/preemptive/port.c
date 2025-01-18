@@ -67,14 +67,10 @@ static void am_ao_task(void *param) {
 }
 
 bool am_ao_run_all(void) {
-    static bool started = false;
-    if (started) {
-        return false;
-    }
     const struct am_ao_state *me = &am_ao_state_;
     /* start all AOs */
     am_pal_mutex_unlock(me->startup_mutex);
-    started = true;
+    am_pal_sleep_ms(-1); /* sleep forever */
     return false;
 }
 

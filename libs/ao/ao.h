@@ -352,8 +352,11 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
 /**
  * Run all active objects.
  *
- * Non blocking.
- * Returns after dispatching zero or one event.
+ * Blocks forever for preemptive AO build.
+ *
+ * What follows only applies to cooperative build of AO.
+ *
+ * Non blocking and returns after dispatching zero or one event.
  *
  * The function must be called again if one event is dispatched as there
  * might be more events waiting for dispatching.

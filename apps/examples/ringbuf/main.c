@@ -49,6 +49,16 @@ int g_ringbuf_data_len = AM_COUNTOF(g_ringbuf_data);
 static const struct am_event *m_queue_ringbuf_reader[2];
 static const struct am_event *m_queue_ringbuf_writer[2];
 
+AM_NORETURN static void ticker_task(void *param) {
+    (void)param;
+    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    for (;;) {
+        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        now_ticks += 1;
+        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    }
+}
+
 AM_NORETURN static void test_ringbuf_threading(void) {
     uint8_t buf[32];
 
@@ -84,14 +94,19 @@ AM_NORETURN static void test_ringbuf_threading(void) {
         /*init_event=*/NULL
     );
 
-    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    am_pal_task_create(
+        "ticker",
+        AM_AO_PRIO_MIN,
+        /*stack=*/NULL,
+        /*stack_size=*/0,
+        /*entry=*/ticker_task,
+        /*arg=*/NULL
+    );
+
     for (;;) {
         while (am_ao_run_all()) {
         }
         am_pal_crit_exit();
-        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
-        now_ticks += 1;
-        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     }
 }
 
