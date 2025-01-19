@@ -10,7 +10,7 @@ Amast is a minimalist asynchronous toolkit that makes it easier to develop C lan
 Library name | Description
 -------------|------------
 ao | active object (preemptive and cooperative) ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/ao/README.rst), [example](https://github.com/adel-mamin/amast/tree/main/apps/examples/dpp))
-async | async/await ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/async/README.rst))
+async | async/await ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/async/README.rst), [example](https://github.com/adel-mamin/amast/tree/main/apps/examples/async))
 dlist | doubly linked list
 event | events ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/event/README.rst))
 fsm | finite state machine (FSM) ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/fsm/README.rst))
