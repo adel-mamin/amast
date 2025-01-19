@@ -25,6 +25,35 @@
  */
 
 /*
+ * Demonstrate integration of async with HSM.
+ * HSM topology:
+ *
+ *  +--------------------------+
+ *  |       async_top          |
+ *  | +---------+  +---------+ |
+ *  | |async_ryg|  |async_gyr| |
+ *  | +---------+  +---------+ |
+ *  +--------------------------+
+ *
+ * async_ryg substate prints colored rectangles in the order
+ * red-yellow-green (ryg)
+ * The print delay of each rectangle is 500ms
+ *
+ * async_ryg substate prints colored rectangles in the order
+ * green-yellow-red (gyr)
+ * The print delay of each rectangle is 1000ms
+ *
+ * async_top handles user input. Press ENTER to switch between
+ * async_ryg and async_gyr substates.
+ *
+ * Generally the use of async is warranted if the sequence of
+ * steps is known beforehand like in this case.
+ * async_ryg calls async_ryg_hnd() to do the printing
+ * async_gyr calls async_gyr_hnd() to do the printing
+ *
+ * The example is built in two flavours:
+ * async_preemptive and async_cooperative.
+ * Both builds do the same.
  */
 
 #include <stdio.h>
