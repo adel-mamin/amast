@@ -172,9 +172,7 @@ int main(void) {
     );
 
     for (;;) {
-        if (!am_ao_run_all()) {
-            am_pal_crit_exit();
-        }
+        am_ao_run_all();
     }
 
     return 0;

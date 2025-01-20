@@ -64,6 +64,20 @@ struct am_ao {
 struct am_ao_state_cfg {
     /** Debug callback. */
     void (*debug)(const struct am_ao *ao, const struct am_event *e);
+    /**
+     * Callback to enter low power mode
+     *
+     * The callback is called with critical section being entered
+     * (struct am_ao_state_cfg::crit_enter()) to allow for race condition free
+     * transition to low power mode(s).
+     * The ao_state_cfg::crit_exit() is called by the library after the callback
+     * is returned.
+     *
+     * Please read the article called
+     * "Use an MCU's low-power modes in foreground/background systems"
+     * by Miro Samek for more information about the reasoning of the approach.
+     */
+    void (*on_idle)(void);
 
     /** Enter critical section. */
     void (*crit_enter)(void);
@@ -382,7 +396,8 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
 /**
  * Run all active objects.
  *
- * Executes initial transition of all active objects once.
+ * Executes initial transition of all active objects once on
+ * the first call.
  *
  * Blocks forever for preemptive AO build.
  *
@@ -390,18 +405,11 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
  *
  * Non blocking and returns after dispatching zero or one event.
  *
- * The function must be called again if one event is dispatched as there
- * might be more events waiting for dispatching.
+ * The function is expected to be called repeatedly to dispatch
+ * events to active objects.
  *
- * If zero events were dispatched, then the event processor is in idle state.
- * In this case the function returns with critical section being entered
- * (struct am_ao_state_cfg::crit_enter()) to allow for race condition free
- * transition to low power mode(s).
- * The caller must exit the critical section in this case.
- *
- * Please read the article called
- * "Use an MCU's low-power modes in foreground/background systems"
- * by Miro Samek for more information.
+ * If zero events were dispatched (the function returned false),
+ * then the event processor is in idle state.
  *
  * @retval true   dispatched one event
  * @retval false  dispatched no events

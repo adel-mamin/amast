@@ -54,12 +54,15 @@ bool am_ao_run_all(void) {
         me->crit_enter();
         if (am_bit_u64_is_empty(&am_ready_aos_)) {
             AM_ASSERT(!dispatched);
-            /*
-             * We intentionally do not call me->crit_exit() here to let
-             * caller to enter low power mode, if needed.
-             * Therefore the caller must call me->crit_exit(),
-             * when am_ao_run_all() returns false.
-             */
+            if (me->on_idle) {
+                /*
+                 * We intentionally do not call me->crit_exit() before
+                 * calling me->on_idle() callback here to let
+                 * the callback to enter low power mode, if needed.
+                 */
+                me->on_idle();
+            }
+            me->crit_exit();
             break;
         }
         int msb = am_bit_u64_msb(&am_ready_aos_);

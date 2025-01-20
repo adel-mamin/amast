@@ -291,6 +291,7 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     }
     me->crit_enter = cfg->crit_enter;
     me->crit_exit = cfg->crit_exit;
+    me->on_idle = cfg->on_idle;
 
     struct am_event_state_cfg cfg_event = {
         .crit_enter = cfg->crit_enter,

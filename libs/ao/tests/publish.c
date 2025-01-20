@@ -109,29 +109,17 @@ static void test_publish(void) {
 
     static const struct am_event event = {.id = AM_EVT_PUB};
 
-    if (!am_ao_run_all()) {
-        am_pal_crit_exit();
-    }
-
+    am_ao_run_all();
     am_ao_publish(&event);
-
-    if (!am_ao_run_all()) {
-        am_pal_crit_exit();
-    }
+    am_ao_run_all();
 
     const char *expected = "s-PUB";
     AM_ASSERT(0 == strncmp(m_publish.log_buf, expected, strlen(expected)));
     m_publish.log_buf[0] = '\0';
 
-    if (!am_ao_run_all()) {
-        am_pal_crit_exit();
-    }
-
+    am_ao_run_all();
     am_ao_publish_exclude(&event, m_me);
-
-    if (!am_ao_run_all()) {
-        am_pal_crit_exit();
-    }
+    am_ao_run_all();
 
     AM_ASSERT('\0' == m_publish.log_buf[0]);
 }
