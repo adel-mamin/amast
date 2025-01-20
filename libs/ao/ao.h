@@ -128,9 +128,22 @@ extern "C" {
  * The function is fast, thread safe and usable from
  * interrupt service routines (ISR).
  *
- * @param event  the pointer to the event to publish
+ * @param event  the event to publish
  */
 void am_ao_publish(const struct am_event **event);
+
+/**
+ * Same as am_ao_publish(), but the event is not delivered to the given AO.
+ *
+ * @param event  the event to publish
+ * @param ao     do not post the event to this active object even
+ *               if it is subscribed to the event.
+ *               If set to NULL, the the API behaves same way as
+ *               am_ao_publish()
+ */
+void am_ao_publish_exclude(
+    const struct am_event **event, const struct am_ao *ao
+);
 
 /**
  * Publish event.
@@ -165,7 +178,7 @@ void am_ao_publish(const struct am_event **event);
  * The function is fast, thread safe and usable from
  * interrupt service routines (ISR).
  *
- * @param event   the pointer to the event to publish
+ * @param event   the event to publish
  * @param margin  free event queue slots to be available in each subscribed
  *                active object after the event is pushed to their event queues
  *
@@ -173,6 +186,25 @@ void am_ao_publish(const struct am_event **event);
  * @retval false  at least one delivery has failed
  */
 bool am_ao_publish_x(const struct am_event **event, int margin);
+
+/**
+ * Same as am_ao_publish_x(), but the event is not delivered to the given AO.
+ *
+ * @param event   the event to publish
+ * @param margin  free event queue slots to be available in each subscribed
+ *                active object after the event is pushed to their event queues
+ * @param ao      do not post the event to this active object even
+ *                if it is subscribed to the event.
+ *                If set to NULL, the the API behaves same way as
+ *                am_ao_publish_x()
+ *
+ * @retval true   the event was delivered to all subscribed active objects
+ *                except the active object given as the parameter
+ * @retval false  at least one delivery has failed
+ */
+bool am_ao_publish_x_exclude(
+    const struct am_event **event, int margin, const struct am_ao *ao
+);
 
 /**
  * Post event to the back of active object's event queue.

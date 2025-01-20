@@ -78,4 +78,20 @@ if unit_test
         ],
         include_directories: [include_directories('tests')])
     test('minimal_cooperative', e, suite: 'ao')
+
+    e = executable(
+        'publish_cooperative',
+        [
+            'tests' / 'publish.c'
+        ],
+        c_args: ['-fno-sanitize=all', '-O0', '-fno-trapv', '-ggdb'],
+        dependencies: [
+            libao_cooperative_dep,
+            libassert_dep,
+            libpal_dep,
+            libbit_dep,
+            libstr_dep,
+        ],
+        include_directories: [include_directories('tests')])
+    test('publish_cooperative', e, suite: 'ao')
 endif
