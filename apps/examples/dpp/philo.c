@@ -117,7 +117,7 @@ static int philo_eating(struct philo *me, const struct am_event *event) {
             EVT_DONE, sizeof(struct done), /*margin=*/0
         );
         msg->philo = me->id;
-        am_ao_publish(AM_CAST(const struct am_event **, &msg));
+        am_ao_publish(AM_CAST(const struct am_event *, msg));
         return AM_HSM_TRAN(philo_thinking);
     }
     default:

@@ -97,7 +97,7 @@ static void table_serve(int philo) {
     );
     eat->philo = philo;
     am_pal_printf("table serving philo %d\n", philo);
-    am_ao_publish(AM_CAST(const struct am_event **, &eat));
+    am_ao_publish(AM_CAST(const struct am_event *, eat));
     philo_mark_eating(philo);
 
     if (m_table.nsession) {

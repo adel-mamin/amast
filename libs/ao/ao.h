@@ -108,7 +108,7 @@ extern "C" {
  * or am_ao_unsubscribe_all() to unsubscribe it from all event IDs.
  *
  * If any active object has full event queue and cannot
- * accommodate the event, then the function asserts.
+ * accommodate the event, then the function crashes with assert.
  *
  * If your application is prepared for loosing the event,
  * then use am_ao_publish_x() function instead.
@@ -117,7 +117,6 @@ extern "C" {
  * using am_event_push_back() function.
  *
  * Tries to free the event, if no active objects are subscribed to it.
- * *event is set to NULL, if the event was freed.
  *
  * The library takes care of freeing the event once all
  * subscribed active objects handled the event.
@@ -130,7 +129,7 @@ extern "C" {
  *
  * @param event  the event to publish
  */
-void am_ao_publish(const struct am_event **event);
+void am_ao_publish(const struct am_event *event);
 
 /**
  * Same as am_ao_publish(), but the event is not delivered to the given AO.
@@ -142,7 +141,7 @@ void am_ao_publish(const struct am_event **event);
  *               am_ao_publish()
  */
 void am_ao_publish_exclude(
-    const struct am_event **event, const struct am_ao *ao
+    const struct am_event *event, const struct am_ao *ao
 );
 
 /**
@@ -167,7 +166,6 @@ void am_ao_publish_exclude(
  * using am_event_push_back() function.
  *
  * Tries to free the event, if it was not delivered to any subscriber.
- * *event is set to NULL, if the event was freed.
  *
  * The library takes care of freeing the event once all
  * subscribed active objects handled the event.
@@ -185,7 +183,7 @@ void am_ao_publish_exclude(
  * @retval true   the event was delivered to all subscribed active objects
  * @retval false  at least one delivery has failed
  */
-bool am_ao_publish_x(const struct am_event **event, int margin);
+bool am_ao_publish_x(const struct am_event *event, int margin);
 
 /**
  * Same as am_ao_publish_x(), but the event is not delivered to the given AO.
@@ -203,7 +201,7 @@ bool am_ao_publish_x(const struct am_event **event, int margin);
  * @retval false  at least one delivery has failed
  */
 bool am_ao_publish_x_exclude(
-    const struct am_event **event, int margin, const struct am_ao *ao
+    const struct am_event *event, int margin, const struct am_ao *ao
 );
 
 /**
@@ -211,7 +209,7 @@ bool am_ao_publish_x_exclude(
  *
  * The event is then handled asynchronously by the active object.
  *
- * If the active object's event queue is full the function asserts.
+ * If the active object's event queue is full the function crashes with assert.
  *
  * The function is fast, thread safe and usable from
  * interrupt service routines (ISR).
@@ -230,7 +228,6 @@ void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
  * then the function fails gracefully.
  *
  * Tries to free the event, if it was not posted.
- * *event is set to NULL, if the event was freed.
  *
  * Statically allocated events (events for which am_event_is_static()
  * returns true) are never freed.
@@ -246,7 +243,7 @@ void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
  * @retval false  the event was not posted
  */
 bool am_ao_post_fifo_x(
-    struct am_ao *ao, const struct am_event **event, int margin
+    struct am_ao *ao, const struct am_event *event, int margin
 );
 
 /**
@@ -254,7 +251,7 @@ bool am_ao_post_fifo_x(
  *
  * The event is then handled asynchronously by the active object.
  *
- * If active object's event queue is full the function asserts.
+ * If active object's event queue is full the function crashes with assert.
  *
  * The function is fast, thread safe and usable from
  * interrupt service routines (ISR).
@@ -273,7 +270,6 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
  * then the function fails gracefully.
  *
  * Tries to free the event, if it was not posted.
- * *event is set to NULL, if the event was freed.
  *
  * Statically allocated events (events for which am_event_is_static()
  * returns true) are never freed.
@@ -286,7 +282,7 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
  * @retval false  the event was not posted
  */
 bool am_ao_post_lifo_x(
-    struct am_ao *ao, const struct am_event **event, int margin
+    struct am_ao *ao, const struct am_event *event, int margin
 );
 
 /**

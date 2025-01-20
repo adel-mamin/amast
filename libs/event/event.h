@@ -277,15 +277,12 @@ void am_event_inc_ref_cnt(const struct am_event *event);
  *
  * Frees the event, if the reference counter drops to zero.
  *
- * If the event is freed, then the pointer to the event is set to NULL.
- *
  * The function does nothing for statically allocated events
  * (events for which am_event_is_static() returns true).
- * If reference cou
  *
  * @param event  the event
  */
-void am_event_dec_ref_cnt(const struct am_event **event);
+void am_event_dec_ref_cnt(const struct am_event *event);
 
 /**
  * Return event reference counter.
@@ -302,7 +299,6 @@ int am_event_get_ref_cnt(const struct am_event *event);
  * Does not assert if margin is non-zero and the event was not pushed.
  *
  * Tries to free the event, if it was not pushed.
- * *event is set to NULL, if the event was freed.
  *
  * Statically allocated events (events for which am_event_is_static()
  * returns true) are never freed.
@@ -316,7 +312,7 @@ int am_event_get_ref_cnt(const struct am_event *event);
  * @retval AM_EVENT_RC_ERR                 the event was not pushed
  */
 enum am_event_rc am_event_push_back_x(
-    struct am_queue *queue, const struct am_event **event, int margin
+    struct am_queue *queue, const struct am_event *event, int margin
 );
 
 /**
@@ -341,7 +337,6 @@ enum am_event_rc am_event_push_back(
  * Does not assert if margin is non-zero and the event was not pushed.
  *
  * Tries to free the event, if it was not pushed.
- * *event is set to NULL, if the event was freed.
  *
  * Statically allocated events (events for which am_event_is_static()
  * returns true) are never freed.
@@ -355,7 +350,7 @@ enum am_event_rc am_event_push_back(
  * @retval AM_EVENT_RC_ERR                 the event was not pushed
  */
 enum am_event_rc am_event_push_front_x(
-    struct am_queue *queue, const struct am_event **event, int margin
+    struct am_queue *queue, const struct am_event *event, int margin
 );
 
 /**
@@ -396,8 +391,7 @@ void am_event_defer(struct am_queue *queue, const struct am_event *event);
 /**
  * Defer event with margin.
  *
- * Tries to free event, if defer fails. If event is freed, then
- * *event is set to NULL.
+ * Tries to free event, if defer fails.
  *
  * Statically allocated events (events for which am_event_is_static()
  * returns true) are never freed.
@@ -410,7 +404,7 @@ void am_event_defer(struct am_queue *queue, const struct am_event *event);
  * @retval false  the event was not deferred
  */
 bool am_event_defer_x(
-    struct am_queue *queue, const struct am_event **event, int margin
+    struct am_queue *queue, const struct am_event *event, int margin
 );
 
 /** The type of a callback used to handle recalled events */

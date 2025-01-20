@@ -59,24 +59,22 @@ bool am_ao_event_queue_is_empty(struct am_ao *ao) {
 }
 
 static bool am_ao_publish_x_(
-    const struct am_event **event, int margin, const struct am_ao *exclude
+    const struct am_event *event, int margin, const struct am_ao *exclude
 ) {
     AM_ASSERT(event);
-    const struct am_event *e = *event;
-    AM_ASSERT(e);
-    AM_ASSERT(AM_EVENT_HAS_USER_ID(e));
-    AM_ASSERT(AM_EVENT_HAS_PUBSUB_ID(e));
+    AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
+    AM_ASSERT(AM_EVENT_HAS_PUBSUB_ID(event));
     AM_ASSERT(margin >= 0);
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(me->sub);
 
-    if (!am_event_is_static(e)) {
+    if (!am_event_is_static(event)) {
         /*
          * To avoid a potential race condition if higher priority
          * active object preempts the event publishing and frees the event
          * as processed.
          */
-        am_event_inc_ref_cnt(e);
+        am_event_inc_ref_cnt(event);
     }
 
     bool all_published = true;
@@ -85,7 +83,7 @@ static bool am_ao_publish_x_(
      * The event publishing is done for higher priority
      * active objects first to avoid priority inversion.
      */
-    struct am_ao_subscribe_list *sub = &me->sub[e->id];
+    struct am_ao_subscribe_list *sub = &me->sub[event->id];
     for (int i = AM_COUNTOF(sub->list) - 1; i >= 0; i--) {
         me->crit_enter();
         unsigned list = sub->list[i];
@@ -118,27 +116,27 @@ static bool am_ao_publish_x_(
      * the function. Also takes care of the case when no active objects
      * subscribed to this event.
      */
-    am_event_free(event);
+    am_event_free(&event);
 
     return all_published;
 }
 
-bool am_ao_publish_x(const struct am_event **event, int margin) {
+bool am_ao_publish_x(const struct am_event *event, int margin) {
     return am_ao_publish_x_(event, margin, /*exclude=*/NULL);
 }
 
 bool am_ao_publish_x_exclude(
-    const struct am_event **event, int margin, const struct am_ao *ao
+    const struct am_event *event, int margin, const struct am_ao *ao
 ) {
     return am_ao_publish_x_(event, margin, ao);
 }
 
-void am_ao_publish(const struct am_event **event) {
+void am_ao_publish(const struct am_event *event) {
     am_ao_publish_x_(event, /*margin=*/0, /*exclude=*/NULL);
 }
 
 void am_ao_publish_exclude(
-    const struct am_event **event, const struct am_ao *ao
+    const struct am_event *event, const struct am_ao *ao
 ) {
     am_ao_publish_x_(event, /*margin=*/0, ao);
 }
@@ -154,7 +152,7 @@ void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event) {
 }
 
 bool am_ao_post_fifo_x(
-    struct am_ao *ao, const struct am_event **event, int margin
+    struct am_ao *ao, const struct am_event *event, int margin
 ) {
     AM_ASSERT(ao);
     AM_ASSERT(event);
@@ -178,7 +176,7 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event) {
 }
 
 bool am_ao_post_lifo_x(
-    struct am_ao *ao, const struct am_event **event, int margin
+    struct am_ao *ao, const struct am_event *event, int margin
 ) {
     AM_ASSERT(ao);
     AM_ASSERT(event);

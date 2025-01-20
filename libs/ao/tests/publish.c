@@ -113,8 +113,7 @@ static void test_publish(void) {
         am_pal_crit_exit();
     }
 
-    const struct am_event *e = &event;
-    am_ao_publish(&e);
+    am_ao_publish(&event);
 
     if (!am_ao_run_all()) {
         am_pal_crit_exit();
@@ -128,7 +127,7 @@ static void test_publish(void) {
         am_pal_crit_exit();
     }
 
-    am_ao_publish_exclude(&e, m_me);
+    am_ao_publish_exclude(&event, m_me);
 
     if (!am_ao_run_all()) {
         am_pal_crit_exit();
