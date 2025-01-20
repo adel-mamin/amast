@@ -41,6 +41,13 @@
 static struct am_bit_u64 am_ready_aos_ = {0};
 
 bool am_ao_run_all(void) {
+    {
+        static bool init_done = false;
+        if (AM_UNLIKELY(!init_done)) {
+            am_ao_init_all();
+            init_done = true;
+        }
+    }
     struct am_ao_state *me = &am_ao_state_;
     bool dispatched = false;
     do {
@@ -113,11 +120,11 @@ void am_ao_start(
     ao->prio = prio;
     ao->name = name;
     ao->task_id = am_pal_task_own_id();
+    ao->init_event = init_event;
 
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(NULL == me->aos[prio]);
     me->aos[prio] = ao;
-    am_hsm_init(&ao->hsm, init_event);
 }
 
 void am_ao_notify(const struct am_ao *ao) {

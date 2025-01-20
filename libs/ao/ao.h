@@ -56,6 +56,8 @@ struct am_ao {
     int last_event;              /**< last processed event */
     int task_id;                 /**< task handle */
     bool stopped;                /**< 1: AO was stopped, 0: AO wasn't stopped */
+    /** initial user event - the parameter of am_ao_start() API */
+    const struct am_event *init_event;
 };
 
 /** Active object library state configuration. */
@@ -351,6 +353,8 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
 
 /**
  * Run all active objects.
+ *
+ * Executes initial transition of all active objects once.
  *
  * Blocks forever for preemptive AO build.
  *

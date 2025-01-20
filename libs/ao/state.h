@@ -69,7 +69,19 @@ struct am_ao_state {
 
 extern struct am_ao_state am_ao_state_;
 
+/**
+ * Notify active object about availability of new event(s).
+ *
+ * @param ao  the active object to notify
+ */
 void am_ao_notify(const struct am_ao *ao);
+
+/**
+ * Execute initial transition of top level HSMs of all active objects.
+ *
+ * Runs once at the beginning of am_ao_run_all().
+ */
+void am_ao_init_all(void);
 
 #ifdef __cplusplus
 }

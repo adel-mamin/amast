@@ -67,6 +67,13 @@ static void am_ao_task(void *param) {
 }
 
 bool am_ao_run_all(void) {
+    {
+        static bool init_done = false;
+        if (!init_done) {
+            am_ao_init_all();
+            init_done = true;
+        }
+    }
     const struct am_ao_state *me = &am_ao_state_;
     /* start all AOs */
     am_pal_mutex_unlock(me->startup_mutex);
@@ -100,11 +107,11 @@ void am_ao_start(
 
     ao->prio = prio;
     ao->name = name;
+    ao->init_event = init_event;
 
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(NULL == me->aos[prio]);
     me->aos[prio] = ao;
-    am_hsm_init(&ao->hsm, init_event);
 
     ao->task_id = am_pal_task_create(
         name,

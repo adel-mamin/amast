@@ -355,3 +355,14 @@ void am_ao_log_last_events(void (*log)(const char *name, int event)) {
         log(ao->name, /*event=*/AM_ATOMIC_LOAD_N(&ao->last_event));
     }
 }
+
+void am_ao_init_all(void) {
+    struct am_ao_state *me = &am_ao_state_;
+
+    for (int i = 0; i < AM_COUNTOF(me->aos); ++i) {
+        struct am_ao *ao = me->aos[i];
+        if (ao) {
+            am_hsm_init(&ao->hsm, ao->init_event);
+        }
+    }
+}
