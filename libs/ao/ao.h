@@ -416,6 +416,18 @@ void am_ao_dump_event_queues(
  */
 void am_ao_log_last_events(void (*log)(const char *name, int event));
 
+/**
+ * Block until all active objects are ready to run.
+ *
+ * Prevents using active objects before they are ready to
+ * process events.
+ *
+ * To be run once at the start of regular user threads started with
+ * am_pal_task_create() API running blocking calls and using
+ * active objects for event posting/publishing.
+ */
+void am_ao_wait_startup(void);
+
 #ifdef __cplusplus
 }
 #endif

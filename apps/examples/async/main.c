@@ -242,6 +242,9 @@ static void async_ctor(struct async *me) {
 
 AM_NORETURN static void ticker_task(void *param) {
     (void)param;
+
+    am_ao_wait_startup();
+
     uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     for (;;) {
         am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
@@ -251,6 +254,8 @@ AM_NORETURN static void ticker_task(void *param) {
 }
 
 static void input_task(void *param) {
+    am_ao_wait_startup();
+
     struct async *m = (struct async *)param;
     int ch;
     while ((ch = getc(stdin)) != EOF) {
