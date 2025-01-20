@@ -48,10 +48,10 @@ bool am_ao_run_all(void) {
         if (am_bit_u64_is_empty(&am_ready_aos_)) {
             AM_ASSERT(!dispatched);
             /*
-             * We intentionally do not call me->crit_exit() here to enable
+             * We intentionally do not call me->crit_exit() here to let
              * caller to enter low power mode, if needed.
-             * Therefore the caller must call me->crit_exit() in
-             * this case.
+             * Therefore the caller must call me->crit_exit(),
+             * when am_ao_run_all() returns false.
              */
             break;
         }
