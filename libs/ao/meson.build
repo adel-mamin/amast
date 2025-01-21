@@ -84,7 +84,6 @@ if unit_test
         [
             'tests' / 'publish.c'
         ],
-        c_args: ['-fno-sanitize=all', '-O0', '-fno-trapv', '-ggdb'],
         dependencies: [
             libao_cooperative_dep,
             libassert_dep,
