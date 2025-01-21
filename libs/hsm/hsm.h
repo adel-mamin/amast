@@ -283,6 +283,8 @@ struct am_hsm {
 /**
  * Synchronous dispatch of event to a given HSM.
  *
+ * Does not free the event - this is caller's responsibility.
+ *
  * @param hsm    the HSM handler
  * @param event  the event to dispatch
  */

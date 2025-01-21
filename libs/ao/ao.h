@@ -225,6 +225,9 @@ bool am_ao_publish_x_exclude(
  *
  * If the active object's event queue is full the function crashes with assert.
  *
+ * The library takes care of freeing the event once the
+ * active object handled the event.
+ *
  * The function is fast, thread safe and usable from
  * interrupt service routines (ISR).
  *
@@ -242,6 +245,9 @@ void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
  * then the function fails gracefully.
  *
  * Tries to free the event, if it was not posted.
+ *
+ * The library takes care of freeing the event once the
+ * active object handled the event.
  *
  * Statically allocated events (events for which am_event_is_static()
  * returns true) are never freed.
@@ -265,6 +271,9 @@ bool am_ao_post_fifo_x(
  *
  * The event is then handled asynchronously by the active object.
  *
+ * The library takes care of freeing the event once the
+ * active object handled the event.
+ *
  * If active object's event queue is full the function crashes with assert.
  *
  * The function is fast, thread safe and usable from
@@ -284,6 +293,9 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
  * then the function fails gracefully.
  *
  * Tries to free the event, if it was not posted.
+ *
+ * The library takes care of freeing the event once the
+ * active object handled the event.
  *
  * Statically allocated events (events for which am_event_is_static()
  * returns true) are never freed.
