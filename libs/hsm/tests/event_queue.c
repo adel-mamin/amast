@@ -76,10 +76,10 @@ static enum am_hsm_rc hsmq_b(struct am_hsmq *me, const struct am_event *event);
 static void hsmq_commit(void) {
     struct am_hsmq *me = &am_hsmq_;
     while (!am_queue_is_empty(&me->event_queue)) {
-        const struct am_event **e = am_queue_pop_front(&me->event_queue);
+        const struct am_event *e = am_event_pop_front(&me->event_queue);
         AM_ASSERT(e);
-        AM_ASSERT(*e);
-        am_hsm_dispatch(am_hsmq, *e);
+        am_hsm_dispatch(am_hsmq, e);
+        am_event_free(&e);
     }
 }
 
@@ -154,6 +154,7 @@ int main(void) {
             AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF_EVENT)
         );
         AM_ASSERT(1 == am_event_get_pool_nblocks(/*index=*/0));
+        AM_ASSERT(1 == am_event_get_pool_nfree_now(/*index=*/0));
     }
 
     hsmq_ctor(hsmq_log);
@@ -177,7 +178,7 @@ int main(void) {
     am_hsm_dtor(am_hsmq);
 
     /* make sure there is no memory leak */
-    AM_ASSERT(1 == am_event_get_pool_nblocks(/*index=*/0));
+    AM_ASSERT(1 == am_event_get_pool_nfree_now(/*index=*/0));
 
     return 0;
 }
