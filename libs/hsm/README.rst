@@ -394,7 +394,7 @@ Here is how it is coded in pseudocode:
                [S1_1] = {.fn = AM_HSM_STATE_FN_CTOR(s3)}
            };
            int instance = am_hsm_instance(&me->hsm);
-           ASSERT(instance < AM_COUNTOF(tt));
+           AM_ASSERT(instance < AM_COUNTOF(tt));
            return AM_HSM_TRAN(tt[instance].fn);
        }
        ...

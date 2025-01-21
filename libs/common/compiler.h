@@ -565,7 +565,7 @@ AM_ASSERT_STATIC(LONG_MAX == ((1ULL << (unsigned)(LONG_BITS - 1)) - 1));
     AM_EXTENSION({                                   \
         int add_res_;                                \
         if (AM_ADD_INT_OVERFLOWED(a, b, add_res_)) { \
-            ASSERT(0); /* NOLINT */                  \
+            AM_ASSERT(0); /* NOLINT */               \
         }                                            \
         add_res_;                                    \
     })
@@ -575,7 +575,7 @@ AM_ASSERT_STATIC(LONG_MAX == ((1ULL << (unsigned)(LONG_BITS - 1)) - 1));
     AM_EXTENSION({                                   \
         int mul_res_;                                \
         if (AM_MUL_INT_OVERFLOWED(a, b, mul_res_)) { \
-            ASSERT(0); /* NOLINT */                  \
+            AM_ASSERT(0); /* NOLINT */               \
         }                                            \
         mul_res_;                                    \
     })
