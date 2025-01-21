@@ -62,7 +62,7 @@ static void fsmq_log(const char *fmt, ...) {
 
 struct am_fsmq {
     struct am_fsm fsm;
-    struct am_queue queue;
+    struct am_queue event_queue;
     void (*log)(const char *fmt, ...);
 };
 
@@ -75,11 +75,11 @@ static enum am_fsm_rc fsmq_b(struct am_fsmq *me, const struct am_event *event);
 
 static void fsmq_commit(void) {
     struct am_fsmq *me = &am_fsmq_;
-    while (!am_queue_is_empty(&me->queue)) {
-        const struct am_event **e = am_queue_pop_front(&me->queue);
+    while (!am_queue_is_empty(&me->event_queue)) {
+        const struct am_event *e = am_event_pop_front(&me->event_queue);
         AM_ASSERT(e);
-        AM_ASSERT(*e);
-        am_fsm_dispatch(am_fsmq, *e);
+        am_fsm_dispatch(am_fsmq, e);
+        am_event_free(&e);
     }
 }
 
@@ -99,7 +99,7 @@ static void fsmq_ctor(void (*log)(const char *fmt, ...)) {
     static const struct am_event *pool[2];
     struct am_blk blk = {.ptr = pool, .size = (int)sizeof(pool)};
     am_queue_init(
-        &me->queue,
+        &me->event_queue,
         /*isize=*/sizeof(pool[0]),
         AM_ALIGNOF_EVENT_PTR,
         &blk
@@ -112,7 +112,7 @@ static enum am_fsm_rc fsmq_a(struct am_fsmq *me, const struct am_event *event) {
         me->log("a-A;");
         const struct am_event *e =
             am_event_allocate(/*id=*/AM_EVT_B, sizeof(*e), /*margin=*/0);
-        am_event_push_back(&me->queue, e);
+        am_event_push_back(&me->event_queue, e);
         return AM_FSM_TRAN(fsmq_b);
     }
     default:
@@ -155,6 +155,7 @@ int main(void) {
             AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF_EVENT)
         );
         AM_ASSERT(1 == am_event_get_pool_nblocks(/*index=*/0));
+        AM_ASSERT(1 == am_event_get_pool_nfree_now(/*index=*/0));
     }
 
     fsmq_ctor(fsmq_log);
@@ -178,7 +179,7 @@ int main(void) {
     am_fsm_dtor(am_fsmq);
 
     /* make sure there is no memory leak */
-    AM_ASSERT(1 == am_event_get_pool_nblocks(/*index=*/0));
+    AM_ASSERT(1 == am_event_get_pool_nfree_now(/*index=*/0));
 
     return 0;
 }
