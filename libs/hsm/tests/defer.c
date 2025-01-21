@@ -143,10 +143,10 @@ static void defer_hsm_log(const char *fmt, ...) {
 static void defer_commit(void) {
     struct test_defer *me = &m_test_defer;
     while (!am_queue_is_empty(&me->event_queue)) {
-        const struct am_event **e = am_queue_pop_front(&me->event_queue);
+        const struct am_event *e = am_event_pop_front(&me->event_queue);
         AM_ASSERT(e);
-        AM_ASSERT(*e);
-        am_hsm_dispatch(&me->hsm, *e);
+        am_hsm_dispatch(&me->hsm, e);
+        am_event_free(&e);
     }
 }
 
@@ -167,6 +167,7 @@ static void test_defer(void) {
             AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF_EVENT)
         );
         AM_ASSERT(2 == am_event_get_pool_nblocks(/*index=*/0));
+        AM_ASSERT(2 == am_event_get_pool_nfree_now(/*index=*/0));
     }
 
     defer_ctor(defer_hsm_log);
@@ -187,14 +188,16 @@ static void test_defer(void) {
         const struct am_event *e = am_event_allocate(
             in[i].event, (int)sizeof(struct am_event), /*margin=*/0
         );
+        am_event_inc_ref_cnt(e);
         am_hsm_dispatch(&me->hsm, e);
+        am_event_free(&e);
         defer_commit();
         AM_ASSERT(0 == strncmp(me->log_buf, in[i].out, strlen(in[i].out)));
         me->log_buf[0] = '\0';
     }
 
     /* make sure there is no memory leak */
-    AM_ASSERT(2 == am_event_get_pool_nblocks(/*index=*/0));
+    AM_ASSERT(2 == am_event_get_pool_nfree_now(/*index=*/0));
 }
 
 int main(void) {
