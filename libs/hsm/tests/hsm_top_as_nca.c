@@ -89,8 +89,8 @@ static void test_am_hsm_top_as_nca(void) {
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
     AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(nca_s11)));
 
-    static const struct am_event E = {.id = HSM_EVT_A};
-    am_hsm_dispatch(&me->hsm, &E);
+    static const struct am_event event = {.id = HSM_EVT_A};
+    am_hsm_dispatch(&me->hsm, &event);
     AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(nca_s2)));
 }
 
