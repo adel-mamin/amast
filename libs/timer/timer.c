@@ -99,12 +99,15 @@ void am_timer_arm(struct am_event_timer *event, int ticks, int interval) {
         AM_ASSERT(me->cfg.publish);
     }
 
+    me->cfg.crit_enter();
+
     event->shot_in_ticks = ticks;
     event->interval_ticks = interval;
     event->event.pubsub_time = event->owner ? false : true;
+    event->disarm_pending = 0;
 
-    me->cfg.crit_enter();
     am_dlist_push_back(&me->domains[event->event.tick_domain], &event->item);
+
     me->cfg.crit_exit();
 }
 
@@ -115,9 +118,12 @@ bool am_timer_disarm(struct am_event_timer *event) {
     struct am_timer *me = &am_timer_;
 
     me->cfg.crit_enter();
-    bool was_armed = am_dlist_pop(&event->item);
-    me->cfg.crit_exit();
+
+    bool was_armed = am_dlist_item_is_linked(&event->item);
     event->shot_in_ticks = event->interval_ticks = 0;
+    event->disarm_pending = 1;
+
+    me->cfg.crit_exit();
 
     return was_armed;
 }
@@ -126,9 +132,13 @@ bool am_timer_is_armed(const struct am_event_timer *event) {
     AM_ASSERT(event);
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
     struct am_timer *me = &am_timer_;
+
     me->cfg.crit_enter();
+
     bool armed = am_dlist_item_is_linked(&event->item);
+
     me->cfg.crit_exit();
+
     return armed;
 }
 
@@ -149,9 +159,19 @@ void am_timer_tick(int domain) {
         struct am_event_timer *timer =
             AM_CONTAINER_OF(p, struct am_event_timer, item);
 
+        if (timer->disarm_pending) {
+            am_dlist_iterator_pop(&it);
+            timer->disarm_pending = 0;
+            me->cfg.crit_exit();
+            me->cfg.crit_enter();
+            continue;
+        }
+
         AM_ASSERT(timer->shot_in_ticks);
         --timer->shot_in_ticks;
         if (timer->shot_in_ticks) {
+            me->cfg.crit_exit();
+            me->cfg.crit_enter();
             continue;
         }
         struct am_event_timer *t = timer;

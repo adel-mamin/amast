@@ -98,6 +98,9 @@ struct am_event_timer {
 
     /** the timer event is re-sent after this many ticks */
     int interval_ticks;
+
+    /** the timer was disarmed and pending removal from timer list */
+    unsigned disarm_pending : 1;
 };
 
 #ifdef __cplusplus
