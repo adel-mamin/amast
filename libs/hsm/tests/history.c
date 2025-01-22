@@ -64,16 +64,12 @@ static enum am_hsm_rc oven_hsm_open(
     struct oven_hsm *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case HSM_EVT_ON:
-        me->history = am_hsm_state(&me->hsm);
-        return AM_HSM_HANDLED();
-
     case HSM_EVT_OFF:
-        me->history = am_hsm_state(&me->hsm);
+        me->history = AM_HSM_STATE_CTOR(oven_hsm_off);
         return AM_HSM_HANDLED();
 
     case HSM_EVT_CLOSE:
-        return AM_HSM_TRAN(me->history.fn, me->history.smi);
+        return AM_HSM_TRAN(oven_hsm_closed);
 
     default:
         break;
@@ -86,7 +82,7 @@ static enum am_hsm_rc oven_hsm_closed(
 ) {
     switch (event->id) {
     case AM_HSM_EVT_INIT:
-        return AM_HSM_TRAN(oven_hsm_off);
+        return AM_HSM_TRAN(me->history.fn);
 
     case HSM_EVT_OPEN:
         return AM_HSM_TRAN(oven_hsm_open);
@@ -103,9 +99,6 @@ static enum am_hsm_rc oven_hsm_on(
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:
         me->history = am_hsm_state(&me->hsm);
-        return AM_HSM_HANDLED();
-
-    case HSM_EVT_ON:
         return AM_HSM_HANDLED();
 
     case HSM_EVT_OFF:
@@ -127,9 +120,6 @@ static enum am_hsm_rc oven_hsm_off(
 
     case HSM_EVT_ON:
         return AM_HSM_TRAN(oven_hsm_on);
-
-    case HSM_EVT_OFF:
-        return AM_HSM_HANDLED();
 
     default:
         break;
