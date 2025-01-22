@@ -64,8 +64,8 @@ static void test_arm(void) {
     am_timer_state_ctor(&cfg);
 
     struct am_event_timer event;
-    am_timer_event_ctor(&event, /*id=*/EVT_TEST, /*domain=*/0);
-    am_timer_arm(&event, &m_owner, /*ticks=*/1, /*interval=*/0);
+    am_timer_event_ctor(&event, /*id=*/EVT_TEST, /*domain=*/0, &m_owner);
+    am_timer_arm(&event, /*ticks=*/1, /*interval=*/0);
     am_timer_tick(/*domain=*/0);
     AM_ASSERT(1 == m_owner.npost);
 }

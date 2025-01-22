@@ -65,7 +65,9 @@ void am_timer_state_ctor(const struct am_timer_state_cfg *cfg) {
     me->cfg = *cfg;
 }
 
-void am_timer_event_ctor(struct am_event_timer *event, int id, int domain) {
+void am_timer_event_ctor(
+    struct am_event_timer *event, int id, int domain, void *owner
+) {
     AM_ASSERT(event);
     AM_ASSERT(id >= AM_EVT_USER);
     AM_ASSERT(domain < AM_PAL_TICK_DOMAIN_MAX);
@@ -75,11 +77,10 @@ void am_timer_event_ctor(struct am_event_timer *event, int id, int domain) {
     am_dlist_item_init(&event->item);
     event->event.id = id;
     event->event.tick_domain = (unsigned)domain & AM_EVENT_TICK_DOMAIN_MASK;
+    event->owner = owner;
 }
 
-void am_timer_arm(
-    struct am_event_timer *event, void *owner, int ticks, int interval
-) {
+void am_timer_arm(struct am_event_timer *event, int ticks, int interval) {
     struct am_timer *me = &am_timer_;
 
     AM_ASSERT(event);
@@ -92,16 +93,15 @@ void am_timer_arm(
     AM_ASSERT(event->event.id > 0);
     AM_ASSERT(event->event.tick_domain < AM_COUNTOF(me->domains));
     AM_ASSERT(ticks >= 0);
-    if (owner) {
+    if (event->owner) {
         AM_ASSERT(me->cfg.post);
     } else {
         AM_ASSERT(me->cfg.publish);
     }
 
-    event->owner = owner;
     event->shot_in_ticks = ticks;
     event->interval_ticks = interval;
-    event->event.pubsub_time = owner ? false : true;
+    event->event.pubsub_time = event->owner ? false : true;
 
     me->cfg.crit_enter();
     am_dlist_push_back(&me->domains[event->event.tick_domain], &event->item);
@@ -180,13 +180,15 @@ void am_timer_tick(int domain) {
     me->cfg.crit_exit();
 }
 
-struct am_event_timer *am_timer_event_allocate(int id, int size, int domain) {
+struct am_event_timer *am_timer_event_allocate(
+    int id, int size, int domain, void *owner
+) {
     AM_ASSERT(size >= (int)sizeof(struct am_event_timer));
     struct am_event *e = am_event_allocate(id, size, /*margin=*/0);
     AM_DISABLE_WARNING(AM_W_CAST_ALIGN);
     struct am_event_timer *te = (struct am_event_timer *)e;
     AM_ENABLE_WARNING(AM_W_CAST_ALIGN);
-    am_timer_event_ctor(te, id, domain);
+    am_timer_event_ctor(te, id, domain, owner);
     return te;
 }
 

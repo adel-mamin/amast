@@ -67,7 +67,7 @@ static int ringbuf_writer_proc(
         uint8_t *ptr = NULL;
         int size = am_ringbuf_get_write_ptr(&g_ringbuf, &ptr, me->len);
         if (size < me->len) {
-            am_timer_arm(&me->timer_wait, &me->ao, /*ticks=*/1, /*interval=*/0);
+            am_timer_arm(&me->timer_wait, /*ticks=*/1, /*interval=*/0);
             return AM_HSM_HANDLED();
         }
         AM_ASSERT(ptr);
@@ -101,6 +101,7 @@ void ringbuf_writer_ctor(void) {
     am_timer_event_ctor(
         &me->timer_wait,
         /*id=*/AM_EVT_RINGBUF_WAIT,
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT
+        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT,
+        &me->ao
     );
 }

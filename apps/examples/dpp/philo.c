@@ -65,7 +65,7 @@ static int philo_thinking(struct philo *me, const struct am_event *event) {
         int ticks = (int)am_pal_time_get_tick_from_ms(
             /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/20
         );
-        am_timer_arm(me->timer, &me->ao, ticks, /*interval=*/0);
+        am_timer_arm(me->timer, ticks, /*interval=*/0);
         return AM_HSM_HANDLED();
 
     case EVT_TIMEOUT: {
@@ -108,7 +108,7 @@ static int philo_eating(struct philo *me, const struct am_event *event) {
         int ticks = (int)am_pal_time_get_tick_from_ms(
             /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/20
         );
-        am_timer_arm(me->timer, &me->ao, ticks, /*interval=*/0);
+        am_timer_arm(me->timer, ticks, /*interval=*/0);
         return AM_HSM_HANDLED();
 
     case EVT_TIMEOUT: {
@@ -145,6 +145,7 @@ void philo_ctor(int id) {
     me->timer = (struct am_event_timer *)am_timer_event_allocate(
         /*id=*/EVT_TIMEOUT,
         /*size=*/sizeof(struct am_event_timer),
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT
+        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT,
+        &me->ao
     );
 }

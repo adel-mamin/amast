@@ -143,7 +143,7 @@ static enum am_hsm_rc async_ryg(
     case AM_HSM_EVT_ENTRY:
         am_async_init(&me->async_ryg);
         am_timer_arm(
-            &me->timer_ryg, me, me->ryg_interval_ticks, me->ryg_interval_ticks
+            &me->timer_ryg, me->ryg_interval_ticks, me->ryg_interval_ticks
         );
         return AM_HSM_HANDLED();
 
@@ -193,7 +193,7 @@ static enum am_hsm_rc async_gyr(
     case AM_HSM_EVT_ENTRY:
         am_async_init(&me->async_gyr);
         am_timer_arm(
-            &me->timer_gyr, me, me->gyr_interval_ticks, me->gyr_interval_ticks
+            &me->timer_gyr, me->gyr_interval_ticks, me->gyr_interval_ticks
         );
         return AM_HSM_HANDLED();
 
@@ -224,12 +224,14 @@ static void async_ctor(struct async *me) {
     am_timer_event_ctor(
         &me->timer_gyr,
         ASYNC_EVT_TIMER_GYR,
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT
+        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT,
+        &me->ao
     );
     am_timer_event_ctor(
         &me->timer_ryg,
         ASYNC_EVT_TIMER_RYG,
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT
+        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT,
+        &me->ao
     );
 
     me->ryg_interval_ticks = (int)am_pal_time_get_tick_from_ms(

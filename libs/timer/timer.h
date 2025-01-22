@@ -118,8 +118,12 @@ void am_timer_state_ctor(const struct am_timer_state_cfg *cfg);
  * @param event   the timer event to construct
  * @param id      the timer event identifier
  * @param domain  tick domain the event belongs to
+ * @param owner   the timer event's owner that gets the posted event.
+ *                Can be NULL, in which case the timer event is published.
  */
-void am_timer_event_ctor(struct am_event_timer *event, int id, int domain);
+void am_timer_event_ctor(
+    struct am_event_timer *event, int id, int domain, void *owner
+);
 
 /**
  * Allocate and construct timer event.
@@ -135,8 +139,12 @@ void am_timer_event_ctor(struct am_event_timer *event, int id, int domain);
  * @param id      the timer event id
  * @param size    the timer event size [bytes]
  * @param domain  the clock domain [0-AM_PAL_TICK_DOMAIN_MAX[
+ * @param owner   the timer event's owner that gets the posted event.
+ *                Can be NULL, in which case the timer event is published.
  */
-struct am_event_timer *am_timer_event_allocate(int id, int size, int domain);
+struct am_event_timer *am_timer_event_allocate(
+    int id, int size, int domain, void *owner
+);
 
 /**
  * Tick timer.
@@ -151,17 +159,15 @@ void am_timer_tick(int domain);
 /**
  * Send timer event to owner in specified number of ticks.
  *
+ * The owner is set in am_timer_event_ctor() or am_timer_event_allocate() calls.
+ *
  * @param event     the timer event to arm
- * @param owner     the timer event's owner that gets the posted event.
- *                  Can be NULL, in which case the timer event is published.
  * @param ticks     the timer event is to be sent in these many ticks
  * @param interval  the timer event is to be re-sent in these many ticks
  *                  after the event is sent for the fist time.
  *                  Can be 0, in which case the timer event is one shot.
  */
-void am_timer_arm(
-    struct am_event_timer *event, void *owner, int ticks, int interval
-);
+void am_timer_arm(struct am_event_timer *event, int ticks, int interval);
 
 /**
  * Disarm timer event.
