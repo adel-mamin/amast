@@ -77,9 +77,6 @@ static int loopback_test_proc(
     struct loopback_test *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_HSM_EVT_ENTRY:
-        am_ao_post_fifo(&m_loopback.ao, &m_min_event);
-        return AM_HSM_HANDLED();
     case AM_EVT_MIN:
         me->cnt++;
         if (100 == me->cnt) {
@@ -97,6 +94,7 @@ static int loopback_test_init(
     struct loopback_test *me, const struct am_event *event
 ) {
     (void)event;
+    am_ao_post_fifo(&m_loopback.ao, &m_min_event);
     return AM_HSM_TRAN(loopback_test_proc);
 }
 

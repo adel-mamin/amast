@@ -58,10 +58,6 @@ static int ringbuf_writer_proc(
     struct ringbuf_writer *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_HSM_EVT_ENTRY: {
-        am_ao_post_fifo(&me->ao, &m_evt_ringbuf_write);
-        return AM_HSM_HANDLED();
-    }
     case AM_EVT_RINGBUF_WAIT:
     case AM_EVT_RINGBUF_WRITE: {
         uint8_t *ptr = NULL;
@@ -90,6 +86,7 @@ static int ringbuf_writer_init(
     struct ringbuf_writer *me, const struct am_event *event
 ) {
     (void)event;
+    am_ao_post_fifo(&me->ao, &m_evt_ringbuf_write);
     return AM_HSM_TRAN(ringbuf_writer_proc);
 }
 
