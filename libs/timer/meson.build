@@ -34,7 +34,7 @@ libtimer = library(
 )
 
 libtimer_dep = declare_dependency(
-    link_with: [libdlist],
+    link_with: [libslist],
     sources: timer_src,
     include_directories : inc)
 
@@ -43,8 +43,14 @@ libraries += libtimer
 if unit_test
     e = executable(
         'timer',
-        ['timer.c', 'test.c', dlist_src],
-        dependencies : [libassert_dep, libpal_dep],
+        ['timer.c', 'test.c', slist_src],
+        c_args: ['-fno-sanitize=all', '-O0', '-fno-trapv', '-fno-lto', '-ggdb'],
+        dependencies : [
+            libassert_dep,
+            libpal_dep,
+            libonesize_dep,
+            libevent_dep
+        ],
         include_directories: inc)
     test('timer', e)
 endif

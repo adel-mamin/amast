@@ -31,7 +31,7 @@
 
 #include "common/macros.h"
 #include "event/event.h"
-#include "dlist/dlist.h"
+#include "slist/slist.h"
 #include "pal/pal.h"
 
 AM_ASSERT_STATIC(AM_EVENT_TICK_DOMAIN_MASK >= AM_PAL_TICK_DOMAIN_MAX);
@@ -88,7 +88,7 @@ struct am_event_timer {
     struct am_event event;
 
     /** to link timer events together */
-    struct am_dlist_item item;
+    struct am_slist_item item;
 
     /** the object, who receives the timer event */
     void *owner;
