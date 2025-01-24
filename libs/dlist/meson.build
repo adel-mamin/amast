@@ -45,6 +45,7 @@ if unit_test
         'dlist',
         ['dlist.c', 'test.c'],
         include_directories: inc,
+        c_args: ['-fno-sanitize=all', '-O0', '-fno-trapv', '-fno-lto', '-ggdb'],
         dependencies : [libassert_dep]
     )
     test('dlist', e)

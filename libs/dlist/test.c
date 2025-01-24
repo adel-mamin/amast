@@ -178,9 +178,13 @@ static void test_am_dlist_iterator_forward(void) {
 
     struct am_dlist_item *e = am_dlist_iterator_next(&it);
     AM_ASSERT(((struct test_dlist *)e)->data == 0);
+    e = am_dlist_iterator_pop(&it);
+    AM_ASSERT(((struct test_dlist *)e)->data == 0);
     e = am_dlist_iterator_next(&it);
     AM_ASSERT(((struct test_dlist *)e)->data == 1);
     e = am_dlist_iterator_next(&it);
+    AM_ASSERT(((struct test_dlist *)e)->data == 2);
+    e = am_dlist_iterator_pop(&it);
     AM_ASSERT(((struct test_dlist *)e)->data == 2);
 
     e = am_dlist_iterator_next(&it);
@@ -199,9 +203,13 @@ static void test_am_dlist_iterator_backward(void) {
 
     struct am_dlist_item *e = am_dlist_iterator_next(&it);
     AM_ASSERT(((struct test_dlist *)e)->data == 2);
+    e = am_dlist_iterator_pop(&it);
+    AM_ASSERT(((struct test_dlist *)e)->data == 2);
     e = am_dlist_iterator_next(&it);
     AM_ASSERT(((struct test_dlist *)e)->data == 1);
     e = am_dlist_iterator_next(&it);
+    AM_ASSERT(((struct test_dlist *)e)->data == 0);
+    e = am_dlist_iterator_pop(&it);
     AM_ASSERT(((struct test_dlist *)e)->data == 0);
 
     e = am_dlist_iterator_next(&it);
@@ -253,15 +261,6 @@ static void test_am_dlist_find(void) {
     AM_ASSERT(NULL == e);
 }
 
-static void test_am_dlist_size(void) {
-    test_setup(&dlist);
-
-    for (int i = 0; i < 10; i++) {
-        am_dlist_push_back(&dlist, &test_dlist[i].hdr);
-        AM_ASSERT((i + 1) == am_dlist_size(&dlist));
-    }
-}
-
 static void test_am_dlist_owns(void) {
     test_setup(&dlist);
 
@@ -286,7 +285,7 @@ static void test_am_dlist_back(void) {
         AM_ASSERT(test_dlist[i].data == e->data);
     }
 
-    AM_ASSERT(0 == am_dlist_size(&dlist));
+    AM_ASSERT(am_dlist_is_empty(&dlist));
 }
 
 static void test_am_dlist_front(void) {
@@ -304,7 +303,7 @@ static void test_am_dlist_front(void) {
         AM_ASSERT(test_dlist[i - 1].data == e->data);
     }
 
-    AM_ASSERT(0 == am_dlist_size(&dlist));
+    AM_ASSERT(am_dlist_is_empty(&dlist));
 }
 
 static void test_am_dlist_back2(void) {
@@ -322,7 +321,7 @@ static void test_am_dlist_back2(void) {
         AM_ASSERT(test_dlist[i - 1].data == e->data);
     }
 
-    AM_ASSERT(0 == am_dlist_size(&dlist));
+    AM_ASSERT(am_dlist_is_empty(&dlist));
 }
 
 static void test_am_dlist_next_prev_item(void) {
@@ -355,8 +354,6 @@ int main(void) {
     test_am_dlist_pop();
 
     test_am_dlist_find();
-
-    test_am_dlist_size();
 
     test_am_dlist_owns();
 

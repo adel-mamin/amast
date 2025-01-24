@@ -108,34 +108,31 @@ struct am_dlist_item *am_dlist_iterator_next(struct am_dlist_iterator *it) {
 
     if (it->cur == &it->hnd->sentinel) {
         it->cur = NULL;
-        return NULL;
     }
-
-    AM_ASSERT(NULL != it->cur);
-
     return it->cur;
 }
 
 struct am_dlist_item *am_dlist_iterator_pop(struct am_dlist_iterator *it) {
     AM_ASSERT(it->cur != &it->hnd->sentinel);
     struct am_dlist_item *pop = it->cur;
-    it->cur = it->cur->prev;
+
+    if (AM_DLIST_FORWARD == it->dir) {
+        it->cur = it->cur->prev;
+    } else {
+        it->cur = it->cur->next;
+    }
     am_dlist_pop(pop);
     return pop;
 }
 
-bool am_dlist_pop(struct am_dlist_item *item) {
+void am_dlist_pop(struct am_dlist_item *item) {
     AM_ASSERT(item);
+    AM_ASSERT(item->next);
+    AM_ASSERT(item->prev);
 
-    if (item->next) {
-        item->next->prev = item->prev;
-    }
-    if (item->prev) {
-        item->prev->next = item->next;
-    }
-    bool popped = item->next && item->prev;
+    item->next->prev = item->prev;
+    item->prev->next = item->next;
     item->next = item->prev = NULL;
-    return popped;
 }
 
 struct am_dlist_item *am_dlist_find(
@@ -146,30 +143,11 @@ struct am_dlist_item *am_dlist_find(
     AM_ASSERT(hnd);
     AM_ASSERT(is_found_cb);
 
-    struct am_dlist_item *candidate = hnd->sentinel.next;
-    while ((candidate != &hnd->sentinel) && (!is_found_cb(context, candidate))
-    ) {
-        candidate = candidate->next;
-    }
-    return (candidate == &hnd->sentinel) ? NULL : candidate;
-}
-
-int am_dlist_size(const struct am_dlist *hnd) {
-    AM_ASSERT(hnd);
-
-    if (am_dlist_is_empty(hnd)) {
-        return 0;
-    }
-
-    int size = 0;
     struct am_dlist_item *item = hnd->sentinel.next;
-    while ((item != &hnd->sentinel) && (item != NULL)) {
-        size++;
+    while ((item != &hnd->sentinel) && !is_found_cb(context, item)) {
         item = item->next;
     }
-    AM_ASSERT(item != NULL);
-
-    return size;
+    return (item == &hnd->sentinel) ? NULL : item;
 }
 
 bool am_dlist_owns(
@@ -185,7 +163,6 @@ bool am_dlist_owns(
         }
         next = next->next;
     }
-
     return false;
 }
 
@@ -200,7 +177,7 @@ struct am_dlist_item *am_dlist_pop_front(struct am_dlist *hnd) {
         return NULL;
     }
     struct am_dlist_item *ret = hnd->sentinel.next;
-    am_dlist_pop(hnd->sentinel.next);
+    am_dlist_pop(ret);
     return ret;
 }
 
@@ -209,7 +186,7 @@ struct am_dlist_item *am_dlist_pop_back(struct am_dlist *hnd) {
         return NULL;
     }
     struct am_dlist_item *ret = hnd->sentinel.prev;
-    am_dlist_pop(hnd->sentinel.prev);
+    am_dlist_pop(ret);
     return ret;
 }
 
@@ -236,5 +213,5 @@ bool am_dlist_is_empty(const struct am_dlist *hnd) {
 
 bool am_dlist_item_is_linked(const struct am_dlist_item *item) {
     AM_ASSERT(item);
-    return (NULL != item->next) && (NULL != item->prev);
+    return item->next && item->prev;
 }
