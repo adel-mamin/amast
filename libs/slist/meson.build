@@ -44,6 +44,7 @@ if unit_test
     e = executable(
         'slist',
         ['slist.c', 'test.c'],
+        c_args: ['-fno-sanitize=all', '-O0', '-fno-trapv', '-fno-lto', '-ggdb'],
         link_with: libassert,
         include_directories: inc
     )
