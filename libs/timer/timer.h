@@ -210,6 +210,24 @@ bool am_timer_is_armed(const struct am_event_timer *event);
  */
 bool am_timer_domain_is_empty(int domain);
 
+/**
+ * Get number of ticks till timer shot.
+ *
+ * @param event  the timer handler
+ *
+ * @return the timer event is sent in this number of ticks
+ */
+int am_timer_get_ticks(const struct am_event_timer *event);
+
+/**
+ * Get timer interval.
+ *
+ * @param event  the timer handler
+ *
+ * @return the timer event is sent with this interval [ticks]
+ */
+int am_timer_get_interval(const struct am_event_timer *event);
+
 #ifdef __cplusplus
 }
 #endif

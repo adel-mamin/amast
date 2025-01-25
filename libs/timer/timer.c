@@ -238,3 +238,23 @@ bool am_timer_domain_is_empty(int domain) {
 
     return empty && empty_pend;
 }
+
+int am_timer_get_ticks(const struct am_event_timer *event) {
+    struct am_timer *me = &am_timer_;
+
+    me->cfg.crit_enter();
+    int ticks = event->shot_in_ticks;
+    me->cfg.crit_exit();
+
+    return ticks;
+}
+
+int am_timer_get_interval(const struct am_event_timer *event) {
+    struct am_timer *me = &am_timer_;
+
+    me->cfg.crit_enter();
+    int interval = event->interval_ticks;
+    me->cfg.crit_exit();
+
+    return interval;
+}
