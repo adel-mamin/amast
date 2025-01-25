@@ -195,6 +195,14 @@ bool am_timer_is_armed(const struct am_event_timer *event);
 /**
  * Check if timer domain has armed timer events.
  *
+ * The function is to be called from a critical section.
+ * So, it can be called to check if there are any pending timers
+ * just before going to sleep mode.
+ *
+ * Please read the article called
+ * "Use an MCU's low-power modes in foreground/background systems"
+ * by Miro Samek for more information about the reasoning of the approach.
+ *
  * @param domain  the domain to check
  *
  * @retval true   the timer domain is empty

@@ -232,10 +232,9 @@ bool am_timer_domain_is_empty(int domain) {
     struct am_timer *me = &am_timer_;
     AM_ASSERT(domain >= 0);
     AM_ASSERT(domain < AM_COUNTOF(me->domains));
-    me->cfg.crit_enter();
+
     bool empty = am_slist_is_empty(&me->domains[domain]);
     bool empty_pend = am_slist_is_empty(&me->domains_pend[domain]);
-    me->cfg.crit_exit();
 
     return empty && empty_pend;
 }
