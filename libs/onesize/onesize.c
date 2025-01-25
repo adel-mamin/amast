@@ -40,21 +40,6 @@
 #include "slist/slist.h"
 #include "onesize/onesize.h"
 
-/**
- * Handle allocation statistics.
- * @param hnd       the allocator
- * @param subtract  the number of allocated blocks
- * @param add the number of blocks to add to statistics
- */
-static void am_onesize_run_stats(
-    struct am_onesize *hnd, int subtract, int add
-) {
-    AM_ASSERT(hnd->nfree >= subtract);
-    hnd->nfree -= subtract;
-    hnd->nfree += add;
-    hnd->minfree = AM_MIN(hnd->minfree, hnd->nfree);
-}
-
 void *am_onesize_allocate(struct am_onesize *hnd, int size) {
     AM_ASSERT(hnd);
     AM_ASSERT(size >= 0);
@@ -72,7 +57,10 @@ void *am_onesize_allocate(struct am_onesize *hnd, int size) {
     struct am_slist_item *elem = am_slist_pop_front(&hnd->fl);
     AM_ASSERT(elem);
 
-    am_onesize_run_stats(hnd, 1, 0);
+    AM_ASSERT(hnd->nfree);
+    --hnd->nfree;
+    hnd->minfree = AM_MIN(hnd->minfree, hnd->nfree);
+
     hnd->crit_exit();
 
     return elem;
@@ -89,8 +77,12 @@ void am_onesize_free(struct am_onesize *hnd, const void *ptr) {
     struct am_slist_item *p = AM_CAST(struct am_slist_item *, ptr);
 
     hnd->crit_enter();
+
+    AM_ASSERT(hnd->nfree < hnd->ntotal);
+    ++hnd->nfree;
+
     am_slist_push_front(&hnd->fl, p);
-    am_onesize_run_stats(hnd, 0, 1);
+
     hnd->crit_exit();
 }
 
@@ -117,9 +109,11 @@ void am_onesize_free_all(struct am_onesize *hnd) {
     struct am_onesize *s = (struct am_onesize *)hnd;
 
     hnd->crit_enter();
+
     int minfree = hnd->minfree;
     am_onesize_ctor_internal(s);
     hnd->minfree = minfree; /* cppcheck-suppress redundantAssignment */
+
     hnd->crit_exit();
 }
 
@@ -138,7 +132,9 @@ void am_onesize_iterate_over_allocated(
     }
     int iterated = 0;
     num = AM_MIN(num, total);
+
     hnd->crit_enter();
+
     for (int i = 0; (i < total) && (iterated < num); i++) {
         AM_ASSERT(AM_ALIGNOF_PTR(ptr) >= AM_ALIGNOF_SLIST_ITEM);
         struct am_slist_item *item = AM_CAST(struct am_slist_item *, ptr);
@@ -152,17 +148,32 @@ void am_onesize_iterate_over_allocated(
         ptr += impl->block_size;
         iterated++;
     }
+
     hnd->crit_exit();
 }
 
 int am_onesize_get_nfree(const struct am_onesize *hnd) {
     AM_ASSERT(hnd);
-    return hnd->nfree;
+
+    hnd->crit_enter();
+
+    int nfree = hnd->nfree;
+
+    hnd->crit_exit();
+
+    return nfree;
 }
 
 int am_onesize_get_min_nfree(const struct am_onesize *hnd) {
     AM_ASSERT(hnd);
-    return hnd->minfree;
+
+    hnd->crit_enter();
+
+    int minfree = hnd->minfree;
+
+    hnd->crit_exit();
+
+    return minfree;
 }
 
 int am_onesize_get_block_size(const struct am_onesize *hnd) {
