@@ -266,7 +266,7 @@ void am_event_log_pools(int num, am_event_log_func cb) {
     for (int i = 0; i < me->npool; i++) {
         ctx.pool_ind = i;
         am_onesize_iterate_over_allocated(
-            &me->pool[i], num, &ctx, am_event_log_cb
+            &me->pool[i], num, am_event_log_cb, &ctx
         );
     }
 }

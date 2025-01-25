@@ -137,11 +137,11 @@ typedef void (*am_onesize_iterate_func)(
  *
  * @param hnd  the allocator
  * @param num  the number of allocated blocks to iterate over
- * @param ctx  the caller's specific context to be used with the callback
  * @param cb   the callback to call for each allocated memory block
+ * @param ctx  the caller's specific context to be used with the callback
  */
 void am_onesize_iterate_over_allocated(
-    struct am_onesize *hnd, int num, void *ctx, am_onesize_iterate_func cb
+    struct am_onesize *hnd, int num, am_onesize_iterate_func cb, void *ctx
 );
 
 /**

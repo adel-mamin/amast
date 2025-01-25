@@ -49,6 +49,7 @@ void *am_onesize_allocate(struct am_onesize *hnd, int size) {
     }
 
     hnd->crit_enter();
+
     if (am_slist_is_empty(&hnd->fl)) {
         hnd->crit_exit();
         return NULL;
@@ -118,34 +119,35 @@ void am_onesize_free_all(struct am_onesize *hnd) {
 }
 
 void am_onesize_iterate_over_allocated(
-    struct am_onesize *hnd, int num, void *ctx, am_onesize_iterate_func cb
+    struct am_onesize *hnd, int num, am_onesize_iterate_func cb, void *ctx
 ) {
     AM_ASSERT(hnd);
     AM_ASSERT(cb);
     AM_ASSERT(num != 0);
 
-    struct am_onesize *impl = (struct am_onesize *)hnd;
-    char *ptr = (char *)impl->pool.ptr;
-    int total = impl->pool.size / impl->block_size;
+    char *ptr = (char *)hnd->pool.ptr;
     if (num < 0) {
-        num = total;
+        num = hnd->ntotal;
     }
     int iterated = 0;
-    num = AM_MIN(num, total);
+    num = AM_MIN(num, hnd->ntotal);
 
     hnd->crit_enter();
 
-    for (int i = 0; (i < total) && (iterated < num); i++) {
+    for (int i = 0; (i < hnd->ntotal) && (iterated < num); i++) {
         AM_ASSERT(AM_ALIGNOF_PTR(ptr) >= AM_ALIGNOF_SLIST_ITEM);
         struct am_slist_item *item = AM_CAST(struct am_slist_item *, ptr);
-        if (am_slist_owns(&impl->fl, item)) {
+        if (am_slist_owns(&hnd->fl, item)) {
             continue; /* the item is free */
         }
         /* the item is allocated */
         hnd->crit_exit();
-        cb(ctx, iterated, (char *)item, impl->block_size);
+
+        cb(ctx, iterated, (char *)item, hnd->block_size);
+
         hnd->crit_enter();
-        ptr += impl->block_size;
+
+        ptr += hnd->block_size;
         iterated++;
     }
 
