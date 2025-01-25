@@ -425,6 +425,9 @@ bool am_event_recall(struct am_queue *queue, am_event_recall_fn cb, void *ctx);
 /**
  * Flush all events from event queue.
  *
+ * Takes care of recycling the events by calling am_event_free().
+ * The provided queue might be deferred events queue.
+ *
  * @param queue  the queue to flush
  *
  * @return the number of events flushed
