@@ -255,10 +255,13 @@ static void input_task(void *param) {
     struct async *m = (struct async *)param;
     int ch;
     while ((ch = getc(stdin)) != EOF) {
+        if (ch != '\n') {
+            continue;
+        }
         am_pal_printf(CURSOR_UP_CHAR);
         am_pal_flush();
         static struct am_event event = {.id = ASYNC_EVT_USER_INPUT};
-        am_ao_post_fifo(&m->ao, &event);
+        am_ao_post_fifo_x(&m->ao, &event, /*margin=*/1);
     }
 }
 
@@ -271,7 +274,7 @@ int main(void) {
     struct async m;
     async_ctor(&m);
 
-    static const struct am_event *m_queue[2];
+    static const struct am_event *m_queue[3];
 
     am_ao_start(
         &m.ao,
