@@ -69,8 +69,8 @@
 #include "pal/pal.h"
 #include "hsm/hsm.h"
 
-#define SOLID_BLOCK_CHAR "\xE2\x96\x88"
-#define CURSOR_UP_CHAR "\033[A"
+#define CHAR_SOLID_BLOCK "\xE2\x96\x88"
+#define CHAR_CURSOR_UP "\033[A"
 
 #define ASYNC_EVT_USER_INPUT AM_EVT_USER
 #define ASYNC_EVT_TIMER_RYG (AM_EVT_USER + 1)
@@ -130,17 +130,17 @@ static enum am_hsm_rc async_ryg(
         AM_ASYNC_BEGIN(&me->async_ryg);
 
         /* red */
-        am_pal_printf(AM_COLOR_RED SOLID_BLOCK_CHAR AM_COLOR_RESET);
+        am_pal_printf(AM_COLOR_RED CHAR_SOLID_BLOCK AM_COLOR_RESET);
         am_pal_flush();
         AM_ASYNC_YIELD();
 
         /* yellow */
-        am_pal_printf(" " AM_COLOR_YELLOW SOLID_BLOCK_CHAR AM_COLOR_RESET);
+        am_pal_printf(" " AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
         am_pal_flush();
         AM_ASYNC_YIELD();
 
         /* green */
-        am_pal_printf(" " AM_COLOR_GREEN SOLID_BLOCK_CHAR AM_COLOR_RESET);
+        am_pal_printf(" " AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
         am_pal_flush();
         AM_ASYNC_YIELD();
 
@@ -177,17 +177,17 @@ static enum am_hsm_rc async_gyr(
         AM_ASYNC_BEGIN(&me->async_gyr);
 
         /* green */
-        am_pal_printf(AM_COLOR_GREEN SOLID_BLOCK_CHAR AM_COLOR_RESET);
+        am_pal_printf(AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
         am_pal_flush();
         AM_ASYNC_YIELD();
 
         /* yellow */
-        am_pal_printf(" " AM_COLOR_YELLOW SOLID_BLOCK_CHAR AM_COLOR_RESET);
+        am_pal_printf(" " AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
         am_pal_flush();
         AM_ASYNC_YIELD();
 
         /* red */
-        am_pal_printf(" " AM_COLOR_RED SOLID_BLOCK_CHAR AM_COLOR_RESET);
+        am_pal_printf(" " AM_COLOR_RED CHAR_SOLID_BLOCK AM_COLOR_RESET);
         am_pal_flush();
         AM_ASYNC_YIELD();
 
@@ -258,7 +258,7 @@ static void input_task(void *param) {
         if (ch != '\n') {
             continue;
         }
-        am_pal_printf(CURSOR_UP_CHAR);
+        am_pal_printf(CHAR_CURSOR_UP);
         am_pal_flush();
         static struct am_event event = {.id = ASYNC_EVT_USER_INPUT};
         am_ao_post_fifo_x(&m->ao, &event, /*margin=*/1);
