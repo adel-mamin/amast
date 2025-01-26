@@ -56,7 +56,7 @@ struct am_onesize {
 /** Onesize configuration. */
 struct am_onesize_cfg {
     /** the memory pool */
-    struct am_blk *pool;
+    struct am_blk pool;
     /**
      * The maximum size of the memory block the allocator
      * can allocate [bytes]. The allocation of memory blocks
@@ -86,7 +86,7 @@ extern "C" {
  * @param me   the allocator
  * @param cfg  configuration
  */
-void am_onesize_ctor(struct am_onesize *me, struct am_onesize_cfg *cfg);
+void am_onesize_ctor(struct am_onesize *me, const struct am_onesize_cfg *cfg);
 
 /**
  * Allocate memory if \p size is <= block_size.

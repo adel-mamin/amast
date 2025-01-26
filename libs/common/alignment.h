@@ -50,7 +50,15 @@
 #define AM_ALIGN_PTR_DOWN(ptr, align) \
     ((void *)((uintptr_t)(ptr) & ~(uintptr_t)((align) - 1)))
 
-/** The byte difference between aligned and unaligned size */
+/**
+ * Return 'size' + the byte difference between aligned and unaligned 'size'
+ *
+ * For example,
+ *
+ * AM_ALIGN_SIZE(3, 4) == 4
+ * AM_ALIGN_SIZE(4, 4) == 4
+ * AM_ALIGN_SIZE(5, 4) == 8
+ */
 #define AM_ALIGN_SIZE(size, align)                       \
     ((int)(((unsigned)(size) + (unsigned)(align) - 1u) & \
            (unsigned)~(unsigned)((unsigned)(align) - 1u)))

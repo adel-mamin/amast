@@ -77,6 +77,11 @@ int main(void) {
             0x10 == AM_CAST(uintptr_t, AM_ALIGN_PTR_DOWN((void *)ptr, 16))
         );
     }
+    {
+        AM_ASSERT(AM_ALIGN_SIZE(3, 4) == 4);
+        AM_ASSERT(AM_ALIGN_SIZE(4, 4) == 4);
+        AM_ASSERT(AM_ALIGN_SIZE(5, 4) == 8);
+    }
 
     return 0;
 }

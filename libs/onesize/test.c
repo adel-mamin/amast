@@ -33,7 +33,6 @@
 
 #include "common/macros.h"
 #include "common/alignment.h"
-#include "common/types.h"
 #include "onesize/onesize.h"
 
 int main(void) {
@@ -43,10 +42,9 @@ int main(void) {
         float b;
         unsigned *c;
     } test_arr[2];
-    struct am_blk blk = {.ptr = &test_arr[0], .size = sizeof(test_arr)};
 
     struct am_onesize_cfg cfg = {
-        .pool = &blk,
+        .pool = {.ptr = &test_arr[0], .size = sizeof(test_arr)},
         .block_size = sizeof(struct test),
         .alignment = AM_ALIGN_MAX
     };

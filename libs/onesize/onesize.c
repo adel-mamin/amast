@@ -30,7 +30,6 @@
  */
 
 #include <stddef.h>
-#include <stdint.h>
 #include <string.h>
 
 #include "common/compiler.h"
@@ -191,31 +190,24 @@ int am_onesize_get_nblocks(const struct am_onesize *me) {
 static void am_onesize_crit_enter(void) {}
 static void am_onesize_crit_exit(void) {}
 
-void am_onesize_ctor(struct am_onesize *me, struct am_onesize_cfg *cfg) {
+void am_onesize_ctor(struct am_onesize *me, const struct am_onesize_cfg *cfg) {
     AM_ASSERT(me);
     AM_ASSERT(cfg);
-    AM_ASSERT(cfg->pool);
-    AM_ASSERT(cfg->pool->ptr);
-    AM_ASSERT(cfg->pool->size > 0);
-    AM_ASSERT(cfg->pool->size >= cfg->block_size);
-    AM_ASSERT(cfg->alignment >= AM_ALIGNOF_SLIST_ITEM);
+    AM_ASSERT(cfg->pool.ptr);
+    AM_ASSERT(cfg->pool.size > 0);
+    AM_ASSERT(cfg->block_size > 0);
+    AM_ASSERT(cfg->pool.size >= cfg->block_size);
+
+    int alignment = AM_MAX(cfg->alignment, AM_ALIGNOF_SLIST_ITEM);
+    AM_ASSERT(AM_ALIGNOF_PTR(cfg->pool.ptr) >= alignment);
 
     memset(me, 0, sizeof(*me));
 
-    void *aligned_ptr = AM_ALIGN_PTR_UP(cfg->pool->ptr, cfg->alignment);
-    int affix = (int)((uintptr_t)aligned_ptr - (uintptr_t)cfg->pool->ptr);
-    AM_ASSERT(affix < cfg->pool->size);
-    cfg->pool->size -= affix;
-    cfg->pool->ptr = aligned_ptr;
+    me->pool = cfg->pool;
+    me->block_size = AM_MAX(cfg->block_size, (int)sizeof(struct am_slist_item));
+    me->block_size = AM_ALIGN_SIZE(me->block_size, alignment);
 
-    cfg->block_size =
-        AM_MAX(cfg->block_size, (int)sizeof(struct am_slist_item));
-    cfg->block_size = AM_MAX(cfg->block_size, cfg->alignment);
-
-    AM_ASSERT(cfg->pool->size >= cfg->block_size);
-
-    me->pool = *cfg->pool;
-    me->block_size = cfg->block_size;
+    AM_ASSERT(me->pool.size >= me->block_size);
 
     if (cfg->crit_enter && cfg->crit_exit) {
         me->crit_enter = cfg->crit_enter;

@@ -35,7 +35,6 @@
 
 #include "common/alignment.h"
 #include "common/macros.h"
-#include "common/types.h"
 #include "onesize/onesize.h"
 #include "event.h"
 
@@ -85,12 +84,10 @@ void am_event_add_pool(void *pool, int size, int block_size, int alignment) {
         AM_ASSERT(block_size > prev_size);
     }
 
-    struct am_blk blk;
-    memset(&blk, 0, sizeof(blk));
-    blk.ptr = pool;
-    blk.size = size;
     struct am_onesize_cfg cfg = {
-        .pool = &blk, .block_size = block_size, .alignment = alignment
+        .pool = {.ptr = pool, .size = size},
+        .block_size = block_size,
+        .alignment = alignment
     };
     am_onesize_ctor(&me->pool[me->npool], &cfg);
 
