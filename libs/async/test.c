@@ -46,6 +46,8 @@ static enum am_async_rc am_async_reentrant(
         AM_ASYNC_EXIT();
     }
     AM_ASYNC_END();
+
+    return AM_ASYNC_RC(me);
 }
 
 static void test_async_local_continuation(void) {
@@ -72,6 +74,8 @@ static enum am_async_rc am_async_empty(struct am_async *me, int *reent) {
     AM_ASYNC_BEGIN(me);
     (*reent)++;
     AM_ASYNC_END();
+
+    return AM_ASYNC_RC(me);
 }
 
 static void test_async_empty(void) {
@@ -93,6 +97,8 @@ static enum am_async_rc am_async_wait_ready(
     AM_ASYNC_AWAIT(ready);
     (*reent)++;
     AM_ASYNC_END();
+
+    return AM_ASYNC_RC(me);
 }
 
 static void test_async_wait_ready(void) {
@@ -118,6 +124,8 @@ static enum am_async_rc am_async_yield(struct am_async *me, int *state) {
     AM_ASYNC_YIELD();
     (*state) = 2;
     AM_ASYNC_END();
+
+    return AM_ASYNC_RC(me);
 }
 
 static void test_async_yield(void) {
@@ -149,6 +157,8 @@ static enum am_async_rc am_async_exit(struct am_async *me, int *state) {
     (*state) = 2;
     AM_ENABLE_WARNING(AM_W_UNREACHABLE_CODE);
     AM_ASYNC_END();
+
+    return AM_ASYNC_RC(me);
 }
 
 static void test_async_exit(void) {
@@ -181,6 +191,8 @@ static enum am_async_rc am_async_call_1(struct am_async_chain *me) {
     AM_ASYNC_AWAIT(me->ready);
     me->foo = 1;
     AM_ASYNC_END();
+
+    return AM_ASYNC_RC(me);
 }
 
 static enum am_async_rc am_async_call_2(struct am_async_chain *me) {
@@ -188,6 +200,8 @@ static enum am_async_rc am_async_call_2(struct am_async_chain *me) {
     AM_ASYNC_AWAIT(me->ready);
     me->foo = 1;
     AM_ASYNC_END();
+
+    return AM_ASYNC_RC(me);
 }
 
 static void test_async_call_chain(void) {

@@ -49,7 +49,8 @@ enum am_async_rc {
 
 /** Async state */
 struct am_async {
-    int state; /**< a line number or #AM_ASYNC_ constant */
+    int state;           /**< a line number or #AM_ASYNC_ constant */
+    enum am_async_rc rc; /**< return code */
 };
 
 /* clang-format off */
@@ -61,7 +62,7 @@ struct am_async {
  *
  * @param me  pointer to the `struct am_async` managing the async state
  */
-#define AM_ASYNC_BEGIN(me)                              \
+#define AM_ASYNC_BEGIN(me) {                            \
     struct am_async *am_async_ = (struct am_async *)me; \
     switch (am_async_->state) {                         \
     case AM_ASYNC_STATE_INIT:                           \
@@ -72,14 +73,15 @@ struct am_async {
 /**
  * Mark the end of async function and return completion.
  *
- * Reset the async state to the initial state and return
+ * Reset the async state to the initial state and set return value to
  * #AM_ASYNC_RC_DONE, indicating that the async operation has completed.
  */
 #define AM_ASYNC_EXIT()                                 \
         /* to suppress cppcheck warnings */             \
         (void)am_async_->state;                         \
         am_async_->state = AM_ASYNC_STATE_INIT;         \
-        return AM_ASYNC_RC_DONE
+        am_async_->rc = AM_ASYNC_RC_DONE;               \
+        break;
 
 /**
  * Mark the end of async function block and handle any unexpected states.
@@ -93,7 +95,7 @@ struct am_async {
         AM_ASYNC_EXIT();                                \
     default:                                            \
         AM_ASSERT(0);                                   \
-    }
+    }}
 
 /**
  * Set label in async function.
@@ -125,7 +127,8 @@ struct am_async {
         /* FALLTHROUGH */                               \
     case __LINE__:                                      \
         if (!(cond)) {                                  \
-            return AM_ASYNC_RC_BUSY;                    \
+            am_async_->rc = AM_ASYNC_RC_BUSY;           \
+            break;                                      \
         }
 
 /**
@@ -139,8 +142,16 @@ struct am_async {
         /* to suppress cppcheck warnings */             \
         (void)am_async_->state;                         \
         am_async_->state = __LINE__;                    \
-        return AM_ASYNC_RC_BUSY;                        \
+        am_async_->rc = AM_ASYNC_RC_BUSY;               \
+        break;                                          \
     case __LINE__:
+
+/**
+ * Return code of async operation.
+ *
+ * @param me  the async instance pointer
+ */
+#define AM_ASYNC_RC(me) ((struct am_async*)(me))->rc
 
 /* clang-format on */
 
@@ -156,9 +167,7 @@ extern "C" {
  *
  * @param me  the async state to initialize
  */
-static inline void am_async_init(struct am_async *me) {
-    me->state = AM_ASYNC_STATE_INIT;
-}
+void am_async_init(struct am_async *me);
 
 #ifdef __cplusplus
 }

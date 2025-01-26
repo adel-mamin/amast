@@ -111,31 +111,6 @@ static enum am_hsm_rc async_top(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_async_rc async_ryg_hnd(struct am_async *me) {
-    AM_ASYNC_BEGIN(me);
-
-    /* red */
-    am_pal_printf(AM_COLOR_RED SOLID_BLOCK_CHAR AM_COLOR_RESET);
-    am_pal_flush();
-    AM_ASYNC_YIELD();
-
-    /* yellow */
-    am_pal_printf(" " AM_COLOR_YELLOW SOLID_BLOCK_CHAR AM_COLOR_RESET);
-    am_pal_flush();
-    AM_ASYNC_YIELD();
-
-    /* green */
-    am_pal_printf(" " AM_COLOR_GREEN SOLID_BLOCK_CHAR AM_COLOR_RESET);
-    am_pal_flush();
-    AM_ASYNC_YIELD();
-
-    am_pal_printf("\r               \r");
-    am_pal_flush();
-    AM_ASYNC_YIELD();
-
-    AM_ASYNC_END();
-}
-
 static enum am_hsm_rc async_ryg(
     struct async *me, const struct am_event *event
 ) {
@@ -152,38 +127,35 @@ static enum am_hsm_rc async_ryg(
         return AM_HSM_HANDLED();
 
     case ASYNC_EVT_TIMER_RYG:
-        async_ryg_hnd(&me->async_ryg);
+        AM_ASYNC_BEGIN(&me->async_ryg);
+
+        /* red */
+        am_pal_printf(AM_COLOR_RED SOLID_BLOCK_CHAR AM_COLOR_RESET);
+        am_pal_flush();
+        AM_ASYNC_YIELD();
+
+        /* yellow */
+        am_pal_printf(" " AM_COLOR_YELLOW SOLID_BLOCK_CHAR AM_COLOR_RESET);
+        am_pal_flush();
+        AM_ASYNC_YIELD();
+
+        /* green */
+        am_pal_printf(" " AM_COLOR_GREEN SOLID_BLOCK_CHAR AM_COLOR_RESET);
+        am_pal_flush();
+        AM_ASYNC_YIELD();
+
+        am_pal_printf("\r               \r");
+        am_pal_flush();
+        AM_ASYNC_YIELD();
+
+        AM_ASYNC_END();
+
         return AM_HSM_HANDLED();
 
     default:
         break;
     }
     return AM_HSM_SUPER(async_top);
-}
-
-static enum am_async_rc async_gyr_hnd(struct am_async *me) {
-    AM_ASYNC_BEGIN(me);
-
-    /* green */
-    am_pal_printf(AM_COLOR_GREEN SOLID_BLOCK_CHAR AM_COLOR_RESET);
-    am_pal_flush();
-    AM_ASYNC_YIELD();
-
-    /* yellow */
-    am_pal_printf(" " AM_COLOR_YELLOW SOLID_BLOCK_CHAR AM_COLOR_RESET);
-    am_pal_flush();
-    AM_ASYNC_YIELD();
-
-    /* red */
-    am_pal_printf(" " AM_COLOR_RED SOLID_BLOCK_CHAR AM_COLOR_RESET);
-    am_pal_flush();
-    AM_ASYNC_YIELD();
-
-    am_pal_printf("\r               \r");
-    am_pal_flush();
-    AM_ASYNC_YIELD();
-
-    AM_ASYNC_END();
 }
 
 static enum am_hsm_rc async_gyr(
@@ -202,7 +174,29 @@ static enum am_hsm_rc async_gyr(
         return AM_HSM_HANDLED();
 
     case ASYNC_EVT_TIMER_GYR:
-        async_gyr_hnd(&me->async_gyr);
+        AM_ASYNC_BEGIN(&me->async_gyr);
+
+        /* green */
+        am_pal_printf(AM_COLOR_GREEN SOLID_BLOCK_CHAR AM_COLOR_RESET);
+        am_pal_flush();
+        AM_ASYNC_YIELD();
+
+        /* yellow */
+        am_pal_printf(" " AM_COLOR_YELLOW SOLID_BLOCK_CHAR AM_COLOR_RESET);
+        am_pal_flush();
+        AM_ASYNC_YIELD();
+
+        /* red */
+        am_pal_printf(" " AM_COLOR_RED SOLID_BLOCK_CHAR AM_COLOR_RESET);
+        am_pal_flush();
+        AM_ASYNC_YIELD();
+
+        am_pal_printf("\r               \r");
+        am_pal_flush();
+        AM_ASYNC_YIELD();
+
+        AM_ASYNC_END();
+
         return AM_HSM_HANDLED();
 
     default:

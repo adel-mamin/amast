@@ -24,7 +24,17 @@
 # SOFTWARE.
 #
 
+async_src = [files('async.c')]
+
+libasync = library(
+    'async',
+    [async_src],
+    c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
+    include_directories: [inc]
+)
+
 libasync_dep = declare_dependency(
+    sources: [async_src],
     include_directories : [inc, include_directories('.')]
 )
 
