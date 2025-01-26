@@ -90,7 +90,7 @@ struct am_event_timer {
     /** to link timer events together */
     struct am_slist_item item;
 
-    /** the object, who receives the timer event */
+    /** the object, which receives the timer event */
     void *owner;
 
     /** the timer event is sent after this many ticks */
