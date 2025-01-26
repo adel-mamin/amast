@@ -50,54 +50,54 @@ extern "C" {
 /**
  * Check if queue is empty.
  *
- * @param hnd     queue handler
+ * @param me  the queue
  *
  * @retval true   queue is empty
  * @retval false  queue is not empty
  */
-bool am_queue_is_empty(const struct am_queue *hnd);
+bool am_queue_is_empty(const struct am_queue *me);
 
 /**
  * Check if queue is full.
  *
- * @param hnd     the queue
+ * @param me  the queue
  *
  * @retval true   queue is full
  * @retval false  queue is not empty
  */
-bool am_queue_is_full(struct am_queue *hnd);
+bool am_queue_is_full(struct am_queue *me);
 
 /**
  * Return how many items are in queue.
  *
- * @param hnd  the queue
+ * @param me  the queue
  *
  * @return number of queued items
  */
-int am_queue_length(struct am_queue *hnd);
+int am_queue_length(struct am_queue *me);
 
 /**
  * Return queue capacity.
  *
- * @param hnd  the queue
+ * @param me  the queue
  *
  * @return queue capacity
  */
-int am_queue_capacity(struct am_queue *hnd);
+int am_queue_capacity(struct am_queue *me);
 
 /**
  * Return queue item size.
  *
- * @param hnd  the queue
+ * @param me  the queue
  *
  * @return queue item size [bytes]
  */
-int am_queue_item_size(const struct am_queue *hnd);
+int am_queue_item_size(const struct am_queue *me);
 
 /**
  * Queue initialization with memory a block.
  *
- * @param hnd        the queue
+ * @param me         the queue
  * @param isize      item size [bytes]
  *                   The queue will only support the items of this size.
  * @param alignment  the queue alignment [bytes]
@@ -105,7 +105,7 @@ int am_queue_item_size(const struct am_queue *hnd);
  * @param blk        the memory block
  */
 void am_queue_init(
-    struct am_queue *hnd, int isize, int alignment, struct am_blk *blk
+    struct am_queue *me, int isize, int alignment, struct am_blk *blk
 );
 
 /**
@@ -113,13 +113,13 @@ void am_queue_init(
  *
  * Takes O(1) to complete.
  *
- * @param hnd  the queue
+ * @param me  the queue
  *
  * @return The popped item. The memory is owned by the queue
  *         Do not free it!
  *         If queue is empty then NULL is returned.
  */
-void *am_queue_pop_front(struct am_queue *hnd);
+void *am_queue_pop_front(struct am_queue *me);
 
 /**
  * Pop an item from the front (head) of queue to the provided buffer.
@@ -132,40 +132,40 @@ void *am_queue_pop_front(struct am_queue *hnd);
  *
  * @return The popped item. NULL if queue was empty.
  */
-void *am_queue_pop_front_and_copy(struct am_queue *hnd, void *buf, int size);
+void *am_queue_pop_front_and_copy(struct am_queue *me, void *buf, int size);
 
 /**
  * Peek an item from the front (head) of queue.
  *
  * Takes O(1) to complete.
  *
- * @param hnd  the queue
+ * @param me  the queue
  *
  * @return The peeked item. The memory is owned by the queue.
  *         Do not free it!
  *         If queue is empty, then NULL is returned.
  */
-void *am_queue_peek_front(struct am_queue *hnd);
+void *am_queue_peek_front(struct am_queue *me);
 
 /**
  * Peek an item from the back (tail) of queue.
  *
  * Takes O(1) to complete.
  *
- * @param hnd  the queue
+ * @param me  the queue
  *
  * @return The peeked item. The memory is owned by the queue.
  *         Do not free it!
  *         If queue is empty, then NULL is returned.
  */
-void *am_queue_peek_back(struct am_queue *hnd);
+void *am_queue_peek_back(struct am_queue *me);
 
 /**
  * Push an item to the front (head) of queue.
  *
  * Takes O(1) to complete.
  *
- * @param hnd   the queue
+ * @param me    the queue
  * @param ptr   the new queue item
  *              The API copies the content of ptr.
  * @param size  the size of the new queue item in bytes
@@ -174,14 +174,14 @@ void *am_queue_peek_back(struct am_queue *hnd);
  * @retval true   success
  * @retval false  failure
  */
-bool am_queue_push_front(struct am_queue *hnd, const void *ptr, int size);
+bool am_queue_push_front(struct am_queue *me, const void *ptr, int size);
 
 /**
  * Push an item to the back (tail) of queue.
  *
  * Takes O(1) to complete.
  *
- * @param hnd   the queue
+ * @param me    the queue
  * @param ptr   the new queue item
  *              The API copies the content of ptr.
  * @param size  the size of the new queue item in bytes
@@ -190,7 +190,7 @@ bool am_queue_push_front(struct am_queue *hnd, const void *ptr, int size);
  * @retval true   success
  * @retval false  failure
  */
-bool am_queue_push_back(struct am_queue *hnd, const void *ptr, int size);
+bool am_queue_push_back(struct am_queue *me, const void *ptr, int size);
 
 #ifdef __cplusplus
 }

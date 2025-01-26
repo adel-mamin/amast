@@ -142,7 +142,7 @@ int am_pal_task_own_id(void) {
     return 0;
 }
 
-static void am_pal_mutex_init(pthread_mutex_t *hnd);
+static void am_pal_mutex_init(pthread_mutex_t *me);
 
 int am_pal_task_create(
     const char *name,
@@ -247,32 +247,32 @@ void am_pal_task_wait(int task) {
     pthread_mutex_unlock(&t->mutex);
 }
 
-static void am_pal_mutex_init(pthread_mutex_t *hnd) {
-    AM_ASSERT(hnd);
+static void am_pal_mutex_init(pthread_mutex_t *me) {
+    AM_ASSERT(me);
 
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr);
     pthread_mutexattr_setprotocol(&attr, PTHREAD_PRIO_INHERIT);
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
 
-    int rc = pthread_mutex_init(hnd, &attr);
+    int rc = pthread_mutex_init(me, &attr);
     AM_ASSERT(0 == rc);
 }
 
 int am_pal_mutex_create(void) {
     int mutex = -1;
-    pthread_mutex_t *hnd = NULL;
+    pthread_mutex_t *me = NULL;
     for (int i = 0; i < AM_COUNTOF(mutex_arr_); ++i) {
         if (!mutex_arr_[i].valid) {
             mutex = i;
-            hnd = &mutex_arr_[i].mutex;
+            me = &mutex_arr_[i].mutex;
             mutex_arr_[i].valid = true;
             break;
         }
     }
-    AM_ASSERT(hnd && (mutex >= 0));
+    AM_ASSERT(me && (mutex >= 0));
 
-    am_pal_mutex_init(hnd);
+    am_pal_mutex_init(me);
 
     return am_pal_id_from_index(mutex);
 }

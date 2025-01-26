@@ -40,9 +40,9 @@
 #include "queue/queue.h"
 
 void am_queue_init(
-    struct am_queue *hnd, int isize, int alignment, struct am_blk *blk
+    struct am_queue *me, int isize, int alignment, struct am_blk *blk
 ) {
-    AM_ASSERT(hnd);
+    AM_ASSERT(me);
     AM_ASSERT(isize > 0);
     AM_ASSERT(alignment > 0);
     AM_ASSERT(AM_IS_POW2((unsigned)alignment));
@@ -50,7 +50,7 @@ void am_queue_init(
     AM_ASSERT(blk->ptr);
     AM_ASSERT(blk->size > 0);
 
-    memset(hnd, 0, sizeof(*hnd));
+    memset(me, 0, sizeof(*me));
 
     void *aligned_ptr = AM_ALIGN_PTR_UP(blk->ptr, alignment);
     int affix = (int)((uintptr_t)aligned_ptr - (uintptr_t)blk->ptr);
@@ -58,116 +58,116 @@ void am_queue_init(
     blk->size -= affix;
     blk->ptr = aligned_ptr;
 
-    hnd->isize = AM_MAX(isize, alignment);
+    me->isize = AM_MAX(isize, alignment);
 
     /* queue requires at least two slots */
-    AM_ASSERT(blk->size >= (2 * hnd->isize));
+    AM_ASSERT(blk->size >= (2 * me->isize));
 
-    hnd->blk = *blk;
+    me->blk = *blk;
 }
 
-bool am_queue_is_empty(const struct am_queue *hnd) {
-    AM_ASSERT(hnd);
-    return hnd->rd == hnd->wr;
+bool am_queue_is_empty(const struct am_queue *me) {
+    AM_ASSERT(me);
+    return me->rd == me->wr;
 }
 
-bool am_queue_is_full(struct am_queue *hnd) {
-    AM_ASSERT(hnd);
-    return ((hnd->wr + 1) % (hnd->blk.size / hnd->isize)) == hnd->rd;
+bool am_queue_is_full(struct am_queue *me) {
+    AM_ASSERT(me);
+    return ((me->wr + 1) % (me->blk.size / me->isize)) == me->rd;
 }
 
-int am_queue_length(struct am_queue *hnd) {
-    AM_ASSERT(hnd);
-    if (hnd->wr >= hnd->rd) {
-        return hnd->wr - hnd->rd;
+int am_queue_length(struct am_queue *me) {
+    AM_ASSERT(me);
+    if (me->wr >= me->rd) {
+        return me->wr - me->rd;
     }
-    int len = (hnd->blk.size / hnd->isize) - hnd->rd - 1;
-    return hnd->wr ? (len + hnd->wr) : len;
+    int len = (me->blk.size / me->isize) - me->rd - 1;
+    return me->wr ? (len + me->wr) : len;
 }
 
-int am_queue_capacity(struct am_queue *hnd) {
-    AM_ASSERT(hnd);
-    return (hnd->blk.size / hnd->isize) - 1;
+int am_queue_capacity(struct am_queue *me) {
+    AM_ASSERT(me);
+    return (me->blk.size / me->isize) - 1;
 }
 
-int am_queue_item_size(const struct am_queue *hnd) {
-    AM_ASSERT(hnd);
-    return hnd->isize;
+int am_queue_item_size(const struct am_queue *me) {
+    AM_ASSERT(me);
+    return me->isize;
 }
 
-void *am_queue_peek_front(struct am_queue *hnd) {
-    AM_ASSERT(hnd);
+void *am_queue_peek_front(struct am_queue *me) {
+    AM_ASSERT(me);
 
-    if (hnd->rd == hnd->wr) {
+    if (me->rd == me->wr) {
         return NULL;
     }
-    return (char *)hnd->blk.ptr + hnd->rd * hnd->isize;
+    return (char *)me->blk.ptr + me->rd * me->isize;
 }
 
-void *am_queue_peek_back(struct am_queue *hnd) {
-    AM_ASSERT(hnd);
+void *am_queue_peek_back(struct am_queue *me) {
+    AM_ASSERT(me);
 
-    if (hnd->rd == hnd->wr) {
+    if (me->rd == me->wr) {
         return NULL;
     }
-    int ind = (0 == hnd->wr) ? (hnd->blk.size / hnd->isize - 1) : (hnd->wr - 1);
-    return (char *)hnd->blk.ptr + ind * hnd->isize;
+    int ind = (0 == me->wr) ? (me->blk.size / me->isize - 1) : (me->wr - 1);
+    return (char *)me->blk.ptr + ind * me->isize;
 }
 
-void *am_queue_pop_front(struct am_queue *hnd) {
-    AM_ASSERT(hnd);
+void *am_queue_pop_front(struct am_queue *me) {
+    AM_ASSERT(me);
 
-    if (hnd->rd == hnd->wr) {
+    if (me->rd == me->wr) {
         return NULL;
     }
-    void *ptr = (char *)hnd->blk.ptr + hnd->rd * hnd->isize;
-    hnd->rd = (hnd->rd + 1) % (hnd->blk.size / hnd->isize);
+    void *ptr = (char *)me->blk.ptr + me->rd * me->isize;
+    me->rd = (me->rd + 1) % (me->blk.size / me->isize);
 
     return ptr;
 }
 
-void *am_queue_pop_front_and_copy(struct am_queue *hnd, void *buf, int size) {
-    AM_ASSERT(hnd);
+void *am_queue_pop_front_and_copy(struct am_queue *me, void *buf, int size) {
+    AM_ASSERT(me);
     AM_ASSERT(buf);
-    AM_ASSERT(size >= hnd->isize);
+    AM_ASSERT(size >= me->isize);
 
-    if (hnd->rd == hnd->wr) {
+    if (me->rd == me->wr) {
         return NULL;
     }
-    void *popped = am_queue_pop_front(hnd);
-    memcpy(buf, popped, (size_t)hnd->isize);
+    void *popped = am_queue_pop_front(me);
+    memcpy(buf, popped, (size_t)me->isize);
 
     return popped;
 }
 
-bool am_queue_push_back(struct am_queue *hnd, const void *ptr, int size) {
-    AM_ASSERT(hnd);
+bool am_queue_push_back(struct am_queue *me, const void *ptr, int size) {
+    AM_ASSERT(me);
     AM_ASSERT(ptr);
     AM_ASSERT(size > 0);
-    AM_ASSERT(size <= hnd->isize);
+    AM_ASSERT(size <= me->isize);
 
-    if (am_queue_is_full(hnd)) {
+    if (am_queue_is_full(me)) {
         return false;
     }
-    void *dst = (char *)hnd->blk.ptr + hnd->wr * hnd->isize;
+    void *dst = (char *)me->blk.ptr + me->wr * me->isize;
     memcpy(dst, ptr, (size_t)size);
-    hnd->wr = (hnd->wr + 1) % (hnd->blk.size / hnd->isize);
+    me->wr = (me->wr + 1) % (me->blk.size / me->isize);
 
     return true;
 }
 
-bool am_queue_push_front(struct am_queue *hnd, const void *ptr, int size) {
-    AM_ASSERT(hnd);
+bool am_queue_push_front(struct am_queue *me, const void *ptr, int size) {
+    AM_ASSERT(me);
     AM_ASSERT(ptr);
     AM_ASSERT(size > 0);
-    AM_ASSERT(size <= hnd->isize);
+    AM_ASSERT(size <= me->isize);
 
-    if (am_queue_is_full(hnd)) {
+    if (am_queue_is_full(me)) {
         return false;
     }
-    hnd->rd = (0 == hnd->rd) ? (hnd->blk.size / hnd->isize - 1) : (hnd->rd - 1);
-    void *dst = (char *)hnd->blk.ptr + hnd->rd * hnd->isize;
-    memcpy(dst, ptr, (size_t)hnd->isize);
+    me->rd = (0 == me->rd) ? (me->blk.size / me->isize - 1) : (me->rd - 1);
+    void *dst = (char *)me->blk.ptr + me->rd * me->isize;
+    memcpy(dst, ptr, (size_t)me->isize);
 
     return true;
 }
