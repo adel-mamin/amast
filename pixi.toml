@@ -20,7 +20,7 @@ posix = { depends-on = ["setup_posix", "cspell", "doxygen", "iwyu_posix", "style
 all = { depends-on = ["posix"] }
 
 [dependencies]
-meson = ">=1.6.1,<2"
+meson = ">=1.7.0,<2"
 ninja = ">=1.12.1,<2"
 gcc = ">=14.2.0,<14.3"
 cppcheck = ">=2.16.0,<3"

@@ -34,7 +34,7 @@ project('amast', 'c',
             'default_library=static',
             'b_sanitize=address,undefined'
         ],
-        meson_version: '>= 1.0.1')
+        meson_version: '>= 1.4.0')
 
 add_project_arguments('-DAMAST_VERSION="@0@"'.format(meson.project_version()), language : 'c')
 
