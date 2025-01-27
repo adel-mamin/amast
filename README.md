@@ -29,14 +29,14 @@ Library name | Code size [kB] | Data size [kB]
 ao_cooperative | 3.29 | 0.57
 ao_preemptive | 3.28 | 0.56
 dlist | 1.29 | 0.00
-event | 3.25 | 0.24
+event | 3.23 | 0.24
 fsm | 0.68 | 0.02
 hsm | 2.39 | 0.03
-onesize | 1.36 | 0.00
+onesize | 1.34 | 0.00
 queue | 1.30 | 0.00
 ringbuf | 1.38 | 0.00
 slist | 1.20 | 0.01
-timer | 1.43 | 0.07
+timer | 1.48 | 0.07
 
 ## How To Compile For Amast Development
 <a name="how-to-compile"></a>
