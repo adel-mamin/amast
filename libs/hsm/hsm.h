@@ -45,7 +45,7 @@
 extern "C" {
 #endif
 
-/** HSM reserved events. */
+/** HSM events. */
 enum am_hsm_evt {
     /**
      * Empty event.
@@ -85,6 +85,7 @@ AM_ASSERT_STATIC(AM_HSM_EVT_MAX <= AM_EVT_RANGE_HSM_END);
 
 /**
  * HSM state handler return codes.
+ *
  * These return codes are not used directly in user code.
  * Instead user code is expected to use as return values the macros
  * listed in descriptions to each of the constants.
@@ -113,6 +114,7 @@ struct am_hsm;
  *
  * @param hsm    the HSM handler
  * @param event  the event to handle
+ *
  * @return return code
  */
 typedef enum am_hsm_rc (*am_hsm_state_fn)(
@@ -126,7 +128,7 @@ typedef enum am_hsm_rc (*am_hsm_state_fn)(
  * Called on each user event BEFORE the event is processes by the HSM.
  * Should only be used for debugging purposes.
  * Set by am_hsm_set_spy().
- * Only supported if hsm.c is compiled with #AM_HSM_SPY defined.
+ * Only supported if hsm.c is compiled with AM_HSM_SPY defined.
  *
  * @param hsm    the handler of HSM to spy
  * @param event  the event to spy
@@ -162,6 +164,7 @@ struct am_hsm_state {
  *
  * @param s  HSM event handler
  * @param i  HSM submachine instance. Default is 0.
+ *
  * @return HSM state structure
  */
 #define AM_HSM_STATE_CTOR(...) \
@@ -212,6 +215,7 @@ struct am_hsm {
 
 /**
  * Event processing is over. No state transition is triggered.
+ *
  * Used as a return value from the event handler that handled
  * an event and wants to prevent the event propagation to
  * superstate(s).
@@ -297,24 +301,26 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event);
  * Use sparingly to test the active state of other state machine as
  * it breaks encapsulation.
  *
- * @param hsm     the HSM handler
- * @param state   the state to check
+ * @param hsm    the HSM handler
+ * @param state  the state to check
+ *
  * @retval false  not in the state in the hierarchical sense
  * @retval true   in the state
  */
 bool am_hsm_is_in(struct am_hsm *hsm, struct am_hsm_state state);
 
 /**
- * Check if active state equals to #state (not in hierarchical sense).
+ * Check if active state equals to \p state (not in hierarchical sense).
  *
  * If active state of hsm is S1, which is substate of S, then
  * am_hsm_state_is_eq(hsm, AM_HSM_STATE_CTOR(S1)) is true, but
  * am_hsm_state_is_eq(hsm, AM_HSM_STATE_CTOR(S)) is false.
  *
- * @param hsm     the HSM handler
- * @param state   the state to compare against
- * @retval true   the active HSM state equals #state
- * @retval false  the active HSM state DOES NOT equal #state
+ * @param hsm    the HSM handler
+ * @param state  the state to compare against
+ *
+ * @retval true   the active HSM state equals \p state
+ * @retval false  the active HSM state DOES NOT equal \p state
  */
 bool am_hsm_state_is_eq(const struct am_hsm *hsm, struct am_hsm_state state);
 
@@ -326,6 +332,7 @@ bool am_hsm_state_is_eq(const struct am_hsm *hsm, struct am_hsm_state state);
  * will always return 0.
  *
  * @param hsm  the HSM handler
+ *
  * @return the submachine instance
  */
 int am_hsm_instance(const struct am_hsm *hsm);
@@ -338,6 +345,7 @@ int am_hsm_instance(const struct am_hsm *hsm);
  * In this case this function always returns S11.
  *
  * @param hsm  the HSM handler
+ *
  * @return the active state
  */
 struct am_hsm_state am_hsm_state(const struct am_hsm *hsm);
@@ -346,6 +354,7 @@ struct am_hsm_state am_hsm_state(const struct am_hsm *hsm);
  * HSM constructor.
  *
  * @param hsm    the HSM to construct
+ *
  * @param state  the initial state of the HSM object
  *               The initial state must return
  *               AM_HSM_TRAN(s) or AM_HSM_TRAN(s, i)
@@ -373,7 +382,7 @@ void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event);
 /**
  * Set spy user callback as one place to catch all events for the given HSM.
  *
- * Is only available if hsm.c is compiled with #AM_HSM_SPY defined.
+ * Is only available if hsm.c is compiled with AM_HSM_SPY defined.
  * Should only be used for debugging purposes.
  * Should only be called after calling am_hsm_ctor() and not during ongoing
  * HSM event processing.

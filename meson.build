@@ -127,6 +127,7 @@ PYTHON = find_program('python3')
 IWYU = find_program('include-what-you-use', required: false, disabler: true)
 CSPELL = find_program('cspell', required: false, disabler: true)
 GENERATE_LIB_SIZES = find_program('tools' / 'generate_lib_sizes.py')
+DOXYGEN = find_program('doxygen')
 
 unit_test = get_option('unit_test')
 pal = get_option('pal')
@@ -256,5 +257,21 @@ run_target(
         '--cache',
         '--config',
         meson.project_source_root() / 'cspell.json',
+    ],
+)
+
+doxyfile = configure_file(
+    input: 'Doxyfile.in',
+    output: 'Doxyfile',
+    configuration: {
+        'PATH': meson.project_source_root()
+    }
+)
+
+run_target(
+    'doxygen',
+    command: [
+        DOXYGEN,
+        doxyfile.full_path()
     ],
 )

@@ -80,7 +80,7 @@ AM_NORETURN void am_assert_failure(
 #define AM_ASSERT(x) \
     AM_LIKELY(x) ? (void)(0) : am_assert_failure(#x, AM_FILE_NAME, __LINE__)
 
-/** Checks if #x is a power of two */
+/** Checks if \p x is a power of two */
 #define AM_IS_POW2(x) (0 == (((x) - 1u) & (x)))
 
 /** Check if a floating point number is NaN */
@@ -180,6 +180,7 @@ AM_NORETURN void am_assert_failure(
         }                      \
     } while (0)
 
+/** Run \p cmd immediately and then repeat every \p ms milliseconds */
 #define AM_DO_EACH_MS(ms, cmd)                    \
     do {                                          \
         if ((ms) < 0) {                           \
@@ -204,7 +205,10 @@ AM_NORETURN void am_assert_failure(
         cmd                                       \
     } while (0)
 
+/** Test \p d1 and \p d2 for equality within \p tolerance */
 #define AM_DOUBLE_EQ(d1, d2, tolerance) (fabs((d1) - (d2)) <= (tolerance))
+
+/** Test \p d1 and \p d2 for equality within \p tolerance */
 #define AM_FLOAT_EQ(d1, d2, tolerance) (fabsf((d1) - (d2)) <= (tolerance))
 
 #endif /* AM_MACROS_H_INCLUDED */

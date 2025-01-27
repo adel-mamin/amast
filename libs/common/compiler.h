@@ -137,7 +137,20 @@ typedef int ssize_t;
 #error "Define macros"
 #endif
 
+/**
+ * Cast pointer to type.
+ *
+ * @param TYPE  the type
+ * @param PTR   the pointer
+ */
 #define AM_CAST(TYPE, PTR) (((TYPE)(uintptr_t)(const void *)(PTR)))
+
+/**
+ * Cast volatile pointer to type.
+ *
+ * @param TYPE  the type
+ * @param PTR   the volatile pointer
+ */
 #define AM_VCAST(TYPE, PTR) (((TYPE)(uintptr_t)(const volatile void *)(PTR)))
 
 /**
@@ -580,9 +593,10 @@ AM_ASSERT_STATIC(LONG_MAX == ((1ULL << (unsigned)(LONG_BITS - 1)) - 1));
         mul_res_;                                    \
     })
 
+/** Atomic store operation. */
 #define AM_ATOMIC_STORE_N(ptr, val) __atomic_store_n(ptr, val, __ATOMIC_SEQ_CST)
-#define AM_ATOMIC_LOAD_N(ptr) __atomic_load_n(ptr, __ATOMIC_SEQ_CST)
 
-int am_compiler_alignment(void);
+/** Atomic load operation. */
+#define AM_ATOMIC_LOAD_N(ptr) __atomic_load_n(ptr, __ATOMIC_SEQ_CST)
 
 #endif /* AM_COMPILER_H_INCLUDED */

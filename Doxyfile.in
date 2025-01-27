@@ -1,0 +1,45 @@
+# Include the base configuration file
+@INCLUDE = @PATH@/Doxyfile.base
+
+# Override specific parameters
+PROJECT_NAME = "amast"
+OUTPUT_DIRECTORY = builds
+INPUT = libs
+RECURSIVE = YES
+EXCLUDE_PATTERNS = *test*,*stubs*,*cobszpe*,*freertos*,*posix/pal.c
+EXCLUDE_SYMBOLS = \
+    AM_HSM_STATE_CTOR \
+    AM_HSM_SUPER \
+    AM_HSM_TRAN \
+    AM_HSM_TRAN_REDISPATCH \
+    AM_ASSERT_STATIC \
+    AM_POOL_BLOCK_SIZEOF \
+    AM_POOL_BLOCK_ALIGNMENT \
+    _POSIX_C_SOURCE \
+    _GNU_SOURCE \
+    AM_ALIGNOF_EVENT \
+    AM_ALIGNOF_EVENT_PTR \
+    am_alignof_event \
+    am_alignof_event_ptr \
+    AM_EVT_RANGE_HSM_BEGIN \
+    AM_EVT_RANGE_HSM_END \
+    AM_EVT_RANGE_FSM_BEGIN \
+    AM_EVT_RANGE_FSM_END \
+    AM_EVT_INTERNAL_MAX \
+    AM_EVENT_REF_COUNTER_BITS \
+    AM_EVENT_REF_COUNTER_MASK \
+    AM_EVENT_TICK_DOMAIN_BITS \
+    AM_EVENT_TICK_DOMAIN_MASK \
+    AM_EVENT_POOL_INDEX_BITS \
+    AM_EVENT_POOL_INDEX_MASK \
+    am_alignof_slist \
+    am_alignof_slist_item \
+    AM_ALIGNOF_SLIST \
+    AM_ALIGNOF_SLIST_ITEM \
+    str_lcatf \
+    AM_PRINTF \
+    AM_GET_MACRO_2_ \
+    AM_FILE_NAME \
+    AM_STRINGIFY \
+    am_pal_printf \
+    AM_ALIGN_MAX

@@ -126,9 +126,9 @@ void *am_queue_pop_front(struct am_queue *me);
  *
  * Takes O(1) to complete.
  *
- * @param queue  the queue
- * @param buf    the popped item is copied here
- * @param size   the byte size of buf
+ * @param me    the queue
+ * @param buf   the popped item is copied here
+ * @param size  the byte size of buf
  *
  * @return The popped item. NULL if queue was empty.
  */

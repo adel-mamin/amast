@@ -37,11 +37,17 @@
 
 #include "queue/queue.h"
 
+/** No event ID should have this value */
 #define AM_EVT_INVALID 0
+
+/** HSM events range */
 #define AM_EVT_RANGE_HSM_BEGIN 1
 #define AM_EVT_RANGE_HSM_END 4
+
+/** FSM events range */
 #define AM_EVT_RANGE_FSM_BEGIN 5
 #define AM_EVT_RANGE_FSM_END 6
+
 #define AM_EVT_INTERNAL_MAX AM_EVT_RANGE_FSM_END
 
 /**
@@ -51,6 +57,11 @@
 #define AM_EVT_USER (AM_EVT_INTERNAL_MAX + 1) /* 7 */
 
 #ifndef AM_EVENT_POOL_NUM_MAX
+/**
+ * The max number of event pool.
+ *
+ * Can be redefined by user.
+ */
 #define AM_EVENT_POOL_NUM_MAX 3
 #endif
 
@@ -64,6 +75,7 @@
 #define AM_EVENT_HAS_USER_ID(event) \
     (((const struct am_event *)(event))->id >= AM_EVT_USER)
 
+/* _BIS and _MASK defines are used for internal purposes */
 #define AM_EVENT_REF_COUNTER_BITS 6
 #define AM_EVENT_REF_COUNTER_MASK ((1U << AM_EVENT_REF_COUNTER_BITS) - 1U)
 
@@ -253,7 +265,7 @@ void am_event_log_pools(int num, am_event_log_func cb);
 /**
  * Check if event is static.
  *
- * @param e  the event to check
+ * @param event  the event to check
  *
  * @retval true   the event is static
  * @retval false  the event is not static

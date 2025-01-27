@@ -305,6 +305,16 @@ int am_event_get_ref_cnt(const struct am_event *event) {
     return cnt;
 }
 
+/**
+ * Data push callback type.
+ *
+ * @param queue  push data to this queue
+ * @param ptr    the data to push
+ * @param size   the data size [bytes]
+ *
+ * @retval true   the data was pushed successfully
+ * @retval false  the data push failed
+ */
 typedef bool (*am_push_fn)(struct am_queue *queue, const void *ptr, int size);
 
 static enum am_event_rc am_event_push_x(

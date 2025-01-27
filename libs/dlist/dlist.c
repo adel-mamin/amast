@@ -88,11 +88,11 @@ void am_dlist_push_before(
 void am_dlist_iterator_init(
     struct am_dlist *me,
     struct am_dlist_iterator *it,
-    enum am_dlist_direction direction
+    enum am_dlist_direction dir
 ) {
     it->me = me;
     it->cur = &me->sentinel;
-    it->dir = direction;
+    it->dir = dir;
 }
 
 struct am_dlist_item *am_dlist_iterator_next(struct am_dlist_iterator *it) {

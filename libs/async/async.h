@@ -49,7 +49,7 @@ enum am_async_rc {
 
 /** Async state */
 struct am_async {
-    int state;           /**< a line number or #AM_ASYNC_ constant */
+    int state;           /**< a line number or #AM_ASYNC_STATE_INIT constant */
     enum am_async_rc rc; /**< return code */
 };
 

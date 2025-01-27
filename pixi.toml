@@ -15,7 +15,8 @@ tidy_posix = "meson compile -C builds/posix tidy"
 test_posix = "meson test -C builds/posix"
 libs_posix = "meson compile -C builds/posix"
 iwyu_posix = "meson compile -C builds/posix iwyu"
-posix = { depends-on = ["setup_posix", "libs_posix", "style_posix", "cspell", "cppcheck_posix", "iwyu_posix", "test_posix"] }
+doxygen = "meson compile -C builds/posix doxygen"
+posix = { depends-on = ["setup_posix", "cspell", "doxygen", "iwyu_posix", "style_posix", "libs_posix", "cppcheck_posix", "test_posix"] }
 all = { depends-on = ["posix"] }
 
 [dependencies]
@@ -31,6 +32,7 @@ clang-tools = ">=19.1.7,<20"
 binutils = ">=2.43,<3"
 gdb = ">=15.1,<16"
 ccache = ">=4.10.1,<5"
+doxygen = ">=1.12.0,<2"
 
 [pypi-dependencies]
 setuptools-scm = ">=8.1.0, <9"

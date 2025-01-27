@@ -120,23 +120,6 @@ unsigned long crc24(const unsigned char *data, int size, unsigned long crc);
  */
 unsigned long crc32(const unsigned char *data, int size, unsigned long crc);
 
-/**
- * The 8 bit Fletcher algorithm implementation.
- * Reference: RFC-1145 (used in the TCP standard)
- * @param data  data buffer
- * @param size  data buffer size [bytes]
- * @param ch_a  first 8 bit checksum
- *              Clear to zero before the first call.
- * @param ch_b  second 8 bit checksum
- *              Clear to zero before the first call.
- */
-void crc_fletcher8(
-    const unsigned char *data,
-    int size,
-    unsigned char *ck_a,
-    unsigned char *ck_b
-);
-
 #ifdef __cplusplus
 }
 #endif

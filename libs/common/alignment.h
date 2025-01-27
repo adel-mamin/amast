@@ -33,6 +33,7 @@
 #ifndef AM_ALIGNMENT_H_INCLUDED
 #define AM_ALIGNMENT_H_INCLUDED
 
+/** The maximum compiler alignment [bytes] */
 #if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L))
 #include <stddef.h>
 #define AM_ALIGN_MAX AM_ALIGNOF(max_align_t)
@@ -40,13 +41,36 @@
 #define AM_ALIGN_MAX 16
 #endif
 
+/**
+ * Pointer alignment.
+ *
+ * @param ptr  return the alignment of this pointer [bytes]
+ *
+ * @return the pointer alignment [bytes]
+ */
 #define AM_ALIGNOF_PTR(ptr) \
     ((int)(1U << (unsigned)__builtin_ctz(AM_CAST(unsigned, ptr))))
 
+/**
+ * Align pointer to the bigger value, which has \p align alignment
+ *
+ * @param ptr    the pointer to align
+ * @param align  the alignment
+ *
+ * @return the aligned pointer
+ */
 #define AM_ALIGN_PTR_UP(ptr, align)                           \
     ((void *)(((uintptr_t)(ptr) + (uintptr_t)((align) - 1)) & \
               ~(uintptr_t)((align) - 1)))
 
+/**
+ * Align pointer to the smaller value, which has \p align alignment
+ *
+ * @param ptr    the pointer to align
+ * @param align  the alignment
+ *
+ * @return the aligned pointer
+ */
 #define AM_ALIGN_PTR_DOWN(ptr, align) \
     ((void *)((uintptr_t)(ptr) & ~(uintptr_t)((align) - 1)))
 

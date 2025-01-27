@@ -44,6 +44,12 @@
 #include "pal/pal.h"
 
 #ifndef AM_AO_EVT_PUB_MAX
+/**
+ * All pub/sub event IDs must be smaller or equal to this constants.
+ *
+ * Users using pub/sub events with IDs bigger that this constant
+ * are expected to override it with a custom value.
+ */
 #define AM_AO_EVT_PUB_MAX AM_EVT_USER
 #endif
 
@@ -95,15 +101,15 @@ struct am_ao_state_cfg {
     ((AM_AO_PRIO_MIN <= (ao)->prio) && ((ao)->prio <= AM_AO_PRIO_MAX))
 
 #ifndef AM_AO_NUM_MAX
+/** The maximum number of active objects. */
 #define AM_AO_NUM_MAX 64
 #endif
 
-AM_ASSERT_STATIC(AM_AO_NUM_MAX <= 64);
 AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_PAL_TASK_NUM_MAX);
 
 /** The subscribe list for one event. */
 struct am_ao_subscribe_list {
-    uint8_t list[AM_DIV_CEIL(AM_AO_NUM_MAX, 8)]; /* the bitmask */
+    uint8_t list[AM_DIV_CEIL(AM_AO_NUM_MAX, 8)]; /**< the bitmask */
 };
 
 #ifdef __cplusplus

@@ -36,8 +36,14 @@
 #include "common/macros.h"
 #include "hsm/hsm.h"
 
+/** Hierarchy path */
 struct am_hsm_path {
+    /**
+     * states in superstate - substate relationship
+     * state[i] is always a substate of state[i-1]
+     */
     struct am_hsm_state state[HSM_HIERARCHY_DEPTH_MAX];
+    /** the actual size of \p state */
     int len;
 };
 

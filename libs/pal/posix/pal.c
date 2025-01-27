@@ -60,6 +60,7 @@
 /* to silence unused macro warnings */
 AM_ASSERT_STATIC(_POSIX_C_SOURCE);
 
+/** Default tick rate [ms] */
 #define AM_PAL_TICK_DOMAIN_DEFAULT_MS 10
 
 struct am_pal_task {

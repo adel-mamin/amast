@@ -48,84 +48,102 @@ extern "C" {
 
 /**
  * Compare two strings in a case insensitive manner.
+ *
  * @param s1  the first string
  * @param s2  the second string
- * @retval 0  if the s1 and s2 are equal
- * @retval a negative value if s1 is less than s2
- * @retval a positive value if s1 is greater than s2
+ *
+ * @retval 0   if the s1 and s2 are equal
+ * @retval <0  if s1 is less than s2
+ * @retval >0  if s1 is greater than s2
  */
 int str_icmp(const char *s1, const char *s2);
 
 /**
  * Check if string has a boolean value.
+ *
  * Case insensitive.
+ *
  * @param str            the string to check
  * @param extracted_val  the extracted value of the string
  *                       as boolean, if str is boolean
- * @retval true          the string is boolean
- * @retval false         the string is not boolean
+ * @retval true   the string is boolean
+ * @retval false  the string is not boolean
  */
 bool str_is_bool(const char *str, bool *extracted_val);
 
 /**
- * Check if the string is double and extracts it
+ * Check if the string is double and extracts it.
+ *
  * @param str            the string to analyze
  * @param extracted_val  the extracted double
- * @retval true          double was recognized and extracted
- * @retval false         double was not recognized
+ *
+ * @retval true   double was recognized and extracted
+ * @retval false  double was not recognized
  */
 bool str_is_double(const char *str, double *extracted_val);
 
 /**
  * Check if string has integer value in it. Case insensitive.
+ *
  * @param str            the string to check
  * @param extracted_val  the extracted value of the string
  *                       as integer, if str has integer value
  * @param base           the base of the expected integer in represented by str
- * @retval true          the string has integer value
- * @retval false         the string does not have integer value in it
+ *
+ * @retval true   the string has integer value
+ * @retval false  the string does not have integer value in it
  */
 bool str_is_intmax(const char *str, intmax_t *extracted_val, int base);
 
 /**
  * Check if the string contains a number in decimal form.
- * @param str            the string to analyze.
+ *
+ * @param str            the string to analyze
  * @param extracted_val  the extracted value
- * @retval true          the decimal number was detected
- * @retval false         the decimal number was not detected
+ *
+ * @retval true   the decimal number was detected
+ * @retval false  the decimal number was not detected
  */
 bool str_is_decimal(const char *str, intmax_t *extracted_val);
 
 /**
  * Check if the string contains a number in hexadecimal form.
+ *
  * @param str            the string to analyze
  * @param extracted_val  the extracted value
- * @retval true          the hexadecimal number was detected
- * @retval false         the hexadecimal number was not detected
+ *
+ * @retval true   the hexadecimal number was detected
+ * @retval false  the hexadecimal number was not detected
  */
 bool str_is_hex(const char *str, intmax_t *extracted_val);
 
 /**
  * Check if the string contains a number in a binary form.
+ *
  * @param str            the string to analyze
  * @param extracted_val  the extracted value
- * @retval true          the binary was detected
- * @retval false         the binary was not detected
+ *
+ * @retval true   the binary was detected
+ * @retval false  the binary was not detected
  */
 bool str_is_binary(const char *str, intmax_t *extracted_val);
 
 /**
  * Check if the string contains a number in octal form.
+ *
  * @param str            the string to analyze
  * @param extracted_val  the extracted value
- * @retval true          the octal number was detected
- * @retval false         the octal number was not detected
+ *
+ * @retval true   the octal number was detected
+ * @retval false  the octal number was not detected
  */
 bool str_is_octal(const char *str, intmax_t *extracted_val);
 
 /**
  * Check if string has "null" in it. Case insensitive.
+ *
  * @param str     the string to check
+ *
  * @retval true   the string has "null" in it
  * @retval false  the string does not have "null" in it
  */
@@ -133,25 +151,31 @@ bool str_is_null(const char *str);
 
 /**
  * Convert uintmax to binary string.
- * @param str      the binary string buffer.
+ *
+ * @param str      the binary string buffer
  * @param strsize  str buffer size
  * @param uintmax  the number to convert
+ *
  * @return the number of bytes printed to str
  */
 int uintmax_to_binstr(char *str, int strsize, uintmax_t uintmax);
 
 /**
  * Convert string to float complex.
+ *
  * @param str  the string to convert
+ *
  * @return the resulting float complex number
  */
 float complex str_to_complex(char *str);
 
 /**
  * Convert string to double.
+ *
  * @param str     the string to convert
  * @param val     the converted value
  * @param endptr  point to the first character past the double
+ *
  * @retval true   the string was converted successfully
  * @retval false  the string was not converted successfully
  */
@@ -159,7 +183,9 @@ bool str_to_double(const char *str, double *val, char **endptr);
 
 /**
  * Check if all characters are in the range '0'-'9'.
- * @param str     the string to analyze
+ *
+ * @param str  the string to analyze
+ *
  * @retval false  not all characters are decimal digits
  * @retval true   all characters are decimal digits
  */
@@ -168,7 +194,9 @@ bool str_is_all_decimal_digits(const char *str);
 /**
  * Check if string starts with '0x' and all characters are in the range
  * '0'-'9', 'a'-'f', 'A'-'F'.
+ *
  * @param str  the string to analyze
+ *
  * @retval false  not all characters are hexadecimal digits
  * @retval true   all characters are hexadecimal digits
  */
@@ -185,15 +213,19 @@ const char *str_lstrip(const char *string, char delim);
 
 /**
  * Return a pointer after the last character in string that is not delim.
+ *
  * Taken from https://github.com/sustrik/libdill
+ *
  * @param string  the string to analyze
  * @param delim   the delimeter character
+ *
  * @return the pointer after the last character in string that is not delim
  */
 const char *str_rstrip(const char *string, char delim);
 
 /**
  * Copy strings.
+ *
  * The custom implementation of strlcpy() from BSD systems.
  * Designed to be safer, more consistent, and less error prone
  * replacement for strncpy. It takes the full size of the buffer (not just the
@@ -209,6 +241,7 @@ const char *str_rstrip(const char *string, char delim);
  * @param dst  the destination string buffer
  * @param src  the source string buffer
  * @param lim  the full size of dst buffer [bytes]
+ *
  * @return the total length of the string it tried to create, i.e.
  *         the length of src
  */
@@ -216,6 +249,7 @@ int str_lcpy(char *dst, const char *src, int lim);
 
 /**
  * Concatenate strings.
+ *
  * It is designed to be safer, more consistent, and less
  * error prone replacement for strncat.
  * It takes the full size of the buffer (not just the length)
@@ -235,9 +269,11 @@ int str_lcpy(char *dst, const char *src, int lim);
  * In practice this should not happen (as it means that either size is
  * incorrect or that dst is not a proper “C” string).
  * The check exists to prevent potential security problems in incorrect code.
+ *
  * @param dst  the destination buffer
  * @param src  the source buffer
  * @param lim  the full size of the buffer (not just the length) [bytes]
+ *
  * @return the total length of the string it tried to create
  *         It means the initial length of dst plus the length of src.
  */
@@ -245,23 +281,30 @@ int str_lcat(char *dst, const char *src, int lim);
 
 /**
  * Same as str_lcat(), but the source buffer is replaced with format string.
- * @param dst  the destination buffer.
- * @param lim  the full size of the buffer (not just the length) [bytes].
- * @param fmt  the format string.
+ *
+ * @param dst  the destination buffer
+ * @param lim  the full size of the buffer (not just the length) [bytes]
+ * @param fmt  the format string
+ * @param ap   arguments to format
+ *
  * @return Returns the total length of the string they tried to create.
  *         It means the initial length of dst plus the length of src.
  */
 int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap);
 
+/* @cond */
 /**
  * Same as str_lcat(), but the source buffer is replaced with format string.
+ *
  * @param dst  the destination buffer
  * @param lim  the full size of the buffer (not just the length) [bytes]
  * @param fmt  the format string
+ *
  * @return the total length of the string they tried to create
  *         It means the initial length of dst plus the length of src.
  */
 AM_PRINTF(3, 4) int str_lcatf(char *dst, int lim, const char *fmt, ...);
+/* @endcond */
 
 /**
  * String tokenizer.
@@ -275,30 +318,54 @@ AM_PRINTF(3, 4) int str_lcatf(char *dst, int lim, const char *fmt, ...);
  *
  * @param sp     the input string
  * @param delim  the list of one character delimeters
+ *
  * @return The first '\0' terminated token in sp or NULL if none.
  */
 char *str_sep(char **sp, const char *delim);
 
 /**
  * Check if string has the given prefix.
+ *
  * @param str     the string to check
  * @param prefix  the prefix to search for
+ *
  * @retval true   the prefix was found
  * @retval false  the prefix was not found
  */
 bool str_has_prefix(const char *str, const char *prefix);
+
+/**
+ * Skip prefix in \p str.
+ *
+ * @param str     the prefix is skipped in this null-terminated string
+ * @param prefix  the prefix
+ *
+ * @return the string without the prefix
+ */
 const char *str_skip_prefix(const char *str, const char *prefix);
+
+/**
+ * Copy \p prefix and then \p str to the provided \p out buffer.
+ *
+ * The resulting string is null-terminated even if it is truncated.
+ *
+ * @param out     the resulting string is placed here
+ * @param outsz   the size of \p out buffer [bytes]
+ * @param str     the string
+ * @param prefix  the prefix. Must be null-terminated.
+ *
+ * @return the resulting string
+ */
 char *str_add_prefix(char *out, int outsz, const char *str, const char *prefix);
 
 /**
  * Convert string to upper case in place.
+ *
  * @param str  string to convert
+ *
  * @return the converted string
  */
 char *str_upr(char *str);
-
-int str_lltoa(char *s, int sz, long long n, int base);
-int str_ulltoa(char *s, int sz, unsigned long long n, int base);
 
 /** String token */
 struct str_token {
@@ -308,6 +375,7 @@ struct str_token {
 
 /**
  * Split path to head and tail.
+ *
  * @param path   the path to split
  * @param head   the resulting path head
  * @param tail   the resulting path tail
@@ -322,10 +390,12 @@ void str_split_path(
 
 /**
  * Concatenate two parts of file path.
+ *
  * @param dst    path head
  * @param src    path tail
  * @param lim    head's buffer size [bytes]
  * @param delim  delimiter character
+ *
  * @return The total length of the string it tried to create.
  *         It means the initial length of head plus the length
  *         of delim and tail.

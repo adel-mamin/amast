@@ -288,7 +288,7 @@ struct am_dlist_item *am_dlist_find(
 void am_dlist_iterator_init(
     struct am_dlist *me,
     struct am_dlist_iterator *it,
-    enum am_dlist_direction direction
+    enum am_dlist_direction dir
 );
 
 /**

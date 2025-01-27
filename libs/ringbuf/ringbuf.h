@@ -35,13 +35,24 @@
 
 #include <stdint.h>
 
+/**
+ * Ring buffer descriptor.
+ *
+ * Only exposed to allow for memory allocation by ring buffer user.
+ */
 struct am_ringbuf_desc {
+    /** dropped bytes counter */
     unsigned dropped;
+    /** reading offset [bytes] */
     int read_offset;
+    /** skip this many bytes at the tail of ring buffer */
     int read_skip;
+    /** writing offset [bytes] */
     int write_offset;
 
+    /** ring buffer */
     uint8_t *buf;
+    /** ring buffer size [bytes] */
     int buf_size;
 };
 
