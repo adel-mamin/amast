@@ -44,6 +44,7 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include <pthread.h>
+#include <sys/types.h>
 #include <time.h>
 #include <bits/local_lim.h>
 #include <sched.h>
@@ -350,15 +351,14 @@ void am_pal_sleep_ms(int ms) {
     if (ms < 0) {
         struct timespec req = {
             .tv_sec = 86400, .tv_nsec = 0
-        };  // 1 day in seconds
+        }; /* 1 day in seconds */
         while (1) {
-            nanosleep(&req, NULL);  // Sleep for 1 day at a time
+            nanosleep(&req, NULL); /* Sleep for 1 day at a time */
         }
     }
-    struct timespec ts = {/* convert milliseconds to seconds */
-                          .tv_sec = ms / 1000,
-                          /* remaining milliseconds to nanoseconds */
-                          .tv_nsec = (ms % 1000) * 1000000
+    struct timespec ts = {
+        .tv_sec = ms / 1000,             /**< convert ms -> s */
+        .tv_nsec = (ms % 1000) * 1000000 /**< remaining ms -> ns */
     };
     nanosleep(&ts, /*rmtp=*/NULL);
 }
@@ -375,10 +375,12 @@ void am_pal_sleep_till_ms(uint32_t ms) {
 void am_pal_sleep_till_ticks(int domain, uint32_t ticks) {
     uint32_t now_ticks = am_pal_time_get_tick(domain);
     uint32_t sleep_ticks = ticks - now_ticks;
-    if (sleep_ticks > UINT32_MAX) {
+    if ((0 == sleep_ticks) || (sleep_ticks > UINT32_MAX / 2)) {
         return;
     }
-    usleep(sleep_ticks * AM_PAL_TICK_DOMAIN_DEFAULT_MS * 1000);
+    useconds_t us =
+        (useconds_t)sleep_ticks * AM_PAL_TICK_DOMAIN_DEFAULT_MS * 1000UL;
+    usleep(us);
 }
 
 int am_pal_printf(const char *fmt, ...) {
