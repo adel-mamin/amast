@@ -424,3 +424,10 @@ void am_pal_dtor(void) {
         }
     }
 }
+
+void am_pal_on_idle(void) {
+    am_pal_crit_exit();
+    int task = am_pal_task_own_id();
+    am_pal_task_wait(task);
+    am_pal_crit_enter();
+}

@@ -225,6 +225,16 @@ AM_PRINTF(1, 2) int am_pal_printf(const char *fmt, ...);
 /** Flush am_pal_printf() intermediate buffer. */
 void am_pal_flush(void);
 
+/**
+ * Block current task with am_pal_task_wait() call.
+ *
+ * Exists critical section before calling am_pal_task_wait() and
+ * reenters it after am_pal_task_wait() returns.
+ *
+ * To be used as on_idle() callback for cooperative active objects library.
+ */
+void am_pal_on_idle(void);
+
 #ifdef __cplusplus
 }
 #endif
