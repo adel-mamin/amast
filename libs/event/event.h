@@ -370,8 +370,8 @@ enum am_event_rc am_event_push_front_x(
  *
  * Asserts if the event was not pushed.
  *
- * @param queue   the event queue
- * @param event   the event to push
+ * @param queue  the event queue
+ * @param event  the event to push
  *
  * @retval AM_EVENT_RC_OK                  the event was pushed
  * @retval AM_EVENT_RC_OK_QUEUE_WAS_EMPTY  the event was pushed, queue was empty

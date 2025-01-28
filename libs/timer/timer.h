@@ -175,7 +175,7 @@ void am_timer_arm(struct am_event_timer *event, int ticks, int interval);
 /**
  * Disarm timer event.
  *
- * @param event   the timer event to disarm
+ * @param event  the timer event to disarm
  *
  * @retval true   the timer event was armed
  * @retval false  the timer event was not armed
@@ -185,7 +185,7 @@ bool am_timer_disarm(struct am_event_timer *event);
 /**
  * Check if timer event is armed.
  *
- * @param event   the timer event to check
+ * @param event  the timer event to check
  *
  * @retval true   the timer event is armed
  * @retval false  the timer event is not armed

@@ -78,7 +78,7 @@ void am_pal_crit_exit(void);
 /**
  * Create mutex.
  *
- * @return  unique mutex ID
+ * @return unique mutex ID
  */
 int am_pal_mutex_create(void);
 
