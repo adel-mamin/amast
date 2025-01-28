@@ -49,7 +49,7 @@ static struct test_publish m_publish;
 static struct am_ao *m_me = &m_publish.ao;
 
 static struct am_ao_subscribe_list m_pubsub_list[AM_AO_EVT_PUB_MAX];
-static const struct am_event *m_queue_publish[2];
+static const struct am_event *m_queue_publish[1];
 
 static enum am_hsm_rc publish_s(
     struct test_publish *me, const struct am_event *event

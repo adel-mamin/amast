@@ -44,8 +44,8 @@
 
 static const struct am_event m_min_event = {.id = AM_EVT_MIN};
 
-static const struct am_event *m_queue_loopback[2];
-static const struct am_event *m_queue_loopback_test[2];
+static const struct am_event *m_queue_loopback[1];
+static const struct am_event *m_queue_loopback_test[1];
 
 static struct loopback {
     struct am_ao ao;

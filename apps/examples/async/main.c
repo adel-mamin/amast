@@ -276,7 +276,7 @@ int main(void) {
     struct async m;
     async_ctor(&m);
 
-    static const struct am_event *m_queue[3];
+    static const struct am_event *m_queue[1];
 
     am_ao_start(
         &m.ao,

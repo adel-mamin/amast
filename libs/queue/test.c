@@ -36,7 +36,7 @@
 #include "queue/queue.h"
 
 static void test_am_queue(const int capacity, const int rdwr_num) {
-    int pool[capacity + 1];
+    int pool[capacity];
     struct am_blk blk = {.ptr = pool, .size = (int)sizeof(pool)};
 
     struct am_queue q;

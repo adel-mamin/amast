@@ -41,6 +41,7 @@ struct am_queue {
     int rd;            /**< read index */
     int wr;            /**< write index */
     struct am_blk blk; /**< queue memory block */
+    unsigned full : 1; /**< queue is full */
 };
 
 #ifdef __cplusplus

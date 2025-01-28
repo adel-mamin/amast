@@ -46,8 +46,8 @@ struct am_ringbuf_desc g_ringbuf;
 const uint8_t g_ringbuf_data[] = {0, 1, 2, 3, 4, 5, 6, 7};
 int g_ringbuf_data_len = AM_COUNTOF(g_ringbuf_data);
 
-static const struct am_event *m_queue_ringbuf_reader[2];
-static const struct am_event *m_queue_ringbuf_writer[2];
+static const struct am_event *m_queue_ringbuf_reader[1];
+static const struct am_event *m_queue_ringbuf_writer[1];
 
 AM_NORETURN static void ticker_task(void *param) {
     (void)param;
