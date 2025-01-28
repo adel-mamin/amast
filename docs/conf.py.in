@@ -6,8 +6,8 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import sys
-sys.path.append('..')
+from pallets_sphinx_themes import get_version
+from pallets_sphinx_themes import ProjectLink
 
 project = 'AMAST'
 copyright = '2025, Adel Mamin'
@@ -18,6 +18,7 @@ author = 'Adel Mamin'
 
 extensions = [
     'breathe',
+    'pallets_sphinx_themes',
 ]
 
 breathe_default_project = "amast"
@@ -31,5 +32,29 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
 # html_static_path = ['_static']
+
+# HTML -----------------------------------------------------------------
+
+html_theme = "flask"
+html_theme_options = {"index_sidebar_logo": False}
+html_context = {
+    "project_links": [
+        ProjectLink("Sponsor", "https://github.com/sponsors/adel-mamin"),
+        ProjectLink("Source Code", "https://github.com/adel-mamin/amast"),
+        ProjectLink("Discussions", "https://github.com/adel-mamin/amast/discussions"),
+    ]
+}
+html_sidebars = {
+    "index": ["project.html", "localtoc.html", "searchbox.html", "ethicalads.html"],
+    "**": ["localtoc.html", "relations.html", "searchbox.html", "ethicalads.html"],
+}
+singlehtml_sidebars = {"index": ["project.html", "localtoc.html", "ethicalads.html"]}
+# html_static_path = ["_static"]
+# html_favicon = "_static/shortcut-icon.png"
+# html_logo = "_static/flask-vertical.png"
+#html_title = f"Amast Documentation ({version})"
+html_show_sourcelink = False
+
+gettext_uuid = True
+gettext_compact = False
