@@ -128,6 +128,7 @@ IWYU = find_program('include-what-you-use', required: false, disabler: true)
 CSPELL = find_program('cspell', required: false, disabler: true)
 GENERATE_LIB_SIZES = find_program('tools' / 'generate_lib_sizes.py')
 DOXYGEN = find_program('doxygen')
+SPHINX = find_program('sphinx-build')
 
 unit_test = get_option('unit_test')
 pal = get_option('pal')
@@ -264,7 +265,8 @@ doxyfile = configure_file(
     input: 'Doxyfile.in',
     output: 'Doxyfile',
     configuration: {
-        'PATH': meson.project_source_root()
+        'PATH_INCLUDE': meson.project_source_root(),
+        'PATH_OUTPUT': meson.project_build_root(),
     }
 )
 
@@ -273,5 +275,29 @@ run_target(
     command: [
         DOXYGEN,
         doxyfile.full_path()
+    ],
+)
+
+sphinx_cfg = configuration_data()
+sphinx_cfg.set_quoted('DOXYGEN_PATH_XML', meson.project_build_root() / 'xml')
+
+configure_file(
+    input: 'docs' / 'conf.py.in',
+    output: 'conf.py',
+    configuration: sphinx_cfg
+)
+
+run_target(
+    'sphinx',
+    command: [
+        SPHINX,
+        '-n',      # nit-picky mode
+        '--color', # emit colored output
+        '-W',      # turn warnings to errors
+        '-T',      # show full traceback on exception
+        '-b', 'html',
+        '-c', meson.project_build_root(),              # path to conf.py
+        meson.project_source_root() / 'docs',          # source dir
+        meson.project_build_root() / 'docs' / 'sphinx' # output dir
     ],
 )

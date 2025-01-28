@@ -2,7 +2,7 @@
 Finite State Machine (FSM)
 ==========================
 
-GLOSSARY
+Glossary
 ========
 
    event
@@ -33,7 +33,7 @@ GLOSSARY
    target state
        the destination state of a state transition
 
-INTRODUCTION
+Introduction
 ============
 
 This FSM (Finite State Machine) library provides a lightweight API for defining,
@@ -47,7 +47,7 @@ state control in an embedded system or other C-based environments.
 The FSM is a combination of one or more state-handler functions of
 type **am_fsm_state**.
 
-EXAMPLE FSM
+Example FSM
 ============
 
 Below is an example of a simple FSM with three states
@@ -69,7 +69,7 @@ Below is an example of a simple FSM with three states
 This FSM transitions from `Idle` to `Processing` upon receiving a `Start` event,
 completes the processing, and then returns to `Idle` with a `Reset` event.
 
-EVENT HANDLING
+Event Handling
 ==============
 
 Events in this FSM are defined by the **struct am_event** structure,
@@ -85,7 +85,7 @@ FSM reserved events are defined as follows:
 
 The **am_fsm_dispatch()** function is used to send events to the FSM.
 
-STATE TRANSITION
+State Transition
 ================
 
 The library supports two main types of state transitions:
@@ -106,7 +106,7 @@ that allows FSM to handle the event in the state that expects it.
 FSM states cannot initiate state transitions when processing entry and exit
 events.
 
-INITIAL STATE
+Initial State
 =============
 
 The initial state of the FSM is provided during the FSM’s construction
@@ -128,7 +128,7 @@ Example:
 The initial state must always return **AM_FSM_TRAN(new_state)** macro
 to proceed to the appropriate active state.
 
-FSM CODING RULES
+FSM Coding Rules
 ================
 
 1. FSM states must be represented by event handlers of type **am_fsm_state_fn**.
@@ -156,7 +156,7 @@ FSM CODING RULES
    not return **AM_FSM_TRAN()** or **AM_FSM_TRAN_REDISPATCH()** for
    these events.
 
-FSM INITIALIZATION
+FSM Initialization
 ==================
 
 FSM initialization is divided into the following two steps for increased
@@ -165,7 +165,7 @@ flexibility and better control of the initialization timeline:
 1. the state machine constructor (**am_fsm_ctor()**)
 2. the initial transition (**am_fsm_init()**).
 
-TRANSITION TO HISTORY
+Transition To History
 =====================
 
 Transition to history is a useful technique that is convenient to apply in
@@ -187,7 +187,7 @@ The user code stores the current state in a local variable of type
 .. code-block:: C
 
    struct foo {
-       struct am_fsm fsm;
+   struct am_fsm fsm;
        ...
        am_fsm_state_fn history;
        ...

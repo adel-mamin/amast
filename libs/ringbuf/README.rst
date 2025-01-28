@@ -1,8 +1,8 @@
 ===========
-RING BUFFER
+Ring Buffer
 ===========
 
-OVERVIEW
+Overview
 ========
 
 The Ring Buffer module provides a high-performance circular buffer for
@@ -11,7 +11,7 @@ producer and one consumer. It facilitates concurrent
 read/write operations, supports data flow control, and minimizes memory
 overhead.
 
-KEY FEATURES
+Key Features
 ============
 
 1. **Circular Buffer Design**:
@@ -38,7 +38,7 @@ KEY FEATURES
 
    - Designed for embedded environments with constrained resources.
 
-USAGE SCENARIOS
+Usage Scenarios
 ===============
 
 The Ring Buffer module is well-suited for:
@@ -49,7 +49,7 @@ The Ring Buffer module is well-suited for:
 - **Efficient Memory Usage**: Handling data in fixed-size buffers without
   dynamic allocation.
 
-DESIGN CONSIDERATIONS
+Design Considerations
 =====================
 
 1. **Data Access**:
@@ -71,7 +71,7 @@ DESIGN CONSIDERATIONS
      analysis.
    - Provides utilities to monitor and clear dropped byte counters.
 
-MODULE CONFIGURATION
+Module Configuration
 ====================
 
 The module requires the following configuration:
@@ -80,7 +80,7 @@ The module requires the following configuration:
   read and write offsets, buffer size, and pointers.
 - **Buffer Memory**: Preallocated buffer space to hold data.
 
-SYSTEM INTEGRATION
+System Integration
 ==================
 
 The module integrates seamlessly into systems requiring efficient data
@@ -94,7 +94,7 @@ handling. Key integration points include:
 - **Diagnostics**: Use utilities like ``am_ringbuf_get_data_size`` and
   ``am_ringbuf_get_free_size`` to monitor buffer state.
 
-LIMITATIONS
+Limitations
 ===========
 
 - Requires explicit state management through user calls to ``flush`` and ``seek``.

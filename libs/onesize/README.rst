@@ -1,7 +1,8 @@
-ONESIZE MEMORY ALLOCATOR
+========================
+Onesize Memory Allocator
 ========================
 
-OVERVIEW
+Overview
 ========
 
 The Onesize Memory Allocator module provides a simple and efficient interface
@@ -9,7 +10,7 @@ for allocating and managing fixed-size memory blocks. It is designed for
 high-performance allocation and deallocation in scenarios where all memory
 requests are of a uniform size or can be rounded to a fixed size.
 
-KEY FEATURES
+Key Features
 ============
 
 1. **Fixed-Size Memory Allocation**:
@@ -39,7 +40,7 @@ KEY FEATURES
    - Supports custom memory pools, alignment requirements, and critical section
      handlers.
 
-USAGE SCENARIOS
+Usage Scenarios
 ===============
 
 The Onesize Memory Allocator is ideal for systems that require:
@@ -51,7 +52,7 @@ The Onesize Memory Allocator is ideal for systems that require:
 - **Thread-Safe Memory Management**: Safe operations in multi-threaded
   environments using critical section management.
 
-DESIGN CONSIDERATIONS
+Design Considerations
 =====================
 
 1. **Memory Allocation**:
@@ -74,7 +75,7 @@ DESIGN CONSIDERATIONS
    - Iteration over allocated blocks allows inspection of memory usage for
      debugging.
 
-MODULE CONFIGURATION
+Module Configuration
 ====================
 
 The module configuration (``am_onesize_cfg``) specifies:
@@ -84,7 +85,7 @@ The module configuration (``am_onesize_cfg``) specifies:
 - **Critical Section Callbacks**: Ensure thread safety during allocation and
   deallocation.
 
-SYSTEM INTEGRATION
+System Integration
 ==================
 
 The module integrates seamlessly into memory management systems for embedded
@@ -97,7 +98,7 @@ and real-time applications. Key integration points include:
 - **Diagnostics**: Inspect memory usage with utilities like
   ``am_onesize_get_nfree`` and ``am_onesize_iterate_over_allocated``.
 
-LIMITATIONS
+Limitations
 ===========
 
 - Only supports allocation requests up to the configured block size.

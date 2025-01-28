@@ -1,8 +1,8 @@
-============
-EVENT MODULE
-============
+=====
+Event
+=====
 
-OVERVIEW
+Overview
 ========
 
 The Event module provides a flexible and efficient framework for event
@@ -10,7 +10,7 @@ management in embedded systems. It supports event allocation, queuing,
 reference counting, and memory pool management to enable reliable event-driven
 programming.
 
-KEY FEATURES
+Key Features
 ============
 
 1. **Event Management**:
@@ -44,7 +44,7 @@ KEY FEATURES
    - Logging utilities to inspect memory pools and event content.
    - Callbacks for detailed inspection of events.
 
-USAGE SCENARIOS
+Usage Scenarios
 ===============
 
 The Event module is well-suited for systems that require:
@@ -55,7 +55,7 @@ The Event module is well-suited for systems that require:
 - **Multi-Threaded Event Handling**: Thread-safe mechanisms for managing events
   across multiple execution contexts.
 
-DESIGN CONSIDERATIONS
+Design Considerations
 =====================
 
 1. **Event Representation**:
@@ -87,7 +87,7 @@ DESIGN CONSIDERATIONS
    - The module is designed to integrate seamlessly into multi-threaded
      environments.
 
-MODULE CONFIGURATION
+Module Configuration
 ====================
 
 The module configuration (``am_event_cfg``) defines:
@@ -97,7 +97,7 @@ The module configuration (``am_event_cfg``) defines:
 - **Memory Pools**: Must be added during initialization in ascending order of
   block size.
 
-SYSTEM INTEGRATION
+System Integration
 ==================
 
 The Event module integrates seamlessly with event-driven systems and RTOS. Key

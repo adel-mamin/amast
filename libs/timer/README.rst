@@ -1,8 +1,8 @@
-============
-TIMER MODULE
-============
+=====
+Timer
+=====
 
-OVERVIEW
+Overview
 ========
 
 The Timer module provides an event-based timer framework for scheduling and
@@ -10,7 +10,7 @@ dispatching events in embedded systems. It enables both one-to-one (post) and
 one-to-many (publish) delivery mechanisms for expired timer events, supporting
 high-resolution timing in multi-tick-rate-domain environments.
 
-KEY FEATURES
+Key Features
 ============
 
 1. **Timer Event Management**:
@@ -40,7 +40,7 @@ KEY FEATURES
    - Optional timer event update callbacks for dynamic modifications.
    - Configurable tick domains for flexible operation.
 
-USAGE SCENARIOS
+Usage Scenarios
 ===============
 
 The Timer module is ideal for systems requiring:
@@ -52,7 +52,7 @@ The Timer module is ideal for systems requiring:
 - **Concurrent and Real-Time Applications**: Safely handling timer events in
   concurrent environments.
 
-DESIGN CONSIDERATIONS
+Design Considerations
 =====================
 
 1. **Timer Events**:
@@ -79,7 +79,7 @@ DESIGN CONSIDERATIONS
    reduces cache misses. Allocated events are fully constructed and ready for
    use.
 
-MODULE CONFIGURATION
+Module Configuration
 ====================
 
 The module configuration (``am_timer_cfg``) defines:
@@ -91,7 +91,7 @@ The module configuration (``am_timer_cfg``) defines:
 - **Critical Section Callbacks**: Ensure safe execution in multi-threaded
   environments.
 
-SYSTEM INTEGRATION
+System Integration
 ==================
 
 The Timer module integrates seamlessly with event-driven systems and RTOS,

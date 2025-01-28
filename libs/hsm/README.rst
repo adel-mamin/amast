@@ -2,7 +2,7 @@
 Hierarchical State Machine (HSM)
 ================================
 
-CREDIT
+Credit
 ======
 
 The design and implementation of the HSM library is heavily inspired by
@@ -10,7 +10,7 @@ The design and implementation of the HSM library is heavily inspired by
 by Miro Samek. Also the example HSM state diagram in **hsm.png** is borrowed
 from the book.
 
-GLOSSARY
+Glossary
 ========
 
    event
@@ -84,7 +84,7 @@ GLOSSARY
        HSM topology is the architecture of HSM - the set of all parent -
        child relations between HSM states
 
-INTRODUCTION
+Introduction
 ============
 
 HSM differs from a Finite State Machine (FSM) in that a state can have a
@@ -95,7 +95,7 @@ states impacts both event handling and transitions.
 The HSM is a combination of one or more state-handler functions of
 type **am_hsm_state_fn**.
 
-EXAMPLE HSM
+Example HSM
 ===========
 
 In order to explore how event handling and transitions work in an HSM,
@@ -123,14 +123,14 @@ consider the below state machine:
        |                                              |
        +----------------------------------------------+
 
-STATE RELATIONS
+State Relations
 ===============
 
 States B and D are children of A. States C and E are children of B and D,
 respectively.  State F has no children. Both A and F have the default parent
 am_hsm_top provided by the library (**am_hsm_top()**).
 
-EVENT PROPAGATION
+Event Propagation
 =================
 
 Events are always sent first to the active state. The active state can choose
@@ -153,7 +153,7 @@ must return **AM_HSM_HANDLED()**.
 To inform the library that an event is passed to a superstate the event
 handler function must return **AM_HSM_SUPER(superstate)**.
 
-STATE TRANSITION
+State Transition
 ================
 
 When transitioning it is important to distinguish the current state and the
@@ -204,7 +204,7 @@ that allows HSM to handle the event in the state that expects it.
 HSM states cannot initiate state transitions when processing entry and exit
 events.
 
-INITIAL STATE TRANSITION
+Initial State Transition
 ========================
 
 If C is the current state and the transition is initiated by A with the
@@ -220,13 +220,13 @@ or go up in state hierarchy to higher-level states.
 For example, the initial transition of state D can only target E and no any
 other state.
 
-INITIAL STATE
+Initial State
 =============
 
 In addition to regular states every HSM must declare the initial state,
 which the HSM library invokes to execute the topmost initial transition.
 
-HSM INITIALIZATION
+HSM Initialization
 ==================
 
 HSM initialization is divided into the following two steps for increased
@@ -235,14 +235,14 @@ flexibility and better control of the initialization timeline:
 1. the state machine constructor (**am_hsm_ctor()**)
 2. the top-most initial transition (**am_hsm_init()**).
 
-HSM TOPOLOGY
+HSM Topology
 ============
 
 HSM library discovers the user HSM topology by sending **AM_HSM_EVT_EMPTY** event
 to state event handlers. The state event handlers should explicitly process
 the event and always return **AM_HSM_SUPER(superstate)** in response.
 
-HSM CODING RULES
+HSM Coding Rules
 ================
 
 1. HSM states must be represented by event handlers of type **am_hsm_state_fn**.
@@ -269,14 +269,14 @@ HSM CODING RULES
    not trigger state transitions. It means that user event handlers should
    not return **AM_HSM_TRAN()** or **AM_HSM_TRAN_REDISPATCH()** for
    these events.
-6. Processing of **AM_HSM_EVT_INIT** event can optionally only trigger
+7. Processing of **AM_HSM_EVT_INIT** event can optionally only trigger
    transition by returning the result of **AM_HSM_TRAN()** macro.
    The use of **AM_HSM_TRAN_REDISPATCH()** is not allowed in this case.
-7. Processing of **AM_HSM_EVT_INIT** event can optionally only trigger
+8. Processing of **AM_HSM_EVT_INIT** event can optionally only trigger
    transition to a substate of the state triggering the transition.
    Transition to peer states of superstates is not allowed in this case.
 
-TRANSITION TO HISTORY
+Transition To History
 =====================
 
 Transition to history is a useful technique that is convenient to apply in
@@ -326,7 +326,7 @@ So, that is essentially all about it.
 Another example of the usage of the transition to history technique can be seen
 in **tests/history.c** unit test.
 
-SUBMACHINES
+Submachines
 ===========
 
 Submachines are reusable HSMs. They can be as simple as one reusable state.

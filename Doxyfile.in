@@ -1,11 +1,12 @@
 # Include the base configuration file
-@INCLUDE = @PATH@/Doxyfile.base
+@INCLUDE = @PATH_INCLUDE@/Doxyfile.base
 
 # Override specific parameters
 PROJECT_NAME = "amast"
-OUTPUT_DIRECTORY = builds
+OUTPUT_DIRECTORY = @PATH_OUTPUT@
 INPUT = libs
 RECURSIVE = YES
+GENERATE_XML = YES
 EXCLUDE_PATTERNS = *test*,*stubs*,*cobszpe*,*freertos*,*posix/pal.c
 EXCLUDE_SYMBOLS = \
     AM_HSM_STATE_CTOR \

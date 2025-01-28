@@ -2,7 +2,7 @@
 Active Object (AO)
 ==================
 
-OVERVIEW
+Overview
 ========
 
 The Active Object (AO) module provides a framework for implementing the Active
@@ -11,7 +11,7 @@ facilitates the encapsulation of threads, event-driven state machines, and
 message queues to enable asynchronous communication and cooperative
 multitasking.
 
-KEY FEATURES
+Key Features
 ============
 
 1. **Active Object Management**:
@@ -53,7 +53,7 @@ KEY FEATURES
    - Support for logging and inspecting event queues and last processed events
      for debugging.
 
-USAGE SCENARIOS
+Usage Scenarios
 ===============
 
 The AO module is particularly suited for systems that require:
@@ -64,7 +64,7 @@ The AO module is particularly suited for systems that require:
   machines.
 - **Scalability**: Supporting multiple concurrent tasks with varying priorities.
 
-DESIGN CONSIDERATIONS
+Design Considerations
 =====================
 
 1. **Priority-Based Scheduling**:
@@ -91,7 +91,7 @@ DESIGN CONSIDERATIONS
    behavior, facilitating efficient troubleshooting during development and
    deployment.
 
-MODULE CONFIGURATION
+Module Configuration
 ====================
 
 The module allows for extensive customization through the following:
@@ -103,7 +103,7 @@ The module allows for extensive customization through the following:
 - **Event Queue Size and AO Stack Size**: Adjust to meet application-specific
   requirements.
 
-SYSTEM INTEGRATION
+System Integration
 ==================
 
 The module can be seamlessly integrated into event-driven systems, real-time
@@ -111,7 +111,7 @@ operating systems (RTOS), or standalone applications. Starting Active Objects
 in priority order (lowest first) is recommended to optimize event queue
 allocation and system startup.
 
-LIMITATIONS
+Limitations
 ===========
 
 - The maximum number of active objects (``AM_AO_NUM_MAX``) is constrained to 64
