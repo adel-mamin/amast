@@ -30,7 +30,6 @@
  */
 
 #include <stddef.h>
-#include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
 
@@ -65,12 +64,12 @@ bool am_queue_is_empty(const struct am_queue *me) {
     return (me->rd == me->wr) && !me->full;
 }
 
-bool am_queue_is_full(struct am_queue *me) {
+bool am_queue_is_full(const struct am_queue *me) {
     AM_ASSERT(me);
     return me->full;
 }
 
-int am_queue_length(struct am_queue *me) {
+int am_queue_length(const struct am_queue *me) {
     AM_ASSERT(me);
     if (me->wr > me->rd) {
         return me->wr - me->rd;
@@ -84,7 +83,7 @@ int am_queue_length(struct am_queue *me) {
     return 0;
 }
 
-int am_queue_capacity(struct am_queue *me) {
+int am_queue_capacity(const struct am_queue *me) {
     AM_ASSERT(me);
     return me->blk.size / me->isize;
 }

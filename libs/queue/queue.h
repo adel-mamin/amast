@@ -66,7 +66,7 @@ bool am_queue_is_empty(const struct am_queue *me);
  * @retval true   queue is full
  * @retval false  queue is not empty
  */
-bool am_queue_is_full(struct am_queue *me);
+bool am_queue_is_full(const struct am_queue *me);
 
 /**
  * Return how many items are in queue.
@@ -75,7 +75,7 @@ bool am_queue_is_full(struct am_queue *me);
  *
  * @return number of queued items
  */
-int am_queue_length(struct am_queue *me);
+int am_queue_length(const struct am_queue *me);
 
 /**
  * Return queue capacity.
@@ -84,7 +84,7 @@ int am_queue_length(struct am_queue *me);
  *
  * @return queue capacity
  */
-int am_queue_capacity(struct am_queue *me);
+int am_queue_capacity(const struct am_queue *me);
 
 /**
  * Return queue item size.
