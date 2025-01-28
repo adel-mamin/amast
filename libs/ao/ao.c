@@ -322,7 +322,7 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub) {
     memset(sub, 0, sizeof(*sub) * (size_t)nsub);
 }
 
-void am_ao_dump_event_queues(
+void am_ao_log_event_queues(
     int num,
     void (*log)(
         const char *name, int i, int len, int cap, const struct am_event *event
