@@ -328,12 +328,14 @@ void am_ao_ctor(struct am_ao *ao, struct am_hsm_state state);
 /**
  * Start active object.
  *
+ * Start managing the active object as part of application.
+ *
  * The safest is to start active objects in the order of their priority,
  * beginning from the lowest priority active objects because they tend
  * to have the bigger event queues.
  *
  * @param ao          the active object to start
- * @param prio        priority level [0, AM_AO_PRIO_MAX]
+ * @param prio        priority level [AM_AO_PRIO_MIN, AM_AO_PRIO_MAX]
  * @param queue       the active object's event queue
  * @param queue_size  the event queue size [sizeof(struct am_event*)]
  * @param stack       active object stack
