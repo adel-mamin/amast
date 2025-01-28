@@ -40,7 +40,7 @@ Macros
   Begins an asynchronous function and initializes the async state.
   It takes a pointer `me` to the `struct am_async` managing the async state.
 
-- **AM_ASYNC_EXIT()**
+- **AM_ASYNC_BREAK()**
 
   Marks the end of the async function. This macro resets the async state
   to the initial value and returns `AM_ASYNC_RC_DONE`, indicating that
@@ -49,7 +49,7 @@ Macros
 - **AM_ASYNC_END()**
 
   Ends the asynchronous function, ensuring that completed or unexpected
-  states are handled correctly. It internally calls `AM_ASYNC_EXIT()`
+  states are handled correctly. It internally calls `AM_ASYNC_BREAK()`
   to reset the async state.
 
 - **AM_ASYNC_LABEL()**
@@ -117,7 +117,7 @@ The following example demonstrates how to use this async implementation in C.
 
         if (some_condition) {
             /* Complete the function with AM_ASYNC_RC_DONE */
-            AM_ASYNC_EXIT();
+            AM_ASYNC_BREAK();
         }
 
         /* Await another condition */
