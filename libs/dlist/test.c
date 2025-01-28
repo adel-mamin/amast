@@ -46,7 +46,7 @@ static struct test_dlist test_dlist[10];
 
 static void test_setup(struct am_dlist *list) {
     am_dlist_init(list);
-    for (int i = 0; i < AM_COUNTOF(test_dlist); i++) {
+    for (int i = 0; i < AM_COUNTOF(test_dlist); ++i) {
         test_dlist[i].data = i;
     }
 }
@@ -249,7 +249,7 @@ static void test_am_dlist_find(void) {
 
     int v = 0;
     struct am_dlist_item *e = NULL;
-    for (v = 0; v < 3; v++) {
+    for (v = 0; v < 3; ++v) {
         e = am_dlist_find(&dlist, predicate_dlist, &v);
         AM_ASSERT(e != NULL);
         const struct test_dlist *d = (struct test_dlist *)e;
@@ -264,7 +264,7 @@ static void test_am_dlist_find(void) {
 static void test_am_dlist_owns(void) {
     test_setup(&dlist);
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; ++i) {
         am_dlist_push_back(&dlist, &test_dlist[i].hdr);
         AM_ASSERT(am_dlist_owns(&dlist, &test_dlist[i].hdr));
     }
@@ -274,11 +274,11 @@ static void test_am_dlist_back(void) {
     test_setup(&dlist);
 
     int i = 0;
-    for (i = 0; i < AM_COUNTOF(test_dlist); i++) {
+    for (i = 0; i < AM_COUNTOF(test_dlist); ++i) {
         am_dlist_push_front(&dlist, &test_dlist[i].hdr);
     }
 
-    for (i = 0; i < AM_COUNTOF(test_dlist); i++) {
+    for (i = 0; i < AM_COUNTOF(test_dlist); ++i) {
         const struct test_dlist *e =
             (struct test_dlist *)am_dlist_pop_back(&dlist);
         AM_ASSERT(e);
@@ -292,11 +292,11 @@ static void test_am_dlist_front(void) {
     test_setup(&dlist);
 
     int i = 0;
-    for (i = 0; i < AM_COUNTOF(test_dlist); i++) {
+    for (i = 0; i < AM_COUNTOF(test_dlist); ++i) {
         am_dlist_push_front(&dlist, &test_dlist[i].hdr);
     }
 
-    for (i = AM_COUNTOF(test_dlist); i > 0; i--) {
+    for (i = AM_COUNTOF(test_dlist); i > 0; --i) {
         const struct test_dlist *e =
             (struct test_dlist *)am_dlist_pop_front(&dlist);
         AM_ASSERT(e);
@@ -310,11 +310,11 @@ static void test_am_dlist_back2(void) {
     test_setup(&dlist);
 
     int i = 0;
-    for (i = 0; i < AM_COUNTOF(test_dlist); i++) {
+    for (i = 0; i < AM_COUNTOF(test_dlist); ++i) {
         am_dlist_push_back(&dlist, &test_dlist[i].hdr);
     }
 
-    for (i = AM_COUNTOF(test_dlist); i > 0; i--) {
+    for (i = AM_COUNTOF(test_dlist); i > 0; --i) {
         const struct test_dlist *e =
             (struct test_dlist *)am_dlist_pop_back(&dlist);
         AM_ASSERT(e);

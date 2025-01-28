@@ -102,7 +102,7 @@ static void test_submachine(void) {
         /* clang-format on */
     };
 
-    for (int i = 0; i < AM_COUNTOF(in); i++) {
+    for (int i = 0; i < AM_COUNTOF(in); ++i) {
         struct am_event e = {.id = in[i].event};
         am_hsm_dispatch(g_complex_sm, &e);
         AM_ASSERT(

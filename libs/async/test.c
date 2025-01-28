@@ -33,7 +33,7 @@
 static enum am_async_rc am_async_reentrant(
     struct am_async *me, int *reent, int *state
 ) {
-    (*reent)++;
+    ++(*reent);
     AM_ASYNC_BEGIN(me);
     AM_ASYNC_LABEL();
     if (*state == 0) {
@@ -72,7 +72,7 @@ static void test_async_local_continuation(void) {
 
 static enum am_async_rc am_async_empty(struct am_async *me, int *reent) {
     AM_ASYNC_BEGIN(me);
-    (*reent)++;
+    ++(*reent);
     AM_ASYNC_END();
 
     return AM_ASYNC_RC(me);
@@ -93,9 +93,9 @@ static enum am_async_rc am_async_wait_ready(
     struct am_async *me, int *reent, int ready
 ) {
     AM_ASYNC_BEGIN(me);
-    (*reent)++;
+    ++(*reent);
     AM_ASYNC_AWAIT(ready);
-    (*reent)++;
+    ++(*reent);
     AM_ASYNC_END();
 
     return AM_ASYNC_RC(me);

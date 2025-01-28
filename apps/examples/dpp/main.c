@@ -131,7 +131,7 @@ int main(void) {
 
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
 
-    for (int i = 0; i < PHILO_NUM; i++) {
+    for (int i = 0; i < PHILO_NUM; ++i) {
         philo_ctor(i);
     }
     table_ctor(/*nsession=*/100);
@@ -151,7 +151,7 @@ int main(void) {
         "philo0", "philo1", "philo2", "philo3", "philo4"
     };
 
-    for (int i = 0; i < AM_COUNTOF(names); i++) {
+    for (int i = 0; i < AM_COUNTOF(names); ++i) {
         am_ao_start(
             g_ao_philo[i],
             /*prio=*/AM_AO_PRIO_MIN + i,

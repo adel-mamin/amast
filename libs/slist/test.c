@@ -46,7 +46,7 @@ static struct test_slist test_slist[10];
 
 static void test_slist_init(struct am_slist *data) {
     am_slist_init(data);
-    for (int i = 0; i < AM_COUNTOF(test_slist); i++) {
+    for (int i = 0; i < AM_COUNTOF(test_slist); ++i) {
         test_slist[i].data = i;
     }
 }
@@ -145,7 +145,7 @@ static void test_am_slist_find(void) {
     int v;
     struct am_slist_item *e;
 
-    for (v = 0; v < 3; v++) {
+    for (v = 0; v < 3; ++v) {
         e = am_slist_find(&slist, predicate_slist, &v);
         AM_ASSERT(e != NULL);
         const struct test_slist *d = (struct test_slist *)e;
@@ -160,7 +160,7 @@ static void test_am_slist_find(void) {
 static void test_am_slist_owns(void) {
     test_slist_init(&slist);
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 2; ++i) {
         am_slist_push_front(&slist, &test_slist[i].hdr);
         AM_ASSERT(am_slist_owns(&slist, &test_slist[i].hdr));
     }
@@ -203,13 +203,13 @@ static void test_am_slist_append(void) {
     static struct am_slist slist2;
 
     am_slist_init(&slist1);
-    for (int i = 0; i < AM_COUNTOF(test_slist1); i++) {
+    for (int i = 0; i < AM_COUNTOF(test_slist1); ++i) {
         test_slist1[i].data = i;
         am_slist_push_back(&slist1, &test_slist1[i].hdr);
     }
 
     am_slist_init(&slist2);
-    for (int i = 0; i < AM_COUNTOF(test_slist2); i++) {
+    for (int i = 0; i < AM_COUNTOF(test_slist2); ++i) {
         test_slist2[i].data = i;
         am_slist_push_back(&slist2, &test_slist2[i].hdr);
     }

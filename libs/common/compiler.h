@@ -74,7 +74,7 @@
 #define AM_COMPILER_ID AM_COMPILER_GCC
 
 #elif defined(__HP_cc) || defined(__HP_aCC)
-/* Hewlett-Packard C/aC++ */
+/* Hewlett-Packard C/C++ */
 #elif defined(__IBMC__) || defined(__IBMCPP__)
 /* IBM XL C/C++ */
 #elif defined(_MSC_VER)

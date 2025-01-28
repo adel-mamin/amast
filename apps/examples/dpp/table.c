@@ -155,7 +155,7 @@ static int table_init(struct table *me, const struct am_event *event) {
 void table_ctor(int nsession) {
     struct table *me = &m_table;
     memset(me, 0, sizeof(*me));
-    for (int i = 0; i < AM_COUNTOF(me->philo); i++) {
+    for (int i = 0; i < AM_COUNTOF(me->philo); ++i) {
         me->philo[i] = PHILO_DONE;
     }
     am_ao_ctor(&m_table.ao, AM_HSM_STATE_CTOR(table_init));

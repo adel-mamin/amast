@@ -73,7 +73,7 @@ static bool is_pragma(const char *str, const char *pragma) {
 static bool include_is_unique(
     char arr[MAX_INCLUDES_NUM][PATH_MAX], int arr_size, const char *inc_file
 ) {
-    for (int i = 0; i < arr_size; i++) {
+    for (int i = 0; i < arr_size; ++i) {
         if (strcmp(arr[i], inc_file) == 0) {
             return false;
         }
@@ -88,7 +88,7 @@ static void include_add_unique(
 ) {
     if (include_is_unique(arr, *arr_size, inc_file)) {
         str_lcpy(arr[*arr_size], inc_file, sizeof(arr[*arr_size]));
-        (*arr_size)++;
+        ++(*arr_size);
     }
 }
 
@@ -171,18 +171,18 @@ static void db_init(struct db *db, const char *db_fname, const char *odir) {
             }
             AM_ASSERT(files->len < AM_COUNTOF(files->content));
             read_file(files, fname);
-            files->len++;
+            ++files->len;
             continue;
         }
         if (strstr(fname, ".h") != NULL) {
             if (strstr(fname, "test") != NULL) {
                 AM_ASSERT(db->hdr_test.len < AM_COUNTOF(db->hdr_test.content));
                 read_file(&db->hdr_test, fname);
-                db->hdr_test.len++;
+                ++db->hdr_test.len;
             } else {
                 AM_ASSERT(db->hdr.len < AM_COUNTOF(db->hdr.content));
                 read_file(&db->hdr, fname);
-                db->hdr.len++;
+                ++db->hdr.len;
             }
             continue;
         }
@@ -245,8 +245,8 @@ static void convert_fname_to_fn_name(
         } else {
             *dst = *src;
         }
-        src++;
-        dst++;
+        ++src;
+        ++dst;
     }
 
     *dst = '\0';
@@ -274,7 +274,7 @@ static void file_append(
     char buffer[2 * PATH_MAX];
     snprintf(buffer, sizeof(buffer), "static int %s(void) {\n", fn_name);
     str_lcpy(tests[*ntests], fn_name, sizeof(tests[*ntests]));
-    (*ntests)++;
+    ++(*ntests);
     *pos = '\0';
     fputs(src, dst);
     fputs(buffer, dst);
@@ -347,7 +347,7 @@ static void create_amast_h_file(
     fprintf(hdr_file, "\n");
 
     /* Copy content of all header files to amast.h */
-    for (int i = 0; i < db->hdr.len; i++) {
+    for (int i = 0; i < db->hdr.len; ++i) {
         fprintf(hdr_file, "\n/* %s */\n\n", get_repo_fname(db->hdr.fnames[i]));
         file_append(
             db->hdr.content[i], db->hdr.fnames[i], hdr_file, ntests, tests
@@ -383,7 +383,7 @@ static void create_amast_test_h_file(
     fprintf(hdr_file, "\n");
 
     /* Copy content of all header files to amast.h */
-    for (int i = 0; i < db->hdr_test.len; i++) {
+    for (int i = 0; i < db->hdr_test.len; ++i) {
         fprintf(
             hdr_file, "\n/* %s */\n\n", get_repo_fname(db->hdr_test.fnames[i])
         );
@@ -433,7 +433,7 @@ static FILE *create_amast_file(struct amast_file_cfg *cfg) {
     fprintf(src_file, "\n");
 
     /* Copy content of all source files to cfg->amast_fname */
-    for (int i = 0; i < cfg->files->len; i++) {
+    for (int i = 0; i < cfg->files->len; ++i) {
         fprintf(
             src_file, "\n/* %s */\n\n", get_repo_fname(cfg->files->fnames[i])
         );
@@ -579,7 +579,7 @@ static void create_amast_test_c_file(
 
     /* Add the final main function to amast_test.c */
     fprintf(src_file, "\nint main(void) {\n");
-    for (int i = 0; i < *ntests; i++) {
+    for (int i = 0; i < *ntests; ++i) {
         fprintf(src_file, "    %s();\n", tests[i]);
     }
     fprintf(src_file, "\n");

@@ -53,8 +53,8 @@ int str_icmp(const char *s1, const char *s2) {
         cb = *(const unsigned char *)s2;
         ca = tolower(toupper(ca));
         cb = tolower(toupper(cb));
-        s1++;
-        s2++;
+        ++s1;
+        ++s2;
     } while (ca == cb && ca != '\0');
     return ca - cb;
 }
@@ -116,7 +116,7 @@ static bool str_is_base_num(
     int sign = 1; /* positive by default */
     int str_offset = 0;
 
-    for (int i = 0; i < prefixes_num; i++) {
+    for (int i = 0; i < prefixes_num; ++i) {
         int prefix_len = (int)strlen(prefixes[i]);
         if (0 == strncmp(str, prefixes[i], (unsigned long)prefix_len)) {
             has_prefix = true;
@@ -212,7 +212,7 @@ float complex str_to_complex(char *str) {
 }
 
 bool str_is_all_decimal_digits(const char *str) {
-    for (int i = 0; i < (int)strlen(str); i++) {
+    for (int i = 0; i < (int)strlen(str); ++i) {
         if ((str[i] < '0') || (str[i] > '9')) {
             return false;
         }
@@ -228,7 +228,7 @@ bool str_is_all_hexadecimal_digits(const char *str) {
     if (('0' != str[0]) || ('x' != str[1])) {
         return false;
     }
-    for (int i = 2; i < len; i++) {
+    for (int i = 2; i < len; ++i) {
         if ((str[i] >= '0') && (str[i] <= '9')) {
             continue;
         }
@@ -317,7 +317,7 @@ int uintmax_to_binstr(char *str, int strsize, uintmax_t uintmax) {
     };
 
     bool printed = false;
-    for (int ni = 0; ni < nybbles; ni++) {
+    for (int ni = 0; ni < nybbles; ++ni) {
         unsigned char nybble =
             (unsigned char)(uintmax >> (unsigned)((nybbles - 1 - ni) * 4));
         nybble &= 0xFU;
@@ -477,7 +477,7 @@ bool str_has_prefix(const char *str, const char *prefix) {
 }
 
 char *str_upr(char *str) {
-    for (int i = 0; i < (int)strlen(str); i++) {
+    for (int i = 0; i < (int)strlen(str); ++i) {
         if (str[i] >= 'a' && str[i] <= 'z') {
             str[i] = (char)(str[i] - ('a' - 'A'));
         }
@@ -494,10 +494,10 @@ const char *str_skip_prefix(const char *str, const char *prefix) {
         if (*str != *prefix) {
             return str;
         }
-        str++;
-        prefix++;
-        strsz--;
-        prefixsz--;
+        ++str;
+        ++prefix;
+        --strsz;
+        --prefixsz;
     }
     return str;
 }
@@ -535,13 +535,13 @@ void str_split_path(
     int end = (int)strlen(path);
     int ndot = 0;
     int dir = 0;
-    for (int i = 0; i < end; i++) {
+    for (int i = 0; i < end; ++i) {
         int isdelim = 0;
         if ('.' == path[i]) {
-            ndot++;
+            ++ndot;
         } else {
             ndot = 0;
-            for (int j = 0; j < ndelim; j++) {
+            for (int j = 0; j < ndelim; ++j) {
                 if (path[i] == delim[j]) {
                     isdelim = 1;
                     break;
@@ -581,7 +581,7 @@ int str_lcat_path(char *head, const char *tail, int lim, char delim) {
         head[l - 1] = '\0';
     }
     if (delim == tail[0]) {
-        tail++;
+        ++tail;
     }
     const char d[2] = {delim, '\0'};
     str_lcat(head, d, lim);

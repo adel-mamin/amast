@@ -84,7 +84,7 @@ static bool am_ao_publish_x_(
      * active objects first to avoid priority inversion.
      */
     struct am_ao_subscribe_list *sub = &me->sub[event->id];
-    for (int i = AM_COUNTOF(sub->list) - 1; i >= 0; i--) {
+    for (int i = AM_COUNTOF(sub->list) - 1; i >= 0; --i) {
         me->crit_enter();
         unsigned list = sub->list[i];
         me->crit_exit();
@@ -239,7 +239,7 @@ void am_ao_unsubscribe_all(const struct am_ao *ao) {
 
     int j = ao->prio / 8;
 
-    for (int i = 0; i < me->nsub; i++) {
+    for (int i = 0; i < me->nsub; ++i) {
         me->crit_enter();
 
         unsigned list = me->sub[i].list[j];
@@ -336,7 +336,7 @@ void am_ao_log_event_queues(
     }
 
     struct am_ao_state *me = &am_ao_state_;
-    for (int i = 0; i < AM_COUNTOF(me->aos); i++) {
+    for (int i = 0; i < AM_COUNTOF(me->aos); ++i) {
         struct am_ao *ao = me->aos[i];
         if (!ao) {
             continue;
@@ -349,7 +349,7 @@ void am_ao_log_event_queues(
             log(ao->name, 0, len, cap, /*event=*/AM_EVT_INVALID);
             continue;
         }
-        for (int j = 0; j < tnum; j++) {
+        for (int j = 0; j < tnum; ++j) {
             struct am_event **e = (struct am_event **)am_queue_pop_front(q);
             AM_ASSERT(e);
             AM_ASSERT(*e);
@@ -362,7 +362,7 @@ void am_ao_log_last_events(void (*log)(const char *name, int event)) {
     AM_ASSERT(log);
 
     struct am_ao_state *me = &am_ao_state_;
-    for (int i = 0; i < AM_COUNTOF(me->aos); i++) {
+    for (int i = 0; i < AM_COUNTOF(me->aos); ++i) {
         struct am_ao *ao = me->aos[i];
         if (!ao) {
             continue;

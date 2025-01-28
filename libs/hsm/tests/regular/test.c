@@ -100,7 +100,7 @@ static void test_regular(void) {
         /* clang-format on */
     };
 
-    for (int i = 0; i < AM_COUNTOF(in); i++) {
+    for (int i = 0; i < AM_COUNTOF(in); ++i) {
         struct am_event e = {.id = in[i].event};
         am_hsm_dispatch(g_regular, &e);
         AM_ASSERT(

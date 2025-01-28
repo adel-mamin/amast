@@ -139,13 +139,13 @@ AM_NORETURN void am_assert_failure(
     EXTENSION({                                 \
         int ret__;                              \
         (word) = ((word) ^ ((word) - 1)) >> 1u; \
-        for (ret__ = 0; (word); ret__++) {      \
+        for (ret__ = 0; (word); ++ret__) {      \
             (word) >>= 1u;                      \
         }                                       \
         ret__;                                  \
     })
 
-/** Example: int i = 0; AM_DO_EVERY(2, i++;);
+/** Example: int i = 0; AM_DO_EVERY(2, ++i;);
     call N | i
     -------+--
     0      | 0
@@ -156,14 +156,14 @@ AM_NORETURN void am_assert_failure(
 #define AM_DO_EVERY(cnt, cmd)      \
     do {                           \
         static unsigned cnt__ = 0; \
-        cnt__++;                   \
+        ++cnt__;                   \
         cnt__ %= (unsigned)(cnt);  \
         if (0 == cnt__) {          \
             cmd;                   \
         }                          \
     } while (0)
 
-/** Example: int i = 0; AM_DO_ONCE(2, i++;);
+/** Example: int i = 0; AM_DO_ONCE(2, ++i;);
     call N | i
     -------+--
     0      | 1

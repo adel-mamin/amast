@@ -168,7 +168,7 @@ int main(void) {
         const char *out;
     } in[] = {{AM_EVT_A, "a-A;b-B;"}, {AM_EVT_C, "b-C;"}};
 
-    for (int i = 0; i < AM_COUNTOF(in); i++) {
+    for (int i = 0; i < AM_COUNTOF(in); ++i) {
         struct am_event e = {.id = in[i].event};
         am_fsm_dispatch(am_fsmq, &e);
         fsmq_commit();

@@ -140,7 +140,7 @@ static void test_reenter_hsm(void) {
         /* clang-format on */
     };
 
-    for (int i = 0; i < AM_COUNTOF(in); i++) {
+    for (int i = 0; i < AM_COUNTOF(in); ++i) {
         struct am_event e = {.id = in[i].event};
         am_hsm_dispatch(&m_reenter_hsm.hsm, &e);
         AM_ASSERT(

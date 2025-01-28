@@ -319,7 +319,7 @@ static void test_split_path(void) {
         {{-1, -1}, { 0,  4}, ".d.."},
         /* clang-format on */
     };
-    for (int i = 0; i < AM_COUNTOF(t); i++) {
+    for (int i = 0; i < AM_COUNTOF(t); ++i) {
         struct str_token head;
         struct str_token tail;
         str_split_path(t[i].path, &head, &tail, delim);

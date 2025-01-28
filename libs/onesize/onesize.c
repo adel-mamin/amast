@@ -95,7 +95,7 @@ static void am_onesize_ctor_internal(struct am_onesize *me) {
 
     char *ptr = (char *)me->pool.ptr;
     int num = me->pool.size / me->block_size;
-    for (int i = 0; i < num; i++) {
+    for (int i = 0; i < num; ++i) {
         struct am_slist_item *item = AM_CAST(struct am_slist_item *, ptr);
         am_slist_push_front(&me->fl, item);
         ptr += me->block_size;
@@ -133,7 +133,7 @@ void am_onesize_iterate_over_allocated(
 
     me->crit_enter();
 
-    for (int i = 0; (i < me->ntotal) && (iterated < num); i++) {
+    for (int i = 0; (i < me->ntotal) && (iterated < num); ++i) {
         AM_ASSERT(AM_ALIGNOF_PTR(ptr) >= AM_ALIGNOF_SLIST_ITEM);
         struct am_slist_item *item = AM_CAST(struct am_slist_item *, ptr);
         if (am_slist_owns(&me->fl, item)) {
@@ -147,7 +147,7 @@ void am_onesize_iterate_over_allocated(
         me->crit_enter();
 
         ptr += me->block_size;
-        iterated++;
+        ++iterated;
     }
 
     me->crit_exit();

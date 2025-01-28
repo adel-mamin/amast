@@ -35,7 +35,7 @@ static void test_crc16(void) {
         AM_ASSERT(0x29b1 == crc);
 
         crc = crc_init;
-        for (int i = 0; i < AM_COUNTOF(data); i++) {
+        for (int i = 0; i < AM_COUNTOF(data); ++i) {
             crc = crc16(&data[i], 1, crc);
         }
         AM_ASSERT(0x29b1 == crc);
@@ -62,7 +62,7 @@ static void test_crc24(void) {
         AM_ASSERT(0xcde703 == crc);
 
         crc = crc_init;
-        for (int i = 0; i < AM_COUNTOF(data); i++) {
+        for (int i = 0; i < AM_COUNTOF(data); ++i) {
             crc = crc24(&data[i], 1, crc);
         }
         AM_ASSERT(0xcde703 == crc);
@@ -90,7 +90,7 @@ static void test_crc32(void) {
         AM_ASSERT(0x0376e6e7 == crc);
 
         crc = crc_init;
-        for (int i = 0; i < AM_COUNTOF(data); i++) {
+        for (int i = 0; i < AM_COUNTOF(data); ++i) {
             crc = crc32(&data[i], 1, crc);
         }
         AM_ASSERT(0x0376e6e7 == crc);

@@ -102,7 +102,7 @@ struct am_event *am_event_allocate(int id, int size, int margin) {
     AM_ASSERT(id >= AM_EVT_USER);
     AM_ASSERT(margin >= 0);
 
-    for (int i = 0; i < me->npool; i++) {
+    for (int i = 0; i < me->npool; ++i) {
         struct am_onesize *osz = &me->pool[i];
         if (size > am_onesize_get_block_size(osz)) {
             continue;
@@ -260,7 +260,7 @@ void am_event_log_pools(int num, am_event_log_func cb) {
 
     struct am_event_state *me = &am_event_state_;
     struct am_event_log_ctx ctx = {.cb = cb};
-    for (int i = 0; i < me->npool; i++) {
+    for (int i = 0; i < me->npool; ++i) {
         ctx.pool_ind = i;
         am_onesize_iterate_over_allocated(
             &me->pool[i], num, am_event_log_cb, &ctx
@@ -465,7 +465,7 @@ int am_event_flush_queue(struct am_queue *queue) {
 
     while ((event = (struct am_event **)am_queue_pop_front(queue)) != NULL) {
         me->crit_exit();
-        cnt++;
+        ++cnt;
         const struct am_event *e = *event;
         AM_ASSERT(e);
         am_event_free(&e);

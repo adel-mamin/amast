@@ -61,7 +61,7 @@ static int philo_thinking(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case AM_HSM_EVT_ENTRY:
         am_pal_printf("philo %d is thinking\n", me->id);
-        me->cnt++;
+        ++me->cnt;
         int ticks = (int)am_pal_time_get_tick_from_ms(
             /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/20
         );

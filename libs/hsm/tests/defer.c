@@ -184,7 +184,7 @@ static void test_defer(void) {
         {HSM_EVT_B, "s1-B;s2-A;"},
     };
 
-    for (int i = 0; i < AM_COUNTOF(in); i++) {
+    for (int i = 0; i < AM_COUNTOF(in); ++i) {
         const struct am_event *e = am_event_allocate(
             in[i].event, (int)sizeof(struct am_event), /*margin=*/0
         );

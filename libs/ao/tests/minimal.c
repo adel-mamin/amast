@@ -77,7 +77,7 @@ static int loopback_test_proc(
 ) {
     switch (event->id) {
     case AM_EVT_MIN:
-        me->cnt++;
+        ++me->cnt;
         if (100 == me->cnt) {
             exit(0);
         }

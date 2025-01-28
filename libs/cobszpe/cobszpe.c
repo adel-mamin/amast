@@ -59,14 +59,14 @@ int am_cobszpe_encode(void *to, int to_size, const void *from, int from_size) {
                 AM_FINISH_BLOCK(code);
             }
             *dst++ = *src++;
-            code++;
+            ++code;
             if ((AM_COBSZPE_ZEROLESS_MAX + 1) == code) {
                 AM_FINISH_BLOCK(code);
             }
             continue;
         }
-        zero_cnt++;
-        src++;
+        ++zero_cnt;
+        ++src;
         if (code >= (UINT8_MAX - AM_COBSZPE_ZEROLESS_MAX)) {
             AM_FINISH_BLOCK(code);
             continue;

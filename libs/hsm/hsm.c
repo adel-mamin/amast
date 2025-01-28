@@ -89,7 +89,7 @@ static void hsm_build(
     while (!am_hsm_state_is_eq(hsm, *until)) {
         AM_ASSERT(path->len < AM_COUNTOF(path->state));
         path->state[path->len] = hsm->state;
-        path->len++;
+        ++path->len;
         if (till && am_hsm_state_is_eq(hsm, *till)) {
             break;
         }

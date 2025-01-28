@@ -52,7 +52,7 @@ static void post_cb(void *owner, const struct am_event *event) {
     (void)event;
     AM_ASSERT(owner == &m_owner);
     AM_ASSERT((EVT_TEST == event->id) || (EVT_TEST2 == event->id));
-    m_owner.npost++;
+    ++m_owner.npost;
 }
 /* cppcheck-suppress-end constParameterCallback */
 

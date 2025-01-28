@@ -98,7 +98,7 @@ static void test_calc(void) {
         /* clang-format on */
     };
 
-    for (int i = 0; i < AM_COUNTOF(in); i++) {
+    for (int i = 0; i < AM_COUNTOF(in); ++i) {
         const struct test *test = &in[i];
         struct calc_event e = {{.id = test->event}, .data = test->event_data};
         am_hsm_dispatch(g_calc, &e.event);
