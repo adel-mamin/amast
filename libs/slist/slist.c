@@ -114,15 +114,13 @@ struct am_slist_item *am_slist_next_item(
 }
 
 struct am_slist_item *am_slist_find(
-    const struct am_slist *me,
-    am_slist_item_found_cb_t is_found_cb,
-    void *context
+    const struct am_slist *me, am_slist_item_found_fn is_found, void *context
 ) {
     AM_ASSERT(me);
-    AM_ASSERT(is_found_cb);
+    AM_ASSERT(is_found);
 
     struct am_slist_item *item = me->sentinel.next;
-    while ((item != &me->sentinel) && !is_found_cb(context, item)) {
+    while ((item != &me->sentinel) && !is_found(context, item)) {
         item = item->next;
     }
     return (item == &me->sentinel) ? NULL : item;

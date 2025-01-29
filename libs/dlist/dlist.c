@@ -136,15 +136,13 @@ void am_dlist_pop(struct am_dlist_item *item) {
 }
 
 struct am_dlist_item *am_dlist_find(
-    const struct am_dlist *me,
-    am_dlist_item_found_cb_t is_found_cb,
-    void *context
+    const struct am_dlist *me, am_dlist_item_found_fn is_found, void *context
 ) {
     AM_ASSERT(me);
-    AM_ASSERT(is_found_cb);
+    AM_ASSERT(is_found);
 
     struct am_dlist_item *item = me->sentinel.next;
-    while ((item != &me->sentinel) && !is_found_cb(context, item)) {
+    while ((item != &me->sentinel) && !is_found(context, item)) {
         item = item->next;
     }
     return (item == &me->sentinel) ? NULL : item;

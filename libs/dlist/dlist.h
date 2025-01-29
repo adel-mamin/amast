@@ -247,27 +247,25 @@ struct am_dlist_item *am_dlist_peek_back(struct am_dlist *me);
  * @retval true    item was found
  * @retval false   item was not found
  */
-typedef bool (*am_dlist_item_found_cb_t)(
+typedef bool (*am_dlist_item_found_fn)(
     void *context, struct am_dlist_item *item
 );
 
 /**
  * Find an item in list using predicate function.
  *
- * @param me           the list
- * @param is_found_cb  the predicate function, which tells if the item
- *                     is found. If the predicate returns 1, the item is
- *                     found. If it returns 0, the item is not found.
- * @param context      the context, which is provided verbatim to predicate
+ * @param me        the list
+ * @param is_found  the predicate function, which tells if the item
+ *                  is found. If the predicate returns 1, the item is
+ *                  found. If it returns 0, the item is not found.
+ * @param context   the context, which is provided verbatim to predicate
  *
  * @return the item, found by the predicate callback function
  *         NULL, if nothing was found. The found item is not popped
  *         from the list.
  */
 struct am_dlist_item *am_dlist_find(
-    const struct am_dlist *me,
-    am_dlist_item_found_cb_t is_found_cb,
-    void *context
+    const struct am_dlist *me, am_dlist_item_found_fn is_found, void *context
 );
 
 /**

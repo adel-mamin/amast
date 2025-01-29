@@ -150,25 +150,23 @@ struct am_slist_item *am_slist_pop_after(
  * @retval true    item was found
  * @retval false   item was not found
  */
-typedef bool (*am_slist_item_found_cb_t)(
+typedef bool (*am_slist_item_found_fn)(
     void *context, struct am_slist_item *item
 );
 
 /**
  * Find item in list using predicate function.
  *
- * @param me           the list
- * @param is_found_cb  the predicate callback
- * @param context      the context, which is provided verbatim to predicate
+ * @param me        the list
+ * @param is_found  the predicate callback
+ * @param context   the context, which is provided verbatim to predicate
  *
  * @return the item, found by the predicate callback function
  *         NULL, if nothing was found. The found item is not popped
  *         from the list.
  */
 struct am_slist_item *am_slist_find(
-    const struct am_slist *me,
-    am_slist_item_found_cb_t is_found_cb,
-    void *context
+    const struct am_slist *me, am_slist_item_found_fn is_found, void *context
 );
 
 /**
