@@ -145,4 +145,4 @@ void am_ao_notify(const struct am_ao *ao) {
     am_pal_task_notify(ao->task_id);
 }
 
-void am_ao_wait_startup(void) {}
+void am_ao_wait_start_all(void) {}

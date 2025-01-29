@@ -482,7 +482,7 @@ void am_ao_log_last_events(void (*log)(const char *name, int event));
  * am_pal_task_create() API running blocking calls and using
  * active objects for event posting/publishing.
  */
-void am_ao_wait_startup(void);
+void am_ao_wait_start_all(void);
 
 #ifdef __cplusplus
 }

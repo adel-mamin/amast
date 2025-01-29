@@ -52,7 +52,7 @@ static const struct am_event *m_queue_ringbuf_writer[1];
 AM_NORETURN static void ticker_task(void *param) {
     (void)param;
 
-    am_ao_wait_startup();
+    am_ao_wait_start_all();
 
     uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     for (;;) {

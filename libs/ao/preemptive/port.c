@@ -40,7 +40,7 @@
 static void am_ao_task(void *param) {
     AM_ASSERT(param);
 
-    am_ao_wait_startup();
+    am_ao_wait_start_all();
 
     struct am_ao *ao = (struct am_ao *)param;
     while (AM_LIKELY(!AM_ATOMIC_LOAD_N(&ao->stopped))) {
@@ -129,7 +129,7 @@ void am_ao_notify(const struct am_ao *ao) {
     am_pal_task_notify(ao->task_id);
 }
 
-void am_ao_wait_startup(void) {
+void am_ao_wait_start_all(void) {
     const struct am_ao_state *me = &am_ao_state_;
     am_pal_mutex_lock(me->startup_mutex);
     am_pal_mutex_unlock(me->startup_mutex);
