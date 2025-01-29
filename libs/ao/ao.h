@@ -91,19 +91,19 @@ struct am_ao_state_cfg {
     void (*crit_exit)(void);
 };
 
-/** The minimum AO priority level. */
-#define AM_AO_PRIO_MIN 0
-/** The maximum AO priority level. */
-#define AM_AO_PRIO_MAX 63
-
-/** Checks if active object priority is valid. */
-#define AM_AO_PRIO_IS_VALID(ao) \
-    ((AM_AO_PRIO_MIN <= (ao)->prio) && ((ao)->prio <= AM_AO_PRIO_MAX))
-
 #ifndef AM_AO_NUM_MAX
 /** The maximum number of active objects. */
 #define AM_AO_NUM_MAX 64
 #endif
+
+/** The minimum AO priority level. */
+#define AM_AO_PRIO_MIN 0
+/** The maximum AO priority level. */
+#define AM_AO_PRIO_MAX (AM_AO_NUM_MAX - 1)
+
+/** Checks if active object priority is valid. */
+#define AM_AO_PRIO_IS_VALID(ao) \
+    ((AM_AO_PRIO_MIN <= (ao)->prio) && ((ao)->prio <= AM_AO_PRIO_MAX))
 
 AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_PAL_TASK_NUM_MAX);
 
