@@ -232,8 +232,11 @@ void am_ao_unsubscribe(const struct am_ao *ao, int event) {
 void am_ao_unsubscribe_all(const struct am_ao *ao) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao));
+
     struct am_ao_state *me = &am_ao_state_;
-    AM_ASSERT(me->sub);
+    if (!me->sub) {
+        return;
+    }
 
     AM_ASSERT(me->aos[ao->prio] == ao);
 
