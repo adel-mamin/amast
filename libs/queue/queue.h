@@ -110,6 +110,13 @@ void am_queue_ctor(
 );
 
 /**
+ * Queue destruction.
+ *
+ * @param me         the queue
+ */
+void am_queue_dtor(struct am_queue *me);
+
+/**
  * Pop an item from the front (head) of queue.
  *
  * Takes O(1) to complete.

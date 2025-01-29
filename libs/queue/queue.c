@@ -59,6 +59,11 @@ void am_queue_ctor(
     me->blk = *blk;
 }
 
+void am_queue_dtor(struct am_queue *me) {
+    AM_ASSERT(me);
+    memset(me, 0, sizeof(*me));
+}
+
 bool am_queue_is_empty(const struct am_queue *me) {
     AM_ASSERT(me);
     return (me->rd == me->wr) && !me->full;
