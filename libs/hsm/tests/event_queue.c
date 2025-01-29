@@ -98,7 +98,7 @@ static void hsmq_ctor(void (*log)(const char *fmt, ...)) {
     /* setup HSM event queue */
     static const struct am_event *pool[2];
     struct am_blk blk = {.ptr = pool, .size = (int)sizeof(pool)};
-    am_queue_init(
+    am_queue_ctor(
         &me->event_queue,
         /*isize=*/sizeof(pool[0]),
         AM_ALIGNOF_EVENT_PTR,

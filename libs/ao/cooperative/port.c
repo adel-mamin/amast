@@ -116,7 +116,7 @@ void am_ao_start(
         .ptr = queue, .size = (int)sizeof(struct am_event *) * queue_size
     };
 
-    am_queue_init(
+    am_queue_ctor(
         &ao->event_queue, sizeof(struct am_event *), AM_ALIGNOF_EVENT_PTR, &blk
     );
 

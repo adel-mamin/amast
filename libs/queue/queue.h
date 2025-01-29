@@ -96,7 +96,7 @@ int am_queue_capacity(const struct am_queue *me);
 int am_queue_item_size(const struct am_queue *me);
 
 /**
- * Queue initialization with memory a block.
+ * Queue construction with a memory block.
  *
  * @param me         the queue
  * @param isize      item size [bytes]
@@ -105,7 +105,7 @@ int am_queue_item_size(const struct am_queue *me);
  *                   Can be set to AM_ALIGN_MAX.
  * @param blk        the memory block
  */
-void am_queue_init(
+void am_queue_ctor(
     struct am_queue *me, int isize, int alignment, struct am_blk *blk
 );
 

@@ -38,7 +38,7 @@
 #include "common/types.h"
 #include "queue/queue.h"
 
-void am_queue_init(
+void am_queue_ctor(
     struct am_queue *me, int isize, int alignment, struct am_blk *blk
 ) {
     AM_ASSERT(me);
