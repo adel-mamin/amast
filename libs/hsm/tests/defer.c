@@ -66,7 +66,7 @@ static enum am_hsm_rc defer_s1(
     struct test_defer *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_HSM_EVT_EXIT:
+    case AM_EVT_HSM_EXIT:
         (void)am_event_recall(&me->defer_queue, defer_push_front, me);
         return AM_HSM_HANDLED();
     case HSM_EVT_A:

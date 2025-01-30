@@ -47,7 +47,7 @@ static struct test {
 
 static int test_proc(struct test *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_HSM_EVT_ENTRY: {
+    case AM_EVT_HSM_ENTRY: {
         static const struct am_event stop = {.id = AM_EVT_SELF_STOP};
         am_ao_post_fifo(&me->ao, &stop);
         break;

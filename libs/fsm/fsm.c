@@ -37,8 +37,8 @@
 #include "fsm/fsm.h"
 
 /** canned events */
-static const struct am_event m_fsm_evt_entry = {.id = AM_FSM_EVT_ENTRY};
-static const struct am_event m_fsm_evt_exit = {.id = AM_FSM_EVT_EXIT};
+static const struct am_event m_fsm_evt_entry = {.id = AM_EVT_FSM_ENTRY};
+static const struct am_event m_fsm_evt_exit = {.id = AM_EVT_FSM_EXIT};
 
 am_fsm_state_fn am_fsm_state(const struct am_fsm *fsm) {
     AM_ASSERT(fsm);

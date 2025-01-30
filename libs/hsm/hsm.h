@@ -53,35 +53,35 @@ enum am_hsm_evt {
      * The event handlers must always return the AM_HSM_SUPER() in response
      * to this event.
      */
-    AM_HSM_EVT_EMPTY = AM_EVT_RANGE_HSM_BEGIN,
+    AM_EVT_HSM_EMPTY = AM_EVT_RANGE_HSM_BEGIN,
 
     /**
      * Init event.
      * Run initial transition from a given state.
-     * Always follows the #AM_HSM_EVT_ENTRY event.
+     * Always follows the #AM_EVT_HSM_ENTRY event.
      */
-    AM_HSM_EVT_INIT,
+    AM_EVT_HSM_INIT,
 
     /**
      * Entry event.
      * Run entry action(s) for a given state.
-     * Always precedes the #AM_HSM_EVT_INIT event.
+     * Always precedes the #AM_EVT_HSM_INIT event.
      * No state transition is allowed in response to this event.
      */
-    AM_HSM_EVT_ENTRY,
+    AM_EVT_HSM_ENTRY,
 
     /**
      * Exit event.
      * Run exit action(s) for a given state.
      * No state transition is allowed in response to this event.
      */
-    AM_HSM_EVT_EXIT,
+    AM_EVT_HSM_EXIT,
 
     /** HSM event with maximum value. */
-    AM_HSM_EVT_MAX = AM_HSM_EVT_EXIT
+    AM_EVT_HSM_MAX = AM_EVT_HSM_EXIT
 };
 
-AM_ASSERT_STATIC(AM_HSM_EVT_MAX <= AM_EVT_RANGE_HSM_END);
+AM_ASSERT_STATIC(AM_EVT_HSM_MAX <= AM_EVT_RANGE_HSM_END);
 
 /**
  * HSM state handler return codes.
@@ -235,8 +235,8 @@ struct am_hsm {
 /**
  * Event processing is over. Transition is triggered.
  *
- * It should never be returned for #AM_HSM_EVT_ENTRY or #AM_HSM_EVT_EXIT events.
- * Conversely, the response to #AM_HSM_EVT_INIT event can optionally use
+ * It should never be returned for #AM_EVT_HSM_ENTRY or #AM_EVT_HSM_EXIT events.
+ * Conversely, the response to #AM_EVT_HSM_INIT event can optionally use
  * this macro as a return value to designate transition to
  * the provided state. The target state in this case must be
  * a substate of the current state.
@@ -255,8 +255,8 @@ struct am_hsm {
 /**
  * Event redispatch is requested. Transition is triggered.
  *
- * It should never be returned for #AM_HSM_EVT_ENTRY, #AM_HSM_EVT_EXIT or
- * #AM_HSM_EVT_INIT events.
+ * It should never be returned for #AM_EVT_HSM_ENTRY, #AM_EVT_HSM_EXIT or
+ * #AM_EVT_HSM_INIT events.
  * Do not redispatch the same event more than once within same
  * am_hsm_dispatch() call.
  *

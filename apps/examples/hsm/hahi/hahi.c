@@ -79,7 +79,7 @@ static enum am_hsm_rc hahi_idle(struct hahi *me, const struct am_event *event);
 
 static enum am_hsm_rc hahi_top(struct hahi *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_HSM_EVT_INIT:
+    case AM_EVT_HSM_INIT:
         return AM_HSM_TRAN(hahi_idle);
 
     case HAHI_EVT_USER_INPUT: {

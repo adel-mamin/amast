@@ -17,14 +17,14 @@ Glossary
        a unique ID plus optionally some data associated with it
 
    entry event
-       an event sent to a state when the state is entered (**AM_HSM_EVT_ENTRY**)
+       an event sent to a state when the state is entered (**AM_EVT_HSM_ENTRY**)
 
    exit event
-       an event sent to a state when the state is exited (**AM_HSM_EVT_EXIT**)
+       an event sent to a state when the state is exited (**AM_EVT_HSM_EXIT**)
 
    init event
        an event sent to a target state when the state is entered
-       (**AM_HSM_EVT_INIT**). It immediately follows the entry event.
+       (**AM_EVT_HSM_INIT**). It immediately follows the entry event.
 
    state
        an event handler. A,B,C,D,E,F,am_hsm_top are all states (see state diagram below)
@@ -238,7 +238,7 @@ flexibility and better control of the initialization timeline:
 HSM Topology
 ============
 
-HSM library discovers the user HSM topology by sending **AM_HSM_EVT_EMPTY** event
+HSM library discovers the user HSM topology by sending **AM_EVT_HSM_EMPTY** event
 to state event handlers. The state event handlers should explicitly process
 the event and always return **AM_HSM_SUPER(superstate)** in response.
 
@@ -265,14 +265,14 @@ HSM Coding Rules
    events.
 5. Avoid placing any code with side effects outside of the switch-case of
    event handlers.
-6. Processing of **AM_HSM_EVT_ENTRY** and **AM_HSM_EVT_EXIT** events should
+6. Processing of **AM_EVT_HSM_ENTRY** and **AM_EVT_HSM_EXIT** events should
    not trigger state transitions. It means that user event handlers should
    not return **AM_HSM_TRAN()** or **AM_HSM_TRAN_REDISPATCH()** for
    these events.
-7. Processing of **AM_HSM_EVT_INIT** event can optionally only trigger
+7. Processing of **AM_EVT_HSM_INIT** event can optionally only trigger
    transition by returning the result of **AM_HSM_TRAN()** macro.
    The use of **AM_HSM_TRAN_REDISPATCH()** is not allowed in this case.
-8. Processing of **AM_HSM_EVT_INIT** event can optionally only trigger
+8. Processing of **AM_EVT_HSM_INIT** event can optionally only trigger
    transition to a substate of the state triggering the transition.
    Transition to peer states of superstates is not allowed in this case.
 
@@ -298,7 +298,7 @@ The user code stores the current state in a local variable of type
    ...
    static enum am_hsm_rc B(struct foo *me, const struct event *event) {
        switch (event->id) {
-       case AM_HSM_EVT_ENTRY:
+       case AM_EVT_HSM_ENTRY:
            me->history  = am_hsm_state(&me->hsm);
            return AM_HSM_HANDLED();
        ...
@@ -388,7 +388,7 @@ Here is how it is coded in pseudocode:
 
    static enum am_hsm_rc s1(struct sm *me, const struct event *event) {
        switch (event->id) {
-       case AM_HSM_EVT_INIT: {
+       case AM_EVT_HSM_INIT: {
            static const struct am_hsm_state tt[] = {
                [S1_0] = {.fn = AM_HSM_STATE_FN_CTOR(s2)},
                [S1_1] = {.fn = AM_HSM_STATE_FN_CTOR(s3)}

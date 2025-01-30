@@ -99,7 +99,7 @@ static enum am_hsm_rc calc_op_entered(
 
 static enum am_hsm_rc calc_on(struct calc *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_HSM_EVT_ENTRY: {
+    case AM_EVT_HSM_ENTRY: {
         memset(me->data, 0, sizeof(me->data));
         me->op = '\0';
         me->result = NAN;
@@ -150,7 +150,7 @@ static enum am_hsm_rc calc_result(
     struct calc *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_HSM_EVT_ENTRY: {
+    case AM_EVT_HSM_ENTRY: {
         double data_0 = strtod(me->data[0].data, /*endptr=*/NULL);
         double data_1 = strtod(me->data[1].data, /*endptr=*/NULL);
         me->result = data_0;
@@ -537,7 +537,7 @@ static enum am_hsm_rc calc_op_entered(
 
 static enum am_hsm_rc calc_off(struct calc *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_HSM_EVT_ENTRY: {
+    case AM_EVT_HSM_ENTRY: {
         exit(0);
         return AM_HSM_HANDLED();
     }

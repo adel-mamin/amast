@@ -9,10 +9,10 @@ Glossary
        a unique ID plus optionally some data associated with it
 
    entry event
-       an event sent to a state when the state is entered (**AM_FSM_EVT_ENTRY**)
+       an event sent to a state when the state is entered (**AM_EVT_FSM_ENTRY**)
 
    exit event
-       an event sent to a state when the state is exited (**AM_FSM_EVT_EXIT**)
+       an event sent to a state when the state is exited (**AM_EVT_FSM_EXIT**)
 
    state
        an event handler. `Idle`, `Processing` and `Completed` are all states
@@ -80,8 +80,8 @@ processes it accordingly.
 
 FSM reserved events are defined as follows:
 
-- **AM_FSM_EVT_ENTRY**: Indicates the entry into a state. Entry actions are executed here.
-- **AM_FSM_EVT_EXIT**: Indicates the exit from a state. Exit actions are executed here.
+- **AM_EVT_FSM_ENTRY**: Indicates the entry into a state. Entry actions are executed here.
+- **AM_EVT_FSM_EXIT**: Indicates the exit from a state. Exit actions are executed here.
 
 The **am_fsm_dispatch()** function is used to send events to the FSM.
 
@@ -151,7 +151,7 @@ FSM Coding Rules
    events.
 5. Avoid placing any code with side effects outside of the switch-case of
    event handlers.
-6. Processing of **AM_FSM_EVT_ENTRY** and **AM_FSM_EVT_EXIT** events should
+6. Processing of **AM_EVT_FSM_ENTRY** and **AM_EVT_FSM_EXIT** events should
    not trigger state transitions. It means that user event handlers should
    not return **AM_FSM_TRAN()** or **AM_FSM_TRAN_REDISPATCH()** for
    these events.
@@ -195,7 +195,7 @@ The user code stores the current state in a local variable of type
    ...
    static enum am_fsm_rc A(struct foo *me, const struct event *event) {
        switch (event->id) {
-       case AM_FSM_EVT_ENTRY:
+       case AM_EVT_FSM_ENTRY:
            me->history = am_fsm_state(&me->fsm);
            return AM_FSM_HANDLED();
        ...

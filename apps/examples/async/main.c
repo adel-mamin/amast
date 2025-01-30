@@ -94,7 +94,7 @@ static enum am_hsm_rc async_top(
     struct async *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_HSM_EVT_INIT:
+    case AM_EVT_HSM_INIT:
         return AM_HSM_TRAN(async_ryg);
 
     case ASYNC_EVT_USER_INPUT: {
@@ -115,14 +115,14 @@ static enum am_hsm_rc async_ryg(
     struct async *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_HSM_EVT_ENTRY:
+    case AM_EVT_HSM_ENTRY:
         am_async_init(&me->async_ryg);
         am_timer_arm(
             &me->timer_ryg, me->ryg_interval_ticks, me->ryg_interval_ticks
         );
         return AM_HSM_HANDLED();
 
-    case AM_HSM_EVT_EXIT:
+    case AM_EVT_HSM_EXIT:
         am_timer_disarm(&me->timer_ryg);
         return AM_HSM_HANDLED();
 
@@ -162,14 +162,14 @@ static enum am_hsm_rc async_gyr(
     struct async *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_HSM_EVT_ENTRY:
+    case AM_EVT_HSM_ENTRY:
         am_async_init(&me->async_gyr);
         am_timer_arm(
             &me->timer_gyr, me->gyr_interval_ticks, me->gyr_interval_ticks
         );
         return AM_HSM_HANDLED();
 
-    case AM_HSM_EVT_EXIT:
+    case AM_EVT_HSM_EXIT:
         am_timer_disarm(&me->timer_gyr);
         return AM_HSM_HANDLED();
 

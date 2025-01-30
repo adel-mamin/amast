@@ -47,14 +47,14 @@ static enum am_fsm_rc reenter_fsm_s(
     struct reenter_fsm *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_FSM_EVT_ENTRY:
-        me->log("s-AM_FSM_EVT_ENTRY;");
+    case AM_EVT_FSM_ENTRY:
+        me->log("s-AM_EVT_FSM_ENTRY;");
         break;
     case AM_EVT_USER:
         me->log("s-AM_EVT_USER;");
         return AM_FSM_TRAN(reenter_fsm_s);
-    case AM_FSM_EVT_EXIT:
-        me->log("s-AM_FSM_EVT_EXIT;");
+    case AM_EVT_FSM_EXIT:
+        me->log("s-AM_EVT_FSM_EXIT;");
         break;
     default:
         break;
@@ -93,8 +93,8 @@ static void test_reenter_fsm(void) {
     am_fsm_dispatch(&me->fsm, &(struct am_event){.id = AM_EVT_USER});
 
     const char *out =
-        "s-AM_FSM_EVT_ENTRY;s-AM_EVT_USER;s-AM_FSM_EVT_EXIT;"
-        "s-AM_FSM_EVT_ENTRY;";
+        "s-AM_EVT_FSM_ENTRY;s-AM_EVT_USER;s-AM_EVT_FSM_EXIT;"
+        "s-AM_EVT_FSM_ENTRY;";
     AM_ASSERT(0 == strncmp(m_reenter_fsm.log_buf, out, strlen(out)));
 }
 

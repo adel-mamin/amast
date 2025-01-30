@@ -52,16 +52,16 @@ static enum am_hsm_rc reenter_hsm_s(
     struct reenter_hsm *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_HSM_EVT_ENTRY:
-        me->log("s-AM_HSM_EVT_ENTRY;");
+    case AM_EVT_HSM_ENTRY:
+        me->log("s-AM_EVT_HSM_ENTRY;");
         return AM_HSM_HANDLED();
-    case AM_HSM_EVT_INIT:
+    case AM_EVT_HSM_INIT:
         return AM_HSM_TRAN(reenter_hsm_s1);
     case HSM_EVT_A:
         me->log("s-HSM_EVT_A;");
         return AM_HSM_TRAN(reenter_hsm_s);
-    case AM_HSM_EVT_EXIT:
-        me->log("s-AM_HSM_EVT_EXIT;");
+    case AM_EVT_HSM_EXIT:
+        me->log("s-AM_EVT_HSM_EXIT;");
         return AM_HSM_HANDLED();
     default:
         break;
@@ -73,8 +73,8 @@ static enum am_hsm_rc reenter_hsm_s1(
     struct reenter_hsm *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_HSM_EVT_ENTRY:
-        me->log("s1-AM_HSM_EVT_ENTRY;");
+    case AM_EVT_HSM_ENTRY:
+        me->log("s1-AM_EVT_HSM_ENTRY;");
         return AM_HSM_HANDLED();
         break;
     case HSM_EVT_B:
@@ -83,8 +83,8 @@ static enum am_hsm_rc reenter_hsm_s1(
     case HSM_EVT_C:
         me->log("s1-HSM_EVT_C;");
         return AM_HSM_TRAN(reenter_hsm_s);
-    case AM_HSM_EVT_EXIT:
-        me->log("s1-AM_HSM_EVT_EXIT;");
+    case AM_EVT_HSM_EXIT:
+        me->log("s1-AM_EVT_HSM_EXIT;");
         return AM_HSM_HANDLED();
     default:
         break;
@@ -123,7 +123,7 @@ static void test_reenter_hsm(void) {
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
 
     {
-        const char *out = "s-AM_HSM_EVT_ENTRY;s1-AM_HSM_EVT_ENTRY;";
+        const char *out = "s-AM_EVT_HSM_ENTRY;s1-AM_EVT_HSM_ENTRY;";
         AM_ASSERT(0 == strncmp(m_reenter_hsm.log_buf, out, strlen(out)));
         m_reenter_hsm.log_buf[0] = '\0';
     }
@@ -134,9 +134,9 @@ static void test_reenter_hsm(void) {
     };
     static const struct test in[] = {
         /* clang-format off */
-        {HSM_EVT_A, "s-HSM_EVT_A;s1-AM_HSM_EVT_EXIT;s-AM_HSM_EVT_EXIT;s-AM_HSM_EVT_ENTRY;s1-AM_HSM_EVT_ENTRY;"},
-        {HSM_EVT_B, "s1-HSM_EVT_B;s1-AM_HSM_EVT_EXIT;s1-AM_HSM_EVT_ENTRY;"},
-        {HSM_EVT_C, "s1-HSM_EVT_C;s1-AM_HSM_EVT_EXIT;s1-AM_HSM_EVT_ENTRY;"},
+        {HSM_EVT_A, "s-HSM_EVT_A;s1-AM_EVT_HSM_EXIT;s-AM_EVT_HSM_EXIT;s-AM_EVT_HSM_ENTRY;s1-AM_EVT_HSM_ENTRY;"},
+        {HSM_EVT_B, "s1-HSM_EVT_B;s1-AM_EVT_HSM_EXIT;s1-AM_EVT_HSM_ENTRY;"},
+        {HSM_EVT_C, "s1-HSM_EVT_C;s1-AM_EVT_HSM_EXIT;s1-AM_EVT_HSM_ENTRY;"},
         /* clang-format on */
     };
 

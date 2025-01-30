@@ -51,20 +51,20 @@ enum am_fsm_evt {
      * Run entry action(s) for a given state.
      * No state transition is allowed in response to this event.
      */
-    AM_FSM_EVT_ENTRY = AM_EVT_RANGE_FSM_BEGIN,
+    AM_EVT_FSM_ENTRY = AM_EVT_RANGE_FSM_BEGIN,
 
     /**
      * Exit event.
      * Run exit action(s) for a given state.
      * No state transition is allowed in response to this event.
      */
-    AM_FSM_EVT_EXIT,
+    AM_EVT_FSM_EXIT,
 
     /** FSM event with maximum value */
-    AM_FSM_EVT_MAX = AM_FSM_EVT_EXIT
+    AM_EVT_FSM_MAX = AM_EVT_FSM_EXIT
 };
 
-AM_ASSERT_STATIC(AM_FSM_EVT_MAX <= AM_EVT_RANGE_FSM_END);
+AM_ASSERT_STATIC(AM_EVT_FSM_MAX <= AM_EVT_RANGE_FSM_END);
 
 /**
  * FSM state handler return codes.
@@ -139,7 +139,7 @@ struct am_fsm {
 /**
  * Event processing is over. Transition is taken.
  *
- * It should never be returned for #AM_FSM_EVT_ENTRY or #AM_FSM_EVT_EXIT events.
+ * It should never be returned for #AM_EVT_FSM_ENTRY or #AM_EVT_FSM_EXIT events.
  *
  * @param s  the new state of type #am_fsm_state_fn
  */
@@ -148,7 +148,7 @@ struct am_fsm {
 /**
  * Event redispatch is requested. Transition is taken.
  *
- * It should never be returned for #AM_FSM_EVT_ENTRY or #AM_FSM_EVT_EXIT events.
+ * It should never be returned for #AM_EVT_FSM_ENTRY or #AM_EVT_FSM_EXIT events.
  * Do not redispatch the same event more than once within same
  * am_fsm_dispatch() call.
  *

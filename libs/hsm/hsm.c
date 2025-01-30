@@ -48,10 +48,10 @@ struct am_hsm_path {
 };
 
 /** canned events */
-static const struct am_event m_hsm_evt_empty = {.id = AM_HSM_EVT_EMPTY};
-static const struct am_event m_hsm_evt_init = {.id = AM_HSM_EVT_INIT};
-static const struct am_event m_hsm_evt_entry = {.id = AM_HSM_EVT_ENTRY};
-static const struct am_event m_hsm_evt_exit = {.id = AM_HSM_EVT_EXIT};
+static const struct am_event m_hsm_evt_empty = {.id = AM_EVT_HSM_EMPTY};
+static const struct am_event m_hsm_evt_init = {.id = AM_EVT_HSM_INIT};
+static const struct am_event m_hsm_evt_entry = {.id = AM_EVT_HSM_ENTRY};
+static const struct am_event m_hsm_evt_exit = {.id = AM_EVT_HSM_EXIT};
 
 static void hsm_set_state(struct am_hsm *hsm, struct am_hsm_state s) {
     hsm->state = s;

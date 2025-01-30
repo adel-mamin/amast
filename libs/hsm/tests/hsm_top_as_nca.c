@@ -48,7 +48,7 @@ static enum am_hsm_rc nca_s1(
     struct test_nca *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_HSM_EVT_INIT:
+    case AM_EVT_HSM_INIT:
         return AM_HSM_TRAN(nca_s11);
     default:
         break;
