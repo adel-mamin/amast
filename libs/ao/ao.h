@@ -61,7 +61,6 @@ struct am_ao {
     struct am_queue event_queue; /**< the event queue */
     int last_event;              /**< last processed event */
     int task_id;                 /**< task handle */
-    bool stopped;                /**< 1: AO was stopped, 0: AO wasn't stopped */
     /** initial user event - the parameter of am_ao_start() API */
     const struct am_event *init_event;
 };
@@ -360,6 +359,10 @@ void am_ao_start(
 
 /**
  * Stop active object.
+ *
+ * Can only be called by the active object itself.
+ * The active object is expected to release all allocated
+ * resources before calling this function.
  *
  * @param ao  the active object to stop
  */

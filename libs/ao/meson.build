@@ -93,4 +93,24 @@ if unit_test
         ],
         include_directories: [include_directories('tests')])
     test('publish_cooperative', e, suite: 'ao')
+
+    e = executable(
+        'stop_preemptive',
+        [
+            'tests' / 'stop.c'
+        ],
+        dependencies: [libao_preemptive_dep, libassert_dep, libpal_dep],
+        include_directories: [include_directories('tests')])
+    test('minimal_preemptive', e, suite: 'ao')
+
+    e = executable(
+        'stop_cooperative',
+        [
+            'tests' / 'stop.c'
+        ],
+        dependencies: [
+            libao_cooperative_dep, libassert_dep, libpal_dep, libbit_dep
+        ],
+        include_directories: [include_directories('tests')])
+    test('stop_cooperative', e, suite: 'ao')
 endif

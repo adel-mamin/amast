@@ -128,6 +128,37 @@ void am_ao_start(
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(NULL == me->aos[prio]);
     me->aos[prio] = ao;
+    ++me->aos_cnt;
+}
+
+void am_ao_stop(struct am_ao *ao) {
+    AM_ASSERT(ao);
+    AM_ASSERT(ao->prio < AM_AO_NUM_MAX);
+    int task_id = am_pal_task_own_id();
+    AM_ASSERT(task_id == ao->task_id); /* check API description */
+    struct am_ao_state *me = &am_ao_state_;
+    AM_ASSERT(me->aos_cnt);
+
+    am_ao_unsubscribe_all(ao);
+
+    me->crit_enter();
+
+    struct am_event **event = NULL;
+    while ((event = (struct am_event **)am_queue_pop_front(&ao->event_queue)) !=
+           NULL) {
+        me->crit_exit();
+        const struct am_event *e = *event;
+        AM_ASSERT(e);
+        am_event_free(&e);
+        me->crit_enter();
+    }
+    am_queue_dtor(&ao->event_queue);
+    am_bit_u64_clear(&am_ready_aos_, ao->prio);
+
+    me->aos[ao->prio] = NULL;
+    --me->aos_cnt;
+
+    me->crit_exit();
 }
 
 void am_ao_notify(const struct am_ao *ao) {

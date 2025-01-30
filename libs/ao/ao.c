@@ -260,16 +260,6 @@ void am_ao_ctor(struct am_ao *ao, struct am_hsm_state state) {
     am_hsm_ctor(&ao->hsm, state);
 }
 
-void am_ao_stop(struct am_ao *ao) {
-    AM_ASSERT(ao);
-    AM_ASSERT(ao->prio < AM_AO_NUM_MAX);
-
-    am_ao_unsubscribe_all(ao);
-    AM_ATOMIC_STORE_N(&ao->stopped, true);
-    struct am_ao_state *me = &am_ao_state_;
-    me->aos[ao->prio] = NULL;
-}
-
 static void am_ao_debug_stub(const struct am_ao *ao, const struct am_event *e) {
     (void)ao;
     (void)e;
