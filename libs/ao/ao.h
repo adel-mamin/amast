@@ -374,9 +374,6 @@ void am_ao_stop(struct am_ao *ao);
  */
 void am_ao_state_ctor(const struct am_ao_state_cfg *cfg);
 
-/** Destroy the internal state of active object library */
-void am_ao_state_dtor(void);
-
 /**
  * Subscribe active object to event ID.
  *

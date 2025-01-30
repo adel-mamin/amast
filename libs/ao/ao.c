@@ -310,11 +310,6 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     am_timer_state_ctor(&cfg_timer);
 }
 
-void am_ao_state_dtor(void) {
-    struct am_ao_state *me = &am_ao_state_;
-    AM_ATOMIC_STORE_N(&me->ao_state_dtor_called, true);
-}
-
 void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub) {
     AM_ASSERT(sub);
     AM_ASSERT(nsub > 0);

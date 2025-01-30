@@ -62,9 +62,6 @@ struct am_ao_state {
     void (*crit_enter)(void);
     /** Exit critical section. */
     void (*crit_exit)(void);
-
-    /** check if am_ao_state_dtor() was called */
-    bool ao_state_dtor_called;
 };
 
 extern struct am_ao_state am_ao_state_;
