@@ -50,7 +50,7 @@ struct ringbuf_reader {
     struct am_ao ao;
     int len;
     int total_len;
-    struct am_event_timer timer_wait;
+    struct am_timer timer_wait;
 };
 
 static struct ringbuf_reader m_ringbuf_reader;
@@ -103,7 +103,7 @@ void ringbuf_reader_ctor(void) {
     memset(me, 0, sizeof(*me));
     me->len = 1;
     am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(ringbuf_reader_init));
-    am_timer_event_ctor(
+    am_timer_ctor(
         &me->timer_wait,
         /*id=*/AM_EVT_RINGBUF_WAIT,
         /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT,

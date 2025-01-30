@@ -63,14 +63,13 @@ static void test_arm(void) {
     am_event_state_ctor(&cfg_event);
 
     {
-        static char
-            pool[2 * AM_POOL_BLOCK_SIZEOF(struct am_event_timer)] AM_ALIGNED(
-                AM_ALIGN_MAX
-            );
+        static char pool[2 * AM_POOL_BLOCK_SIZEOF(struct am_timer)] AM_ALIGNED(
+            AM_ALIGN_MAX
+        );
         am_event_add_pool(
             pool,
             (int)sizeof(pool),
-            AM_POOL_BLOCK_SIZEOF(struct am_event_timer),
+            AM_POOL_BLOCK_SIZEOF(struct am_timer),
             AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF_EVENT)
         );
     }
@@ -85,14 +84,14 @@ static void test_arm(void) {
     };
     am_timer_state_ctor(&cfg_timer);
 
-    struct am_event_timer event;
-    am_timer_event_ctor(
+    struct am_timer event;
+    am_timer_ctor(
         &event, /*id=*/EVT_TEST, AM_PAL_TICK_DOMAIN_DEFAULT, &m_owner
     );
     am_timer_arm(&event, /*ticks=*/1, /*interval=*/0);
     AM_ASSERT(am_timer_is_armed(&event));
 
-    struct am_event_timer *event2 = am_timer_event_allocate(
+    struct am_timer *event2 = am_timer_allocate(
         /*id=*/EVT_TEST2,
         /*size=*/(int)sizeof(*event2),
         AM_PAL_TICK_DOMAIN_DEFAULT,

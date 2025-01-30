@@ -65,15 +65,15 @@ struct am_timer_state_cfg {
     am_timer_publish_fn publish;
 
     /**
-     * Update the content of the given timer event.
+     * Update the content of the given timer.
      *
      * Optional, can be NULL.
      *
-     * @param event  the timer event to update
+     * @param timer  the timer to update
      *
-     * @return the updated timer event
+     * @return the updated timer
      */
-    struct am_event_timer *(*update)(struct am_event_timer *event);
+    struct am_timer *(*update)(struct am_timer *timer);
 
     /** Enter critical section. */
     void (*crit_enter)(void);
@@ -82,12 +82,12 @@ struct am_timer_state_cfg {
     void (*crit_exit)(void);
 };
 
-/** Timer event. */
-struct am_event_timer {
+/** Timer. */
+struct am_timer {
     /** event descriptor */
     struct am_event event;
 
-    /** to link timer events together */
+    /** to link timers together */
     struct am_slist_item item;
 
     /** the object, which receives the timer event */
@@ -116,43 +116,39 @@ extern "C" {
 void am_timer_state_ctor(const struct am_timer_state_cfg *cfg);
 
 /**
- * Timer event constructor.
+ * Timer constructor.
  *
- * @param event   the timer event to construct
+ * @param timer   the timer to construct
  * @param id      the timer event identifier
- * @param domain  tick domain the event belongs to
- * @param owner   the timer event's owner that gets the posted event.
+ * @param domain  tick domain the timer belongs to
+ * @param owner   the timer's owner that gets the posted event.
  *                Can be NULL, in which case the timer event is published.
  */
-void am_timer_event_ctor(
-    struct am_event_timer *event, int id, int domain, void *owner
-);
+void am_timer_ctor(struct am_timer *timer, int id, int domain, void *owner);
 
 /**
- * Allocate and construct timer event.
+ * Allocate and construct timer.
  *
  * Cannot fail. Cannot be freed. Never garbage collected.
- * The returned timer event is fully constructed.
- * No need to call am_timer_event_ctor() for it.
- * Provides an alternative way to reserve memory for timer events in
+ * The returned timer is fully constructed.
+ * No need to call am_timer_ctor() for it.
+ * Provides an alternative way to reserve memory for timers in
  * addition to the static allocation in user code.
- * Allocation of timer event using this API is preferred as it
- * improves cache locality of timer event structures.
+ * Allocation of timer using this API is preferred as it
+ * improves cache locality of timer structures.
  *
  * @param id      the timer event id
- * @param size    the timer event size [bytes]
+ * @param size    the timer size [bytes]
  * @param domain  the clock domain [0-AM_PAL_TICK_DOMAIN_MAX[
- * @param owner   the timer event's owner that gets the posted event.
+ * @param owner   the timer's owner that gets the posted event.
  *                Can be NULL, in which case the timer event is published.
  */
-struct am_event_timer *am_timer_event_allocate(
-    int id, int size, int domain, void *owner
-);
+struct am_timer *am_timer_allocate(int id, int size, int domain, void *owner);
 
 /**
  * Tick timer.
  *
- * Update all armed timers and fire expired timer events.
+ * Update all armed timers and fire expired timers.
  * Must be called every tick.
  *
  * @param domain  only tick timers in this tick domain
@@ -160,40 +156,45 @@ struct am_event_timer *am_timer_event_allocate(
 void am_timer_tick(int domain);
 
 /**
- * Send timer event to owner in specified number of ticks.
+ * Arm timer.
  *
- * The owner is set in am_timer_event_ctor() or am_timer_event_allocate() calls.
+ * Sends timer event to owner in specified number of ticks.
+ * It is fine to arm an already armed timer.
  *
- * @param event     the timer event to arm
+ * The owner is set in am_timer_ctor() or am_timer_allocate() calls.
+ *
+ * @param timer     the timer to arm
  * @param ticks     the timer event is to be sent in these many ticks
  * @param interval  the timer event is to be re-sent in these many ticks
  *                  after the event is sent for the fist time.
- *                  Can be 0, in which case the timer event is one shot.
+ *                  Can be 0, in which case the timer is one shot.
  */
-void am_timer_arm(struct am_event_timer *event, int ticks, int interval);
+void am_timer_arm(struct am_timer *timer, int ticks, int interval);
 
 /**
- * Disarm timer event.
+ * Disarm timer.
  *
- * @param event  the timer event to disarm
+ * It is fine to disarm an already disarmed timer.
  *
- * @retval true   the timer event was armed
- * @retval false  the timer event was not armed
+ * @param timer  the timer to disarm
+ *
+ * @retval true   the timer was armed
+ * @retval false  the timer was not armed
  */
-bool am_timer_disarm(struct am_event_timer *event);
+bool am_timer_disarm(struct am_timer *timer);
 
 /**
- * Check if timer event is armed.
+ * Check if timer is armed.
  *
- * @param event  the timer event to check
+ * @param timer  the timer to check
  *
- * @retval true   the timer event is armed
- * @retval false  the timer event is not armed
+ * @retval true   the timer is armed
+ * @retval false  the timer is not armed
  */
-bool am_timer_is_armed(const struct am_event_timer *event);
+bool am_timer_is_armed(const struct am_timer *timer);
 
 /**
- * Check if timer domain has armed timer events.
+ * Check if timer domain has armed timers.
  *
  * The function is to be called from a critical section.
  * So, it can be called to check if there are any pending timers
@@ -206,27 +207,27 @@ bool am_timer_is_armed(const struct am_event_timer *event);
  * @param domain  the domain to check
  *
  * @retval true   the timer domain is empty
- * @retval false  the timer domain has armed timer events
+ * @retval false  the timer domain has armed timers
  */
 bool am_timer_domain_is_empty(int domain);
 
 /**
  * Get number of ticks till timer shot.
  *
- * @param event  the timer handler
+ * @param timer  the timer handler
  *
  * @return the timer event is sent in this number of ticks
  */
-int am_timer_get_ticks(const struct am_event_timer *event);
+int am_timer_get_ticks(const struct am_timer *timer);
 
 /**
  * Get timer interval.
  *
- * @param event  the timer handler
+ * @param timer  the timer handler
  *
  * @return the timer event is sent with this interval [ticks]
  */
-int am_timer_get_interval(const struct am_event_timer *event);
+int am_timer_get_interval(const struct am_timer *timer);
 
 #ifdef __cplusplus
 }

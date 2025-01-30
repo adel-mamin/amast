@@ -80,8 +80,8 @@ struct async {
     struct am_ao ao;
     int ryg_interval_ticks;
     int gyr_interval_ticks;
-    struct am_event_timer timer_ryg;
-    struct am_event_timer timer_gyr;
+    struct am_timer timer_ryg;
+    struct am_timer timer_gyr;
     struct am_async async_ryg;
     struct am_async async_gyr;
 };
@@ -215,13 +215,13 @@ static enum am_hsm_rc async_init(
 static void async_ctor(struct async *me) {
     am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(async_init));
 
-    am_timer_event_ctor(
+    am_timer_ctor(
         &me->timer_gyr,
         ASYNC_EVT_TIMER_GYR,
         /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT,
         &me->ao
     );
-    am_timer_event_ctor(
+    am_timer_ctor(
         &me->timer_ryg,
         ASYNC_EVT_TIMER_RYG,
         /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT,

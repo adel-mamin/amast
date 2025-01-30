@@ -42,7 +42,7 @@ static struct philo {
     struct am_ao ao;
     int id;
     int cnt;
-    struct am_event_timer *timer;
+    struct am_timer *timer;
 } m_philo[PHILO_NUM];
 
 struct am_ao *g_ao_philo[PHILO_NUM] = {
@@ -142,9 +142,9 @@ void philo_ctor(int id) {
     me->id = id;
     am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(philo_init));
 
-    me->timer = (struct am_event_timer *)am_timer_event_allocate(
+    me->timer = (struct am_timer *)am_timer_allocate(
         /*id=*/EVT_TIMEOUT,
-        /*size=*/sizeof(struct am_event_timer),
+        /*size=*/sizeof(struct am_timer),
         /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT,
         &me->ao
     );
