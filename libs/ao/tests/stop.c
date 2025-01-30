@@ -25,10 +25,8 @@
 /**
  * @file
  *
- * Minimal example of two active objects sending static messages to each other.
- * No event pool allocation is needed.
- * No pub/sub memory allocation is needed.
- * No timers.
+ * Unit test am_ao_stop() API.
+ * Creates a single AO and waits till it stops itself.
  */
 
 #include <stddef.h>
