@@ -37,7 +37,7 @@
 #define AM_EVT_RINGBUF_WRITE (AM_EVT_USER + 1)
 #define AM_EVT_RINGBUF_WAIT (AM_EVT_USER + 2)
 
-extern struct am_ringbuf_desc g_ringbuf;
+extern struct am_ringbuf g_ringbuf;
 
 extern const uint8_t g_ringbuf_data[];
 extern int g_ringbuf_data_len;

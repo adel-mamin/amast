@@ -47,15 +47,15 @@ struct am_alignof_slist_item {
 };
 const int am_alignof_slist_item = offsetof(struct am_alignof_slist_item, d);
 
-void am_slist_init(struct am_slist *me) {
-    AM_ASSERT(me);
-    me->sentinel.next = &me->sentinel;
-    me->back = &me->sentinel;
+void am_slist_init(struct am_slist *list) {
+    AM_ASSERT(list);
+    list->sentinel.next = &list->sentinel;
+    list->back = &list->sentinel;
 }
 
-bool am_slist_is_empty(const struct am_slist *me) {
-    AM_ASSERT(me);
-    return me->sentinel.next == &me->sentinel;
+bool am_slist_is_empty(const struct am_slist *list) {
+    AM_ASSERT(list);
+    return list->sentinel.next == &list->sentinel;
 }
 
 bool am_slist_item_is_linked(const struct am_slist_item *item) {
@@ -69,36 +69,36 @@ void am_slist_item_init(struct am_slist_item *item) {
 }
 
 void am_slist_push_after(
-    struct am_slist *me,
+    struct am_slist *list,
     struct am_slist_item *item,
     struct am_slist_item *newitem
 ) {
-    AM_ASSERT(me);
+    AM_ASSERT(list);
     AM_ASSERT(item);
     AM_ASSERT(item->next);
     AM_ASSERT(newitem);
 
     newitem->next = item->next;
     item->next = newitem;
-    if (me->back == item) {
-        me->back = newitem;
+    if (list->back == item) {
+        list->back = newitem;
     }
 }
 
 struct am_slist_item *am_slist_pop_after(
-    struct am_slist *me, struct am_slist_item *item
+    struct am_slist *list, struct am_slist_item *item
 ) {
-    AM_ASSERT(me);
+    AM_ASSERT(list);
     AM_ASSERT(item);
     AM_ASSERT(item->next);
     AM_ASSERT(item->next->next);
 
     struct am_slist_item *pop = item->next;
-    if (pop == &me->sentinel) {
+    if (pop == &list->sentinel) {
         return NULL;
     }
-    if (me->back == pop) {
-        me->back = item;
+    if (list->back == pop) {
+        list->back = item;
     }
     item->next = pop->next;
 
@@ -106,44 +106,44 @@ struct am_slist_item *am_slist_pop_after(
 }
 
 struct am_slist_item *am_slist_next_item(
-    const struct am_slist *me, const struct am_slist_item *item
+    const struct am_slist *list, const struct am_slist_item *item
 ) {
-    AM_ASSERT(me);
+    AM_ASSERT(list);
     AM_ASSERT(item);
-    return (item->next == &me->sentinel) ? NULL : item->next;
+    return (item->next == &list->sentinel) ? NULL : item->next;
 }
 
 struct am_slist_item *am_slist_find(
-    const struct am_slist *me, am_slist_item_found_fn is_found, void *context
+    const struct am_slist *list, am_slist_item_found_fn is_found, void *context
 ) {
-    AM_ASSERT(me);
+    AM_ASSERT(list);
     AM_ASSERT(is_found);
 
-    struct am_slist_item *item = me->sentinel.next;
-    while ((item != &me->sentinel) && !is_found(context, item)) {
+    struct am_slist_item *item = list->sentinel.next;
+    while ((item != &list->sentinel) && !is_found(context, item)) {
         item = item->next;
     }
-    return (item == &me->sentinel) ? NULL : item;
+    return (item == &list->sentinel) ? NULL : item;
 }
 
-struct am_slist_item *am_slist_peek_front(const struct am_slist *me) {
-    AM_ASSERT(me);
-    return am_slist_is_empty(me) ? NULL : me->sentinel.next;
+struct am_slist_item *am_slist_peek_front(const struct am_slist *list) {
+    AM_ASSERT(list);
+    return am_slist_is_empty(list) ? NULL : list->sentinel.next;
 }
 
-struct am_slist_item *am_slist_peek_back(const struct am_slist *me) {
-    AM_ASSERT(me);
-    return am_slist_is_empty(me) ? NULL : me->back;
+struct am_slist_item *am_slist_peek_back(const struct am_slist *list) {
+    AM_ASSERT(list);
+    return am_slist_is_empty(list) ? NULL : list->back;
 }
 
 bool am_slist_owns(
-    const struct am_slist *me, const struct am_slist_item *item
+    const struct am_slist *list, const struct am_slist_item *item
 ) {
-    AM_ASSERT(me);
+    AM_ASSERT(list);
     AM_ASSERT(item);
 
-    struct am_slist_item *next = me->sentinel.next;
-    while (next != &me->sentinel) {
+    struct am_slist_item *next = list->sentinel.next;
+    while (next != &list->sentinel) {
         if (next == item) {
             return true;
         }
@@ -152,16 +152,16 @@ bool am_slist_owns(
     return false;
 }
 
-void am_slist_push_front(struct am_slist *me, struct am_slist_item *item) {
-    am_slist_push_after(me, &me->sentinel, item);
+void am_slist_push_front(struct am_slist *list, struct am_slist_item *item) {
+    am_slist_push_after(list, &list->sentinel, item);
 }
 
-struct am_slist_item *am_slist_pop_front(struct am_slist *me) {
-    return am_slist_pop_after(me, &me->sentinel);
+struct am_slist_item *am_slist_pop_front(struct am_slist *list) {
+    return am_slist_pop_after(list, &list->sentinel);
 }
 
-void am_slist_push_back(struct am_slist *me, struct am_slist_item *item) {
-    am_slist_push_after(me, me->back, item);
+void am_slist_push_back(struct am_slist *list, struct am_slist_item *item) {
+    am_slist_push_after(list, list->back, item);
 }
 
 void am_slist_append(struct am_slist *to, struct am_slist *from) {
@@ -177,12 +177,14 @@ void am_slist_append(struct am_slist *to, struct am_slist *from) {
     am_slist_init(from);
 }
 
-void am_slist_iterator_init(struct am_slist *me, struct am_slist_iterator *it) {
-    AM_ASSERT(me);
+void am_slist_iterator_init(
+    struct am_slist *list, struct am_slist_iterator *it
+) {
+    AM_ASSERT(list);
     AM_ASSERT(it);
 
-    it->me = me;
-    it->cur = &me->sentinel;
+    it->list = list;
+    it->cur = &list->sentinel;
     it->prev = NULL;
 }
 
@@ -193,7 +195,7 @@ struct am_slist_item *am_slist_iterator_next(struct am_slist_iterator *it) {
     it->prev = it->cur;
     it->cur = it->cur->next;
 
-    return (it->cur == &it->me->sentinel) ? NULL : it->cur;
+    return (it->cur == &it->list->sentinel) ? NULL : it->cur;
 }
 
 struct am_slist_item *am_slist_iterator_pop(struct am_slist_iterator *it) {
@@ -202,8 +204,8 @@ struct am_slist_item *am_slist_iterator_pop(struct am_slist_iterator *it) {
 
     struct am_slist_item *pop = it->cur;
     it->prev->next = pop->next;
-    if (it->me->back == pop) {
-        it->me->back = it->prev;
+    if (it->list->back == pop) {
+        it->list->back = it->prev;
     }
     it->cur = it->prev;
     it->prev = NULL;

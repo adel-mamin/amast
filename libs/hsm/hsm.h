@@ -112,7 +112,7 @@ struct am_hsm;
  * switch statement. Event handlers should avoid using any code outside
  * of the switch statement, especially code that has side effects.
  *
- * @param hsm    the HSM handler
+ * @param hsm    the HSM
  * @param event  the event to handle
  *
  * @return return code
@@ -289,7 +289,7 @@ struct am_hsm {
  *
  * Does not free the event - this is caller's responsibility.
  *
- * @param hsm    the HSM handler
+ * @param hsm    the HSM
  * @param event  the event to dispatch
  */
 void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event);
@@ -301,7 +301,7 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event);
  * Use sparingly to test the active state of other state machine as
  * it breaks encapsulation.
  *
- * @param hsm    the HSM handler
+ * @param hsm    the HSM
  * @param state  the state to check
  *
  * @retval false  not in the state in the hierarchical sense
@@ -310,13 +310,13 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event);
 bool am_hsm_is_in(struct am_hsm *hsm, struct am_hsm_state state);
 
 /**
- * Check if active state equals to \p state (not in hierarchical sense).
+ * Check if HSM's active state equals to \p state (not in hierarchical sense).
  *
  * If active state of hsm is S1, which is substate of S, then
  * am_hsm_state_is_eq(hsm, AM_HSM_STATE_CTOR(S1)) is true, but
  * am_hsm_state_is_eq(hsm, AM_HSM_STATE_CTOR(S)) is false.
  *
- * @param hsm    the HSM handler
+ * @param hsm    the HSM
  * @param state  the state to compare against
  *
  * @retval true   the active HSM state equals \p state
@@ -325,26 +325,26 @@ bool am_hsm_is_in(struct am_hsm *hsm, struct am_hsm_state state);
 bool am_hsm_state_is_eq(const struct am_hsm *hsm, struct am_hsm_state state);
 
 /**
- * Get submachine instance.
+ * Get HSM submachine instance.
  *
  * Always returns the submachine instance of the calling state function.
  * Calling the function from a state that is not part of any submachine
  * will always return 0.
  *
- * @param hsm  the HSM handler
+ * @param hsm  the HSM
  *
  * @return the submachine instance
  */
 int am_hsm_instance(const struct am_hsm *hsm);
 
 /**
- * Get active state.
+ * Get HSM's active state.
  *
  * E.g., assume HSM is in state S11,
  * which is a substate of S1, which is in turn a substate of S.
  * In this case this function always returns S11.
  *
- * @param hsm  the HSM handler
+ * @param hsm  the HSM
  *
  * @return the active state
  */
@@ -374,7 +374,7 @@ void am_hsm_dtor(struct am_hsm *hsm);
  * Call the initial state set by am_hsm_ctor() with provided
  * optional initial event.
  *
- * @param hsm         the HSM handler
+ * @param hsm         the HSM to init
  * @param init_event  the init event. Can be NULL.
  */
 void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event);
@@ -387,7 +387,7 @@ void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event);
  * Should only be called after calling am_hsm_ctor() and not during ongoing
  * HSM event processing.
  *
- * @param hsm  the handler of HSM to spy
+ * @param hsm  the HSM to spy
  * @param spy  the spy callback. Use NULL to unset.
  */
 void am_hsm_set_spy(struct am_hsm *hsm, am_hsm_spy_fn spy);

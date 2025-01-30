@@ -38,35 +38,35 @@
 #include "ringbuf/ringbuf.h"
 
 static void test_ringbuf_1(void) {
-    struct am_ringbuf_desc desc;
+    struct am_ringbuf rb;
     uint8_t buf[8];
     uint8_t data[] = {1, 2, 3, 4};
 
-    am_ringbuf_ctor(&desc, buf, AM_COUNTOF(buf));
+    am_ringbuf_ctor(&rb, buf, AM_COUNTOF(buf));
     for (int i = 1; i <= AM_COUNTOF(data); ++i) {
         {
-            int size = am_ringbuf_get_data_size(&desc);
+            int size = am_ringbuf_get_data_size(&rb);
             AM_ASSERT(0 == size);
         }
         {
             uint8_t *ptr = NULL;
-            int size = am_ringbuf_get_write_ptr(&desc, &ptr, /*size=*/i);
+            int size = am_ringbuf_get_write_ptr(&rb, &ptr, /*size=*/i);
             AM_ASSERT(size >= i);
             memcpy(ptr, data, (size_t)i);
-            am_ringbuf_flush(&desc, /*offset=*/i);
+            am_ringbuf_flush(&rb, /*offset=*/i);
         }
         {
-            int size = am_ringbuf_get_data_size(&desc);
+            int size = am_ringbuf_get_data_size(&rb);
             AM_ASSERT(i == size);
         }
         {
             uint8_t *ptr = NULL;
-            int size = am_ringbuf_get_read_ptr(&desc, &ptr);
+            int size = am_ringbuf_get_read_ptr(&rb, &ptr);
             AM_ASSERT(i == size);
             uint8_t tmp[AM_COUNTOF(data)];
             memcpy(tmp, ptr, (size_t)size);
             AM_ASSERT(0 == memcmp(tmp, data, (size_t)size));
-            am_ringbuf_seek(&desc, /*offset=*/size);
+            am_ringbuf_seek(&rb, /*offset=*/size);
         }
     }
 }

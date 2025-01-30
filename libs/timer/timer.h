@@ -212,7 +212,7 @@ bool am_timer_is_armed(const struct am_timer *timer);
 bool am_timer_domain_is_empty(int domain);
 
 /**
- * Get number of ticks till timer shot.
+ * Get number of ticks till timer event is sent.
  *
  * @param timer  the timer handler
  *

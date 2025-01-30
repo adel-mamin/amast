@@ -41,7 +41,7 @@
 #include "pal/pal.h"
 #include "state.h"
 
-struct am_ringbuf_desc g_ringbuf;
+struct am_ringbuf g_ringbuf;
 
 const uint8_t g_ringbuf_data[] = {0, 1, 2, 3, 4, 5, 6, 7};
 int g_ringbuf_data_len = AM_COUNTOF(g_ringbuf_data);

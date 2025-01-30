@@ -87,7 +87,7 @@ struct am_fsm;
 /**
  * FSM state (event handler) function type.
  *
- * @param fsm    the FSM handler
+ * @param fsm    the FSM
  * @param event  the event to handle
  * @return return code
  */
@@ -159,7 +159,7 @@ struct am_fsm {
 /**
  * Synchronous dispatch of event to a given FSM.
  *
- * @param fsm    the FSM handler
+ * @param fsm    the FSM
  * @param event  the event to dispatch
  */
 void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event);
@@ -167,7 +167,7 @@ void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event);
 /**
  * Test whether FSM is in a given state.
  *
- * @param fsm     the FSM handler
+ * @param fsm     the FSM
  * @param state   the state to check
  * @retval false  not in the state
  * @retval true   in the state
@@ -175,9 +175,9 @@ void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event);
 bool am_fsm_is_in(const struct am_fsm *fsm, am_fsm_state_fn state);
 
 /**
- * Get active state.
+ * Get FSM's active state.
  *
- * @param fsm  the FSM handler
+ * @param fsm  the FSM
  * @return the active state
  */
 am_fsm_state_fn am_fsm_state(const struct am_fsm *fsm);
@@ -204,7 +204,7 @@ void am_fsm_dtor(struct am_fsm *fsm);
  * Call the initial state set by am_fsm_ctor() with provided
  * optional init event.
  *
- * @param fsm         the FSM handler
+ * @param fsm         the FSM to init
  * @param init_event  the init event. Can be NULL.
  */
 void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event);
@@ -217,7 +217,7 @@ void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event);
  * Should only be called after calling am_fsm_ctor() and not during ongoing
  * FSM event processing.
  *
- * @param fsm  the handler of FSM to spy
+ * @param fsm  the FSM to spy
  * @param spy  the spy callback. Use NULL to unset.
  */
 void am_fsm_set_spy(struct am_fsm *fsm, am_fsm_spy_fn spy);
