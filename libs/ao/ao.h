@@ -481,6 +481,13 @@ void am_ao_log_last_events(void (*log)(const char *name, int event));
  */
 void am_ao_wait_start_all(void);
 
+/**
+ * Get number of running active objects.
+ *
+ * @return the number of running active objects.
+ */
+int am_ao_get_cnt(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -112,7 +112,7 @@ void am_queue_ctor(
 /**
  * Queue destruction.
  *
- * @param me         the queue
+ * @param me  the queue
  */
 void am_queue_dtor(struct am_queue *me);
 

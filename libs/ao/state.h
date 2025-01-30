@@ -51,6 +51,8 @@ struct am_ao_state {
     int nsub;
     /** User defined active objects, or NULL if not defined. */
     struct am_ao *aos[AM_AO_NUM_MAX];
+    /** Number of runnings AOs */
+    int aos_cnt;
     /** Ensure simultaneous start of all active objects. */
     int startup_mutex;
     /** User callback on idle state, when no AO is running. */

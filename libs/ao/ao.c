@@ -379,3 +379,11 @@ void am_ao_init_all(void) {
         }
     }
 }
+
+int am_ao_get_cnt(void) {
+    struct am_ao_state *me = &am_ao_state_;
+    me->crit_enter();
+    int cnt = me->aos_cnt;
+    me->crit_exit();
+    return cnt;
+}
