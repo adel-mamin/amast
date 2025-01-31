@@ -265,8 +265,8 @@ doxyfile = configure_file(
     input: 'Doxyfile.in',
     output: 'Doxyfile',
     configuration: {
-        'PATH_INCLUDE': meson.project_source_root(),
-        'PATH_OUTPUT': meson.project_build_root(),
+        'SOURCE_ROOT': meson.project_source_root(),
+        'OUTPUT_DIR': meson.project_build_root(),
     }
 )
 
