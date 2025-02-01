@@ -41,14 +41,13 @@
 static struct am_bit_u64 am_ready_aos_ = {0};
 
 bool am_ao_run_all(void) {
-    {
-        static bool init_done = false;
-        if (AM_UNLIKELY(!init_done)) {
-            am_ao_init_all();
-            init_done = true;
-        }
-    }
     struct am_ao_state *me = &am_ao_state_;
+
+    if (AM_UNLIKELY(!me->run_all_called_once)) {
+        am_ao_init_all();
+        me->run_all_called_once = true;
+    }
+
     bool dispatched = false;
     do {
         me->crit_enter();
@@ -129,6 +128,10 @@ void am_ao_start(
     AM_ASSERT(NULL == me->aos[prio]);
     me->aos[prio] = ao;
     ++me->aos_cnt;
+
+    if (me->run_all_called_once) {
+        am_hsm_init(&ao->hsm, init_event);
+    }
 }
 
 void am_ao_stop(struct am_ao *ao) {

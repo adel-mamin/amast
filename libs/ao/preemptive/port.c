@@ -65,14 +65,13 @@ static void am_ao_task(void *param) {
 }
 
 bool am_ao_run_all(void) {
-    {
-        static bool init_done = false;
-        if (!init_done) {
-            am_ao_init_all();
-            init_done = true;
-        }
+    struct am_ao_state *me = &am_ao_state_;
+
+    if (!me->run_all_called_once) {
+        am_ao_init_all();
+        me->run_all_called_once = true;
     }
-    const struct am_ao_state *me = &am_ao_state_;
+
     /* start all AOs */
     am_pal_mutex_unlock(me->startup_mutex);
     /* wait all AOs to complete */
@@ -115,6 +114,10 @@ void am_ao_start(
     me->crit_enter();
     ++me->aos_cnt;
     me->crit_exit();
+
+    if (me->run_all_called_once) {
+        am_hsm_init(&ao->hsm, init_event);
+    }
 
     ao->task_id = am_pal_task_create(
         name,

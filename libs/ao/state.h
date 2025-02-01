@@ -64,6 +64,14 @@ struct am_ao_state {
     void (*crit_enter)(void);
     /** Exit critical section. */
     void (*crit_exit)(void);
+
+    /**
+     * am_am_run_all() was called at least once.
+     *
+     * Used to decide if am_ao_start() should call am_hsm_init()
+     * or skip it and rely on am_ao_run_all() calling it later.
+     */
+    bool run_all_called_once;
 };
 
 extern struct am_ao_state am_ao_state_;
