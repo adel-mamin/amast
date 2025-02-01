@@ -37,14 +37,14 @@
 
 #include "queue/queue.h"
 
-/** No event ID should have this value */
+/** No event ID should have this value. */
 #define AM_EVT_INVALID 0
 
-/** HSM events range */
+/** HSM events range. */
 #define AM_EVT_RANGE_HSM_BEGIN 1
 #define AM_EVT_RANGE_HSM_END 4
 
-/** FSM events range */
+/** FSM events range. */
 #define AM_EVT_RANGE_FSM_BEGIN 5
 #define AM_EVT_RANGE_FSM_END 6
 
@@ -91,14 +91,20 @@ extern const int am_alignof_event_ptr;
 #define AM_ALIGNOF_EVENT am_alignof_event
 #define AM_ALIGNOF_EVENT_PTR am_alignof_event_ptr
 
-/** Event API return codes */
+/** Event API return codes. */
 enum am_event_rc {
-    AM_EVENT_RC_ERR = -1,
-    AM_EVENT_RC_OK = 0,
+    AM_EVENT_RC_ERR = -1,           /**< failure */
+    AM_EVENT_RC_OK = 0,             /**< success */
+    /**
+     * Success.
+     * Also tells that event queue was empty before the call.
+     * This allows to signal the event queue owner about
+     * new event available for processing.
+     */
     AM_EVENT_RC_OK_QUEUE_WAS_EMPTY
 };
 
-/** Event descriptor */
+/** Event descriptor. */
 struct am_event {
     /** event ID */
     int id;
@@ -248,7 +254,7 @@ struct am_event *am_event_dup(
  * @param event        event to log
  * @param size         the event size [bytes]
  */
-typedef void (*am_event_log_func)(
+typedef void (*am_event_log_fn)(
     int pool_index, int event_index, const struct am_event *event, int size
 );
 
@@ -260,7 +266,7 @@ typedef void (*am_event_log_func)(
  * @param num  the number of events to log in each pool (if <0, then log all)
  * @param cb   the logging callback
  */
-void am_event_log_pools(int num, am_event_log_func cb);
+void am_event_log_pools(int num, am_event_log_fn cb);
 
 /**
  * Check if event is static.

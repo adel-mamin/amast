@@ -24,6 +24,11 @@
  * SOFTWARE.
  */
 
+/**
+ * @file types.h
+ * @brief Common types.
+ */
+
 #ifndef AM_TYPES_H_INCLUDED
 #define AM_TYPES_H_INCLUDED
 

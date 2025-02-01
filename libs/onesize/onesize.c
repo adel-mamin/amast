@@ -116,7 +116,7 @@ void am_onesize_free_all(struct am_onesize *hnd) {
 }
 
 void am_onesize_iterate_over_allocated(
-    struct am_onesize *hnd, int num, am_onesize_iterate_func cb, void *ctx
+    struct am_onesize *hnd, int num, am_onesize_iterate_fn cb, void *ctx
 ) {
     AM_ASSERT(hnd);
     AM_ASSERT(cb);

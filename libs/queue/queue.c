@@ -39,9 +39,9 @@
 #include "queue/queue.h"
 
 void am_queue_ctor(
-    struct am_queue *me, int isize, int alignment, struct am_blk *blk
+    struct am_queue *queue, int isize, int alignment, struct am_blk *blk
 ) {
-    AM_ASSERT(me);
+    AM_ASSERT(queue);
     AM_ASSERT(isize > 0);
     AM_ASSERT(alignment > 0);
     AM_ASSERT(AM_IS_POW2((unsigned)alignment));
@@ -50,132 +50,132 @@ void am_queue_ctor(
     AM_ASSERT(AM_ALIGNOF_PTR(blk->ptr) >= alignment);
     AM_ASSERT(blk->size > 0);
 
-    memset(me, 0, sizeof(*me));
+    memset(queue, 0, sizeof(*queue));
 
-    me->isize = AM_ALIGN_SIZE(isize, alignment);
+    queue->isize = AM_ALIGN_SIZE(isize, alignment);
 
-    AM_ASSERT(blk->size >= me->isize);
+    AM_ASSERT(blk->size >= queue->isize);
 
-    me->blk = *blk;
+    queue->blk = *blk;
 }
 
-void am_queue_dtor(struct am_queue *me) {
-    AM_ASSERT(me);
-    memset(me, 0, sizeof(*me));
+void am_queue_dtor(struct am_queue *queue) {
+    AM_ASSERT(queue);
+    memset(queue, 0, sizeof(*queue));
 }
 
-bool am_queue_is_empty(const struct am_queue *me) {
-    AM_ASSERT(me);
-    return (me->rd == me->wr) && !me->full;
+bool am_queue_is_empty(const struct am_queue *queue) {
+    AM_ASSERT(queue);
+    return (queue->rd == queue->wr) && !queue->full;
 }
 
-bool am_queue_is_full(const struct am_queue *me) {
-    AM_ASSERT(me);
-    return me->full;
+bool am_queue_is_full(const struct am_queue *queue) {
+    AM_ASSERT(queue);
+    return queue->full;
 }
 
-int am_queue_length(const struct am_queue *me) {
-    AM_ASSERT(me);
-    if (me->wr > me->rd) {
-        return me->wr - me->rd;
+int am_queue_length(const struct am_queue *queue) {
+    AM_ASSERT(queue);
+    if (queue->wr > queue->rd) {
+        return queue->wr - queue->rd;
     }
-    if (me->wr < me->rd) {
-        return (me->blk.size / me->isize) - me->rd + me->wr;
+    if (queue->wr < queue->rd) {
+        return (queue->blk.size / queue->isize) - queue->rd + queue->wr;
     }
-    if (me->full) {
-        return (me->blk.size / me->isize);
+    if (queue->full) {
+        return (queue->blk.size / queue->isize);
     }
     return 0;
 }
 
-int am_queue_capacity(const struct am_queue *me) {
-    AM_ASSERT(me);
-    return me->blk.size / me->isize;
+int am_queue_capacity(const struct am_queue *queue) {
+    AM_ASSERT(queue);
+    return queue->blk.size / queue->isize;
 }
 
-int am_queue_item_size(const struct am_queue *me) {
-    AM_ASSERT(me);
-    return me->isize;
+int am_queue_item_size(const struct am_queue *queue) {
+    AM_ASSERT(queue);
+    return queue->isize;
 }
 
-void *am_queue_peek_front(struct am_queue *me) {
-    AM_ASSERT(me);
+void *am_queue_peek_front(struct am_queue *queue) {
+    AM_ASSERT(queue);
 
-    if (am_queue_is_empty(me)) {
+    if (am_queue_is_empty(queue)) {
         return NULL;
     }
-    return (char *)me->blk.ptr + me->rd * me->isize;
+    return (char *)queue->blk.ptr + queue->rd * queue->isize;
 }
 
-void *am_queue_peek_back(struct am_queue *me) {
-    AM_ASSERT(me);
+void *am_queue_peek_back(struct am_queue *queue) {
+    AM_ASSERT(queue);
 
-    if (am_queue_is_empty(me)) {
+    if (am_queue_is_empty(queue)) {
         return NULL;
     }
-    int ind = me->wr ? (me->wr - 1) : (me->blk.size / me->isize - 1);
-    return (char *)me->blk.ptr + ind * me->isize;
+    int ind = queue->wr ? (queue->wr - 1) : (queue->blk.size / queue->isize - 1);
+    return (char *)queue->blk.ptr + ind * queue->isize;
 }
 
-void *am_queue_pop_front(struct am_queue *me) {
-    AM_ASSERT(me);
+void *am_queue_pop_front(struct am_queue *queue) {
+    AM_ASSERT(queue);
 
-    if (am_queue_is_empty(me)) {
+    if (am_queue_is_empty(queue)) {
         return NULL;
     }
-    void *ptr = (char *)me->blk.ptr + me->rd * me->isize;
-    me->rd = (me->rd + 1) % (me->blk.size / me->isize);
-    me->full = 0;
+    void *ptr = (char *)queue->blk.ptr + queue->rd * queue->isize;
+    queue->rd = (queue->rd + 1) % (queue->blk.size / queue->isize);
+    queue->full = 0;
 
     return ptr;
 }
 
-void *am_queue_pop_front_and_copy(struct am_queue *me, void *buf, int size) {
-    AM_ASSERT(me);
+void *am_queue_pop_front_and_copy(struct am_queue *queue, void *buf, int size) {
+    AM_ASSERT(queue);
     AM_ASSERT(buf);
-    AM_ASSERT(size >= me->isize);
+    AM_ASSERT(size >= queue->isize);
 
-    if (am_queue_is_empty(me)) {
+    if (am_queue_is_empty(queue)) {
         return NULL;
     }
-    void *popped = am_queue_pop_front(me);
-    memcpy(buf, popped, (size_t)me->isize);
+    void *popped = am_queue_pop_front(queue);
+    memcpy(buf, popped, (size_t)queue->isize);
 
     return popped;
 }
 
-bool am_queue_push_back(struct am_queue *me, const void *ptr, int size) {
-    AM_ASSERT(me);
+bool am_queue_push_back(struct am_queue *queue, const void *ptr, int size) {
+    AM_ASSERT(queue);
     AM_ASSERT(ptr);
     AM_ASSERT(size > 0);
-    AM_ASSERT(size <= me->isize);
+    AM_ASSERT(size <= queue->isize);
 
-    if (am_queue_is_full(me)) {
+    if (am_queue_is_full(queue)) {
         return false;
     }
-    void *dst = (char *)me->blk.ptr + me->wr * me->isize;
+    void *dst = (char *)queue->blk.ptr + queue->wr * queue->isize;
     memcpy(dst, ptr, (size_t)size);
-    me->wr = (me->wr + 1) % (me->blk.size / me->isize);
-    if (me->wr == me->rd) {
-        me->full = 1;
+    queue->wr = (queue->wr + 1) % (queue->blk.size / queue->isize);
+    if (queue->wr == queue->rd) {
+        queue->full = 1;
     }
     return true;
 }
 
-bool am_queue_push_front(struct am_queue *me, const void *ptr, int size) {
-    AM_ASSERT(me);
+bool am_queue_push_front(struct am_queue *queue, const void *ptr, int size) {
+    AM_ASSERT(queue);
     AM_ASSERT(ptr);
     AM_ASSERT(size > 0);
-    AM_ASSERT(size <= me->isize);
+    AM_ASSERT(size <= queue->isize);
 
-    if (am_queue_is_full(me)) {
+    if (am_queue_is_full(queue)) {
         return false;
     }
-    me->rd = me->rd ? (me->rd - 1) : (me->blk.size / me->isize - 1);
-    void *dst = (char *)me->blk.ptr + me->rd * me->isize;
-    memcpy(dst, ptr, (size_t)me->isize);
-    if (me->wr == me->rd) {
-        me->full = 1;
+    queue->rd = queue->rd ? (queue->rd - 1) : (queue->blk.size / queue->isize - 1);
+    void *dst = (char *)queue->blk.ptr + queue->rd * queue->isize;
+    memcpy(dst, ptr, (size_t)queue->isize);
+    if (queue->wr == queue->rd) {
+        queue->full = 1;
     }
     return true;
 }

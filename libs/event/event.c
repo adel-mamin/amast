@@ -224,12 +224,12 @@ struct am_event *am_event_dup(
 
 /** Event log context. */
 struct am_event_log_ctx {
-    am_event_log_func cb; /**< event log callback */
-    int pool_ind;         /**< event pool index */
+    am_event_log_fn cb; /**< event log callback */
+    int pool_ind;       /**< event pool index */
 };
 
 /**
- * A helper callback of type am_onesize_iterate_func.
+ * A helper callback of type \ref am_onesize_iterate_fn.
  *
  * Expected to be used together with am_onesize_iterate_over_allocated()
  *
@@ -254,7 +254,7 @@ static void am_event_log_cb(void *ctx, int index, const char *buf, int size) {
     log->cb(log->pool_ind, index, event, size);
 }
 
-void am_event_log_pools(int num, am_event_log_func cb) {
+void am_event_log_pools(int num, am_event_log_fn cb) {
     AM_ASSERT(num != 0);
     AM_ASSERT(cb);
 

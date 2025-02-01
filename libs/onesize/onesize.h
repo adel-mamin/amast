@@ -126,7 +126,7 @@ void am_onesize_free_all(struct am_onesize *hnd);
  * @param buf    the buffer pointer
  * @param size   the buffer size [bytes]
  */
-typedef void (*am_onesize_iterate_func)(
+typedef void (*am_onesize_iterate_fn)(
     void *ctx, int index, const char *buf, int size
 );
 
@@ -141,7 +141,7 @@ typedef void (*am_onesize_iterate_func)(
  * @param ctx  the caller's specific context to be used with the callback
  */
 void am_onesize_iterate_over_allocated(
-    struct am_onesize *hnd, int num, am_onesize_iterate_func cb, void *ctx
+    struct am_onesize *hnd, int num, am_onesize_iterate_fn cb, void *ctx
 );
 
 /**
