@@ -83,6 +83,7 @@ Event
 .. doxygenstruct:: am_event
 
 .. doxygenstruct:: am_event_state_cfg
+   :members:
 
 .. doxygenfunction:: am_event_state_ctor
 
@@ -133,4 +134,36 @@ Event
 .. doxygenfunction:: am_event_recall
 
 .. doxygenfunction:: am_event_flush_queue
+
+Timer
+-----
+
+.. doxygentypedef:: am_timer_post_fn
+
+.. doxygentypedef:: am_timer_publish_fn
+
+.. doxygenstruct:: am_timer_state_cfg
+   :members:
+
+.. doxygenstruct:: am_timer
+
+.. doxygenfunction:: am_timer_state_ctor
+
+.. doxygenfunction:: am_timer_ctor
+
+.. doxygenfunction:: am_timer_allocate
+
+.. doxygenfunction:: am_timer_tick
+
+.. doxygenfunction:: am_timer_arm
+
+.. doxygenfunction:: am_timer_disarm
+
+.. doxygenfunction:: am_timer_is_armed
+
+.. doxygenfunction:: am_timer_domain_is_empty
+
+.. doxygenfunction:: am_timer_get_ticks
+
+.. doxygenfunction:: am_timer_get_interval
 
