@@ -42,8 +42,11 @@ static void am_ao_task(void *param) {
 
     am_ao_wait_start_all();
 
-    struct am_ao_state *me = &am_ao_state_;
     struct am_ao *ao = (struct am_ao *)param;
+
+    am_hsm_init(&ao->hsm, ao->init_event);
+
+    struct am_ao_state *me = &am_ao_state_;
     while (AM_LIKELY(me->aos[ao->prio])) {
         me->crit_enter();
         while (am_queue_is_empty(&ao->event_queue)) {
@@ -65,12 +68,7 @@ static void am_ao_task(void *param) {
 }
 
 bool am_ao_run_all(void) {
-    struct am_ao_state *me = &am_ao_state_;
-
-    if (!me->run_all_called_once) {
-        am_ao_init_all();
-        me->run_all_called_once = true;
-    }
+    const struct am_ao_state *me = &am_ao_state_;
 
     /* start all AOs */
     am_pal_mutex_unlock(me->startup_mutex);
@@ -114,10 +112,6 @@ void am_ao_start(
     me->crit_enter();
     ++me->aos_cnt;
     me->crit_exit();
-
-    if (me->run_all_called_once) {
-        am_hsm_init(&ao->hsm, init_event);
-    }
 
     ao->task_id = am_pal_task_create(
         name,

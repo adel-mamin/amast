@@ -359,17 +359,6 @@ void am_ao_log_last_events(void (*log)(const char *name, int event)) {
     }
 }
 
-void am_ao_init_all(void) {
-    struct am_ao_state *me = &am_ao_state_;
-
-    for (int i = 0; i < AM_COUNTOF(me->aos); ++i) {
-        struct am_ao *ao = me->aos[i];
-        if (ao) {
-            am_hsm_init(&ao->hsm, ao->init_event);
-        }
-    }
-}
-
 int am_ao_get_cnt(void) {
     struct am_ao_state *me = &am_ao_state_;
     me->crit_enter();

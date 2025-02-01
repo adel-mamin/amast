@@ -43,9 +43,15 @@ static struct am_bit_u64 am_ready_aos_ = {0};
 bool am_ao_run_all(void) {
     struct am_ao_state *me = &am_ao_state_;
 
-    if (AM_UNLIKELY(!me->run_all_called_once)) {
-        am_ao_init_all();
-        me->run_all_called_once = true;
+    if (AM_UNLIKELY(me->hsm_init_pend)) {
+        for (int i = 0; i < AM_COUNTOF(me->aos); ++i) {
+            struct am_ao *ao = me->aos[i];
+            if (ao && ao->hsm_init_pend) {
+                am_hsm_init(&ao->hsm, ao->init_event);
+                ao->hsm_init_pend = false;
+            }
+        }
+        me->hsm_init_pend = false;
     }
 
     bool dispatched = false;
@@ -129,9 +135,7 @@ void am_ao_start(
     me->aos[prio] = ao;
     ++me->aos_cnt;
 
-    if (me->run_all_called_once) {
-        am_hsm_init(&ao->hsm, init_event);
-    }
+    ao->hsm_init_pend = me->hsm_init_pend = true;
 }
 
 void am_ao_stop(struct am_ao *ao) {

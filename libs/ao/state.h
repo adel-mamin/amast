@@ -66,12 +66,10 @@ struct am_ao_state {
     void (*crit_exit)(void);
 
     /**
-     * am_am_run_all() was called at least once.
-     *
-     * Used to decide if am_ao_start() should call am_hsm_init()
-     * or skip it and rely on am_ao_run_all() calling it later.
+     * there is a pending am_ao_task() call to be done from
+     * am_ao_run_all() function
      */
-    bool run_all_called_once;
+    unsigned hsm_init_pend : 1;
 };
 
 extern struct am_ao_state am_ao_state_;
@@ -82,13 +80,6 @@ extern struct am_ao_state am_ao_state_;
  * @param ao  the active object to notify
  */
 void am_ao_notify(const struct am_ao *ao);
-
-/**
- * Execute initial transition of top level HSMs of all active objects.
- *
- * Runs once at the beginning of am_ao_run_all().
- */
-void am_ao_init_all(void);
 
 #ifdef __cplusplus
 }

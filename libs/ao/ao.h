@@ -63,6 +63,11 @@ struct am_ao {
     int task_id;                 /**< task handle */
     /** initial user event - the parameter of am_ao_start() API */
     const struct am_event *init_event;
+    /**
+     * Mark AO as pending am_hsm_init() call.
+     * It is done either from am_ao_task() or from am_ao_run_all().
+     */
+    unsigned hsm_init_pend : 1;
 };
 
 /** Active object library state configuration. */
