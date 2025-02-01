@@ -26,6 +26,8 @@ breathe_projects = {
     'amast': @DOXYGEN_PATH_XML@
 }
 
+nitpick_ignore = [('ref.identifier', 'uint8_t')]
+
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
