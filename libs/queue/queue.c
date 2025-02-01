@@ -113,7 +113,8 @@ void *am_queue_peek_back(struct am_queue *queue) {
     if (am_queue_is_empty(queue)) {
         return NULL;
     }
-    int ind = queue->wr ? (queue->wr - 1) : (queue->blk.size / queue->isize - 1);
+    int ind =
+        queue->wr ? (queue->wr - 1) : (queue->blk.size / queue->isize - 1);
     return (char *)queue->blk.ptr + ind * queue->isize;
 }
 
@@ -171,7 +172,8 @@ bool am_queue_push_front(struct am_queue *queue, const void *ptr, int size) {
     if (am_queue_is_full(queue)) {
         return false;
     }
-    queue->rd = queue->rd ? (queue->rd - 1) : (queue->blk.size / queue->isize - 1);
+    queue->rd =
+        queue->rd ? (queue->rd - 1) : (queue->blk.size / queue->isize - 1);
     void *dst = (char *)queue->blk.ptr + queue->rd * queue->isize;
     memcpy(dst, ptr, (size_t)queue->isize);
     if (queue->wr == queue->rd) {

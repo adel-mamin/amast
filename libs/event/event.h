@@ -93,8 +93,8 @@ extern const int am_alignof_event_ptr;
 
 /** Event API return codes. */
 enum am_event_rc {
-    AM_EVENT_RC_ERR = -1,           /**< failure */
-    AM_EVENT_RC_OK = 0,             /**< success */
+    AM_EVENT_RC_ERR = -1, /**< failure */
+    AM_EVENT_RC_OK = 0,   /**< success */
     /**
      * Success.
      * Also tells that event queue was empty before the call.
