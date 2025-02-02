@@ -26,13 +26,13 @@ Some x86-64 size figures to get an idea:
 
 Library name | Code size [kB] | Data size [kB]
 -------------|----------------|---------------
-ao_cooperative | 3.50 | 0.56
-ao_preemptive | 3.53 | 0.56
+ao_cooperative | 3.61 | 0.57
+ao_preemptive | 3.58 | 0.56
 dlist | 1.29 | 0.00
 event | 3.23 | 0.24
 fsm | 0.68 | 0.02
 hsm | 2.39 | 0.03
-onesize | 1.34 | 0.00
+onesize | 1.40 | 0.00
 queue | 1.39 | 0.00
 ringbuf | 1.38 | 0.00
 slist | 1.20 | 0.01
