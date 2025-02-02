@@ -100,7 +100,7 @@ struct am_ao_state_cfg {
 #define AM_AO_NUM_MAX 64
 #endif
 
-/** Invalid AO priority */
+/** Invalid AO priority. */
 #define AM_AO_PRIO_INVALID -1
 /** The minimum AO priority level. */
 #define AM_AO_PRIO_MIN 0
@@ -126,7 +126,7 @@ extern "C" {
  * Publish event.
  *
  * The event is delivered to event queues of all the active objects,
- * which are subscribed to the event ID.
+ * which are subscribed to the event ID including the AO publishing the event.
  * The event is then handled asynchronously by the active objects.
  *
  * Use am_ao_subscribe() to subscribe an active object to an event ID.
@@ -139,7 +139,7 @@ extern "C" {
  * If your application is prepared for loosing the event,
  * then use am_ao_publish_x() function instead.
  *
- * Internally the event is added to subscribed active object event queues
+ * Internally the event is pushed to subscribed active object event queues
  * using am_event_push_back() function.
  *
  * Tries to free the event, if no active objects are subscribed to it.
@@ -160,6 +160,9 @@ void am_ao_publish(const struct am_event *event);
 /**
  * Same as am_ao_publish(), but the event is not delivered to the given AO.
  *
+ * Might be useful if the AO publishing the event does not want
+ * the framework to route the same event back to this AO.
+ *
  * @param event  the event to publish
  * @param ao     do not post the event to this active object even
  *               if it is subscribed to the event.
@@ -171,15 +174,15 @@ void am_ao_publish_exclude(
 );
 
 /**
- * Publish event.
+ * Publish event with free space guarantee in destination event queues.
  *
  * The event is delivered to event queues of all the active objects,
- * which are subscribed to the event ID.
+ * which are subscribed to the event ID including the AO publishing the event.
  * The event is then handled asynchronously by the active objects.
  *
  * Use am_ao_subscribe() to subscribe an active object to an event ID.
- * Use am_ao_unsubscribe() or am_ao_unsubscribe_all() to unsubscribe it
- * from the event ID.
+ * Use am_ao_unsubscribe() to unsubscribe it from the event ID
+ * or am_ao_unsubscribe_all() to unsubscribe it from all event IDs.
  *
  * If any active object has full event queue and cannot
  * accommodate the event, then the function skips the event delivery
@@ -188,7 +191,7 @@ void am_ao_publish_exclude(
  * If your application is not prepared for loosing the event,
  * then use am_ao_publish() function instead.
  *
- * Internally the event is added to subscribed active object event queues
+ * Internally the event is pushed to subscribed active object event queues
  * using am_event_push_back() function.
  *
  * Tries to free the event, if it was not delivered to any subscriber.
@@ -213,6 +216,16 @@ bool am_ao_publish_x(const struct am_event *event, int margin);
 
 /**
  * Same as am_ao_publish_x(), but the event is not delivered to the given AO.
+ *
+ * Might be useful if the AO publishing the event does not want
+ * the library to route the same event back to this AO.
+ *
+ * Guarantees availability of \p margin free slots in destination event queues
+ * after the event was delivered to subscribed active objects.
+ *
+ * If any active object has full event queue and cannot
+ * accommodate the event, then the function skips the event delivery
+ * to the active object.
  *
  * @param event   the event to publish
  * @param margin  free event queue slots to be available in each subscribed
@@ -423,12 +436,12 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
 /**
  * Run all active objects.
  *
- * Executes initial transition of all active objects once on
- * the first call.
- *
- * Blocks forever for preemptive AO build.
+ * Blocks for preemptive AO build and returns when all active objects
+ * were stopped.
  *
  * What follows only applies to cooperative build of AO.
+ *
+ * Executes initial transition of all newly started active objects.
  *
  * Non blocking and returns after dispatching zero or one event.
  *
@@ -440,6 +453,8 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
  *
  * @retval true   dispatched one event
  * @retval false  dispatched no events
+ *                Call am_ao_get_cnt() to make sure there are still
+ *                started active objects available.
  */
 bool am_ao_run_all(void);
 
