@@ -52,15 +52,15 @@ int main(void) {
 
     AM_ASSERT(am_onesize_get_nfree(&ma) == 2);
 
-    const void *ptr1 = am_onesize_allocate(&ma);
+    const void *ptr1 = am_onesize_allocate(&ma, /*margin=*/0);
     AM_ASSERT(ptr1);
     AM_ASSERT(am_onesize_get_nfree(&ma) == 1);
 
-    const void *ptr2 = am_onesize_allocate(&ma);
+    const void *ptr2 = am_onesize_allocate(&ma, /*margin=*/0);
     AM_ASSERT(ptr2);
     AM_ASSERT(am_onesize_get_nfree(&ma) == 0);
 
-    const void *ptr3 = am_onesize_allocate(&ma);
+    const void *ptr3 = am_onesize_allocate(&ma, /*margin=*/1);
     AM_ASSERT(!ptr3);
     AM_ASSERT(am_onesize_get_nfree(&ma) == 0);
 
@@ -70,7 +70,7 @@ int main(void) {
     am_onesize_free(&ma, ptr2);
     AM_ASSERT(am_onesize_get_nfree(&ma) == 2);
 
-    ptr1 = am_onesize_allocate(&ma);
+    ptr1 = am_onesize_allocate(&ma, /*margin=*/0);
     AM_ASSERT(ptr1);
     AM_ASSERT(am_onesize_get_nfree(&ma) == 1);
 

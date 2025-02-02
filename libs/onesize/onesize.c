@@ -39,12 +39,24 @@
 #include "slist/slist.h"
 #include "onesize/onesize.h"
 
-void *am_onesize_allocate(struct am_onesize *hnd) {
+void *am_onesize_allocate(struct am_onesize *hnd, int margin) {
     AM_ASSERT(hnd);
+    AM_ASSERT(margin >= 0);
 
     hnd->crit_enter();
 
-    if (am_slist_is_empty(&hnd->fl)) {
+    if ((margin > 0) && (hnd->nfree <= margin)) {
+        hnd->crit_exit();
+        return NULL;
+    }
+
+    if ((0 == margin) && !hnd->nfree) {
+        hnd->crit_exit();
+        AM_ASSERT(0); /* no memory buffers left to allocate */
+        return NULL;
+    }
+
+    if (!hnd->nfree) {
         hnd->crit_exit();
         return NULL;
     }
@@ -59,7 +71,6 @@ void *am_onesize_allocate(struct am_onesize *hnd) {
     AM_ASSERT((void *)elem >= hnd->pool.ptr);
     AM_ASSERT((void *)elem < (void *)((char *)hnd->pool.ptr + hnd->pool.size));
 
-    AM_ASSERT(hnd->nfree);
     --hnd->nfree;
     hnd->minfree = AM_MIN(hnd->minfree, hnd->nfree);
 

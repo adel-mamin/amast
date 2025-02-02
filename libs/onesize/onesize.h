@@ -91,14 +91,20 @@ void am_onesize_ctor(struct am_onesize *hnd, const struct am_onesize_cfg *cfg);
 /**
  * Allocate memory of block_size.
  *
- * The block at the front of the free list is removed from
- * the list and returned. Otherwise NULL is returned.
+ * If \p margin is more than zero, then checks if there are more
+ * free memory blocks available than \p margin.
+ * If not, then returns NULL. Otherwise allocates memory block and returns it.
  *
- * @param hnd   the allocator
+ * If \p margin is zero and there are no free memory blocks,
+ * then the function fails with assert.
+ * Otherwise allocates memory block and returns it.
+ *
+ * @param hnd     the allocator
+ * @param margin  free memory blocks to remain available after the allocation
  *
  * @return the allocated memory or NULL, if allocation failed
  */
-void *am_onesize_allocate(struct am_onesize *hnd);
+void *am_onesize_allocate(struct am_onesize *hnd, int margin);
 
 /**
  * Free a memory block.

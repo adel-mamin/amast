@@ -110,16 +110,7 @@ struct am_event *am_event_allocate(int id, int size, int margin) {
 
         me->crit_enter();
 
-        int nfree = am_onesize_get_nfree(osz);
-        if (margin && (nfree <= margin)) {
-            me->crit_exit();
-            break;
-        }
-        if (!nfree) {
-            me->crit_exit();
-            continue;
-        }
-        struct am_event *event = am_onesize_allocate(osz);
+        struct am_event *event = am_onesize_allocate(osz, margin);
 
         me->crit_exit();
 
