@@ -286,6 +286,8 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     me->crit_exit = cfg->crit_exit;
     me->on_idle = cfg->on_idle;
 
+    me->running_ao_prio = AM_AO_PRIO_INVALID;
+
     struct am_event_state_cfg cfg_event = {
         .crit_enter = cfg->crit_enter,
         .crit_exit = cfg->crit_exit,

@@ -170,3 +170,16 @@ void am_ao_wait_start_all(void) {
     am_pal_mutex_lock(me->startup_mutex);
     am_pal_mutex_unlock(me->startup_mutex);
 }
+
+int am_ao_get_own_prio(void) {
+    int task_id = am_pal_task_get_own_id();
+    AM_ASSERT(AM_PAL_TASK_ID_MAIN != task_id);
+    struct am_ao_state *me = &am_ao_state_;
+    for (int i = 0; i < AM_COUNTOF(me->aos); ++i) {
+        struct am_ao *ao = me->aos[i];
+        if (ao && ao->task_id == task_id) {
+            return ao->prio;
+        }
+    }
+    AM_ASSERT(0);
+}

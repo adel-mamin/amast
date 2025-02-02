@@ -66,6 +66,12 @@ struct am_ao_state {
     void (*crit_exit)(void);
 
     /**
+     * The priority of the currently running AO.
+     * Only valid for cooperative AO builds.
+     */
+    int running_ao_prio;
+
+    /**
      * there is a pending am_ao_task() call to be done from
      * am_ao_run_all() function
      */

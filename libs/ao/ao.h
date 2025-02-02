@@ -100,6 +100,8 @@ struct am_ao_state_cfg {
 #define AM_AO_NUM_MAX 64
 #endif
 
+/** Invalid AO priority */
+#define AM_AO_PRIO_INVALID -1
 /** The minimum AO priority level. */
 #define AM_AO_PRIO_MIN 0
 /** The maximum AO priority level. */
@@ -495,6 +497,13 @@ void am_ao_wait_start_all(void);
  * @return the number of running active objects.
  */
 int am_ao_get_cnt(void);
+
+/**
+ * Get active object own priority level.
+ *
+ * @return the priority level
+ */
+int am_ao_get_own_prio(void);
 
 #ifdef __cplusplus
 }

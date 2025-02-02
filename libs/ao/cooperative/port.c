@@ -47,7 +47,9 @@ bool am_ao_run_all(void) {
         for (int i = 0; i < AM_COUNTOF(me->aos); ++i) {
             struct am_ao *ao = me->aos[i];
             if (ao && ao->hsm_init_pend) {
+                me->running_ao_prio = ao->prio;
                 am_hsm_init(&ao->hsm, ao->init_event);
+                me->running_ao_prio = AM_AO_PRIO_INVALID;
                 ao->hsm_init_pend = false;
             }
         }
@@ -88,7 +90,11 @@ bool am_ao_run_all(void) {
         }
         me->debug(ao, e);
         AM_ATOMIC_STORE_N(&ao->last_event, e->id);
+        me->running_ao_prio = ao->prio;
+
         am_hsm_dispatch(&ao->hsm, e);
+
+        me->running_ao_prio = AM_AO_PRIO_INVALID;
         AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
         am_event_free(&e);
 
@@ -184,3 +190,9 @@ void am_ao_notify(const struct am_ao *ao) {
 }
 
 void am_ao_wait_start_all(void) {}
+
+int am_ao_get_own_prio(void) {
+    const struct am_ao_state *me = &am_ao_state_;
+    AM_ASSERT(AM_AO_PRIO_INVALID != me->running_ao_prio);
+    return me->running_ao_prio;
+}
