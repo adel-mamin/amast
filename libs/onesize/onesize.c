@@ -57,6 +57,13 @@ void *am_onesize_allocate(struct am_onesize *hnd, int size) {
     struct am_slist_item *elem = am_slist_pop_front(&hnd->fl);
     AM_ASSERT(elem);
 
+    /*
+     * make sure that onesize freelist bookkeeping state
+     * was not corrupted by someone
+     */
+    AM_ASSERT((void *)elem >= hnd->pool.ptr);
+    AM_ASSERT((void *)elem < (void *)((char *)hnd->pool.ptr + hnd->pool.size));
+
     AM_ASSERT(hnd->nfree);
     --hnd->nfree;
     hnd->minfree = AM_MIN(hnd->minfree, hnd->nfree);
