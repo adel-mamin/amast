@@ -39,13 +39,8 @@
 #include "slist/slist.h"
 #include "onesize/onesize.h"
 
-void *am_onesize_allocate(struct am_onesize *hnd, int size) {
+void *am_onesize_allocate(struct am_onesize *hnd) {
     AM_ASSERT(hnd);
-    AM_ASSERT(size >= 0);
-
-    if (size > hnd->block_size) {
-        return NULL;
-    }
 
     hnd->crit_enter();
 

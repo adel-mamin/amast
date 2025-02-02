@@ -119,7 +119,7 @@ struct am_event *am_event_allocate(int id, int size, int margin) {
             me->crit_exit();
             continue;
         }
-        struct am_event *event = am_onesize_allocate(osz, size);
+        struct am_event *event = am_onesize_allocate(osz);
 
         me->crit_exit();
 

@@ -89,17 +89,16 @@ extern "C" {
 void am_onesize_ctor(struct am_onesize *hnd, const struct am_onesize_cfg *cfg);
 
 /**
- * Allocate memory if \p size is <= block_size.
+ * Allocate memory of block_size.
  *
  * The block at the front of the free list is removed from
  * the list and returned. Otherwise NULL is returned.
  *
  * @param hnd   the allocator
- * @param size  amount of memory to allocate [bytes]
  *
  * @return the allocated memory or NULL, if allocation failed
  */
-void *am_onesize_allocate(struct am_onesize *hnd, int size);
+void *am_onesize_allocate(struct am_onesize *hnd);
 
 /**
  * Free a memory block.
