@@ -145,7 +145,7 @@ void am_pal_task_wait(int task);
  *
  * @return task ID
  */
-int am_pal_task_own_id(void);
+int am_pal_task_get_own_id(void);
 
 /**
  * Get current time in milliseconds.

@@ -70,7 +70,9 @@ void am_pal_crit_exit(void) {
     }
 }
 
-int am_pal_task_own_id(void) { TaskHandle_t h = xTaskGetCurrentTaskHandle(); }
+int am_pal_task_get_own_id(void) {
+    TaskHandle_t h = xTaskGetCurrentTaskHandle();
+}
 
 void *am_pal_task_create(
     const char *name,

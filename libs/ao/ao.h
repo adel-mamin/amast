@@ -55,17 +55,17 @@
 
 /** The active object. */
 struct am_ao {
-    struct am_hsm hsm;           /**< the state machine member */
-    int prio;                    /**< the priority of active object */
-    const char *name;            /**< the human readable name of AO */
-    struct am_queue event_queue; /**< the event queue */
+    struct am_hsm hsm;           /**< top level AO state machine */
+    int prio;                    /**< priority of active object */
+    const char *name;            /**< human readable name of AO */
+    struct am_queue event_queue; /**< event queue */
     int last_event;              /**< last processed event */
     int task_id;                 /**< task handle */
     /** initial user event - the parameter of am_ao_start() API */
     const struct am_event *init_event;
     /**
      * Mark AO as pending am_hsm_init() call.
-     * It is done either from am_ao_task() or from am_ao_run_all().
+     * The call is then done either from am_ao_task() or from am_ao_run_all().
      */
     unsigned hsm_init_pend : 1;
 };

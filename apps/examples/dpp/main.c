@@ -93,7 +93,7 @@ AM_NORETURN void am_assert_failure(
         assertion,
         file,
         line,
-        am_pal_task_own_id()
+        am_pal_task_get_own_id()
     );
     am_event_log_pools(/*num=*/-1, log_pool);
     am_ao_log_event_queues(/*num=*/-1, log_queue);

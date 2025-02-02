@@ -127,7 +127,7 @@ void am_ao_start(
 
     ao->prio = prio;
     ao->name = name;
-    ao->task_id = am_pal_task_own_id();
+    ao->task_id = am_pal_task_get_own_id();
     ao->init_event = init_event;
 
     struct am_ao_state *me = &am_ao_state_;
@@ -141,7 +141,7 @@ void am_ao_start(
 void am_ao_stop(struct am_ao *ao) {
     AM_ASSERT(ao);
     AM_ASSERT(ao->prio < AM_AO_NUM_MAX);
-    int task_id = am_pal_task_own_id();
+    int task_id = am_pal_task_get_own_id();
     AM_ASSERT(task_id == ao->task_id); /* check API description */
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(me->aos_cnt);

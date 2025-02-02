@@ -81,7 +81,7 @@ void am_pal_sleep_ticks(int domain, int ticks) {
 
 void am_pal_sleep_ms(int ms) { (void)ms; }
 
-int am_pal_task_own_id(void) { return -1; }
+int am_pal_task_get_own_id(void) { return -1; }
 
 AM_PRINTF(1, 2) int am_pal_printf(const char *fmt, ...) {
     va_list args;

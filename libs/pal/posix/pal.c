@@ -130,7 +130,7 @@ void am_pal_crit_exit(void) {
     AM_ASSERT(0 == rc);
 }
 
-int am_pal_task_own_id(void) {
+int am_pal_task_get_own_id(void) {
     pthread_t thread = pthread_self();
     if (task_main_.thread == thread) {
         return AM_PAL_TASK_ID_MAIN;
@@ -229,7 +229,7 @@ void am_pal_task_notify(int task) {
 
 void am_pal_task_wait(int task) {
     if (AM_PAL_TASK_ID_NONE == task) {
-        task = am_pal_task_own_id();
+        task = am_pal_task_get_own_id();
     }
     AM_ASSERT(task != AM_PAL_TASK_ID_NONE);
 
@@ -430,7 +430,7 @@ void am_pal_dtor(void) {
 
 void am_pal_on_idle(void) {
     am_pal_crit_exit();
-    int task = am_pal_task_own_id();
+    int task = am_pal_task_get_own_id();
     am_pal_task_wait(task);
     am_pal_crit_enter();
 }
