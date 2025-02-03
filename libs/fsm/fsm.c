@@ -40,7 +40,7 @@
 static const struct am_event m_fsm_evt_entry = {.id = AM_EVT_FSM_ENTRY};
 static const struct am_event m_fsm_evt_exit = {.id = AM_EVT_FSM_EXIT};
 
-am_fsm_state_fn am_fsm_state(const struct am_fsm *fsm) {
+am_fsm_state_fn am_fsm_get_state(const struct am_fsm *fsm) {
     AM_ASSERT(fsm);
     return AM_FSM_STATE_CTOR(fsm->state);
 }

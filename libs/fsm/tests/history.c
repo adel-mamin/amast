@@ -62,11 +62,11 @@ static enum am_fsm_rc oven_fsm_open(
 ) {
     switch (event->id) {
     case FSM_EVT_ON:
-        me->history = am_fsm_state(&me->fsm);
+        me->history = am_fsm_get_state(&me->fsm);
         return AM_FSM_HANDLED();
 
     case FSM_EVT_OFF:
-        me->history = am_fsm_state(&me->fsm);
+        me->history = am_fsm_get_state(&me->fsm);
         return AM_FSM_HANDLED();
 
     case FSM_EVT_CLOSE:
@@ -83,7 +83,7 @@ static enum am_fsm_rc oven_fsm_on(
 ) {
     switch (event->id) {
     case AM_EVT_FSM_ENTRY:
-        me->history = am_fsm_state(&me->fsm);
+        me->history = am_fsm_get_state(&me->fsm);
         return AM_FSM_HANDLED();
 
     case FSM_EVT_OFF:
@@ -103,7 +103,7 @@ static enum am_fsm_rc oven_fsm_off(
 ) {
     switch (event->id) {
     case AM_EVT_FSM_ENTRY:
-        me->history = am_fsm_state(&me->fsm);
+        me->history = am_fsm_get_state(&me->fsm);
         return AM_FSM_HANDLED();
 
     case FSM_EVT_ON:

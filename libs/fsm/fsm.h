@@ -180,7 +180,7 @@ bool am_fsm_is_in(const struct am_fsm *fsm, am_fsm_state_fn state);
  * @param fsm  the FSM
  * @return the active state
  */
-am_fsm_state_fn am_fsm_state(const struct am_fsm *fsm);
+am_fsm_state_fn am_fsm_get_state(const struct am_fsm *fsm);
 
 /**
  * FSM constructor.
