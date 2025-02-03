@@ -28,14 +28,16 @@
 #define AM_ASYNC_H_INCLUDED
 
 /**
+ * @file
+ *
  * Async/await API implementation.
  * See test.c for usage examples.
  *
  * Based on the work from the following sources:
  *
- * https://www.chiark.greenend.org.uk/~sgtatham/coroutines.html
- * https://github.com/naasking/async.h
- * https://dunkels.com/adam/pt/
+ * - https://www.chiark.greenend.org.uk/~sgtatham/coroutines.html
+ * - https://github.com/naasking/async.h
+ * - https://dunkels.com/adam/pt/
  */
 
 /** Init state of async function */
