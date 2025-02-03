@@ -26,6 +26,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
 
 #include "bit/bit.h"
 #include "common/compiler.h"
@@ -39,6 +40,10 @@
 #include "state.h"
 
 static struct am_bit_u64 am_ready_aos_ = {0};
+
+void am_ao_state_ctor_(void) {
+    memset(&am_ready_aos_, 0, sizeof(am_ready_aos_));
+}
 
 bool am_ao_run_all(void) {
     struct am_ao_state *me = &am_ao_state_;

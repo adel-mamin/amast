@@ -37,6 +37,8 @@
 #include "ao/ao.h"
 #include "state.h"
 
+void am_ao_state_ctor_(void) {}
+
 static void am_ao_task(void *param) {
     AM_ASSERT(param);
 

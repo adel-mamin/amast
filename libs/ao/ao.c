@@ -272,6 +272,7 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
 
     struct am_ao_state *me = &am_ao_state_;
     memset(me, 0, sizeof(*me));
+    am_ao_state_ctor_();
 
     am_pal_ctor();
 

@@ -87,6 +87,13 @@ extern struct am_ao_state am_ao_state_;
  */
 void am_ao_notify(const struct am_ao *ao);
 
+/**
+ * Internal active object library state constructor.
+ * Has different implementation for cooperative and preemptive
+ * active object library builds.
+ */
+void am_ao_state_ctor_(void);
+
 #ifdef __cplusplus
 }
 #endif
