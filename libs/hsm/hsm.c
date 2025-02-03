@@ -326,12 +326,12 @@ bool am_hsm_state_is_eq(const struct am_hsm *hsm, struct am_hsm_state state) {
     return (hsm->state.fn == state.fn) && (hsm->state.smi == state.smi);
 }
 
-int am_hsm_instance(const struct am_hsm *hsm) {
+int am_hsm_get_instance(const struct am_hsm *hsm) {
     AM_ASSERT(hsm);
     return (int)hsm->smi;
 }
 
-struct am_hsm_state am_hsm_state(const struct am_hsm *hsm) {
+struct am_hsm_state am_hsm_get_state(const struct am_hsm *hsm) {
     AM_ASSERT(hsm);
     return hsm->state;
 }

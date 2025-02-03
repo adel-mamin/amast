@@ -198,7 +198,7 @@ static const struct am_hsm_state m_tt[] = {
 };
 
 static enum am_hsm_rc calc_data(struct calc *me, const struct am_event *event) {
-    int instance = am_hsm_instance(&me->hsm);
+    int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case EVT_OP: {
         me->log("data/%d-OP;", instance);
@@ -207,7 +207,7 @@ static enum am_hsm_rc calc_data(struct calc *me, const struct am_event *event) {
         }
         const struct calc_event *e = (const struct calc_event *)event;
         me->op = e->data;
-        me->data[DATA_0].history = am_hsm_state(&me->hsm);
+        me->data[DATA_0].history = am_hsm_get_state(&me->hsm);
         return AM_HSM_TRAN(calc_op_entered);
     }
     default:
@@ -219,7 +219,7 @@ static enum am_hsm_rc calc_data(struct calc *me, const struct am_event *event) {
 static enum am_hsm_rc calc_data_nan(
     struct calc *me, const struct am_event *event
 ) {
-    int instance = am_hsm_instance(&me->hsm);
+    int instance = am_hsm_get_instance(&me->hsm);
     struct data *data = &me->data[instance];
 
     switch (event->id) {
@@ -267,7 +267,7 @@ static enum am_hsm_rc calc_data_nan(
 static enum am_hsm_rc calc_data_nan_point(
     struct calc *me, const struct am_event *event
 ) {
-    int instance = am_hsm_instance(&me->hsm);
+    int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case EVT_DEL: {
         me->log("nan_point/%d-DEL;", instance);
@@ -303,7 +303,7 @@ static enum am_hsm_rc calc_data_nan_point(
 static enum am_hsm_rc calc_data_num(
     struct calc *me, const struct am_event *event
 ) {
-    int instance = am_hsm_instance(&me->hsm);
+    int instance = am_hsm_get_instance(&me->hsm);
     struct data *data = &me->data[instance];
     switch (event->id) {
     case EVT_DIGIT_0: {
@@ -336,7 +336,7 @@ static enum am_hsm_rc calc_data_num(
 static enum am_hsm_rc calc_data_num_int(
     struct calc *me, const struct am_event *event
 ) {
-    int instance = am_hsm_instance(&me->hsm);
+    int instance = am_hsm_get_instance(&me->hsm);
     struct data *data = &me->data[instance];
     switch (event->id) {
     case EVT_DIGIT_0: {
@@ -387,7 +387,7 @@ static enum am_hsm_rc calc_data_num_int(
 static enum am_hsm_rc calc_data_num_int_zero(
     struct calc *me, const struct am_event *event
 ) {
-    int instance = am_hsm_instance(&me->hsm);
+    int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case EVT_DIGIT_0: {
         me->log("int_zero/%d-0;", instance);
@@ -406,7 +406,7 @@ static enum am_hsm_rc calc_data_num_int_zero(
 static enum am_hsm_rc calc_data_num_int_point(
     struct calc *me, const struct am_event *event
 ) {
-    int instance = am_hsm_instance(&me->hsm);
+    int instance = am_hsm_get_instance(&me->hsm);
     struct data *data = &me->data[instance];
     switch (event->id) {
     case EVT_DIGIT_0:
@@ -437,7 +437,7 @@ static enum am_hsm_rc calc_data_num_int_point(
 static enum am_hsm_rc calc_data_num_int_point_frac(
     struct calc *me, const struct am_event *event
 ) {
-    int instance = am_hsm_instance(&me->hsm);
+    int instance = am_hsm_get_instance(&me->hsm);
     struct data *data = &me->data[instance];
     switch (event->id) {
     case EVT_DIGIT_0: {
@@ -460,7 +460,7 @@ static enum am_hsm_rc calc_data_num_int_point_frac(
 static enum am_hsm_rc calc_data_num_point_frac(
     struct calc *me, const struct am_event *event
 ) {
-    int instance = am_hsm_instance(&me->hsm);
+    int instance = am_hsm_get_instance(&me->hsm);
     struct data *data = &me->data[instance];
     switch (event->id) {
     case EVT_DIGIT_0: {

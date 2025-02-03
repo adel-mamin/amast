@@ -98,7 +98,7 @@ static enum am_hsm_rc oven_hsm_on(
 ) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
-        me->history = am_hsm_state(&me->hsm);
+        me->history = am_hsm_get_state(&me->hsm);
         return AM_HSM_HANDLED();
 
     case HSM_EVT_OFF:
@@ -115,7 +115,7 @@ static enum am_hsm_rc oven_hsm_off(
 ) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
-        me->history = am_hsm_state(&me->hsm);
+        me->history = am_hsm_get_state(&me->hsm);
         return AM_HSM_HANDLED();
 
     case HSM_EVT_ON:

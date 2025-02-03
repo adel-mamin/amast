@@ -120,7 +120,7 @@ static enum am_hsm_rc cs_s121(
 static enum am_hsm_rc cs_s(
     struct complex_sm *me, const struct am_event *event
 ) {
-    const int instance = am_hsm_instance(&me->hsm);
+    const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
         AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(cs_s)));
@@ -146,7 +146,7 @@ static enum am_hsm_rc cs_s(
 static enum am_hsm_rc cs_s1(
     struct complex_sm *me, const struct am_event *event
 ) {
-    const int instance = am_hsm_instance(&me->hsm);
+    const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
         AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(cs_s1, instance)));
@@ -195,7 +195,7 @@ static enum am_hsm_rc cs_s1(
 static enum am_hsm_rc cs_s11(
     struct complex_sm *me, const struct am_event *event
 ) {
-    const int instance = am_hsm_instance(&me->hsm);
+    const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
         AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(cs_s11, instance)));
@@ -233,7 +233,7 @@ static enum am_hsm_rc cs_s11(
 static enum am_hsm_rc cs_s111(
     struct complex_sm *me, const struct am_event *event
 ) {
-    const int instance = am_hsm_instance(&me->hsm);
+    const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
         AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(cs_s111, instance)));
@@ -263,7 +263,7 @@ static enum am_hsm_rc cs_s111(
 static enum am_hsm_rc cs_s12(
     struct complex_sm *me, const struct am_event *event
 ) {
-    const int instance = am_hsm_instance(&me->hsm);
+    const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
         AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(cs_s12, instance)));
@@ -301,7 +301,7 @@ static enum am_hsm_rc cs_s12(
 static enum am_hsm_rc cs_s121(
     struct complex_sm *me, const struct am_event *event
 ) {
-    const int instance = am_hsm_instance(&me->hsm);
+    const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
         AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(cs_s121, instance)));
@@ -333,7 +333,7 @@ static enum am_hsm_rc complex_sm_init(
 ) {
     (void)event;
 
-    me->log("top/%d-INIT;", am_hsm_instance(&me->hsm));
+    me->log("top/%d-INIT;", am_hsm_get_instance(&me->hsm));
 
     return AM_HSM_TRAN(cs_s1, SM_1);
 }

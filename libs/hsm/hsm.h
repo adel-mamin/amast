@@ -192,7 +192,7 @@ struct am_hsm {
      * am_hsm::smi maintains the transitive submachine instance that may differ
      * from am_hsm::state::smi, when an event is propagated up
      * from substates to superstates.
-     * Returned by am_hsm_instance().
+     * Returned by am_hsm_get_instance().
      */
     unsigned char smi;
     /**
@@ -335,7 +335,7 @@ bool am_hsm_state_is_eq(const struct am_hsm *hsm, struct am_hsm_state state);
  *
  * @return the submachine instance
  */
-int am_hsm_instance(const struct am_hsm *hsm);
+int am_hsm_get_instance(const struct am_hsm *hsm);
 
 /**
  * Get HSM's active state.
@@ -348,7 +348,7 @@ int am_hsm_instance(const struct am_hsm *hsm);
  *
  * @return the active state
  */
-struct am_hsm_state am_hsm_state(const struct am_hsm *hsm);
+struct am_hsm_state am_hsm_get_state(const struct am_hsm *hsm);
 
 /**
  * HSM constructor.
