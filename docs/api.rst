@@ -214,3 +214,27 @@ Timer
 
 .. doxygenfunction:: am_timer_get_interval
 
+Async
+-----
+
+.. doxygendefine:: AM_ASYNC_STATE_INIT
+
+.. doxygenenum:: am_async_rc
+
+.. doxygenstruct:: am_async
+
+.. doxygendefine:: AM_ASYNC_BEGIN
+
+.. doxygendefine:: AM_ASYNC_BREAK
+
+.. doxygendefine:: AM_ASYNC_END
+
+.. doxygendefine:: AM_ASYNC_LABEL
+
+.. doxygendefine:: AM_ASYNC_AWAIT
+
+.. doxygendefine:: AM_ASYNC_YIELD
+
+.. doxygendefine:: AM_ASYNC_RC
+
+.. doxygenfunction:: am_async_init
