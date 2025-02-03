@@ -32,12 +32,11 @@
 #include "event/event.h"
 #include "strlib/strlib.h"
 #include "hsm/hsm.h"
+#include "ao/ao.h"
+#include "pal/pal.h"
 
 #define AM_EVT_PUB AM_EVT_USER
 #define AM_AO_EVT_PUB_MAX (AM_EVT_PUB + 1)
-
-#include "ao/ao.h"
-#include "pal/pal.h"
 
 struct test_publish {
     struct am_ao ao;

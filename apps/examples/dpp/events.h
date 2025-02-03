@@ -33,15 +33,13 @@ enum events {
     EVT_DONE = AM_EVT_USER,
     EVT_EAT,
     EVT_TIMEOUT,
+    AM_AO_EVT_PUB_MAX,
 
     EVT_HUNGRY,
     EVT_MAX
 };
 
 const char* event_to_str(int id);
-
-#undef AM_AO_EVT_PUB_MAX
-#define AM_AO_EVT_PUB_MAX EVT_TIMEOUT
 
 struct hungry {
     struct am_event event;

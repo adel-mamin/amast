@@ -43,16 +43,6 @@
 #include "hsm/hsm.h"
 #include "pal/pal.h"
 
-#ifndef AM_AO_EVT_PUB_MAX
-/**
- * All pub/sub event IDs must be smaller or equal to this constants.
- *
- * Users using pub/sub events with IDs bigger that this constant
- * are expected to override it with a custom value.
- */
-#define AM_AO_EVT_PUB_MAX AM_EVT_USER
-#endif
-
 /** The active object. */
 struct am_ao {
     struct am_hsm hsm;           /**< top level AO state machine */
@@ -400,6 +390,10 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg);
 /**
  * Subscribe active object to event ID.
  *
+ * The event ID must be smaller than the the number of elements
+ * in the array of active object subscribe lists provided to
+ * am_ao_init_subscribe_list().
+ *
  * @param ao     active object to subscribe
  * @param event  the event ID to subscribe to
  */
@@ -407,6 +401,10 @@ void am_ao_subscribe(const struct am_ao *ao, int event);
 
 /**
  * Unsubscribe active object from event ID.
+ *
+ * The event ID must be smaller than the the number of elements
+ * in the array of active object subscribe lists provided to
+ * am_ao_init_subscribe_list().
  *
  * @param ao     active object to unsubscribe
  * @param event  the event ID to unsubscribe from

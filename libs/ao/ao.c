@@ -305,7 +305,7 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
 
 void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub) {
     AM_ASSERT(sub);
-    AM_ASSERT(nsub > 0);
+    AM_ASSERT(nsub >= AM_EVT_USER);
 
     struct am_ao_state *me = &am_ao_state_;
     me->sub = sub;
