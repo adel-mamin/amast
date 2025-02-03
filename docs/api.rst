@@ -13,6 +13,53 @@ Common Types
 .. doxygenstruct:: am_blk
    :members:
 
+Singly Linked List
+------------------
+
+.. doxygenstruct:: am_slist_item
+
+.. doxygenstruct:: am_slist
+
+.. doxygenstruct:: am_slist_iterator
+
+.. doxygenfunction:: am_slist_init
+
+.. doxygenfunction:: am_slist_is_empty
+
+.. doxygenfunction:: am_slist_item_is_linked
+
+.. doxygenfunction:: am_slist_item_init
+
+.. doxygenfunction:: am_slist_push_after
+
+.. doxygenfunction:: am_slist_pop_after
+
+.. doxygentypedef:: am_slist_item_found_fn
+
+.. doxygenfunction:: am_slist_find
+
+.. doxygenfunction:: am_slist_peek_front
+
+.. doxygenfunction:: am_slist_peek_back
+
+.. doxygenfunction:: am_slist_push_front
+
+.. doxygenfunction:: am_slist_pop_front
+
+.. doxygenfunction:: am_slist_push_back
+
+.. doxygenfunction:: am_slist_owns
+
+.. doxygenfunction:: am_slist_next_item
+
+.. doxygenfunction:: am_slist_append
+
+.. doxygenfunction:: am_slist_iterator_init
+
+.. doxygenfunction:: am_slist_iterator_next
+
+.. doxygenfunction:: am_slist_iterator_pop
+
 Ring Buffer
 -----------
 
