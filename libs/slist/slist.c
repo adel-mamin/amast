@@ -47,7 +47,7 @@ struct am_alignof_slist_item {
 };
 const int am_alignof_slist_item = offsetof(struct am_alignof_slist_item, d);
 
-void am_slist_init(struct am_slist *list) {
+void am_slist_ctor(struct am_slist *list) {
     AM_ASSERT(list);
     list->sentinel.next = &list->sentinel;
     list->back = &list->sentinel;
@@ -63,7 +63,7 @@ bool am_slist_item_is_linked(const struct am_slist_item *item) {
     return item->next != NULL;
 }
 
-void am_slist_item_init(struct am_slist_item *item) {
+void am_slist_item_ctor(struct am_slist_item *item) {
     AM_ASSERT(item);
     item->next = NULL;
 }
@@ -174,10 +174,10 @@ void am_slist_append(struct am_slist *to, struct am_slist *from) {
     to->back = from->back;
     from->back->next = &to->sentinel;
 
-    am_slist_init(from);
+    am_slist_ctor(from);
 }
 
-void am_slist_iterator_init(
+void am_slist_iterator_ctor(
     struct am_slist *list, struct am_slist_iterator *it
 ) {
     AM_ASSERT(list);

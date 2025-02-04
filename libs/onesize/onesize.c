@@ -104,7 +104,7 @@ void am_onesize_free(struct am_onesize *hnd, const void *ptr) {
  * @param hnd  the allocator
  */
 static void am_onesize_ctor_internal(struct am_onesize *hnd) {
-    am_slist_init(&hnd->fl);
+    am_slist_ctor(&hnd->fl);
 
     char *ptr = (char *)hnd->pool.ptr;
     int num = hnd->pool.size / hnd->block_size;

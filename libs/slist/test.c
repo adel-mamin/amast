@@ -44,15 +44,15 @@ struct test_slist {
 
 static struct test_slist test_slist[10];
 
-static void test_slist_init(struct am_slist *data) {
-    am_slist_init(data);
+static void test_slist_ctor(struct am_slist *data) {
+    am_slist_ctor(data);
     for (int i = 0; i < AM_COUNTOF(test_slist); ++i) {
         test_slist[i].data = i;
     }
 }
 
 static void test_am_slist_empty(void) {
-    test_slist_init(&slist);
+    test_slist_ctor(&slist);
 
     AM_ASSERT(am_slist_is_empty(&slist));
 
@@ -64,7 +64,7 @@ static void test_am_slist_empty(void) {
 }
 
 static void test_am_slist_push_after(void) {
-    test_slist_init(&slist);
+    test_slist_ctor(&slist);
 
     am_slist_push_front(&slist, &test_slist[0].hdr);
 
@@ -81,7 +81,7 @@ static void test_am_slist_push_after(void) {
 }
 
 static void test_am_slist_push_after_2(void) {
-    test_slist_init(&slist);
+    test_slist_ctor(&slist);
 
     am_slist_push_back(&slist, &test_slist[0].hdr);
     am_slist_push_back(&slist, &test_slist[1].hdr);
@@ -97,7 +97,7 @@ static void test_am_slist_push_after_2(void) {
 }
 
 static void test_am_slist_push_after_3(void) {
-    test_slist_init(&slist);
+    test_slist_ctor(&slist);
 
     am_slist_push_back(&slist, &test_slist[0].hdr);
     am_slist_push_back(&slist, &test_slist[2].hdr);
@@ -113,7 +113,7 @@ static void test_am_slist_push_after_3(void) {
 }
 
 static void test_am_slist_pop(void) {
-    test_slist_init(&slist);
+    test_slist_ctor(&slist);
 
     am_slist_push_front(&slist, &test_slist[2].hdr);
     am_slist_push_front(&slist, &test_slist[1].hdr);
@@ -136,7 +136,7 @@ static bool predicate_slist(void *context, struct am_slist_item *item) {
 }
 
 static void test_am_slist_find(void) {
-    test_slist_init(&slist);
+    test_slist_ctor(&slist);
 
     am_slist_push_front(&slist, &test_slist[2].hdr);
     am_slist_push_front(&slist, &test_slist[1].hdr);
@@ -158,7 +158,7 @@ static void test_am_slist_find(void) {
 }
 
 static void test_am_slist_owns(void) {
-    test_slist_init(&slist);
+    test_slist_ctor(&slist);
 
     for (int i = 0; i < 2; ++i) {
         am_slist_push_front(&slist, &test_slist[i].hdr);
@@ -171,10 +171,10 @@ static void test_am_slist_owns(void) {
 }
 
 static void test_am_slist_iterator(void) {
-    test_slist_init(&slist);
+    test_slist_ctor(&slist);
 
     struct am_slist_iterator it;
-    am_slist_iterator_init(&slist, &it);
+    am_slist_iterator_ctor(&slist, &it);
 
     am_slist_push_back(&slist, &test_slist[0].hdr);
     am_slist_push_back(&slist, &test_slist[1].hdr);
@@ -202,13 +202,13 @@ static void test_am_slist_append(void) {
     static struct am_slist slist1;
     static struct am_slist slist2;
 
-    am_slist_init(&slist1);
+    am_slist_ctor(&slist1);
     for (int i = 0; i < AM_COUNTOF(test_slist1); ++i) {
         test_slist1[i].data = i;
         am_slist_push_back(&slist1, &test_slist1[i].hdr);
     }
 
-    am_slist_init(&slist2);
+    am_slist_ctor(&slist2);
     for (int i = 0; i < AM_COUNTOF(test_slist2); ++i) {
         test_slist2[i].data = i;
         am_slist_push_back(&slist2, &test_slist2[i].hdr);
@@ -217,7 +217,7 @@ static void test_am_slist_append(void) {
     am_slist_append(&slist1, &slist2);
 
     struct am_slist_iterator it;
-    am_slist_iterator_init(&slist1, &it);
+    am_slist_iterator_ctor(&slist1, &it);
 
     struct am_slist_item *e = am_slist_iterator_next(&it);
     AM_ASSERT(((struct test_slist *)e)->data == 0);

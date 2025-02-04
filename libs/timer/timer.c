@@ -73,8 +73,8 @@ void am_timer_state_ctor(const struct am_timer_state_cfg *cfg) {
     struct am_timer_state *me = &am_timer_;
     memset(me, 0, sizeof(*me));
     for (int i = 0; i < AM_COUNTOF(me->domains); ++i) {
-        am_slist_init(&me->domains[i]);
-        am_slist_init(&me->domains_pend[i]);
+        am_slist_ctor(&me->domains[i]);
+        am_slist_ctor(&me->domains_pend[i]);
     }
     me->cfg = *cfg;
 }
@@ -86,7 +86,7 @@ void am_timer_ctor(struct am_timer *timer, int id, int domain, void *owner) {
 
     /* timer events are never deallocated */
     memset(timer, 0, sizeof(*timer));
-    am_slist_item_init(&timer->item);
+    am_slist_item_ctor(&timer->item);
     timer->event.id = id;
     timer->event.tick_domain = (unsigned)domain & AM_EVENT_TICK_DOMAIN_MASK;
     timer->owner = owner;
@@ -165,7 +165,7 @@ void am_timer_tick(int domain) {
     if (!am_slist_is_empty(&me->domains_pend[domain])) {
         am_slist_append(&me->domains[domain], &me->domains_pend[domain]);
     }
-    am_slist_iterator_init(&me->domains[domain], &it);
+    am_slist_iterator_ctor(&me->domains[domain], &it);
 
     struct am_slist_item *p = NULL;
     while ((p = am_slist_iterator_next(&it)) != NULL) {

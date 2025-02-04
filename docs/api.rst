@@ -27,13 +27,13 @@ Singly Linked List
 
 .. doxygenstruct:: am_slist_iterator
 
-.. doxygenfunction:: am_slist_init
+.. doxygenfunction:: am_slist_ctor
 
 .. doxygenfunction:: am_slist_is_empty
 
 .. doxygenfunction:: am_slist_item_is_linked
 
-.. doxygenfunction:: am_slist_item_init
+.. doxygenfunction:: am_slist_item_ctor
 
 .. doxygenfunction:: am_slist_push_after
 
@@ -59,7 +59,7 @@ Singly Linked List
 
 .. doxygenfunction:: am_slist_append
 
-.. doxygenfunction:: am_slist_iterator_init
+.. doxygenfunction:: am_slist_iterator_ctor
 
 .. doxygenfunction:: am_slist_iterator_next
 

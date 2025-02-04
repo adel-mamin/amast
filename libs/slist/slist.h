@@ -99,11 +99,11 @@ extern const int am_alignof_slist_item;
 #define AM_ALIGNOF_SLIST_ITEM am_alignof_slist_item
 
 /**
- * Singly linked list initialization.
+ * Singly linked list construction.
  *
  * @param list  the list
  */
-void am_slist_init(struct am_slist *list);
+void am_slist_ctor(struct am_slist *list);
 
 /**
  * Check if list is empty.
@@ -126,11 +126,11 @@ bool am_slist_is_empty(const struct am_slist *list);
 bool am_slist_item_is_linked(const struct am_slist_item *item);
 
 /**
- * Initialize list item.
+ * Construct list item.
  *
- * @param item  list item to initialize.
+ * @param item  list item to construct.
  */
-void am_slist_item_init(struct am_slist_item *item);
+void am_slist_item_ctor(struct am_slist_item *item);
 
 /**
  * Push new item after the item, which is already in list.
@@ -273,20 +273,20 @@ struct am_slist_item *am_slist_next_item(
 void am_slist_append(struct am_slist *to, struct am_slist *from);
 
 /**
- * Initialize new iterator.
+ * Construct new iterator.
  *
  * Must be called before calling am_slist_iterator_next().
  * If the iterator is used to traverse the list once, then
- * it must be re-initialized by calling this function in order to
+ * it must be re-constructed by calling this function in order to
  * be used with am_slist_iterator_next() again.
  * The only valid operation with the iterator after this one is
  * am_slist_iterator_next() or am_slist_iterator_pop().
  * Otherwise the behavior is undefined.
  *
  * @param list  the list
- * @param it    the iterator to be initialized
+ * @param it    the iterator to be constructed
  */
-void am_slist_iterator_init(
+void am_slist_iterator_ctor(
     struct am_slist *list, struct am_slist_iterator *it
 );
 
@@ -298,7 +298,7 @@ void am_slist_iterator_init(
  * the list were visited, the next invocation of the function returns NULL.
  * The current visited item can only be popped with am_slist_iterator_pop().
  *
- * @param it  the iterator initialized by am_slist_iterator_init()
+ * @param it  the iterator constructed by am_slist_iterator_ctor()
  * @return the visited item or NULL if the iteration is over.
  *         The item is not popped from the list.
  */
@@ -311,7 +311,7 @@ struct am_slist_item *am_slist_iterator_next(struct am_slist_iterator *it);
  * At least one am_slist_iterator_next() call is expected for the iterator
  * before this function is called. Otherwise the behavior is undefined.
  * The valid operations possible after this call are am_slist_iterator_next()
- * or am_slist_iterator_init(). Otherwise the behavior is undefined.
+ * or am_slist_iterator_ctor(). Otherwise the behavior is undefined.
  *
  * @param it  the iterator
  *
