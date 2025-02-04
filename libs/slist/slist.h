@@ -41,16 +41,35 @@
  * a singly linked list item:
  *
  * [1]
- * struct foo {int bar; struct am_slist_item list;}
+ * @code{.c}
+ * struct foo {
+ *     int bar;
+ *     struct am_slist_item list;
+ * };
+ * @endcode
  *
  * [2]
- * struct foo {int bar; }
- * struct foo_item {struct foo foo; struct am_slist_item list}
+ * @code{.c}
+ * struct foo {
+ *     int bar;
+ * };
+ *
+ * struct foo_item {
+ *     struct foo foo;
+ *     struct am_slist_item list;
+ * };
+ * @endcode
  *
  * Also `struct foo` can be part of several independent lists.
  * For example,
  *
- * struct foo {int bar; struct am_slist_item list1; struct am_slist_item list2;}
+ * @code{.c}
+ * struct foo {
+ *     int bar;
+ *     struct am_slist_item list1;
+ *     struct am_slist_item list2;
+ * };
+ * @endcode
  */
 struct am_slist_item {
     struct am_slist_item *next; /**< next item in the list */
@@ -99,7 +118,7 @@ bool am_slist_is_empty(const struct am_slist *list);
 /**
  * Check if given list item is part of ANY list.
  *
- * @param[in] item  the list item to check
+ * @param item  the list item to check
  *
  * @retval true   item IS part of SOME list
  * @retval false  item IS NOT part of ANY list
@@ -135,7 +154,7 @@ void am_slist_push_after(
  * @param list  the list
  * @param item  the item after this item is popped
  *
- * @return the popped item or NULL if nothing to remove
+ * @return the popped item or NULL if nothing to pop
  */
 struct am_slist_item *am_slist_pop_after(
     struct am_slist *list, struct am_slist_item *item
@@ -247,9 +266,9 @@ struct am_slist_item *am_slist_next_item(
  * Append one list to another.
  *
  * @param to    append to this list
- * @param from  append this list
- *              If 'from' list is not empty, then it is initialized after
- *              it is appended to 'to' list.
+ * @param from  append this list.
+ *              If \p from list is not empty, then it is initialized after
+ *              it is appended to \p to list.
  */
 void am_slist_append(struct am_slist *to, struct am_slist *from);
 
@@ -280,7 +299,7 @@ void am_slist_iterator_init(
  * The current visited item can only be popped with am_slist_iterator_pop().
  *
  * @param it  the iterator initialized by am_slist_iterator_init()
- * @return the visited item or NULL if the iteration is over
+ * @return the visited item or NULL if the iteration is over.
  *         The item is not popped from the list.
  */
 struct am_slist_item *am_slist_iterator_next(struct am_slist_iterator *it);
