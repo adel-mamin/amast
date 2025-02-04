@@ -296,7 +296,7 @@ struct am_slist_item *am_slist_iterator_next(struct am_slist_iterator *it);
  *
  * @param it  the iterator
  *
- * @retval the popped item
+ * @return the popped item
  */
 struct am_slist_item *am_slist_iterator_pop(struct am_slist_iterator *it);
 
