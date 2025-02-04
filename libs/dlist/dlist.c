@@ -35,11 +35,11 @@
 #include "common/macros.h"
 #include "dlist/dlist.h"
 
-void am_dlist_init(struct am_dlist *list) {
+void am_dlist_ctor(struct am_dlist *list) {
     list->sentinel.next = list->sentinel.prev = &list->sentinel;
 }
 
-void am_dlist_item_init(struct am_dlist_item *item) {
+void am_dlist_item_ctor(struct am_dlist_item *item) {
     item->next = item->prev = NULL;
 }
 
@@ -85,7 +85,7 @@ void am_dlist_push_before(
     item->prev = new_item;
 }
 
-void am_dlist_iterator_init(
+void am_dlist_iterator_ctor(
     struct am_dlist *list,
     struct am_dlist_iterator *it,
     enum am_dlist_direction dir

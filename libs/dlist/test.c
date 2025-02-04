@@ -45,7 +45,7 @@ struct test_dlist {
 static struct test_dlist test_dlist[10];
 
 static void test_setup(struct am_dlist *list) {
-    am_dlist_init(list);
+    am_dlist_ctor(list);
     for (int i = 0; i < AM_COUNTOF(test_dlist); ++i) {
         test_dlist[i].data = i;
     }
@@ -170,7 +170,7 @@ static void test_am_dlist_iterator_forward(void) {
     test_setup(&dlist);
 
     struct am_dlist_iterator it;
-    am_dlist_iterator_init(&dlist, &it, AM_DLIST_FORWARD);
+    am_dlist_iterator_ctor(&dlist, &it, AM_DLIST_FORWARD);
 
     am_dlist_push_back(&dlist, &test_dlist[0].hdr);
     am_dlist_push_back(&dlist, &test_dlist[1].hdr);
@@ -199,7 +199,7 @@ static void test_am_dlist_iterator_backward(void) {
     am_dlist_push_back(&dlist, &test_dlist[2].hdr);
 
     struct am_dlist_iterator it;
-    am_dlist_iterator_init(&dlist, &it, AM_DLIST_BACKWARD);
+    am_dlist_iterator_ctor(&dlist, &it, AM_DLIST_BACKWARD);
 
     struct am_dlist_item *e = am_dlist_iterator_next(&it);
     AM_ASSERT(((struct test_dlist *)e)->data == 2);

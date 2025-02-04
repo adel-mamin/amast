@@ -167,7 +167,7 @@ extern "C" {
  * Set the async state to #AM_ASYNC_STATE_INIT
  * preparing it for use in async operation.
  *
- * @param me  the async state to initialize
+ * @param me  the async state to construct
  */
 void am_async_ctor(struct am_async *me);
 

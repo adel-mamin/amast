@@ -38,7 +38,7 @@
  * List iterator traverse direction.
  *
  * Used together with list iterator API
- * am_dlist_iterator_init() to specify the direction
+ * am_dlist_iterator_ctor() to specify the direction
  * in which doubly linked list iterator traverses the list.
  */
 enum am_dlist_direction {
@@ -89,11 +89,11 @@ extern "C" {
 #endif
 
 /**
- * List initialization.
+ * List construction.
  *
  * @param list  the list
  */
-void am_dlist_init(struct am_dlist *list);
+void am_dlist_ctor(struct am_dlist *list);
 
 /**
  * Check if list is empty.
@@ -116,11 +116,11 @@ bool am_dlist_is_empty(const struct am_dlist *list);
 bool am_dlist_item_is_linked(const struct am_dlist_item *item);
 
 /**
- * Initialize list item.
+ * Construct list item.
  *
- * @param item  list item to initialize.
+ * @param item  list item to construct
  */
-void am_dlist_item_init(struct am_dlist_item *item);
+void am_dlist_item_ctor(struct am_dlist_item *item);
 
 /**
  * Give next item after the given one.
@@ -269,21 +269,21 @@ struct am_dlist_item *am_dlist_find(
 );
 
 /**
- * Initialize a new iterator.
+ * Construct a new iterator.
  *
  * Must be called before calling am_dlist_iterator_next().
  * If the iterator is used to traverse the list once, then
- * it must be re-initialized by calling this function in order to
+ * it must be re-constructed by calling this function in order to
  * be used with am_dlist_iterator_next() again.
  * The only valid operation with the iterator after this one is
  * am_dlist_iterator_next(). Otherwise the behavior is undefined.
  *
  * @param list  the list
- * @param it    the iterator to be initialized
+ * @param it    the iterator to be constructed
  * @param dir   the direction, at which the iteration is going to be done,
  *              when am_dlist_iterator_next() is used.
  */
-void am_dlist_iterator_init(
+void am_dlist_iterator_ctor(
     struct am_dlist *list,
     struct am_dlist_iterator *it,
     enum am_dlist_direction dir
@@ -295,10 +295,9 @@ void am_dlist_iterator_init(
  * Is supposed to be called in iterative way to traverse part or full list.
  * The iteration can visit each item only once. When all items of
  * the list were visited, the next invocation of the function returns NULL.
- * The current visited item can only be popped with
- * am_dlist_iterator_pop().
+ * The current visited item can only be popped with am_dlist_iterator_pop().
  *
- * @param it  the iterator initialized by am_dlist_iterator_init()
+ * @param it  the iterator constructed by am_dlist_iterator_ctor()
  *
  * @return the visited item or NULL if the iteration is over
  *         The item is not popped from the list.
@@ -312,7 +311,7 @@ struct am_dlist_item *am_dlist_iterator_next(struct am_dlist_iterator *it);
  * At least one am_dlist_iterator_next() is expected for the iterator before
  * this function is called. Otherwise the behavior is undefined. The only valid
  * operation possible after this call is am_dlist_iterator_next() or
- * am_dlist_iterator_init(). Otherwise the behavior is undefined.
+ * am_dlist_iterator_ctor(). Otherwise the behavior is undefined.
  *
  * @param it  the iterator
  *
