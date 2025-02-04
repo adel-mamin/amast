@@ -162,7 +162,7 @@ void am_event_add_pool(void *pool, int size, int block_size, int alignment);
  *
  * @return the minimum number of blocks of size block_size available so far
  */
-int am_event_get_pool_min_nfree(int index);
+int am_event_get_pool_nfree_min(int index);
 
 /**
  * Get minimum number of free memory blocks available now in the memory pool
