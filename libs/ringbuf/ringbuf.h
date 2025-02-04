@@ -92,16 +92,16 @@ int am_ringbuf_get_read_ptr(struct am_ringbuf *rb, uint8_t **ptr);
  *
  * @param rb    the ring buffer
  * @param ptr   the write data pointer is returned here. Can be NULL.
- * @param size  the requested memory size behind the write date pointer
+ * @param size  the requested memory size behind the write date pointer.
  *              Can be set to 0.
  *
- * @return the byte size of all the available memory pointed to by *ptr
+ * @return the byte size of all the available memory pointed to by *ptr.
  *         Can be 0 or more than the requested size.
  */
 int am_ringbuf_get_write_ptr(struct am_ringbuf *rb, uint8_t **ptr, int size);
 
 /**
- * Increase by offset bytes by the amount of written data available to reader.
+ * Increase by offset bytes the amount of written data available to reader.
  *
  * Called once or many times after calling am_ringbuf_get_write_ptr().
  * The offset or sum of offsets of multiple calls to this function must not
@@ -113,7 +113,7 @@ int am_ringbuf_get_write_ptr(struct am_ringbuf *rb, uint8_t **ptr, int size);
 void am_ringbuf_flush(struct am_ringbuf *rb, int offset);
 
 /**
- * Increase by offset bytes by the amount of data available to writer.
+ * Increase by offset bytes the amount of data available to writer.
  *
  * Called once or many times after calling am_ringbuf_get_read_ptr().
  * The offset or sum of offsets of multiple calls to this function must not
