@@ -126,7 +126,7 @@ Event
 
 .. doxygendefine:: AM_EVT_USER
 
-.. doxygendefine:: AM_EVENT_POOL_NUM_MAX
+.. doxygendefine:: AM_EVENT_POOLS_NUM_MAX
 
 .. doxygendefine:: AM_EVENT_HAS_USER_ID
 

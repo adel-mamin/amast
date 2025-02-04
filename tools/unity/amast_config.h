@@ -46,4 +46,9 @@
 /** Enable am_assert_failure() implementation */
 /* #define AM_ASSERT_FAILURE */
 
+/**
+ * The max number of event pools.
+ */
+/* #define AM_EVENT_POOLS_NUM_MAX 3 */
+
 #endif /* AMAST_CONFIG_H_INCLUDED */

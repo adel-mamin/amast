@@ -85,7 +85,7 @@ bool am_queue_is_empty(const struct am_queue *queue);
  * @param queue  the queue
  *
  * @retval true   queue is full
- * @retval false  queue is not empty
+ * @retval false  queue is not full
  */
 bool am_queue_is_full(const struct am_queue *queue);
 
@@ -125,7 +125,7 @@ int am_queue_item_size(const struct am_queue *queue);
  *
  * @return The popped item. The memory is owned by the queue.
  *         Do not free it!
- *         If queue is empty then NULL is returned.
+ *         If queue is empty, then NULL is returned.
  */
 void *am_queue_pop_front(struct am_queue *queue);
 

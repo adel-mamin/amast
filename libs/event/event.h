@@ -56,13 +56,13 @@
  */
 #define AM_EVT_USER (AM_EVT_INTERNAL_MAX + 1) /* 7 */
 
-#ifndef AM_EVENT_POOL_NUM_MAX
+#ifndef AM_EVENT_POOLS_NUM_MAX
 /**
- * The max number of event pool.
+ * The max number of event pools.
  *
  * Can be redefined by user.
  */
-#define AM_EVENT_POOL_NUM_MAX 3
+#define AM_EVENT_POOLS_NUM_MAX 3
 #endif
 
 /**

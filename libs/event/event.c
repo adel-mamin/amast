@@ -41,7 +41,7 @@
 /** Event internal state. */
 struct am_event_state {
     /** user defined event memory pools  */
-    struct am_onesize pool[AM_EVENT_POOL_NUM_MAX];
+    struct am_onesize pool[AM_EVENT_POOLS_NUM_MAX];
     /** the number of user defined event memory pools */
     int npool;
     /** enter critical section */
@@ -78,7 +78,7 @@ void am_event_state_ctor(const struct am_event_state_cfg *cfg) {
 
 void am_event_add_pool(void *pool, int size, int block_size, int alignment) {
     struct am_event_state *me = &am_event_state_;
-    AM_ASSERT(me->npool < AM_EVENT_POOL_NUM_MAX);
+    AM_ASSERT(me->npool < AM_EVENT_POOLS_NUM_MAX);
     if (me->npool > 0) {
         int prev_size = am_onesize_get_block_size(&me->pool[me->npool - 1]);
         AM_ASSERT(block_size > prev_size);
@@ -139,7 +139,7 @@ void am_event_free(const struct am_event **event) {
     }
 
     struct am_event *e = AM_CAST(struct am_event *, *event);
-    AM_ASSERT(e->pool_index_plus_one <= AM_EVENT_POOL_NUM_MAX);
+    AM_ASSERT(e->pool_index_plus_one <= AM_EVENT_POOLS_NUM_MAX);
 
     struct am_event_state *me = &am_event_state_;
     me->crit_enter();
