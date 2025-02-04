@@ -242,7 +242,7 @@ Async
 
 .. doxygendefine:: AM_ASYNC_RC
 
-.. doxygenfunction:: am_async_init
+.. doxygenfunction:: am_async_ctor
 
 HSM
 ---

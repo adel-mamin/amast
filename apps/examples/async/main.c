@@ -116,7 +116,7 @@ static enum am_hsm_rc async_ryg(
 ) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
-        am_async_init(&me->async_ryg);
+        am_async_ctor(&me->async_ryg);
         am_timer_arm(
             &me->timer_ryg, me->ryg_interval_ticks, me->ryg_interval_ticks
         );
@@ -163,7 +163,7 @@ static enum am_hsm_rc async_gyr(
 ) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
-        am_async_init(&me->async_gyr);
+        am_async_ctor(&me->async_gyr);
         am_timer_arm(
             &me->timer_gyr, me->gyr_interval_ticks, me->gyr_interval_ticks
         );

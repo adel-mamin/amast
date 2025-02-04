@@ -162,14 +162,14 @@ extern "C" {
 #endif
 
 /**
- * Initialize async state.
+ * Construct async state.
  *
  * Set the async state to #AM_ASYNC_STATE_INIT
  * preparing it for use in async operation.
  *
  * @param me  the async state to initialize
  */
-void am_async_init(struct am_async *me);
+void am_async_ctor(struct am_async *me);
 
 #ifdef __cplusplus
 }

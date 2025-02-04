@@ -55,7 +55,7 @@ static void test_async_local_continuation(void) {
     int state = 0;
     struct am_async me;
 
-    am_async_init(&me);
+    am_async_ctor(&me);
 
     enum am_async_rc rc = am_async_reentrant(&me, &reent, &state);
     AM_ASSERT((AM_ASYNC_RC_DONE == rc) && (reent == 1) && (state == 1));
@@ -80,7 +80,7 @@ static enum am_async_rc am_async_empty(struct am_async *me, int *reent) {
 
 static void test_async_empty(void) {
     struct am_async me;
-    am_async_init(&me);
+    am_async_ctor(&me);
 
     int reent = 0;
     am_async_empty(&me, &reent);
@@ -103,7 +103,7 @@ static enum am_async_rc am_async_wait_ready(
 
 static void test_async_wait_ready(void) {
     struct am_async me;
-    am_async_init(&me);
+    am_async_ctor(&me);
 
     int ready = 0;
     int reent = 0;
@@ -132,8 +132,8 @@ static void test_async_yield(void) {
     struct am_async me1;
     struct am_async me2;
 
-    am_async_init(&me1);
-    am_async_init(&me2);
+    am_async_ctor(&me1);
+    am_async_ctor(&me2);
 
     int state = 0;
     enum am_async_rc rc = am_async_yield(&me1, &state);
@@ -163,7 +163,7 @@ static enum am_async_rc am_async_exit(struct am_async *me, int *state) {
 
 static void test_async_exit(void) {
     struct am_async me;
-    am_async_init(&me);
+    am_async_ctor(&me);
 
     int state = 0;
     enum am_async_rc rc = am_async_exit(&me, &state);
@@ -211,8 +211,8 @@ static void test_async_call_chain(void) {
         struct am_async_chain *me1 = &test_async_chain[0];
         struct am_async_chain *me2 = &test_async_chain[1];
 
-        am_async_init(&me1->async);
-        am_async_init(&me2->async);
+        am_async_ctor(&me1->async);
+        am_async_ctor(&me2->async);
 
         enum am_async_rc rc = am_async_call_1(me1);
         AM_ASSERT(AM_ASYNC_RC_BUSY == rc);
