@@ -158,12 +158,19 @@ struct am_hsm_state {
  * Get HSM state from HSM event handler and optionally HSM submachine instance.
  *
  * AM_HSM_STATE_CTOR(s)     is converted to
+ *                          @code{.c}
  *                          (struct am_hsm_state){.fn = s, .smi = 0}
+ *                          @endcode
  * AM_HSM_STATE_CTOR(s, i)  is converted to
+ *                          @code{.c}
  *                          (struct am_hsm_state){.fn = s, .smi = i}
+ *                          @endcode
  *
- * @param s  HSM event handler
- * @param i  HSM submachine instance. Default is 0.
+ * @def AM_HSM_STATE_CTOR(s, i)
+ *
+ * \a s  is HSM event handler (mandatory)
+ *
+ * \a i  is HSM submachine instance (optional, default is 0)
  *
  * @return HSM state structure
  */
@@ -183,7 +190,7 @@ struct am_hsm_state {
 
 AM_ASSERT_STATIC(HSM_HIERARCHY_DEPTH_MAX <= AM_HSM_HIERARCHY_LEVEL_MASK);
 
-/** HSM state */
+/** HSM state. */
 struct am_hsm {
     /** active state */
     struct am_hsm_state state;
@@ -241,8 +248,11 @@ struct am_hsm {
  * the provided state. The target state in this case must be
  * a substate of the current state.
  *
- * @param s  the new state of type #am_hsm_state_fn (mandatory)
- * @param i  the new state submachine instance (optional, default is 0)
+ * @def AM_HSM_TRAN(s, i)
+ *
+ * \a s  is the new state of type #am_hsm_state_fn (mandatory)
+ *
+ * \a i  is HSM submachine instance (optional, default is 0)
  */
 #define AM_HSM_TRAN(...) \
     AM_GET_MACRO_2_(__VA_ARGS__, AM_TRAN2_, AM_TRAN1_, _)(__VA_ARGS__)
@@ -260,8 +270,11 @@ struct am_hsm {
  * Do not redispatch the same event more than once within same
  * am_hsm_dispatch() call.
  *
- * @param s  the new HSM state of type #am_hsm_state_fn (mandatory)
- * @param i  the new HSM state submachine instance (optional, default is 0)
+ * @def AM_HSM_TRAN_REDISPATCH(s, i)
+ *
+ * \a s  is the new HSM state of type #am_hsm_state_fn (mandatory)
+ *
+ * \a i  is the new HSM state submachine instance (optional, default is 0)
  */
 #define AM_HSM_TRAN_REDISPATCH(...)                                     \
     AM_GET_MACRO_2_(__VA_ARGS__, AM_TRAN_REDISP2_, AM_TRAN_REDISP1_, _) \
@@ -278,8 +291,11 @@ struct am_hsm {
  * If no explicit superstate exists, then the top (super)state am_hsm_top()
  * must be used.
  *
- * @param s  the superstate of type #am_hsm_state_fn (mandatory)
- * @param i  the superstate submachine instance (optional, default is 0)
+ * @def AM_HSM_SUPER(s, i)
+ *
+ * \a s  is the superstate of type #am_hsm_state_fn (mandatory)
+ *
+ * \a i  is the superstate submachine instance (optional, default is 0)
  */
 #define AM_HSM_SUPER(...) \
     AM_GET_MACRO_2_(__VA_ARGS__, AM_SUPER2_, AM_SUPER1_, _)(__VA_ARGS__)

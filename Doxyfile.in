@@ -11,10 +11,6 @@ OPTIMIZE_OUTPUT_FOR_C = YES
 WARN_AS_ERROR = YES
 EXCLUDE_PATTERNS = *test*,*stubs*,*cobszpe*,*freertos*,*posix/pal.c
 EXCLUDE_SYMBOLS = \
-    AM_HSM_STATE_CTOR \
-    AM_HSM_SUPER \
-    AM_HSM_TRAN \
-    AM_HSM_TRAN_REDISPATCH \
     AM_ASSERT_STATIC \
     AM_POOL_BLOCK_SIZEOF \
     AM_POOL_BLOCK_ALIGNMENT \
@@ -44,5 +40,4 @@ EXCLUDE_SYMBOLS = \
     AM_GET_MACRO_2_ \
     AM_FILE_NAME \
     AM_STRINGIFY \
-    am_pal_printf \
-    AM_ALIGN_MAX
+    am_pal_printf

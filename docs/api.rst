@@ -5,6 +5,11 @@ API
 
 This part of the documentation covers all the interfaces of Amast.
 
+Common Constants
+----------------
+
+.. doxygendefine:: AM_ALIGN_MAX
+
 Common Types
 ------------
 
@@ -238,3 +243,10 @@ Async
 .. doxygendefine:: AM_ASYNC_RC
 
 .. doxygenfunction:: am_async_init
+
+HSM
+---
+
+.. doxygendefine:: AM_HSM_STATE_CTOR
+
+.. doxygenstruct:: am_hsm_state
