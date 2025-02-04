@@ -67,9 +67,6 @@ CFLAGS += -Wformat-nonliteral
 CFLAGS += -Wformat-security
 CFLAGS += -Wcast-align
 CFLAGS += -Wno-declaration-after-statement
-CFLAGS += -DAM_HSM_SPY
-CFLAGS += -DAM_FSM_SPY
-CFLAGS += -DAM_ASSERT_FAILURE
 CFLAGS += -pthread
 
 LDFLAGS = -Wl,--gc-sections -flto=auto

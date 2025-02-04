@@ -83,8 +83,6 @@ if unit_test
         ],
         include_directories: libs_inc,
         c_args: [
-            '-DAM_HSM_SPY',
-            '-DAM_FSM_SPY',
             '-flto=auto',
             '-O2',
             '-ffunction-sections', '-fdata-sections'

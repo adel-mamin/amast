@@ -33,7 +33,7 @@
  * Increases the size of struct am_hsm by the size of a function
  * pointer.
  */
-/* #define AM_HSM_SPY */
+#define AM_HSM_SPY
 
 /**
  * Enable am_fsm_set_spy() API to register user callback
@@ -41,14 +41,26 @@
  * Increases the size of struct am_fsm by the size of a function
  * pointer.
  */
-/* #define AM_FSM_SPY */
+#define AM_FSM_SPY
 
 /** Enable am_assert_failure() implementation */
-/* #define AM_ASSERT_FAILURE */
+#define AM_ASSERT_FAILURE
 
 /**
  * The max number of event pools.
  */
-/* #define AM_EVENT_POOLS_NUM_MAX 3 */
+#define AM_EVENT_POOLS_NUM_MAX 3
+
+/** The maximum number of active objects. */
+#define AM_AO_NUM_MAX 64
+
+/** HSM hierarchy maximum depth */
+#define HSM_HIERARCHY_DEPTH_MAX 16
+
+/** total number of tick domains */
+#define AM_PAL_TICK_DOMAIN_MAX 1
+
+/** Maximum number of mutexes */
+#define AM_PAL_MUTEX_NUM_MAX 2
 
 #endif /* AMAST_CONFIG_H_INCLUDED */
