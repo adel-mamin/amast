@@ -52,10 +52,10 @@ extern "C" {
  * Queue construction with a memory block.
  *
  * @param queue      the queue
- * @param isize      item size [bytes]
+ * @param isize      item size [bytes].
  *                   The queue will only support the items of this size.
- * @param alignment  the queue alignment [bytes]
- *                   Can be set to AM_ALIGN_MAX.
+ * @param alignment  the queue alignment [bytes].
+ *                   Can be set to #AM_ALIGN_MAX.
  * @param blk        the memory block
  */
 void am_queue_ctor(
@@ -123,7 +123,7 @@ int am_queue_item_size(const struct am_queue *queue);
  *
  * @param queue  the queue
  *
- * @return The popped item. The memory is owned by the queue
+ * @return The popped item. The memory is owned by the queue.
  *         Do not free it!
  *         If queue is empty then NULL is returned.
  */
@@ -174,9 +174,9 @@ void *am_queue_peek_back(struct am_queue *queue);
  * Takes O(1) to complete.
  *
  * @param queue  the queue
- * @param ptr    the new queue item
+ * @param ptr    the new queue item.
  *               The API copies the content of ptr.
- * @param size   the size of the new queue item in bytes
+ * @param size   the size of the new queue item in bytes.
  *               Must be <= than queue item size.
  *
  * @retval true   success
@@ -190,9 +190,9 @@ bool am_queue_push_front(struct am_queue *queue, const void *ptr, int size);
  * Takes O(1) to complete.
  *
  * @param queue  the queue
- * @param ptr    the new queue item
+ * @param ptr    the new queue item.
  *               The API copies the content of ptr.
- * @param size   the size of the new queue item in bytes
+ * @param size   the size of the new queue item in bytes.
  *               Must be <= than queue item size.
  *
  * @retval true   success
