@@ -70,7 +70,7 @@ static int philo_thinking(struct philo *me, const struct am_event *event) {
 
     case EVT_TIMEOUT: {
         struct hungry *msg = (struct hungry *)am_event_allocate(
-            EVT_HUNGRY, sizeof(struct hungry), /*margin=*/0
+            EVT_HUNGRY, sizeof(struct hungry)
         );
         msg->philo = me->id;
         am_ao_post_fifo(g_ao_table, &msg->event);
@@ -113,9 +113,8 @@ static int philo_eating(struct philo *me, const struct am_event *event) {
 
     case EVT_TIMEOUT: {
         am_pal_printf("philo %d publishing DONE\n", me->id);
-        struct done *msg = (struct done *)am_event_allocate(
-            EVT_DONE, sizeof(struct done), /*margin=*/0
-        );
+        struct done *msg =
+            (struct done *)am_event_allocate(EVT_DONE, sizeof(struct done));
         msg->philo = me->id;
         am_ao_publish(AM_CAST(const struct am_event *, msg));
         return AM_HSM_TRAN(philo_thinking);

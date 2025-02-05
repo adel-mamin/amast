@@ -111,7 +111,7 @@ static enum am_fsm_rc fsmq_a(struct am_fsmq *me, const struct am_event *event) {
     case AM_EVT_A: {
         me->log("a-A;");
         const struct am_event *e =
-            am_event_allocate(/*id=*/AM_EVT_B, sizeof(*e), /*margin=*/0);
+            am_event_allocate(/*id=*/AM_EVT_B, sizeof(*e));
         am_event_push_back(&me->event_queue, e);
         return AM_FSM_TRAN(fsmq_b);
     }

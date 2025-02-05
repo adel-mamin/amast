@@ -113,29 +113,37 @@ extern "C" {
 #endif
 
 /**
- * Publish event.
+ * Publish event to all subscribed active objects except one (eXtended version).
  *
  * The event is delivered to event queues of all the active objects,
- * which are subscribed to the event ID including the AO publishing the event.
+ * which are subscribed to the event ID excluding the specified AO.
  * The event is then handled asynchronously by the active objects.
+ *
+ * Might be useful if the AO publishing the event does not want
+ * the library to route the same event back to this AO.
  *
  * Use am_ao_subscribe() to subscribe an active object to an event ID.
  * Use am_ao_unsubscribe() to unsubscribe it from the event ID
  * or am_ao_unsubscribe_all() to unsubscribe it from all event IDs.
  *
- * If any active object has full event queue and cannot
- * accommodate the event, then the function crashes with assert.
+ * Guarantees availability of \p margin free slots in destination event queues
+ * after the event was delivered to subscribed active objects.
  *
- * If your application is prepared for loosing the event,
- * then use am_ao_publish_x() function instead.
+ * If any active object has full event queue and cannot
+ * accommodate the event, then the function skips the event delivery
+ * to the active object.
+ *
+ * If your application is not prepared for loosing the event,
+ * then use am_ao_publish_exclude() function instead.
  *
  * Internally the event is pushed to subscribed active object event queues
  * using am_event_push_back() function.
  *
- * Tries to free the event, if no active objects are subscribed to it.
+ * Tries to free the event, if it was not delivered to any subscriber.
  *
  * The library takes care of freeing the event once all
- * subscribed active objects handled the event.
+ * subscribed active objects handled it.
+ * This is done asynchronously after this function returns.
  *
  * Statically allocated events (events for which am_event_is_static()
  * returns true) are never freed.
@@ -143,15 +151,28 @@ extern "C" {
  * The function is fast, thread safe and usable from
  * interrupt service routines (ISR).
  *
- * @param event  the event to publish
+ * @param event   the event to publish
+ * @param ao      do not post the event to this active object even
+ *                if it is subscribed to the event.
+ *                If set to NULL, the the API behaves same way as
+ *                am_ao_publish_x()
+ * @param margin  free event queue slots to be available in each subscribed
+ *                active object after the event is pushed to their event queues
+ *
+ * @retval true   the event was delivered to all subscribed active objects
+ *                except the active object given as the parameter
+ * @retval false  at least one delivery has failed
  */
-void am_ao_publish(const struct am_event *event);
+bool am_ao_publish_exclude_x(
+    const struct am_event *event, const struct am_ao *ao, int margin
+);
 
 /**
- * Same as am_ao_publish(), but the event is not delivered to the given AO.
+ * Publish event to all subscribed active objects except one.
  *
- * Might be useful if the AO publishing the event does not want
- * the framework to route the same event back to this AO.
+ * Same as am_ao_publish_exclude_x() except this function
+ * crashes with assert if it fails delivering the event to at
+ * least one subscribed active object.
  *
  * @param event  the event to publish
  * @param ao     do not post the event to this active object even
@@ -164,7 +185,7 @@ void am_ao_publish_exclude(
 );
 
 /**
- * Publish event with free space guarantee in destination event queues.
+ * Publish event to all subscribed active objects (eXtended version).
  *
  * The event is delivered to event queues of all the active objects,
  * which are subscribed to the event ID including the AO publishing the event.
@@ -187,7 +208,8 @@ void am_ao_publish_exclude(
  * Tries to free the event, if it was not delivered to any subscriber.
  *
  * The library takes care of freeing the event once all
- * subscribed active objects handled the event.
+ * subscribed active objects handled it.
+ * This is done asynchronously after this function returns.
  *
  * Statically allocated events (events for which am_event_is_static()
  * returns true) are never freed.
@@ -205,64 +227,29 @@ void am_ao_publish_exclude(
 bool am_ao_publish_x(const struct am_event *event, int margin);
 
 /**
- * Same as am_ao_publish_x(), but the event is not delivered to the given AO.
+ * Publish event to all subscribed active objects.
  *
- * Might be useful if the AO publishing the event does not want
- * the library to route the same event back to this AO.
+ * Same as am_ao_publish_x() except this function
+ * crashes with assert if it fails delivering the event to at
+ * least one subscribed active object.
  *
- * Guarantees availability of \p margin free slots in destination event queues
- * after the event was delivered to subscribed active objects.
- *
- * If any active object has full event queue and cannot
- * accommodate the event, then the function skips the event delivery
- * to the active object.
- *
- * @param event   the event to publish
- * @param margin  free event queue slots to be available in each subscribed
- *                active object after the event is pushed to their event queues
- * @param ao      do not post the event to this active object even
- *                if it is subscribed to the event.
- *                If set to NULL, the the API behaves same way as
- *                am_ao_publish_x()
- *
- * @retval true   the event was delivered to all subscribed active objects
- *                except the active object given as the parameter
- * @retval false  at least one delivery has failed
+ * @param event  the event to publish
  */
-bool am_ao_publish_x_exclude(
-    const struct am_event *event, int margin, const struct am_ao *ao
-);
+void am_ao_publish(const struct am_event *event);
 
 /**
- * Post event to the back of active object's event queue.
+ * Post event to the back of active object's event queue (eXtended version).
  *
  * The event is then handled asynchronously by the active object.
  *
- * If the active object's event queue is full the function crashes with assert.
- *
- * The library takes care of freeing the event once the
- * active object handled the event.
- *
- * The function is fast, thread safe and usable from
- * interrupt service routines (ISR).
- *
- * @param ao     the event is posted to this active object
- * @param event  the event to post
- */
-void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
-
-/**
- * Post event to the back of active object's event queue.
- *
- * The event is then handled asynchronously by the active object.
- *
- * If the active object's event queue is full and margin is >0,
- * then the function fails gracefully.
+ * Guarantees availability of \p margin free slots in destination event queue
+ * after the event was delivered to the active object.
  *
  * Tries to free the event, if it was not posted.
  *
  * The library takes care of freeing the event once the
  * active object handled the event.
+ * This is done asynchronously after this function returns.
  *
  * Statically allocated events (events for which am_event_is_static()
  * returns true) are never freed.
@@ -282,25 +269,18 @@ bool am_ao_post_fifo_x(
 );
 
 /**
- * Post event to the front of active object's event queue.
+ * Post event to the back of active object's event queue.
  *
- * The event is then handled asynchronously by the active object.
- *
- * The library takes care of freeing the event once the
- * active object handled the event.
- *
- * If active object's event queue is full the function crashes with assert.
- *
- * The function is fast, thread safe and usable from
- * interrupt service routines (ISR).
+ * Same as am_ao_post_fifo_x() except this function
+ * crashes with assert if it fails delivering the event to the active object.
  *
  * @param ao     the event is posted to this active object
  * @param event  the event to post
  */
-void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
+void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
 
 /**
- * Post event to the front of AO event queue.
+ * Post event to the front of AO event queue (eXtended version).
  *
  * The event is then handled asynchronously by the active object.
  *
@@ -311,6 +291,7 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
  *
  * The library takes care of freeing the event once the
  * active object handled the event.
+ * This is done asynchronously after this function returns.
  *
  * Statically allocated events (events for which am_event_is_static()
  * returns true) are never freed.
@@ -325,6 +306,17 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
 bool am_ao_post_lifo_x(
     struct am_ao *ao, const struct am_event *event, int margin
 );
+
+/**
+ * Post event to the front of active object's event queue.
+ *
+ * Same as am_ao_post_lifo_x() except this function
+ * crashes with assert if it fails delivering the event to the active object.
+ *
+ * @param ao     the event is posted to this active object
+ * @param event  the event to post
+ */
+void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
 
 /**
  * Active object constructor.

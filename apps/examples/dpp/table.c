@@ -92,9 +92,8 @@ static int table_can_serve(int philo) {
 }
 
 static void table_serve(int philo) {
-    struct eat *eat = (struct eat *)am_event_allocate(
-        EVT_EAT, sizeof(struct eat), /*margin=*/0
-    );
+    struct eat *eat =
+        (struct eat *)am_event_allocate(EVT_EAT, sizeof(struct eat));
     eat->philo = philo;
     am_pal_printf("table serving philo %d\n", philo);
     am_ao_publish(AM_CAST(const struct am_event *, eat));

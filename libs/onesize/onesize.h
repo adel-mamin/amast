@@ -89,22 +89,28 @@ extern "C" {
 void am_onesize_ctor(struct am_onesize *hnd, const struct am_onesize_cfg *cfg);
 
 /**
- * Allocate memory of block_size.
+ * Allocate memory block of struct of block_size (eXtended version).
  *
- * If \p margin is more than zero, then checks if there are more
- * free memory blocks available than \p margin.
- * If not, then returns NULL. Otherwise allocates memory block and returns it.
- *
- * If \p margin is zero and there are no free memory blocks,
- * then the function fails with assert.
- * Otherwise allocates memory block and returns it.
+ * Checks if there are more free memory blocks available than \p margin.
+ * If not, then returns NULL. Otherwise allocates memory block and returns it.o
  *
  * @param hnd     the allocator
  * @param margin  free memory blocks to remain available after the allocation
  *
  * @return the allocated memory or NULL, if allocation failed
  */
-void *am_onesize_allocate(struct am_onesize *hnd, int margin);
+void *am_onesize_allocate_x(struct am_onesize *hnd, int margin);
+
+/**
+ * Allocate one memory block of struct am_onesize_cfg::block_size
+ *
+ * Asserts if no free memory block is available.
+ *
+ * @param hnd  the allocator
+ *
+ * @return the allocated memory
+ */
+void *am_onesize_allocate(struct am_onesize *hnd);
 
 /**
  * Free a memory block.

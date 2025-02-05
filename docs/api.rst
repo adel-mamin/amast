@@ -149,9 +149,13 @@ Event
 
 .. doxygenfunction:: am_event_get_pools_num
 
+.. doxygenfunction:: am_event_allocate_x
+
 .. doxygenfunction:: am_event_allocate
 
 .. doxygenfunction:: am_event_free
+
+.. doxygenfunction:: am_event_dup_x
 
 .. doxygenfunction:: am_event_dup
 
@@ -177,9 +181,9 @@ Event
 
 .. doxygenfunction:: am_event_pop_front
 
-.. doxygenfunction:: am_event_defer
-
 .. doxygenfunction:: am_event_defer_x
+
+.. doxygenfunction:: am_event_defer
 
 .. doxygentypedef:: am_event_recall_fn
 

@@ -94,7 +94,7 @@ void am_event_add_pool(void *pool, int size, int block_size, int alignment) {
     ++me->npool;
 }
 
-struct am_event *am_event_allocate(int id, int size, int margin) {
+struct am_event *am_event_allocate_x(int id, int size, int margin) {
     struct am_event_state *me = &am_event_state_;
     AM_ASSERT(size > 0);
     AM_ASSERT(me->npool);
@@ -110,11 +110,13 @@ struct am_event *am_event_allocate(int id, int size, int margin) {
 
         me->crit_enter();
 
-        struct am_event *event = am_onesize_allocate(osz, margin);
+        struct am_event *event = am_onesize_allocate_x(osz, margin);
 
         me->crit_exit();
 
-        AM_ASSERT(event);
+        if (!event) {
+            return NULL;
+        }
 
         memset(event, 0, sizeof(*event));
         event->id = id;
@@ -125,9 +127,14 @@ struct am_event *am_event_allocate(int id, int size, int margin) {
         return event;
     }
 
-    AM_ASSERT(margin);
-
     return NULL;
+}
+
+struct am_event *am_event_allocate(int id, int size) {
+    struct am_event *event = am_event_allocate_x(id, size, /*margin=*/0);
+    AM_ASSERT(event);
+
+    return event;
 }
 
 void am_event_free(const struct am_event **event) {
@@ -192,7 +199,7 @@ int am_event_get_pool_nblocks(int index) {
 
 int am_event_get_pools_num(void) { return am_event_state_.npool; }
 
-struct am_event *am_event_dup(
+struct am_event *am_event_dup_x(
     const struct am_event *event, int size, int margin
 ) {
     AM_ASSERT(event);
@@ -202,13 +209,20 @@ struct am_event *am_event_dup(
     AM_ASSERT(event->id >= AM_EVT_USER);
     AM_ASSERT(margin >= 0);
 
-    struct am_event *dup = am_event_allocate(event->id, size, margin);
+    struct am_event *dup = am_event_allocate_x(event->id, size, margin);
     if (dup && (size > (int)sizeof(struct am_event))) {
         char *dst = (char *)dup + sizeof(struct am_event);
         const char *src = (const char *)event + sizeof(struct am_event);
         int sz = size - (int)sizeof(struct am_event);
         memcpy(dst, src, (size_t)sz);
     }
+
+    return dup;
+}
+
+struct am_event *am_event_dup(const struct am_event *event, int size) {
+    struct am_event *dup = am_event_dup_x(event, size, /*margin=*/0);
+    AM_ASSERT(dup);
 
     return dup;
 }
@@ -358,9 +372,6 @@ enum am_event_rc am_event_push_back_x(
 enum am_event_rc am_event_push_back(
     struct am_queue *queue, const struct am_event *event
 ) {
-    AM_ASSERT(queue);
-    AM_ASSERT(event);
-
     return am_event_push_back_x(queue, event, /*margin=*/0);
 }
 
@@ -373,9 +384,6 @@ enum am_event_rc am_event_push_front_x(
 enum am_event_rc am_event_push_front(
     struct am_queue *queue, const struct am_event *event
 ) {
-    AM_ASSERT(queue);
-    AM_ASSERT(event);
-
     return am_event_push_front_x(queue, event, /*margin=*/0);
 }
 
@@ -401,22 +409,12 @@ const struct am_event *am_event_pop_front(struct am_queue *queue) {
 }
 
 void am_event_defer(struct am_queue *queue, const struct am_event *event) {
-    AM_ASSERT(queue);
-    AM_ASSERT(event);
-
     am_event_push_back(queue, event);
 }
 
 bool am_event_defer_x(
     struct am_queue *queue, const struct am_event *event, int margin
 ) {
-    AM_ASSERT(queue);
-    AM_ASSERT(event);
-    AM_ASSERT(margin >= 0);
-
-    const int capacity = am_queue_capacity(queue);
-    AM_ASSERT(margin < capacity);
-
     return am_event_push_back_x(queue, event, margin);
 }
 

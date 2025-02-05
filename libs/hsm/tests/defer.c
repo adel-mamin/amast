@@ -185,9 +185,8 @@ static void test_defer(void) {
     };
 
     for (int i = 0; i < AM_COUNTOF(in); ++i) {
-        const struct am_event *e = am_event_allocate(
-            in[i].event, (int)sizeof(struct am_event), /*margin=*/0
-        );
+        const struct am_event *e =
+            am_event_allocate(in[i].event, (int)sizeof(struct am_event));
         am_event_inc_ref_cnt(e);
         am_hsm_dispatch(&me->hsm, e);
         am_event_free(&e);

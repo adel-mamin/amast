@@ -191,15 +191,13 @@ int am_event_get_pool_nblocks(int index);
 int am_event_get_pools_num(void);
 
 /**
- * Allocate event.
+ * Allocate event (eXtended version).
  *
  * The event is allocated from one of the memory pools provided
  * with am_event_add_pool() function.
  *
- * The allocation cannot fail, if margin is 0.
- *
- * The function asserts if the margin is 0 and there is no memory left
- * to accommodate the event.
+ * Checks if there are more free memory blocks available than \p margin.
+ * If not, then returns NULL. Otherwise allocates the event and returns it.
  *
  * @param id      the event identifier
  * @param size    the event size [bytes]
@@ -207,7 +205,22 @@ int am_event_get_pools_num(void);
  *
  * @return the newly allocated event
  */
-struct am_event *am_event_allocate(int id, int size, int margin);
+struct am_event *am_event_allocate_x(int id, int size, int margin);
+
+/**
+ * Allocate event.
+ *
+ * The event is allocated from one of the memory pools provided
+ * with am_event_add_pool() function.
+ *
+ * The function asserts if there is no memory left to accommodate the event.
+ *
+ * @param id    the event identifier
+ * @param size  the event size [bytes]
+ *
+ * @return the newly allocated event
+ */
+struct am_event *am_event_allocate(int id, int size);
 
 /**
  * Try to free the event allocated earlier with am_event_allocate().
@@ -226,25 +239,37 @@ struct am_event *am_event_allocate(int id, int size, int margin);
 void am_event_free(const struct am_event **event);
 
 /**
- * Duplicate an event.
+ * Duplicate an event (eXtended version).
  *
- * Allocates it from memory pools provided at with am_event_add_pool() function
- * and then copy the content of the given event to it.
+ * Allocates it from memory pools provided with am_event_add_pool() function.
  *
- * The allocation cannot fail, if margin is 0.
- *
- * The function asserts if the margin is 0 and there is no memory left
- * to accommodate the event.
+ * Checks if there are more free memory blocks available than \p margin.
+ * If not, then returns NULL. Otherwise allocates memory block
+ * and then copies the content of the given event to it.
  *
  * @param event   the event to duplicate
  * @param size    the event size [bytes]
  * @param margin  free memory blocks to be available after the allocation
  *
- * @return the newly allocated event
+ * @return the newly allocated copy of \p event
  */
-struct am_event *am_event_dup(
+struct am_event *am_event_dup_x(
     const struct am_event *event, int size, int margin
 );
+
+/**
+ * Duplicate an event.
+ *
+ * Allocates it from memory pools provided with am_event_add_pool() function.
+ *
+ * The function asserts if there is no memory left to allocated the event.
+ *
+ * @param event  the event to duplicate
+ * @param size   the event size [bytes]
+ *
+ * @return the newly allocated copy of \p event
+ */
+struct am_event *am_event_dup(const struct am_event *event, int size);
 
 /**
  * Log event content callback type.
@@ -312,9 +337,11 @@ void am_event_dec_ref_cnt(const struct am_event *event);
 int am_event_get_ref_cnt(const struct am_event *event);
 
 /**
- * Push event to the back of event queue with margin.
+ * Push event to the back of event queue (eXtended version).
  *
- * Does not assert if margin is non-zero and the event was not pushed.
+ * Checks if there are more free queue slots available than \p margin.
+ * If not, then does not push. Otherwise pushes the event to the back of
+ * the event queue.
  *
  * Tries to free the event, if it was not pushed.
  *
@@ -352,7 +379,9 @@ enum am_event_rc am_event_push_back(
 /**
  * Push event to the front of event queue with margin.
  *
- * Does not assert if margin is non-zero and the event was not pushed.
+ * Checks if there are more free queue slots available than \p margin.
+ * If not, then does not push. Otherwise pushes the event to the front of
+ * the event queue.
  *
  * Tries to free the event, if it was not pushed.
  *
@@ -397,17 +426,11 @@ enum am_event_rc am_event_push_front(
 const struct am_event *am_event_pop_front(struct am_queue *queue);
 
 /**
- * Defer event.
+ * Defer event (eXtended version).
  *
- * Asserts if the event was not deferred.
- *
- * @param queue  the queue to store the deferred event
- * @param event  the event to defer
- */
-void am_event_defer(struct am_queue *queue, const struct am_event *event);
-
-/**
- * Defer event with margin.
+ * Checks if there are more free queue slots available than \p margin.
+ * If not, then does not defer. Otherwise defers the event by pushing it
+ * to the back of the event queue.
  *
  * Tries to free event, if defer fails.
  *
@@ -424,6 +447,16 @@ void am_event_defer(struct am_queue *queue, const struct am_event *event);
 bool am_event_defer_x(
     struct am_queue *queue, const struct am_event *event, int margin
 );
+
+/**
+ * Defer event.
+ *
+ * Asserts if the event was not deferred.
+ *
+ * @param queue  the queue to store the deferred event
+ * @param event  the event to defer
+ */
+void am_event_defer(struct am_queue *queue, const struct am_event *event);
 
 /** The type of a callback used to handle recalled events */
 typedef void (*am_event_recall_fn)(void *ctx, const struct am_event *event);
