@@ -103,9 +103,13 @@ Queue
 
 .. doxygenfunction:: am_queue_is_full
 
-.. doxygenfunction:: am_queue_length
+.. doxygenfunction:: am_queue_get_nbusy
 
-.. doxygenfunction:: am_queue_capacity
+.. doxygenfunction:: am_queue_get_nfree
+
+.. doxygenfunction:: am_queue_get_nfree_min
+
+.. doxygenfunction:: am_queue_get_capacity
 
 .. doxygenfunction:: am_queue_item_size
 

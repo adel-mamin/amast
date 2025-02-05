@@ -331,7 +331,7 @@ static enum am_event_rc am_event_push_x(
     AM_ASSERT(queue);
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
-    const int capacity = am_queue_capacity(queue);
+    const int capacity = am_queue_get_capacity(queue);
     AM_ASSERT(margin < capacity);
     AM_ASSERT(push);
 
@@ -340,15 +340,13 @@ static enum am_event_rc am_event_push_x(
 
     me->crit_enter();
 
-    const int len = am_queue_length(queue);
-    AM_ASSERT(capacity >= len);
-    int space = capacity - len;
-    if (margin && (space <= margin)) {
+    int nfree = am_queue_get_nfree(queue);
+    if (margin && (nfree <= margin)) {
         me->crit_exit();
         am_event_free(&event);
         return AM_EVENT_RC_ERR;
     }
-    AM_ASSERT(space > 0);
+    AM_ASSERT(nfree > 0);
 
     if (!am_event_is_static(e)) {
         ++e->ref_counter;
@@ -360,7 +358,10 @@ static enum am_event_rc am_event_push_x(
 
     AM_ASSERT(true == rc);
 
-    return len ? AM_EVENT_RC_OK : AM_EVENT_RC_OK_QUEUE_WAS_EMPTY;
+    if (capacity == nfree) {
+        return AM_EVENT_RC_OK_QUEUE_WAS_EMPTY;
+    }
+    return AM_EVENT_RC_OK;
 }
 
 enum am_event_rc am_event_push_back_x(

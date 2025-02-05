@@ -46,7 +46,7 @@ struct am_onesize {
     struct am_slist fl; /**< list of non-allocated memory blocks (free list) */
     int nfree;          /**< current number of blocks in free list */
     int ntotal;         /**< total number of blocks */
-    int minfree;        /**< minimum number of blocks in free list */
+    int nfree_min;      /**< minimum number of blocks in free list */
     /** Enter critical section */
     void (*crit_enter)(void);
     /** Exit critical section */

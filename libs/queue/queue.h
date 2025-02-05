@@ -40,6 +40,8 @@ struct am_queue {
     int isize;         /**< item size [bytes] */
     int rd;            /**< read index */
     int wr;            /**< write index */
+    int nfree;         /**< number of free slots */
+    int nfree_min;     /**< minimum number of free slots observed so far */
     struct am_blk blk; /**< queue memory block */
     unsigned full : 1; /**< queue is full */
 };
@@ -96,7 +98,7 @@ bool am_queue_is_full(const struct am_queue *queue);
  *
  * @return number of queued items
  */
-int am_queue_length(const struct am_queue *queue);
+int am_queue_get_nbusy(const struct am_queue *queue);
 
 /**
  * Return queue capacity.
@@ -105,7 +107,7 @@ int am_queue_length(const struct am_queue *queue);
  *
  * @return queue capacity
  */
-int am_queue_capacity(const struct am_queue *queue);
+int am_queue_get_capacity(const struct am_queue *queue);
 
 /**
  * Return queue item size.
@@ -199,6 +201,26 @@ bool am_queue_push_front(struct am_queue *queue, const void *ptr, int size);
  * @retval false  failure
  */
 bool am_queue_push_back(struct am_queue *queue, const void *ptr, int size);
+
+/**
+ * Get minimum number of free slots available in queue.
+ *
+ * @param queue  the queue
+ *
+ * @return the number of free slots available now
+ */
+int am_queue_get_nfree(const struct am_queue *queue);
+
+/**
+ * Get minimum number of free slots available so far in queue.
+ *
+ * Could be used to assess the usage of the queue.
+ *
+ * @param queue  the queue
+ *
+ * @return the minimum number of slots available so far
+ */
+int am_queue_get_nfree_min(const struct am_queue *queue);
 
 #ifdef __cplusplus
 }

@@ -57,6 +57,7 @@ void am_queue_ctor(
     AM_ASSERT(blk->size >= queue->isize);
 
     queue->blk = *blk;
+    queue->nfree = queue->nfree_min = queue->blk.size / queue->isize;
 }
 
 void am_queue_dtor(struct am_queue *queue) {
@@ -74,21 +75,11 @@ bool am_queue_is_full(const struct am_queue *queue) {
     return queue->full;
 }
 
-int am_queue_length(const struct am_queue *queue) {
-    AM_ASSERT(queue);
-    if (queue->wr > queue->rd) {
-        return queue->wr - queue->rd;
-    }
-    if (queue->wr < queue->rd) {
-        return (queue->blk.size / queue->isize) - queue->rd + queue->wr;
-    }
-    if (queue->full) {
-        return (queue->blk.size / queue->isize);
-    }
-    return 0;
+int am_queue_get_nbusy(const struct am_queue *queue) {
+    return am_queue_get_capacity(queue) - queue->nfree;
 }
 
-int am_queue_capacity(const struct am_queue *queue) {
+int am_queue_get_capacity(const struct am_queue *queue) {
     AM_ASSERT(queue);
     return queue->blk.size / queue->isize;
 }
@@ -127,6 +118,7 @@ void *am_queue_pop_front(struct am_queue *queue) {
     void *ptr = (char *)queue->blk.ptr + queue->rd * queue->isize;
     queue->rd = (queue->rd + 1) % (queue->blk.size / queue->isize);
     queue->full = 0;
+    ++queue->nfree;
 
     return ptr;
 }
@@ -141,6 +133,7 @@ void *am_queue_pop_front_and_copy(struct am_queue *queue, void *buf, int size) {
     }
     void *popped = am_queue_pop_front(queue);
     memcpy(buf, popped, (size_t)queue->isize);
+    ++queue->nfree;
 
     return popped;
 }
@@ -160,6 +153,9 @@ bool am_queue_push_back(struct am_queue *queue, const void *ptr, int size) {
     if (queue->wr == queue->rd) {
         queue->full = 1;
     }
+    AM_ASSERT(queue->nfree);
+    --queue->nfree;
+    queue->nfree_min = AM_MIN(queue->nfree, queue->nfree_min);
     return true;
 }
 
@@ -179,5 +175,18 @@ bool am_queue_push_front(struct am_queue *queue, const void *ptr, int size) {
     if (queue->wr == queue->rd) {
         queue->full = 1;
     }
+    AM_ASSERT(queue->nfree);
+    --queue->nfree;
+    queue->nfree_min = AM_MIN(queue->nfree, queue->nfree_min);
     return true;
+}
+
+int am_queue_get_nfree(const struct am_queue *queue) {
+    AM_ASSERT(queue);
+    return queue->nfree;
+}
+
+int am_queue_get_nfree_min(const struct am_queue *queue) {
+    AM_ASSERT(queue);
+    return queue->nfree_min;
 }

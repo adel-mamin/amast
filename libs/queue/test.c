@@ -56,7 +56,7 @@ static void test_am_queue(const int capacity, const int rdwr_num) {
     for (int i = 1; i <= rdwr_num; ++i) {
         bool rc = am_queue_push_back(&q, &i, (int)sizeof(int));
         AM_ASSERT(true == rc);
-        AM_ASSERT(am_queue_length(&q) == i);
+        AM_ASSERT(am_queue_get_nbusy(&q) == i);
         AM_ASSERT(!am_queue_is_empty(&q));
     }
 
@@ -69,8 +69,8 @@ static void test_am_queue(const int capacity, const int rdwr_num) {
     for (int i = 1; i <= rdwr_num; ++i) {
         bool rc = am_queue_push_front(&q, &i, (int)sizeof(i));
         AM_ASSERT(true == rc);
-        AM_ASSERT(am_queue_length(&q) > 0);
-        AM_ASSERT(am_queue_length(&q) == i);
+        AM_ASSERT(am_queue_get_nbusy(&q) > 0);
+        AM_ASSERT(am_queue_get_nbusy(&q) == i);
         AM_ASSERT(!am_queue_is_empty(&q));
     }
 
@@ -80,7 +80,7 @@ static void test_am_queue(const int capacity, const int rdwr_num) {
         AM_ASSERT(i == *(int *)ptr);
     }
 
-    AM_ASSERT(am_queue_length(&q) == 0);
+    AM_ASSERT(am_queue_get_nbusy(&q) == 0);
     AM_ASSERT(am_queue_is_empty(&q));
 }
 

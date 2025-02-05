@@ -317,18 +317,18 @@ void am_ao_log_event_queues(
             continue;
         }
         struct am_queue *q = &ao->event_queue;
-        int cap = am_queue_capacity(q);
-        int len = am_queue_length(q);
-        int tnum = AM_MIN(num, len);
+        const int cap = am_queue_get_capacity(q);
+        const int nbusy = am_queue_get_nbusy(q);
+        const int tnum = AM_MIN(num, nbusy);
         if (0 == tnum) {
-            log(ao->name, 0, len, cap, /*event=*/AM_EVT_INVALID);
+            log(ao->name, 0, nbusy, cap, /*event=*/AM_EVT_INVALID);
             continue;
         }
         for (int j = 0; j < tnum; ++j) {
             struct am_event **e = (struct am_event **)am_queue_pop_front(q);
             AM_ASSERT(e);
             AM_ASSERT(*e);
-            log(ao->name, j, len, cap, *e);
+            log(ao->name, j, nbusy, cap, *e);
         }
     }
 }

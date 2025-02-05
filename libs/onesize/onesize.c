@@ -61,7 +61,7 @@ void *am_onesize_allocate_x(struct am_onesize *hnd, int margin) {
     AM_ASSERT((void *)elem < (void *)((char *)hnd->pool.ptr + hnd->pool.size));
 
     --hnd->nfree;
-    hnd->minfree = AM_MIN(hnd->minfree, hnd->nfree);
+    hnd->nfree_min = AM_MIN(hnd->nfree_min, hnd->nfree);
 
     hnd->crit_exit();
 
@@ -108,7 +108,7 @@ static void am_onesize_ctor_internal(struct am_onesize *hnd) {
         am_slist_push_front(&hnd->fl, item);
         ptr += hnd->block_size;
     }
-    hnd->ntotal = hnd->nfree = hnd->minfree = num;
+    hnd->ntotal = hnd->nfree = hnd->nfree_min = num;
 }
 
 void am_onesize_free_all(struct am_onesize *hnd) {
@@ -116,9 +116,9 @@ void am_onesize_free_all(struct am_onesize *hnd) {
 
     hnd->crit_enter();
 
-    int minfree = hnd->minfree;
+    int nfree_min = hnd->nfree_min;
     am_onesize_ctor_internal(hnd);
-    hnd->minfree = minfree; /* cppcheck-suppress redundantAssignment */
+    hnd->nfree_min = nfree_min; /* cppcheck-suppress redundantAssignment */
 
     hnd->crit_exit();
 }
@@ -163,9 +163,7 @@ int am_onesize_get_nfree(const struct am_onesize *hnd) {
     AM_ASSERT(hnd);
 
     hnd->crit_enter();
-
     int nfree = hnd->nfree;
-
     hnd->crit_exit();
 
     return nfree;
@@ -175,12 +173,10 @@ int am_onesize_get_min_nfree(const struct am_onesize *hnd) {
     AM_ASSERT(hnd);
 
     hnd->crit_enter();
-
-    int minfree = hnd->minfree;
-
+    int nfree_min = hnd->nfree_min;
     hnd->crit_exit();
 
-    return minfree;
+    return nfree_min;
 }
 
 int am_onesize_get_block_size(const struct am_onesize *hnd) {
