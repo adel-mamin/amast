@@ -4,3 +4,4 @@
 .pixi
 *.egg-info
 build/
+.cspellcache
