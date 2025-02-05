@@ -26,17 +26,17 @@ Some x86-64 size figures to get an idea:
 
 Library name | Code size [kB] | Data size [kB]
 -------------|----------------|---------------
-ao_cooperative | 3.63 | 0.57
-ao_preemptive | 3.59 | 0.56
+ao_cooperative | 3.53 | 0.57
+ao_preemptive | 3.49 | 0.56
 dlist | 1.29 | 0.00
-event | 3.20 | 0.24
+event | 2.88 | 0.24
 fsm | 0.68 | 0.02
 hsm | 2.39 | 0.03
 onesize | 1.40 | 0.00
-queue | 1.39 | 0.00
+queue | 1.51 | 0.00
 ringbuf | 1.38 | 0.00
 slist | 1.20 | 0.01
-timer | 1.48 | 0.07
+timer | 1.47 | 0.07
 
 ## How To Compile For Amast Development
 <a name="how-to-compile"></a>
