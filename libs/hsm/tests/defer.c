@@ -167,7 +167,7 @@ static void test_defer(void) {
             AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF_EVENT)
         );
         AM_ASSERT(2 == am_event_get_pool_nblocks(/*index=*/0));
-        AM_ASSERT(2 == am_event_get_pool_nfree_now(/*index=*/0));
+        AM_ASSERT(2 == am_event_get_pool_nfree(/*index=*/0));
     }
 
     defer_ctor(defer_hsm_log);
@@ -196,7 +196,7 @@ static void test_defer(void) {
     }
 
     /* make sure there is no memory leak */
-    AM_ASSERT(2 == am_event_get_pool_nfree_now(/*index=*/0));
+    AM_ASSERT(2 == am_event_get_pool_nfree(/*index=*/0));
 }
 
 int main(void) {

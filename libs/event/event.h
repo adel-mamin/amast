@@ -153,26 +153,24 @@ void am_event_state_ctor(const struct am_event_state_cfg *cfg);
 void am_event_add_pool(void *pool, int size, int block_size, int alignment);
 
 /**
- * Get minimum number of free memory blocks available so far in the memory pool
- * with a given index.
+ * Get minimum number of free memory blocks observed so far.
  *
  * Could be used to assess the usage of the underlying memory pool.
  *
  * @param index  memory pool index
  *
- * @return the minimum number of blocks of size block_size available so far
+ * @return the minimum number of blocks of size block_size observed so far
  */
 int am_event_get_pool_nfree_min(int index);
 
 /**
- * Get minimum number of free memory blocks available now in the memory pool
- * with a given index.
+ * Get number of free memory blocks.
  *
  * @param index  memory pool index
  *
  * @return the number of free blocks of size block_size available now
  */
-int am_event_get_pool_nfree_now(int index);
+int am_event_get_pool_nfree(int index);
 
 /**
  * The number of blocks in the pool with the given index.

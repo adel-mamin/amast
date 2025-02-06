@@ -145,9 +145,9 @@ Event
 
 .. doxygenfunction:: am_event_add_pool
 
-.. doxygenfunction:: am_event_get_pool_nfree_min
+.. doxygenfunction:: am_event_get_pool_nfree
 
-.. doxygenfunction:: am_event_get_pool_nfree_now
+.. doxygenfunction:: am_event_get_pool_nfree_min
 
 .. doxygenfunction:: am_event_get_pool_nblocks
 

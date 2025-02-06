@@ -175,7 +175,7 @@ int am_event_get_pool_nfree_min(int index) {
     return nfree;
 }
 
-int am_event_get_pool_nfree_now(int index) {
+int am_event_get_pool_nfree(int index) {
     struct am_event_state *me = &am_event_state_;
     AM_ASSERT(index >= 0);
     AM_ASSERT(index < me->npool);
