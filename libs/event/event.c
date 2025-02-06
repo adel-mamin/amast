@@ -170,7 +170,7 @@ int am_event_get_pool_nfree_min(int index) {
     AM_ASSERT(index < me->npool);
 
     me->crit_enter();
-    int nfree = am_onesize_get_min_nfree(&me->pool[index]);
+    int nfree = am_onesize_get_nfree_min(&me->pool[index]);
     me->crit_exit();
     return nfree;
 }

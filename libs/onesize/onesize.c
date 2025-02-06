@@ -169,7 +169,7 @@ int am_onesize_get_nfree(const struct am_onesize *hnd) {
     return nfree;
 }
 
-int am_onesize_get_min_nfree(const struct am_onesize *hnd) {
+int am_onesize_get_nfree_min(const struct am_onesize *hnd) {
     AM_ASSERT(hnd);
 
     hnd->crit_enter();

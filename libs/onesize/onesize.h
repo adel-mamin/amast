@@ -173,7 +173,7 @@ int am_onesize_get_nfree(const struct am_onesize *hnd);
  *
  * @return the minimum number of blocks of size block_size available so far
  */
-int am_onesize_get_min_nfree(const struct am_onesize *hnd);
+int am_onesize_get_nfree_min(const struct am_onesize *hnd);
 
 /**
  * Returns the memory block size.

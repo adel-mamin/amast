@@ -77,7 +77,7 @@ int main(void) {
     am_onesize_free_all(&ma);
     AM_ASSERT(am_onesize_get_nfree(&ma) == 2);
 
-    AM_ASSERT(0 == am_onesize_get_min_nfree(&ma));
+    AM_ASSERT(0 == am_onesize_get_nfree_min(&ma));
 
     return 0;
 }
