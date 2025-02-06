@@ -62,7 +62,7 @@ bool am_ao_publish_exclude_x(
     const struct am_event *event, const struct am_ao *ao, int margin
 ) {
     AM_ASSERT(event);
-    AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
+    AM_ASSERT(AM_EVENT_HAS_USER_ID(event) || AM_EVENT_HAS_AO_ID(event));
     AM_ASSERT(AM_EVENT_HAS_PUBSUB_ID(event));
     AM_ASSERT(margin >= 0);
     struct am_ao_state *me = &am_ao_state_;
@@ -190,6 +190,12 @@ void am_ao_subscribe(const struct am_ao *ao, int event) {
     me->sub[event].list[i] |= (uint8_t)(1U << (unsigned)(ao->prio % 8));
 
     me->crit_exit();
+
+    struct am_ao_evt *evt = (struct am_ao_evt *)am_event_allocate(
+        AM_EVT_AO_SUBSCRIBE, sizeof(struct am_ao_evt)
+    );
+    evt->id = event;
+    am_ao_publish(&evt->super);
 }
 
 void am_ao_unsubscribe(const struct am_ao *ao, int event) {
@@ -211,6 +217,12 @@ void am_ao_unsubscribe(const struct am_ao *ao, int event) {
     me->sub[ind].list[i] = (uint8_t)list;
 
     me->crit_exit();
+
+    struct am_ao_evt *evt = (struct am_ao_evt *)am_event_allocate(
+        AM_EVT_AO_UNSUBSCRIBE, sizeof(struct am_ao_evt)
+    );
+    evt->id = event;
+    am_ao_publish(&evt->super);
 }
 
 void am_ao_unsubscribe_all(const struct am_ao *ao) {
@@ -235,6 +247,9 @@ void am_ao_unsubscribe_all(const struct am_ao *ao) {
 
         me->crit_exit();
     }
+
+    static const struct am_event uae = {.id = AM_EVT_AO_UNSUBSCRIBE_ALL, 0};
+    am_ao_publish(&uae);
 }
 
 void am_ao_ctor(struct am_ao *ao, struct am_hsm_state state) {

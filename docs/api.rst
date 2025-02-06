@@ -134,6 +134,8 @@ Event
 
 .. doxygendefine:: AM_EVENT_HAS_USER_ID
 
+.. doxygendefine:: AM_EVENT_HAS_AO_ID
+
 .. doxygenenum:: am_event_rc
 
 .. doxygenstruct:: am_event

@@ -99,7 +99,7 @@ if unit_test
         [
             'tests' / 'stop.c'
         ],
-        dependencies: [libao_preemptive_dep, libassert_dep, libpal_dep],
+        dependencies: [libao_preemptive_dep, libassert_dep, libpal_dep, libbit_dep],
         include_directories: [include_directories('tests')])
     test('minimal_preemptive', e, suite: 'ao')
 

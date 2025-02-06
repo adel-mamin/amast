@@ -45,7 +45,7 @@ extern "C" {
 #endif
 
 /** FSM events. */
-enum am_fsm_evt {
+enum am_fsm_evt_id {
     /**
      * Entry event.
      * Run entry action(s) for a given state.

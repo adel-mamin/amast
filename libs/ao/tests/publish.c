@@ -28,6 +28,8 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "common/alignment.h"
+#include "common/compiler.h"
 #include "common/macros.h"
 #include "event/event.h"
 #include "strlib/strlib.h"
@@ -49,6 +51,8 @@ static struct am_ao *m_me = &m_publish.ao;
 
 static struct am_ao_subscribe_list m_pubsub_list[AM_AO_EVT_PUB_MAX];
 static const struct am_event *m_queue_publish[1];
+
+static char m_event_pool[1][16] AM_ALIGNED(AM_ALIGN_MAX);
 
 static enum am_hsm_rc publish_s(
     struct test_publish *me, const struct am_event *event
@@ -90,6 +94,13 @@ static void test_publish(void) {
         .crit_enter = am_pal_crit_enter, .crit_exit = am_pal_crit_exit
     };
     am_ao_state_ctor(&cfg);
+
+    am_event_add_pool(
+        m_event_pool,
+        sizeof(m_event_pool),
+        sizeof(m_event_pool[0]),
+        AM_ALIGN_MAX
+    );
 
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
 

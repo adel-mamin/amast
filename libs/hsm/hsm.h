@@ -46,7 +46,7 @@ extern "C" {
 #endif
 
 /** HSM events. */
-enum am_hsm_evt {
+enum am_hsm_evt_id {
     /**
      * Empty event.
      * Should not cause any side effects in event handlers.
