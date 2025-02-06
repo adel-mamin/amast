@@ -300,3 +300,39 @@ HSM
 .. doxygenfunction:: am_hsm_set_spy
 
 .. doxygenfunction:: am_hsm_top
+
+FSM
+---
+
+.. doxygenenum:: am_fsm_evt_id
+
+.. doxygenenum:: am_fsm_rc
+
+.. doxygentypedef:: am_fsm_state_fn
+
+.. doxygentypedef:: am_fsm_spy_fn
+
+.. doxygendefine:: AM_FSM_STATE_CTOR
+
+.. doxygenstruct:: am_fsm
+
+.. doxygendefine:: AM_FSM_HANDLED
+
+.. doxygendefine:: AM_FSM_TRAN
+
+.. doxygendefine:: AM_FSM_TRAN_REDISPATCH
+
+.. doxygenfunction:: am_fsm_dispatch
+
+.. doxygenfunction:: am_fsm_is_in
+
+.. doxygenfunction:: am_fsm_get_state
+
+.. doxygenfunction:: am_fsm_ctor
+
+.. doxygenfunction:: am_fsm_dtor
+
+.. doxygenfunction:: am_fsm_init
+
+.. doxygenfunction:: am_fsm_set_spy
+

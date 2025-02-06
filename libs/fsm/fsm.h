@@ -99,7 +99,7 @@ typedef enum am_fsm_rc (*am_fsm_state_fn)(
  * Called on each user event BEFORE the event is processes by the FSM.
  * Should only be used for debugging purposes.
  * Set by am_fsm_set_spy().
- * Only supported if fsm.c is compiled with AM_FSM_SPY defined.
+ * Only supported if "fsm.c" is compiled with AM_FSM_SPY defined.
  *
  * @param fsm    the handler of FSM to spy
  * @param event  the event to spy
@@ -209,7 +209,7 @@ void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event);
 /**
  * Set spy user callback as one place to catch all events for the given FSM.
  *
- * It is only available if fsm.c is compiled with AM_FSM_SPY defined.
+ * It is only available if "fsm.c" is compiled with AM_FSM_SPY defined.
  * Should only be used for debugging purposes.
  * Should only be called after calling am_fsm_ctor() and not during ongoing
  * FSM event processing.
