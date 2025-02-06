@@ -125,7 +125,7 @@ typedef enum am_hsm_rc (*am_hsm_state_fn)(
  * Called on each user event BEFORE the event is processes by the HSM.
  * Should only be used for debugging purposes.
  * Set by am_hsm_set_spy().
- * Only supported if hsm.c is compiled with AM_HSM_SPY defined.
+ * Only supported if "hsm.c" file is compiled with AM_HSM_SPY defined.
  *
  * @param hsm    the handler of HSM to spy
  * @param event  the event to spy
@@ -395,7 +395,7 @@ void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event);
 /**
  * Set spy user callback as one place to catch all events for the given HSM.
  *
- * Is only available if hsm.c is compiled with AM_HSM_SPY defined.
+ * Is only available if "hsm.c" file is compiled with AM_HSM_SPY defined.
  * Should only be used for debugging purposes.
  * Should only be called after calling am_hsm_ctor() and not during ongoing
  * HSM event processing.

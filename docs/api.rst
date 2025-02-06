@@ -257,6 +257,46 @@ Async
 HSM
 ---
 
-.. doxygendefine:: AM_HSM_STATE_CTOR
+.. doxygenenum:: am_hsm_evt_id
+
+.. doxygenenum:: am_hsm_rc
+
+.. doxygentypedef:: am_hsm_state_fn
+
+.. doxygentypedef:: am_hsm_spy_fn
 
 .. doxygenstruct:: am_hsm_state
+
+.. doxygendefine:: AM_HSM_STATE_CTOR
+
+.. doxygendefine:: HSM_HIERARCHY_DEPTH_MAX
+
+.. doxygenstruct:: am_hsm
+
+.. doxygendefine:: AM_HSM_HANDLED
+
+.. doxygendefine:: AM_HSM_TRAN
+
+.. doxygendefine:: AM_HSM_TRAN_REDISPATCH
+
+.. doxygendefine:: AM_HSM_SUPER
+
+.. doxygenfunction:: am_hsm_dispatch
+
+.. doxygenfunction:: am_hsm_is_in
+
+.. doxygenfunction:: am_hsm_state_is_eq
+
+.. doxygenfunction:: am_hsm_get_instance
+
+.. doxygenfunction:: am_hsm_get_state
+
+.. doxygenfunction:: am_hsm_ctor
+
+.. doxygenfunction:: am_hsm_dtor
+
+.. doxygenfunction:: am_hsm_init
+
+.. doxygenfunction:: am_hsm_set_spy
+
+.. doxygenfunction:: am_hsm_top
