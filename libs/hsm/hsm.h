@@ -53,7 +53,7 @@ enum am_hsm_evt {
      * The event handlers must always return the AM_HSM_SUPER() in response
      * to this event.
      */
-    AM_EVT_HSM_EMPTY = AM_EVT_RANGE_HSM_BEGIN,
+    AM_EVT_HSM_EMPTY = AM_EVT_RANGE_SM_BEGIN,
 
     /**
      * Init event.
@@ -76,12 +76,9 @@ enum am_hsm_evt {
      * No state transition is allowed in response to this event.
      */
     AM_EVT_HSM_EXIT,
-
-    /** HSM event with maximum value. */
-    AM_EVT_HSM_MAX = AM_EVT_HSM_EXIT
 };
 
-AM_ASSERT_STATIC(AM_EVT_HSM_MAX <= AM_EVT_RANGE_HSM_END);
+AM_ASSERT_STATIC(AM_EVT_HSM_EXIT <= AM_EVT_RANGE_SM_END);
 
 /**
  * HSM state handler return codes.

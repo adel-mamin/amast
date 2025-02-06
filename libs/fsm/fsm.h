@@ -51,7 +51,7 @@ enum am_fsm_evt {
      * Run entry action(s) for a given state.
      * No state transition is allowed in response to this event.
      */
-    AM_EVT_FSM_ENTRY = AM_EVT_RANGE_FSM_BEGIN,
+    AM_EVT_FSM_ENTRY = AM_EVT_RANGE_SM_BEGIN,
 
     /**
      * Exit event.
@@ -59,12 +59,9 @@ enum am_fsm_evt {
      * No state transition is allowed in response to this event.
      */
     AM_EVT_FSM_EXIT,
-
-    /** FSM event with maximum value */
-    AM_EVT_FSM_MAX = AM_EVT_FSM_EXIT
 };
 
-AM_ASSERT_STATIC(AM_EVT_FSM_MAX <= AM_EVT_RANGE_FSM_END);
+AM_ASSERT_STATIC(AM_EVT_FSM_EXIT <= AM_EVT_RANGE_SM_END);
 
 /**
  * FSM state handler return codes.

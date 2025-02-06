@@ -40,15 +40,12 @@
 /** No event ID should have this value. */
 #define AM_EVT_INVALID 0
 
-/** HSM events range. */
-#define AM_EVT_RANGE_HSM_BEGIN 1
-#define AM_EVT_RANGE_HSM_END 4
+/** State machine events range start (inclusive). */
+#define AM_EVT_RANGE_SM_BEGIN 1
+/** State machine events range end (inclusive). */
+#define AM_EVT_RANGE_SM_END 4
 
-/** FSM events range. */
-#define AM_EVT_RANGE_FSM_BEGIN 5
-#define AM_EVT_RANGE_FSM_END 6
-
-#define AM_EVT_INTERNAL_MAX AM_EVT_RANGE_FSM_END
+#define AM_EVT_INTERNAL_MAX AM_EVT_RANGE_SM_END
 
 /**
  * The event IDs below this value are reserved
