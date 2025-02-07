@@ -165,8 +165,8 @@ extern "C" {
  * subscribed active objects handled it.
  * This is done asynchronously after this function returns.
  *
- * Statically allocated events (events for which am_event_is_static()
- * returns true) are never freed.
+ * Statically allocated events, i.e. events for which am_event_is_static()
+ * returns true, are never freed.
  *
  * The function is fast, thread safe and usable from
  * interrupt service routines (ISR).
@@ -231,8 +231,8 @@ void am_ao_publish_exclude(
  * subscribed active objects handled it.
  * This is done asynchronously after this function returns.
  *
- * Statically allocated events (events for which am_event_is_static()
- * returns true) are never freed.
+ * Statically allocated events, i.e. events for which am_event_is_static()
+ * returns true, are never freed.
  *
  * The function is fast, thread safe and usable from
  * interrupt service routines (ISR).
@@ -271,8 +271,8 @@ void am_ao_publish(const struct am_event *event);
  * active object handled the event.
  * This is done asynchronously after this function returns.
  *
- * Statically allocated events (events for which am_event_is_static()
- * returns true) are never freed.
+ * Statically allocated events, i.e. events for which am_event_is_static()
+ * returns true are never freed.
  *
  * The function is fast, thread safe and usable from
  * interrupt service routines (ISR).
@@ -313,8 +313,8 @@ void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
  * active object handled the event.
  * This is done asynchronously after this function returns.
  *
- * Statically allocated events (events for which am_event_is_static()
- * returns true) are never freed.
+ * Statically allocated events, i.e. events for which am_event_is_static()
+ * returns true, are never freed.
  *
  * @param ao      the event is posted to this active object
  * @param event   the event to post
