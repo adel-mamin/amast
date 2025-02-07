@@ -13,8 +13,6 @@ Common Constants
 Common Types
 ------------
 
-.. cpp:type:: uint8_t
-
 .. doxygenstruct:: am_blk
    :members:
 
