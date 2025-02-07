@@ -123,8 +123,7 @@ struct am_event *am_event_allocate_x(int id, int size, int margin) {
         memset(event, 0, sizeof(*event));
         event->id = id;
         event->pool_index_plus_one =
-            (unsigned)i & ((1U << AM_EVENT_POOL_INDEX_BITS) - 1);
-        event->pool_index_plus_one += 1;
+            (unsigned)(i + 1) & AM_EVENT_POOL_INDEX_MASK;
 
         return event;
     }
