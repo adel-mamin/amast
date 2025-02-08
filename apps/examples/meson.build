@@ -136,3 +136,16 @@ async_cooperative = executable(
         libbit_dep,
     ]
 )
+
+fork = executable(
+    'fork',
+    ['fork' / 'main.c'],
+    dependencies: [
+        libhsm_dep,
+        libasync_dep,
+        libao_preemptive_dep,
+        libpal_dep,
+        libassert_dep,
+        libbit_dep
+    ]
+)
