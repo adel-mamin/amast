@@ -38,17 +38,17 @@
 #include "queue/queue.h"
 
 /** No event ID should have this value. */
-#define AM_EVT_INVALID 0
+#define AM_EVT_INVALID -1
 
 /** State machine events range start (inclusive). */
-#define AM_EVT_RANGE_SM_BEGIN 1
+#define AM_EVT_RANGE_SM_BEGIN 0
 /** State machine events range end (inclusive). */
-#define AM_EVT_RANGE_SM_END 4
+#define AM_EVT_RANGE_SM_END 3
 
 /** Active object events range start (inclusive). */
-#define AM_EVT_RANGE_AO_BEGIN 5
+#define AM_EVT_RANGE_AO_BEGIN 4
 /** Active object events range end (inclusive). */
-#define AM_EVT_RANGE_AO_END 7
+#define AM_EVT_RANGE_AO_END 6
 
 #define AM_EVT_INTERNAL_MAX AM_EVT_RANGE_AO_END
 

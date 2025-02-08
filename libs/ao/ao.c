@@ -336,7 +336,7 @@ void am_ao_log_event_queues(
         const int nbusy = am_queue_get_nbusy(q);
         const int tnum = AM_MIN(num, nbusy);
         if (0 == tnum) {
-            log(ao->name, 0, nbusy, cap, /*event=*/AM_EVT_INVALID);
+            log(ao->name, 0, nbusy, cap, /*event=*/NULL);
             continue;
         }
         for (int j = 0; j < tnum; ++j) {
