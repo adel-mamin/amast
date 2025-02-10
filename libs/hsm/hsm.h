@@ -377,6 +377,9 @@ void am_hsm_ctor(struct am_hsm *hsm, struct am_hsm_state state);
 /**
  * HSM destructor.
  *
+ * Exits all HSM states.
+ * Call am_hsm_ctor() to construct HSM again.
+ *
  * @param hsm  the HSM to destruct
  */
 void am_hsm_dtor(struct am_hsm *hsm);

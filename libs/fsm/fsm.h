@@ -191,6 +191,9 @@ void am_fsm_ctor(struct am_fsm *fsm, am_fsm_state_fn state);
 /**
  * FSM destructor.
  *
+ * Exits any FSM state.
+ * Call am_fsm_ctor() to construct FSM again.
+ *
  * @param fsm  the FSM to destruct
  */
 void am_fsm_dtor(struct am_fsm *fsm);

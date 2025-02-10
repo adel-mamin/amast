@@ -117,6 +117,7 @@ void am_fsm_ctor(struct am_fsm *fsm, const am_fsm_state_fn state) {
 
 void am_fsm_dtor(struct am_fsm *fsm) {
     AM_ASSERT(fsm);
+    AM_ASSERT(fsm->state); /* was am_fsm_ctor() called? */
     fsm_exit(fsm);
     fsm->state = NULL;
 }
