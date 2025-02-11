@@ -1,0 +1,49 @@
+{
+    "states": [
+        {
+            "name": "playing",
+            "type": "regular",
+            "statemachine": {
+                "transitions": [
+                    {
+                        "from": "resting",
+                        "to": "walking",
+                        "id": 3
+                    },
+                    {
+                        "from": "walking",
+                        "to": "resting",
+                        "id": 4
+                    }
+                ],
+                "states": [
+                    {
+                        "name": "resting",
+                        "type": "regular"
+                    },
+                    {
+                        "name": "walking",
+                        "type": "regular"
+                    }
+                ]
+            }
+        }
+    ],
+    "transitions": [
+        {
+            "from": "playing",
+            "to": "playing",
+            "label": "ingest food",
+            "event": "ingest food",
+            "id": 5
+        },
+        {
+            "from": "playing",
+            "to": "playing",
+            "label": "ingest drink",
+            "event": "ingest drink",
+            "type": "internal",
+            "id": 6
+        }
+    ]
+}

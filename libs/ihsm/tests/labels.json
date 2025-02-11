@@ -1,0 +1,31 @@
+{
+    "transitions": [
+        {
+            "from": "on",
+            "to": "off",
+            "label": "switch flicked [not an emergency]/light off",
+            "event": "switch flicked",
+            "cond": "not an emergency",
+            "action": "light off",
+            "id": 1
+        },
+        {
+            "from": "off",
+            "to": "on",
+            "label": "switch flicked/light on",
+            "event": "switch flicked",
+            "action": "light on",
+            "id": 2
+        }
+    ],
+    "states": [
+        {
+            "name": "on",
+            "type": "regular"
+        },
+        {
+            "name": "off",
+            "type": "regular"
+        }
+    ]
+}

@@ -1,0 +1,30 @@
+{
+    "states": [
+        {
+            "name": "on",
+            "type": "regular",
+            "label": "Lamp aan"
+        },
+        {
+            "name": "off",
+            "type": "regular",
+            "label": "Lamp uit"
+        }
+    ],
+    "transitions": [
+        {
+            "from": "off",
+            "to": "on",
+            "label": "on pushed",
+            "event": "on pushed",
+            "id": 1
+        },
+        {
+            "from": "on",
+            "to": "off",
+            "label": "off pushed",
+            "event": "off pushed",
+            "id": 2
+        }
+    ]
+}
