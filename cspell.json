@@ -90,7 +90,17 @@
 
         "ZEROLESS",
         "hahi",
-        "libdpp"
+        "libdpp",
+
+        "IHSM",
+        "ihsm",
+
+        "SMCAT",
+        "IHSM's",
+        "libihsm",
+        "statemachine",
+        "deephistory",
+        "JSMN",
     ],
     // flagWords - list of words to be always considered incorrect
     // This is useful for offensive words and common spelling errors.
