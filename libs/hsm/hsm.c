@@ -31,6 +31,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "common/macros.h"
@@ -55,7 +56,7 @@ static const struct am_event m_hsm_evt_exit = {.id = AM_EVT_HSM_EXIT};
 
 static void hsm_set_state(struct am_hsm *hsm, struct am_hsm_state s) {
     hsm->state = s;
-    hsm->smi = (unsigned char)s.smi;
+    hsm->smi = (uint8_t)s.smi;
 }
 
 /**

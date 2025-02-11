@@ -37,6 +37,7 @@
 #define AM_HSM_H_INCLUDED
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "common/compiler.h"
 #include "event/event.h"
@@ -138,9 +139,9 @@ struct am_hsm_state {
     am_hsm_state_fn fn;
     /**
      * HSM submachine instance.
-     * Default is 0. Valid range [0,127].
+     * Default is 0. Valid range [0,255].
      */
-    char smi;
+    uint8_t smi;
 };
 
 /** Helper macro. Not to be used directly. */
@@ -149,7 +150,7 @@ struct am_hsm_state {
 
 /** Helper macro. Not to be used directly. */
 #define AM_STATE2_(s, i) \
-    (struct am_hsm_state) { .fn = (am_hsm_state_fn)(s), .smi = (char)(i) }
+    (struct am_hsm_state) { .fn = (am_hsm_state_fn)(s), .smi = (uint8_t)(i) }
 
 /**
  * Get HSM state from HSM event handler and optionally HSM submachine instance.
@@ -198,19 +199,19 @@ struct am_hsm {
      * from substates to superstates.
      * Returned by am_hsm_get_instance().
      */
-    unsigned char smi;
+    uint8_t smi;
     /**
      * Active state hierarchy level [0,HSM_HIERARCHY_DEPTH_MAX]
      * (level 0 is assigned to am_hsm_top()).
      * Used internally to speed up state transitions.
      */
-    unsigned char hierarchy_level : AM_HSM_HIERARCHY_LEVEL_BITS;
+    uint8_t hierarchy_level : AM_HSM_HIERARCHY_LEVEL_BITS;
     /** safety net to catch missing am_hsm_ctor() call */
-    unsigned char ctor_called : 1;
+    uint8_t ctor_called : 1;
     /** safety net to catch missing am_hsm_init() call */
-    unsigned char init_called : 1;
+    uint8_t init_called : 1;
     /** safety net to catch erroneous reentrant am_hsm_dispatch() call */
-    unsigned char dispatch_in_progress : 1;
+    uint8_t dispatch_in_progress : 1;
 #ifdef AM_HSM_SPY
     /** HSM spy callback */
     am_hsm_spy_fn spy;
@@ -229,7 +230,7 @@ struct am_hsm {
 /** Helper macro. Not to be used directly. */
 #define AM_HSM_SET_(s, i)                                    \
     (((struct am_hsm *)me)->state = AM_HSM_STATE_CTOR(s, i), \
-     ((struct am_hsm *)me)->smi = (unsigned char)i)
+     ((struct am_hsm *)me)->smi = (uint8_t)i)
 
 /** Helper macro. Not to be used directly. */
 #define AM_TRAN1_(s) (AM_HSM_SET_(s, 0), AM_HSM_RC_TRAN)
