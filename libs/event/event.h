@@ -45,12 +45,7 @@
 /** State machine events range end (inclusive). */
 #define AM_EVT_RANGE_SM_END 3
 
-/** Active object events range start (inclusive). */
-#define AM_EVT_RANGE_AO_BEGIN 4
-/** Active object events range end (inclusive). */
-#define AM_EVT_RANGE_AO_END 6
-
-#define AM_EVT_INTERNAL_MAX AM_EVT_RANGE_AO_END
+#define AM_EVT_INTERNAL_MAX AM_EVT_RANGE_SM_END
 
 /**
  * The event IDs below this value are reserved
@@ -76,17 +71,6 @@
  */
 #define AM_EVENT_HAS_USER_ID(event) \
     (((const struct am_event *)(event))->id >= AM_EVT_USER)
-
-/**
- * Check if event has a valid AO event ID.
- *
- * @param event   event to check
- * @retval true   the event has AO event ID
- * @retval false  the event does not have AO event ID
- */
-#define AM_EVENT_HAS_AO_ID(event)                                         \
-    ((AM_EVT_RANGE_AO_BEGIN <= ((const struct am_event *)(event))->id) && \
-     (((const struct am_event *)(event))->id <= AM_EVT_RANGE_AO_END))
 
 /* _BIS and _MASK defines are used for internal purposes */
 #define AM_EVENT_REF_COUNTER_BITS 6

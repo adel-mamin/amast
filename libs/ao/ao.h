@@ -43,26 +43,6 @@
 #include "hsm/hsm.h"
 #include "pal/pal.h"
 
-/** Active object events. */
-enum am_ao_evt_id {
-    /** AO subscribe event */
-    AM_EVT_AO_SUBSCRIBE = AM_EVT_RANGE_AO_BEGIN,
-    /** AO unsubscribe event */
-    AM_EVT_AO_UNSUBSCRIBE,
-    /** AO unsubscribe all events */
-    AM_EVT_AO_UNSUBSCRIBE_ALL,
-};
-
-AM_ASSERT_STATIC(AM_EVT_AO_UNSUBSCRIBE_ALL <= AM_EVT_RANGE_AO_END);
-
-/** #AM_EVT_AO_SUBSCRIBE / #AM_EVT_AO_UNSUBSCRIBE event */
-struct am_ao_evt {
-    /** base class */
-    struct am_event super;
-    /** the event ID to subscribe/unsubscribe */
-    int id;
-};
-
 /** The active object. */
 struct am_ao {
     struct am_hsm hsm;           /**< top level AO state machine */

@@ -99,9 +99,7 @@ struct am_event *am_event_allocate_x(int id, int size, int margin) {
     AM_ASSERT(size > 0);
     AM_ASSERT(me->npool);
     AM_ASSERT(size <= am_onesize_get_block_size(&me->pool[me->npool - 1]));
-    bool user_id = (id >= AM_EVT_USER);
-    bool ao_id = (AM_EVT_RANGE_AO_BEGIN <= id) && (id <= AM_EVT_RANGE_AO_END);
-    AM_ASSERT(user_id || ao_id);
+    AM_ASSERT(id >= AM_EVT_USER);
     AM_ASSERT(margin >= 0);
 
     for (int i = 0; i < me->npool; ++i) {
