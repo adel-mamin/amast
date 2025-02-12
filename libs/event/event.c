@@ -190,10 +190,7 @@ int am_event_get_pool_nblocks(int index) {
     AM_ASSERT(index >= 0);
     AM_ASSERT(index < me->npool);
 
-    me->crit_enter();
-    int nblocks = am_onesize_get_nblocks(&me->pool[index]);
-    me->crit_exit();
-    return nblocks;
+    return am_onesize_get_nblocks(&me->pool[index]);
 }
 
 int am_event_get_pools_num(void) { return am_event_state_.npool; }

@@ -131,6 +131,9 @@ extern "C" {
 /**
  * Event state constructor.
  *
+ * Must be called before calling any other event APIs.
+ * Not thread safe.
+ *
  * @param cfg  event state configuration
  *             The event module makes an internal copy of the configuration.
  */
@@ -140,7 +143,8 @@ void am_event_state_ctor(const struct am_event_state_cfg *cfg);
  * Add event memory pool.
  *
  * Event memory pools must be added in the order of increasing block sizes.
- * Not thread safe. Expected to be called at initialization.
+ * Not thread safe. Must be called at initialization if event allocation
+ * API is used.
  *
  * @param pool        the memory pool pointer
  * @param size        the memory pool size [bytes]
@@ -153,6 +157,7 @@ void am_event_add_pool(void *pool, int size, int block_size, int alignment);
  * Get minimum number of free memory blocks observed so far.
  *
  * Could be used to assess the usage of the underlying memory pool.
+ * Thread safe, if critical section callbacks were configured.
  *
  * @param index  memory pool index
  *
@@ -163,6 +168,9 @@ int am_event_get_pool_nfree_min(int index);
 /**
  * Get number of free memory blocks.
  *
+ * Thread safe, if critical section callbacks were configured.
+ * Use sparingly as the return value could be volatile due to multitasking.
+ *
  * @param index  memory pool index
  *
  * @return the number of free blocks of size block_size available now
@@ -172,6 +180,8 @@ int am_event_get_pool_nfree(int index);
 /**
  * The number of blocks in the pool with the given index.
  *
+ * Thread safe.
+ *
  * @param index  the pool index
  *
  * @return the number of blocks
@@ -180,6 +190,8 @@ int am_event_get_pool_nblocks(int index);
 
 /**
  * The number of registered pools.
+ *
+ * Thread safe.
  *
  * @return the number of pools
  */
@@ -193,6 +205,8 @@ int am_event_get_pools_num(void);
  *
  * Checks if there are more free memory blocks available than \p margin.
  * If not, then returns NULL. Otherwise allocates the event and returns it.
+ *
+ * Thread safe, if critical section callbacks were configured.
  *
  * @param id      the event identifier
  * @param size    the event size [bytes]
@@ -209,6 +223,8 @@ struct am_event *am_event_allocate_x(int id, int size, int margin);
  * with am_event_add_pool() function.
  *
  * The function asserts if there is no memory left to accommodate the event.
+ *
+ * Thread safe, if critical section callbacks were configured.
  *
  * @param id    the event identifier
  * @param size  the event size [bytes]
@@ -229,6 +245,8 @@ struct am_event *am_event_allocate(int id, int size);
  * The function does nothing for statically allocated events
  * (events for which am_event_is_static() returns true).
  *
+ * Thread safe, if critical section callbacks were configured.
+ *
  * @param event  the event to free
  */
 void am_event_free(const struct am_event **event);
@@ -241,6 +259,8 @@ void am_event_free(const struct am_event **event);
  * Checks if there are more free memory blocks available than \p margin.
  * If not, then returns NULL. Otherwise allocates memory block
  * and then copies the content of the given event to it.
+ *
+ * Thread safe, if critical section callbacks were configured.
  *
  * @param event   the event to duplicate
  * @param size    the event size [bytes]
@@ -258,6 +278,8 @@ struct am_event *am_event_dup_x(
  * Allocates it from memory pools provided with am_event_add_pool() function.
  *
  * The function asserts if there is no memory left to allocated the event.
+ *
+ * Thread safe, if critical section callbacks were configured.
  *
  * @param event  the event to duplicate
  * @param size   the event size [bytes]
@@ -282,6 +304,7 @@ typedef void (*am_event_log_fn)(
  * Log events content of the first num events in each event pool.
  *
  * To be used for debugging purposes.
+ * Not thread safe.
  *
  * @param num  the number of events to log in each pool (if <0, then log all)
  * @param cb   the logging callback
@@ -290,6 +313,8 @@ void am_event_log_pools(int num, am_event_log_fn cb);
 
 /**
  * Check if event is static.
+ *
+ * Thread safe.
  *
  * @param event  the event to check
  *
@@ -306,6 +331,8 @@ bool am_event_is_static(const struct am_event *event);
  * Call am_event_dec_ref_cnt(), when the event is not needed anymore
  * and can be disposed.
  *
+ * Thread safe, if critical section callbacks were configured.
+ *
  * @param event  the event
  */
 void am_event_inc_ref_cnt(const struct am_event *event);
@@ -318,12 +345,17 @@ void am_event_inc_ref_cnt(const struct am_event *event);
  * The function does nothing for statically allocated events
  * (events for which am_event_is_static() returns true).
  *
+ * Thread safe, if critical section callbacks were configured.
+ *
  * @param event  the event
  */
 void am_event_dec_ref_cnt(const struct am_event *event);
 
 /**
  * Return event reference counter.
+ *
+ * Thread safe, if critical section callbacks were configured.
+ * Use sparingly as the return value is volatile due to multitasking.
  *
  * @param event  the event, which reference counter is to be returned
  *
@@ -343,6 +375,8 @@ int am_event_get_ref_cnt(const struct am_event *event);
  * Statically allocated events (events for which am_event_is_static()
  * returns true) are never freed.
  *
+ * Thread safe, if critical section callbacks were configured.
+ *
  * @param queue   the event queue
  * @param event   the event to push
  * @param margin  free event queue slots to be available after event was pushed
@@ -359,6 +393,8 @@ enum am_event_rc am_event_push_back_x(
  * Push event to the back of event queue.
  *
  * Asserts if the event was not pushed.
+ *
+ * Thread safe, if critical section callbacks were configured.
  *
  * @param queue  the event queue
  * @param event  the event to push
@@ -383,6 +419,8 @@ enum am_event_rc am_event_push_back(
  * Statically allocated events (events for which am_event_is_static()
  * returns true) are never freed.
  *
+ * Thread safe, if critical section callbacks were configured.
+ *
  * @param queue   the event queue
  * @param event   the event to push
  * @param margin  free event queue slots to be available after event was pushed
@@ -400,6 +438,8 @@ enum am_event_rc am_event_push_front_x(
  *
  * Asserts if the event was not pushed.
  *
+ * Thread safe, if critical section callbacks were configured.
+ *
  * @param queue  the event queue
  * @param event  the event to push
  *
@@ -413,6 +453,8 @@ enum am_event_rc am_event_push_front(
 
 /**
  * Pop event from the front of event queue.
+ *
+ * Thread safe, if critical section callbacks were configured.
  *
  * @param queue  the event queue
  *
@@ -432,6 +474,8 @@ const struct am_event *am_event_pop_front(struct am_queue *queue);
  * Statically allocated events (events for which am_event_is_static()
  * returns true) are never freed.
  *
+ * Thread safe, if critical section callbacks were configured.
+ *
  * @param queue   the queue to store the deferred event
  * @param event   the event to defer
  * @param margin  free event queue slots to be available after event is deferred
@@ -448,6 +492,8 @@ bool am_event_defer_x(
  *
  * Asserts if the event was not deferred.
  *
+ * Thread safe, if critical section callbacks were configured.
+ *
  * @param queue  the queue to store the deferred event
  * @param event  the event to defer
  */
@@ -458,6 +504,8 @@ typedef void (*am_event_recall_fn)(void *ctx, const struct am_event *event);
 
 /**
  * Recall deferred event.
+ *
+ * Thread safe, if critical section callbacks were configured.
  *
  * @param queue  queue of deferred events
  * @param cb     the recalled event is provided to this callback
@@ -473,6 +521,8 @@ bool am_event_recall(struct am_queue *queue, am_event_recall_fn cb, void *ctx);
  *
  * Takes care of recycling the events by calling am_event_free().
  * The provided queue might be deferred events queue.
+ *
+ * Thread safe, if critical section callbacks were configured.
  *
  * @param queue  the queue to flush
  *
