@@ -36,6 +36,7 @@
 #define AM_FSM_H_INCLUDED
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "common/compiler.h"
 #include "event/event.h"
@@ -122,6 +123,10 @@ struct am_fsm {
     /** FSM spy callback */
     am_fsm_spy_fn spy;
 #endif
+    /** safety net to catch missing am_hsm_init() call */
+    uint8_t init_called : 1;
+    /** safety net to catch erroneous reentrant am_hsm_dispatch() call */
+    uint8_t dispatch_in_progress : 1;
 };
 
 /**

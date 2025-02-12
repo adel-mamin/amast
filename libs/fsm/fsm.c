@@ -91,6 +91,16 @@ static enum am_fsm_rc fsm_dispatch(
 }
 
 void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event) {
+    AM_ASSERT(fsm);
+    AM_ASSERT(fsm->state);
+    AM_ASSERT(fsm->init_called);
+    AM_ASSERT(!fsm->dispatch_in_progress);
+    AM_ASSERT(event);
+    AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
+
+    fsm->dispatch_in_progress = true;
+    const int id = event->id;
+
 #ifdef AM_FSM_SPY
     if (fsm->spy) {
         fsm->spy(fsm, event);
@@ -101,6 +111,23 @@ void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event) {
         rc = fsm_dispatch(fsm, event);
         AM_ASSERT(AM_FSM_RC_TRAN_REDISPATCH != rc);
     }
+
+    fsm->dispatch_in_progress = false;
+
+    /*
+     * Event was freed / corrupted ?
+     *
+     * One possible reason could be the following usage scenario:
+     *
+     *  const struct am_event *e = am_event_allocate(id, size);
+     *  am_event_inc_ref_cnt(e); <-- THIS IS MISSING
+     *  am_fsm_dispatch(fsm, e);
+     *      am_event_defer(queue, e) & am_event_recall(queue, ...)
+     *      OR
+     *      am_event_inc_ref_cnt(e) & am_event_dec_ref_cnt(e)
+     *  am_event_free(&e);
+     */
+    AM_ASSERT(id == event->id); /* cppcheck-suppress knownArgument */
 }
 
 bool am_fsm_is_in(const struct am_fsm *fsm, const am_fsm_state_fn state) {
@@ -120,6 +147,7 @@ void am_fsm_dtor(struct am_fsm *fsm) {
     AM_ASSERT(fsm->state); /* was am_fsm_ctor() called? */
     fsm_exit(fsm);
     fsm->state = NULL;
+    fsm->init_called = false;
 }
 
 void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event) {
@@ -129,6 +157,7 @@ void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event) {
     enum am_fsm_rc rc = fsm->state(fsm, init_event);
     AM_ASSERT(AM_FSM_RC_TRAN == rc);
     fsm_enter(fsm, fsm->state);
+    fsm->init_called = true;
 }
 
 #ifdef AM_FSM_SPY

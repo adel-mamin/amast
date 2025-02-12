@@ -282,6 +282,7 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event) {
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
 
     hsm->dispatch_in_progress = true;
+    const int id = event->id;
 
 #ifdef AM_HSM_SPY
     if (hsm->spy) {
@@ -295,6 +296,21 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event) {
     }
 
     hsm->dispatch_in_progress = false;
+
+    /*
+     * Event was freed / corrupted ?
+     *
+     * One possible reason could be the following usage scenario:
+     *
+     *  const struct am_event *e = am_event_allocate(id, size);
+     *  am_event_inc_ref_cnt(e); <-- THIS IS MISSING
+     *  am_hsm_dispatch(hsm, e);
+     *      am_event_defer(queue, e) & am_event_recall(queue, ...)
+     *      OR
+     *      am_event_inc_ref_cnt(e) & am_event_dec_ref_cnt(e)
+     *  am_event_free(&e);
+     */
+    AM_ASSERT(id == event->id); /* cppcheck-suppress knownArgument */
 }
 
 bool am_hsm_is_in(struct am_hsm *hsm, struct am_hsm_state state) {
