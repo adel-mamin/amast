@@ -66,16 +66,7 @@ static int test_init(struct test *me, const struct am_event *event) {
     return AM_HSM_TRAN(test_proc);
 }
 
-int main(void) {
-    struct am_ao_state_cfg cfg_ao = {
-        .on_idle = am_pal_on_idle,
-        .crit_enter = am_pal_crit_enter,
-        .crit_exit = am_pal_crit_exit
-    };
-    am_ao_state_ctor(&cfg_ao);
-
-    am_ao_ctor(&m_test.ao, AM_HSM_STATE_CTOR(test_init));
-
+static void start_ao(void) {
     am_ao_start(
         &m_test.ao,
         /*prio=*/AM_AO_PRIO_MAX,
@@ -86,6 +77,26 @@ int main(void) {
         /*name=*/"test",
         /*init_event=*/NULL
     );
+}
+
+int main(void) {
+    struct am_ao_state_cfg cfg_ao = {
+        .on_idle = am_pal_on_idle,
+        .crit_enter = am_pal_crit_enter,
+        .crit_exit = am_pal_crit_exit
+    };
+    am_ao_state_ctor(&cfg_ao);
+
+    am_ao_ctor(&m_test.ao, AM_HSM_STATE_CTOR(test_init));
+
+    start_ao();
+
+    while (am_ao_get_cnt() > 0) {
+        am_ao_run_all();
+    }
+
+    am_ao_ctor(&m_test.ao, AM_HSM_STATE_CTOR(test_init));
+    start_ao();
 
     while (am_ao_get_cnt() > 0) {
         am_ao_run_all();

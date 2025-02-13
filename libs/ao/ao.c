@@ -242,6 +242,7 @@ void am_ao_ctor(struct am_ao *ao, struct am_hsm_state state) {
 
     memset(ao, 0, sizeof(*ao));
     am_hsm_ctor(&ao->hsm, state);
+    ao->ctor_called = true;
 }
 
 static void am_ao_debug_stub(const struct am_ao *ao, const struct am_event *e) {
@@ -262,6 +263,7 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
 
     me->startup_mutex = am_pal_mutex_create();
     am_pal_mutex_lock(me->startup_mutex);
+    me->startup_complete = false;
 
     me->debug = cfg->debug;
     if (!me->debug) {

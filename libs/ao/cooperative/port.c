@@ -123,6 +123,7 @@ void am_ao_start(
     (void)stack_size;
 
     AM_ASSERT(ao);
+    AM_ASSERT(ao->ctor_called);
     AM_ASSERT(prio >= AM_AO_PRIO_MIN);
     AM_ASSERT(prio <= AM_AO_PRIO_MAX);
     AM_ASSERT(queue);
@@ -177,6 +178,8 @@ void am_ao_stop(struct am_ao *ao) {
     --me->aos_cnt;
 
     me->crit_exit();
+
+    ao->ctor_called = false;
 }
 
 void am_ao_notify(const struct am_ao *ao) {

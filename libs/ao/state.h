@@ -76,6 +76,8 @@ struct am_ao_state {
      * am_ao_run_all() function
      */
     unsigned hsm_init_pend : 1;
+    /** mark startup sequence complete */
+    unsigned startup_complete : 1;
 };
 
 extern struct am_ao_state am_ao_state_;

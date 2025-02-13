@@ -58,6 +58,8 @@ struct am_ao {
      * The call is then done either from am_ao_task() or from am_ao_run_all().
      */
     unsigned hsm_init_pend : 1;
+    /** safety net to catch missing am_ao_ctor() call */
+    unsigned ctor_called : 1;
 };
 
 /** Active object library state configuration. */

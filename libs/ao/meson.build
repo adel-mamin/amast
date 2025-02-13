@@ -101,7 +101,7 @@ if unit_test
         ],
         dependencies: [libao_preemptive_dep, libassert_dep, libpal_dep, libbit_dep],
         include_directories: [include_directories('tests')])
-    test('minimal_preemptive', e, suite: 'ao')
+    test('stop_preemptive', e, suite: 'ao')
 
     e = executable(
         'stop_cooperative',

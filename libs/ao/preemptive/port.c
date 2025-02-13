@@ -70,10 +70,13 @@ static void am_ao_task(void *param) {
 }
 
 bool am_ao_run_all(void) {
-    const struct am_ao_state *me = &am_ao_state_;
+    struct am_ao_state *me = &am_ao_state_;
 
-    /* start all AOs */
-    am_pal_mutex_unlock(me->startup_mutex);
+    if (!me->startup_complete) {
+        /* start all AOs */
+        am_pal_mutex_unlock(me->startup_mutex);
+        me->startup_complete = true;
+    }
     /* wait all AOs to complete */
     am_pal_task_wait(AM_PAL_TASK_ID_MAIN);
     return false;
@@ -90,6 +93,7 @@ void am_ao_start(
     const struct am_event *init_event
 ) {
     AM_ASSERT(ao);
+    AM_ASSERT(ao->ctor_called);
     AM_ASSERT(prio >= AM_AO_PRIO_MIN);
     AM_ASSERT(prio <= AM_AO_PRIO_MAX);
     AM_ASSERT(queue);
@@ -153,6 +157,8 @@ void am_ao_stop(struct am_ao *ao) {
     bool running_aos = me->aos_cnt;
 
     me->crit_exit();
+
+    ao->ctor_called = false;
 
     if (!running_aos) {
         am_pal_task_notify(/*task=*/AM_PAL_TASK_ID_MAIN);
