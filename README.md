@@ -85,3 +85,7 @@ If you find any bugs, please report them.
 <a name="license"></a>
 
 Amast is open-sourced software licensed under the [MIT license](LICENSE.md).
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=adel-mamin/amast&type=Date)](https://star-history.com/#adel-mamin/amast&Date)
