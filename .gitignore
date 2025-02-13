@@ -1,7 +1,6 @@
 # pixi environments
 .pixi
-# pixi environments
-.pixi
+pixi.lock
 *.egg-info
 build/
 .cspellcache
