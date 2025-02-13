@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Async-Await &#8212; AMAST  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="amast" data-version="" src="_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="canonical" href="https://adel-mamin.github.io/amast/async.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Timer" href="timer.html" />
+    <link rel="prev" title="Event" href="event.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="timer.html" title="Timer"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="event.html" title="Event"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">AMAST  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Async-Await</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="async-await">
+<h1>Async-Await<a class="headerlink" href="#async-await" title="Link to this heading">¶</a></h1>
+<p>Provides a lightweight implementation of asynchronous programming using
+a custom async-await mechanism in C. It allows a stateful asynchronous
+execution flow be represented in a linear structured, readable manner.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>The core of the implementation revolves around managing async state
+in a <cite>struct am_async</cite> object. The object combined with a set of
+state-tracking macros allows to mimic async-await behavior.</p>
+<p>Useful for the cases when the sequence of states (operations) is strictly
+pre-defined.</p>
+<p>Best effect is achieved when combined with hierarchical state machines -
+the more powerful concept, which allows to implement more complex interaction
+of states.</p>
+<p>Inspired by:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.chiark.greenend.org.uk/~sgtatham/coroutines.html">Coroutines in C</a></p></li>
+<li><p><a class="reference external" href="https://github.com/naasking/async.h">Async.h - asynchronous, stackless subroutines</a></p></li>
+<li><p><a class="reference external" href="https://dunkels.com/adam/pt/">Protothreads</a></p></li>
+</ul>
+</section>
+<section id="async-macros-and-functions">
+<h2>Async Macros and Functions<a class="headerlink" href="#async-macros-and-functions" title="Link to this heading">¶</a></h2>
+<p>The async macros and functions below help create asynchronous functions,
+manage state, and handle control flow.</p>
+<section id="macros">
+<h3>Macros<a class="headerlink" href="#macros" title="Link to this heading">¶</a></h3>
+<ul>
+<li><p><strong>AM_ASYNC_BEGIN(me)</strong></p>
+<p>Begins an asynchronous function and initializes the async state.
+It takes a pointer <cite>me</cite> to the <cite>struct am_async</cite> managing the async state.</p>
+</li>
+<li><p><strong>AM_ASYNC_BREAK()</strong></p>
+<p>Marks the end of the async function. This macro resets the async state
+to the initial value and returns <cite>AM_ASYNC_RC_DONE</cite>, indicating that
+the function has completed.</p>
+</li>
+<li><p><strong>AM_ASYNC_END()</strong></p>
+<p>Ends the asynchronous function, ensuring that completed or unexpected
+states are handled correctly. It internally calls <cite>AM_ASYNC_BREAK()</cite>
+to reset the async state.</p>
+</li>
+<li><p><strong>AM_ASYNC_LABEL()</strong></p>
+<p>Sets a “label” in the async function by storing the current line number
+in the <cite>state</cite> field. This allows the async function to resume execution
+from this point when re-entered.</p>
+</li>
+<li><p><strong>AM_ASYNC_AWAIT(cond)</strong></p>
+<p>Awaits a specified condition <cite>cond</cite> before proceeding with execution.
+If the condition is not met, the function returns <cite>AM_ASYNC_RC_BUSY</cite>
+and can be re-entered later. This allows the async function to wait
+for external conditions without blocking.</p>
+</li>
+<li><p><strong>AM_ASYNC_YIELD()</strong></p>
+<p>Yields control back to the caller without completing the function,
+returning <cite>AM_ASYNC_RC_BUSY</cite>. This enables the async function to be
+resumed later from this point.</p>
+</li>
+</ul>
+</section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h3>
+<ul>
+<li><p><strong>void am_async_init(struct am_async *me)</strong></p>
+<p>Initializes an <cite>am_async</cite> structure by setting its <cite>state</cite> field
+to <cite>AM_ASYNC_STATE_INIT</cite>. This prepares the structure to be used in
+an async function.</p>
+</li>
+</ul>
+</section>
+<section id="enumerations">
+<h3>Enumerations<a class="headerlink" href="#enumerations" title="Link to this heading">¶</a></h3>
+<ul>
+<li><p><strong>enum am_async_rc</strong></p>
+<p>Defines return codes used in async functions:</p>
+<ul class="simple">
+<li><p><strong>AM_ASYNC_RC_DONE</strong>: Indicates that the async function has
+completed successfully.</p></li>
+<li><p><strong>AM_ASYNC_RC_BUSY</strong>: Indicates that the async function is still
+busy and should be re-entered later.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="usage-example">
+<h2>Usage Example<a class="headerlink" href="#usage-example" title="Link to this heading">¶</a></h2>
+<p>The following example demonstrates how to use this async implementation in C.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;async.h&quot;</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">my_async</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">am_async</span><span class="w"> </span><span class="n">async</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">foo</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">async_function</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">my_async</span><span class="w"> </span><span class="o">*</span><span class="n">me</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">AM_ASYNC_BEGIN</span><span class="p">(</span><span class="n">me</span><span class="p">);</span>
+
+<span class="w">    </span><span class="cm">/* Await some condition before continuing */</span>
+<span class="w">    </span><span class="n">AM_ASYNC_AWAIT</span><span class="p">(</span><span class="n">me</span><span class="o">-&gt;</span><span class="n">foo</span><span class="p">);</span>
+
+<span class="w">    </span><span class="cm">/* Yield control back to the caller */</span>
+<span class="w">    </span><span class="n">AM_ASYNC_YIELD</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">some_condition</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="cm">/* Complete the function with AM_ASYNC_RC_DONE */</span>
+<span class="w">        </span><span class="n">AM_ASYNC_BREAK</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="cm">/* Await another condition */</span>
+<span class="w">    </span><span class="n">AM_ASYNC_AWAIT</span><span class="p">(</span><span class="n">another_condition</span><span class="p">());</span>
+
+<span class="w">    </span><span class="cm">/* Complete the function with AM_ASYNC_RC_DONE */</span>
+<span class="w">    </span><span class="n">AM_ASYNC_END</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">my_async</span><span class="w"> </span><span class="n">me</span><span class="p">;</span>
+<span class="w">    </span><span class="n">am_async_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">me</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">async_function</span><span class="p">(</span><span class="o">&amp;</span><span class="n">me</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">AM_ASYNC_RC_BUSY</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="cm">/* Perform other work while async function is busy */</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Avoid using switch-case constructs withing asynchronous function
+using the macros</p></li>
+<li><p>Keep the variables that should preserve their values across async
+function calls in a state stored outside of the async function.</p></li>
+<li><p>See <cite>test.c</cite> for usage examples</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  
+    
+  
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Async-Await</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#async-macros-and-functions">Async Macros and Functions</a><ul>
+<li><a class="reference internal" href="#macros">Macros</a></li>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#enumerations">Enumerations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage-example">Usage Example</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="index.html">Overview</a>
+    <ul>
+          <li>Previous: <a href="event.html" title="previous chapter">Event</a>
+          <li>Next: <a href="timer.html" title="next chapter">Timer</a>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2025, Adel Mamin.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

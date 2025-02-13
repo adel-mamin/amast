@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Timer &#8212; AMAST  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="amast" data-version="" src="_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="canonical" href="https://adel-mamin.github.io/amast/timer.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Onesize Memory Allocator" href="onesize.html" />
+    <link rel="prev" title="Async-Await" href="async.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="onesize.html" title="Onesize Memory Allocator"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="async.html" title="Async-Await"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">AMAST  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Timer</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="timer">
+<h1>Timer<a class="headerlink" href="#timer" title="Link to this heading">¶</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>The Timer module provides an event-based timer framework for scheduling and
+dispatching events in embedded systems. It enables both one-to-one (post) and
+one-to-many (publish) delivery mechanisms for expired timer events, supporting
+high-resolution timing in multi-tick-rate-domain environments.</p>
+</section>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Timer Event Management</strong>:</p>
+<ul class="simple">
+<li><p>Support for one-shot and periodic timer events.</p></li>
+<li><p>Timer events are associated with owners or broadcasted using publish
+mechanisms.</p></li>
+<li><p>Configurable callbacks for handling expired timer events.</p></li>
+</ul>
+</li>
+<li><p><strong>Tick-Based Operation</strong>:</p>
+<ul class="simple">
+<li><p>Timers operate on a tick-based system, updated with <code class="docutils literal notranslate"><span class="pre">am_timer_tick</span></code>.</p></li>
+<li><p>Multiple tick domains are supported for independent timer operation.</p></li>
+</ul>
+</li>
+<li><p><strong>Thread Safety</strong>:</p>
+<ul class="simple">
+<li><p>Critical sections managed using user-defined enter/exit callbacks.</p></li>
+<li><p>Safe timer operations across concurrent threads.</p></li>
+</ul>
+</li>
+<li><p><strong>Dynamic and Static Timer Allocation</strong>:</p>
+<ul class="simple">
+<li><p>Timer events can be allocated dynamically for improved cache locality.</p></li>
+<li><p>Support for static allocation for predictable memory usage.</p></li>
+</ul>
+</li>
+<li><p><strong>Customization</strong>:</p>
+<ul class="simple">
+<li><p>Optional timer event update callbacks for dynamic modifications.</p></li>
+<li><p>Configurable tick domains for flexible operation.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="usage-scenarios">
+<h2>Usage Scenarios<a class="headerlink" href="#usage-scenarios" title="Link to this heading">¶</a></h2>
+<p>The Timer module is ideal for systems requiring:</p>
+<ul class="simple">
+<li><p><strong>Event Scheduling</strong>: Scheduling one-shot or periodic events at specific
+intervals.</p></li>
+<li><p><strong>Multi-Domain Timing</strong>: Supporting independent timing domains for various
+subsystems.</p></li>
+<li><p><strong>Concurrent and Real-Time Applications</strong>: Safely handling timer events in
+concurrent environments.</p></li>
+</ul>
+</section>
+<section id="design-considerations">
+<h2>Design Considerations<a class="headerlink" href="#design-considerations" title="Link to this heading">¶</a></h2>
+<ol class="arabic">
+<li><p><strong>Timer Events</strong>:</p>
+<p>Timer events (<code class="docutils literal notranslate"><span class="pre">am_event_timer</span></code>) encapsulate the details of scheduled
+operations. Each timer event includes:
+- Owner: The recipient of the timer event.
+- Shot time: Number of ticks after which the event is fired.
+- Interval: Period between successive event firings (0 for one-shot events).</p>
+</li>
+<li><p><strong>Callback Mechanisms</strong>:</p>
+<ul class="simple">
+<li><p><strong>Post Callback</strong>: Delivers the timer event to a specific owner.</p></li>
+<li><p><strong>Publish Callback</strong>: Broadcasts the timer event to all subscribers.</p></li>
+</ul>
+</li>
+<li><p><strong>Critical Section Management</strong>:</p>
+<p>User-defined <code class="docutils literal notranslate"><span class="pre">crit_enter</span></code> and <code class="docutils literal notranslate"><span class="pre">crit_exit</span></code> callbacks protect shared resources
+during timer updates and event handling.</p>
+</li>
+<li><p><strong>Dynamic Timer Event Allocation</strong>:</p>
+<p>Dynamic allocation of timer events improves memory access patterns and
+reduces cache misses. Allocated events are fully constructed and ready for
+use.</p>
+</li>
+</ol>
+</section>
+<section id="module-configuration">
+<h2>Module Configuration<a class="headerlink" href="#module-configuration" title="Link to this heading">¶</a></h2>
+<p>The module configuration (<code class="docutils literal notranslate"><span class="pre">am_timer_cfg</span></code>) defines:</p>
+<ul class="simple">
+<li><p><strong>Post and Publish Callbacks</strong>: Specify the mechanisms for handling expired
+timer events.</p></li>
+<li><p><strong>Event Update Callback</strong>: Optional callback for dynamically modifying event
+properties.</p></li>
+<li><p><strong>Critical Section Callbacks</strong>: Ensure safe execution in multi-threaded
+environments.</p></li>
+</ul>
+</section>
+<section id="system-integration">
+<h2>System Integration<a class="headerlink" href="#system-integration" title="Link to this heading">¶</a></h2>
+<p>The Timer module integrates seamlessly with event-driven systems and RTOS,
+providing a tick-based mechanism for precise timing. Key integration points
+include:</p>
+<ul class="simple">
+<li><p><strong>Tick Update</strong>: Regular calls to <code class="docutils literal notranslate"><span class="pre">am_timer_tick</span></code> to update timer states and
+dispatch expired events.</p></li>
+<li><p><strong>Event Construction</strong>: Use <code class="docutils literal notranslate"><span class="pre">am_timer_event_ctor</span></code> for static events or
+<code class="docutils literal notranslate"><span class="pre">am_timer_event_allocate</span></code> for dynamic events.</p></li>
+<li><p><strong>Event Handling</strong>: Utilize post or publish mechanisms for event delivery.</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  
+    
+  
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Timer</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#key-features">Key Features</a></li>
+<li><a class="reference internal" href="#usage-scenarios">Usage Scenarios</a></li>
+<li><a class="reference internal" href="#design-considerations">Design Considerations</a></li>
+<li><a class="reference internal" href="#module-configuration">Module Configuration</a></li>
+<li><a class="reference internal" href="#system-integration">System Integration</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="index.html">Overview</a>
+    <ul>
+          <li>Previous: <a href="async.html" title="previous chapter">Async-Await</a>
+          <li>Next: <a href="onesize.html" title="next chapter">Onesize Memory Allocator</a>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2025, Adel Mamin.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Finite State Machine (FSM) &#8212; AMAST  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="amast" data-version="" src="_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="canonical" href="https://adel-mamin.github.io/amast/fsm.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Active Object (AO)" href="ao.html" />
+    <link rel="prev" title="Hierarchical State Machine (HSM)" href="hsm.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ao.html" title="Active Object (AO)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="hsm.html" title="Hierarchical State Machine (HSM)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">AMAST  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Finite State Machine (FSM)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="finite-state-machine-fsm">
+<h1>Finite State Machine (FSM)<a class="headerlink" href="#finite-state-machine-fsm" title="Link to this heading">¶</a></h1>
+<section id="glossary">
+<h2>Glossary<a class="headerlink" href="#glossary" title="Link to this heading">¶</a></h2>
+<blockquote>
+<div><dl class="simple">
+<dt>event</dt><dd><p>a unique ID plus optionally some data associated with it</p>
+</dd>
+<dt>entry event</dt><dd><p>an event sent to a state when the state is entered (<strong>AM_EVT_FSM_ENTRY</strong>)</p>
+</dd>
+<dt>exit event</dt><dd><p>an event sent to a state when the state is exited (<strong>AM_EVT_FSM_EXIT</strong>)</p>
+</dd>
+<dt>state</dt><dd><p>an event handler. <cite>Idle</cite>, <cite>Processing</cite> and <cite>Completed</cite> are all states
+(see the diagram below)</p>
+</dd>
+<dt>current state</dt><dd><p>the state which currently gets incoming events</p>
+</dd>
+<dt>active state</dt><dd><p>same as current state</p>
+</dd>
+<dt>state transition</dt><dd><p>the process of changing of the current state to another or to itself</p>
+</dd>
+<dt>source state</dt><dd><p>the state that initiates the state transition</p>
+</dd>
+<dt>target state</dt><dd><p>the destination state of a state transition</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>This FSM (Finite State Machine) library provides a lightweight API for defining,
+creating, and managing state machines in C. The library includes support for
+state transitions, entry/exit actions, and event handling.
+It also provides a debugging mechanism through the “spy” callback,
+allowing users to observe events as they pass through the state machine.
+This library is ideal for applications that require structured and manageable
+state control in an embedded system or other C-based environments.</p>
+<p>The FSM is a combination of one or more state-handler functions of
+type <strong>am_fsm_state</strong>.</p>
+</section>
+<section id="example-fsm">
+<h2>Example FSM<a class="headerlink" href="#example-fsm" title="Link to this heading">¶</a></h2>
+<p>Below is an example of a simple FSM with three states
+(<cite>Idle</cite>, <cite>Processing</cite>, and <cite>Completed</cite>) and basic transitions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="o">*</span> <span class="n">Initial</span> <span class="n">State</span>
+    <span class="o">|</span>
+<span class="o">+---</span><span class="n">v</span><span class="o">------+</span>    <span class="n">Start</span>     <span class="o">+------------+</span>
+<span class="o">|</span>   <span class="n">Idle</span>   <span class="o">|-------------&gt;|</span> <span class="n">Processing</span> <span class="o">|</span>
+<span class="o">+----^-----+</span>              <span class="o">+------------+</span>
+     <span class="o">|</span>                         <span class="o">|</span>
+     <span class="o">|</span> <span class="n">Reset</span>                   <span class="o">|</span> <span class="n">Complete</span>
+     <span class="o">|</span>     <span class="o">+-------------+</span>     <span class="o">|</span>
+     <span class="o">+-----|</span>  <span class="n">Completed</span>  <span class="o">&lt;-----+</span>
+           <span class="o">+-------------+</span>
+</pre></div>
+</div>
+<p>This FSM transitions from <cite>Idle</cite> to <cite>Processing</cite> upon receiving a <cite>Start</cite> event,
+completes the processing, and then returns to <cite>Idle</cite> with a <cite>Reset</cite> event.</p>
+</section>
+<section id="event-handling">
+<h2>Event Handling<a class="headerlink" href="#event-handling" title="Link to this heading">¶</a></h2>
+<p>Events in this FSM are defined by the <strong>struct am_event</strong> structure,
+with device IDs starting from <strong>AM_EVT_USER</strong>.</p>
+<p>Each event is handled in a state handler function that receives the event and
+processes it accordingly.</p>
+<p>FSM reserved events are defined as follows:</p>
+<ul class="simple">
+<li><p><strong>AM_EVT_FSM_ENTRY</strong>: Indicates the entry into a state. Entry actions are executed here.</p></li>
+<li><p><strong>AM_EVT_FSM_EXIT</strong>: Indicates the exit from a state. Exit actions are executed here.</p></li>
+</ul>
+<p>The <strong>am_fsm_dispatch()</strong> function is used to send events to the FSM.</p>
+</section>
+<section id="state-transition">
+<h2>State Transition<a class="headerlink" href="#state-transition" title="Link to this heading">¶</a></h2>
+<p>The library supports two main types of state transitions:</p>
+<ol class="arabic simple">
+<li><p>Standard Transition (<strong>AM_FSM_TRAN()</strong>):
+Moves directly from the current state to the new state.</p></li>
+<li><p>Redispatch Transition (<strong>AM_FSM_TRAN_REDISPATCH()</strong>):
+Transitions to a new state and redispatches the event for further processing.</p></li>
+</ol>
+<p>Both type of state transitions are used within state handlers to initiate
+a transition, updating the FSM’s state and returning control to the dispatcher.</p>
+<p>If state handler function returns <strong>AM_FSM_TRAN_REDISPATCH(target_state)</strong>,
+then the transition is executed first and then the same event is
+dispatched to the new current state. This is a convenience feature,
+that allows FSM to handle the event in the state that expects it.</p>
+<p>FSM states cannot initiate state transitions when processing entry and exit
+events.</p>
+</section>
+<section id="initial-state">
+<h2>Initial State<a class="headerlink" href="#initial-state" title="Link to this heading">¶</a></h2>
+<p>The initial state of the FSM is provided during the FSM’s construction
+using the <strong>am_fsm_ctor()</strong> function.</p>
+<p>This state is set to handle any initial setup required by the FSM and
+ensures that the FSM begins with a predictable configuration.</p>
+<p>The function <strong>am_fsm_init()</strong> initiates the FSM with an optional initial event.</p>
+<p>Example:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">am_fsm</span><span class="w"> </span><span class="n">my_fsm</span><span class="p">;</span>
+<span class="n">am_fsm_ctor</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_fsm</span><span class="p">,</span><span class="w"> </span><span class="n">initial_state</span><span class="p">);</span>
+<span class="n">am_fsm_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_fsm</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span><span class="w"> </span><span class="cm">/* initiates with no event */</span>
+</pre></div>
+</div>
+<p>The initial state must always return <strong>AM_FSM_TRAN(new_state)</strong> macro
+to proceed to the appropriate active state.</p>
+</section>
+<section id="fsm-coding-rules">
+<h2>FSM Coding Rules<a class="headerlink" href="#fsm-coding-rules" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>FSM states must be represented by event handlers of type <strong>am_fsm_state_fn</strong>.</p></li>
+<li><p>The name of the first argument of all user event handler functions
+must be <strong>me</strong>.</p></li>
+<li><p>For convenience instead of using <strong>struct am_fsm *me</strong> the first argument
+can point to a user structure. In this case the user structure
+must have <strong>struct am_fsm</strong> instance as its first field.
+For example, the first argument can be <strong>struct foo *me</strong>, where
+<strong>struct foo</strong> is defined like this:</p></li>
+</ol>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">foo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">am_fsm</span><span class="w"> </span><span class="n">fsm</span><span class="p">;</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Each user event handler should be implemented as a switch-case of handled
+events.</p></li>
+<li><p>Avoid placing any code with side effects outside of the switch-case of
+event handlers.</p></li>
+<li><p>Processing of <strong>AM_EVT_FSM_ENTRY</strong> and <strong>AM_EVT_FSM_EXIT</strong> events should
+not trigger state transitions. It means that user event handlers should
+not return <strong>AM_FSM_TRAN()</strong> or <strong>AM_FSM_TRAN_REDISPATCH()</strong> for
+these events.</p></li>
+</ol>
+</section>
+<section id="fsm-initialization">
+<h2>FSM Initialization<a class="headerlink" href="#fsm-initialization" title="Link to this heading">¶</a></h2>
+<p>FSM initialization is divided into the following two steps for increased
+flexibility and better control of the initialization timeline:</p>
+<ol class="arabic simple">
+<li><p>the state machine constructor (<strong>am_fsm_ctor()</strong>)</p></li>
+<li><p>the initial transition (<strong>am_fsm_init()</strong>).</p></li>
+</ol>
+</section>
+<section id="transition-to-history">
+<h2>Transition To History<a class="headerlink" href="#transition-to-history" title="Link to this heading">¶</a></h2>
+<p>Transition to history is a useful technique that is convenient to apply in
+certain use cases. It does not require to use any dedicated FSM API.</p>
+<p>Given the following example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+---+</span>   <span class="o">+---+</span>  <span class="o">+---+</span>
+<span class="o">|</span> <span class="n">A</span> <span class="o">|</span>   <span class="o">|</span> <span class="n">B</span> <span class="o">|</span>  <span class="o">|</span> <span class="n">C</span> <span class="o">|</span>
+<span class="o">+---+</span>   <span class="o">+---+</span>  <span class="o">+---+</span>
+</pre></div>
+</div>
+<p>the transition to history technique can be
+demonstrated as follows. Assume that the FSM is in the state A.
+The user code stores the current state in a local variable of type
+<strong>am_fsm_state_fn</strong>. This is done with:</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">foo</span><span class="w"> </span><span class="p">{</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">am_fsm</span><span class="w"> </span><span class="n">fsm</span><span class="p">;</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">am_fsm_state_fn</span><span class="w"> </span><span class="n">history</span><span class="p">;</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">};</span>
+<span class="p">...</span>
+<span class="k">static</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="n">am_fsm_rc</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">foo</span><span class="w"> </span><span class="o">*</span><span class="n">me</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">event</span><span class="w"> </span><span class="o">*</span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="o">-&gt;</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">AM_EVT_FSM_ENTRY</span><span class="p">:</span>
+<span class="w">        </span><span class="n">me</span><span class="o">-&gt;</span><span class="n">history</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">am_fsm_state</span><span class="p">(</span><span class="o">&amp;</span><span class="n">me</span><span class="o">-&gt;</span><span class="n">fsm</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">AM_FSM_HANDLED</span><span class="p">();</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">AM_FSM_HANDLED</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then the transition to state C happens, which is then followed by a request
+to transition back to the previous state. Since the previous state is captured
+in <strong>me-&gt;history</strong> it can be achieved by doing this:</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="n">am_fsm_rc</span><span class="w"> </span><span class="nf">C</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">foo</span><span class="w"> </span><span class="o">*</span><span class="n">me</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">event</span><span class="w"> </span><span class="o">*</span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="o">-&gt;</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">FSM_EVT_FOO</span><span class="p">:</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">AM_FSM_TRAN</span><span class="p">(</span><span class="n">me</span><span class="o">-&gt;</span><span class="n">history</span><span class="p">);</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">AM_FSM_HANDLED</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>So, that is essentially all about it.</p>
+<p>Another example of the usage of the transition to history technique can be seen
+in <strong>tests/history.c</strong> unit test.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  
+    
+  
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Finite State Machine (FSM)</a><ul>
+<li><a class="reference internal" href="#glossary">Glossary</a></li>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#example-fsm">Example FSM</a></li>
+<li><a class="reference internal" href="#event-handling">Event Handling</a></li>
+<li><a class="reference internal" href="#state-transition">State Transition</a></li>
+<li><a class="reference internal" href="#initial-state">Initial State</a></li>
+<li><a class="reference internal" href="#fsm-coding-rules">FSM Coding Rules</a></li>
+<li><a class="reference internal" href="#fsm-initialization">FSM Initialization</a></li>
+<li><a class="reference internal" href="#transition-to-history">Transition To History</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="index.html">Overview</a>
+    <ul>
+          <li>Previous: <a href="hsm.html" title="previous chapter">Hierarchical State Machine (HSM)</a>
+          <li>Next: <a href="ao.html" title="next chapter">Active Object (AO)</a>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2025, Adel Mamin.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

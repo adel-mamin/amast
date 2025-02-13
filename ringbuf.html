@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ring Buffer &#8212; AMAST  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="amast" data-version="" src="_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="canonical" href="https://adel-mamin.github.io/amast/ringbuf.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Onesize Memory Allocator" href="onesize.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="onesize.html" title="Onesize Memory Allocator"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">AMAST  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Ring Buffer</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="ring-buffer">
+<h1>Ring Buffer<a class="headerlink" href="#ring-buffer" title="Link to this heading">¶</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>The Ring Buffer module provides a high-performance circular buffer for
+efficient data handling. It allows for lockless operation with one
+producer and one consumer. It facilitates concurrent
+read/write operations, supports data flow control, and minimizes memory
+overhead.</p>
+</section>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Circular Buffer Design</strong>:</p>
+<ul class="simple">
+<li><p>Utilizes a fixed-size buffer for continuous data wrapping.</p></li>
+<li><p>Supports concurrent read and write operations.</p></li>
+</ul>
+</li>
+<li><p><strong>Flexible Data Handling</strong>:</p>
+<ul class="simple">
+<li><p>Read and write pointers allow dynamic management of data availability.</p></li>
+<li><p>Users can read and write directly to the buffer memory.</p></li>
+</ul>
+</li>
+<li><p><strong>Flow Control</strong>:</p>
+<ul class="simple">
+<li><p>Tracks the number of dropped bytes due to buffer overflow.</p></li>
+<li><p>Provides utilities to manage and clear dropped data counters.</p></li>
+</ul>
+</li>
+<li><p><strong>Diagnostics</strong>:</p>
+<ul class="simple">
+<li><p>Functions to retrieve the size of available data and free space.</p></li>
+<li><p>Utilities to track and adjust buffer state for debugging and optimization.</p></li>
+</ul>
+</li>
+<li><p><strong>Low Memory Overhead</strong>:</p>
+<ul class="simple">
+<li><p>Designed for embedded environments with constrained resources.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="usage-scenarios">
+<h2>Usage Scenarios<a class="headerlink" href="#usage-scenarios" title="Link to this heading">¶</a></h2>
+<p>The Ring Buffer module is well-suited for:</p>
+<ul class="simple">
+<li><p><strong>Data Streaming</strong>: Managing continuous data streams in real-time systems.</p></li>
+<li><p><strong>Inter-Thread Communication</strong>: Serving as a lockless shared buffer for
+producer-consumer scenarios.</p></li>
+<li><p><strong>Efficient Memory Usage</strong>: Handling data in fixed-size buffers without
+dynamic allocation.</p></li>
+</ul>
+</section>
+<section id="design-considerations">
+<h2>Design Considerations<a class="headerlink" href="#design-considerations" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Data Access</strong>:</p>
+<ul class="simple">
+<li><p>Provides direct access to buffer memory via read and write pointers.</p></li>
+<li><p>Users must explicitly manage buffer state using <code class="docutils literal notranslate"><span class="pre">flush</span></code> and <code class="docutils literal notranslate"><span class="pre">seek</span></code>
+functions.</p></li>
+</ul>
+</li>
+<li><p><strong>Concurrency</strong>:</p>
+<ul class="simple">
+<li><p>Reader and writer operations are synchronized through explicit calls to
+state management functions.</p></li>
+<li><p>Provides mechanisms to ensure data integrity between read and write
+operations.</p></li>
+</ul>
+</li>
+<li><p><strong>Diagnostics and Flow Control</strong>:</p>
+<ul class="simple">
+<li><p>Tracks dropped bytes during buffer overflow conditions for performance
+analysis.</p></li>
+<li><p>Provides utilities to monitor and clear dropped byte counters.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="module-configuration">
+<h2>Module Configuration<a class="headerlink" href="#module-configuration" title="Link to this heading">¶</a></h2>
+<p>The module requires the following configuration:</p>
+<ul class="simple">
+<li><p><strong>Buffer Descriptor</strong>: Describes the ring buffer’s internal state, including
+read and write offsets, buffer size, and pointers.</p></li>
+<li><p><strong>Buffer Memory</strong>: Preallocated buffer space to hold data.</p></li>
+</ul>
+</section>
+<section id="system-integration">
+<h2>System Integration<a class="headerlink" href="#system-integration" title="Link to this heading">¶</a></h2>
+<p>The module integrates seamlessly into systems requiring efficient data
+handling. Key integration points include:</p>
+<ul class="simple">
+<li><p><strong>Initialization</strong>: Use <code class="docutils literal notranslate"><span class="pre">am_ringbuf_ctor</span></code> to configure the buffer descriptor
+and associate it with the preallocated memory.</p></li>
+<li><p><strong>Data Handling</strong>: Retrieve read and write pointers using
+<code class="docutils literal notranslate"><span class="pre">am_ringbuf_get_read_ptr</span></code> and <code class="docutils literal notranslate"><span class="pre">am_ringbuf_get_write_ptr</span></code>, then manage data
+flow with <code class="docutils literal notranslate"><span class="pre">am_ringbuf_flush</span></code> and <code class="docutils literal notranslate"><span class="pre">am_ringbuf_seek</span></code>.</p></li>
+<li><p><strong>Diagnostics</strong>: Use utilities like <code class="docutils literal notranslate"><span class="pre">am_ringbuf_get_data_size</span></code> and
+<code class="docutils literal notranslate"><span class="pre">am_ringbuf_get_free_size</span></code> to monitor buffer state.</p></li>
+</ul>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Requires explicit state management through user calls to <code class="docutils literal notranslate"><span class="pre">flush</span></code> and <code class="docutils literal notranslate"><span class="pre">seek</span></code>.</p></li>
+<li><p>Buffer size must be fixed and allocated in advance.</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  
+    
+  
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Ring Buffer</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#key-features">Key Features</a></li>
+<li><a class="reference internal" href="#usage-scenarios">Usage Scenarios</a></li>
+<li><a class="reference internal" href="#design-considerations">Design Considerations</a></li>
+<li><a class="reference internal" href="#module-configuration">Module Configuration</a></li>
+<li><a class="reference internal" href="#system-integration">System Integration</a></li>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="index.html">Overview</a>
+    <ul>
+          <li>Previous: <a href="onesize.html" title="previous chapter">Onesize Memory Allocator</a>
+          <li>Next: <a href="api.html" title="next chapter">API</a>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2025, Adel Mamin.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

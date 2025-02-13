@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Active Object (AO) &#8212; AMAST  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="amast" data-version="" src="_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="canonical" href="https://adel-mamin.github.io/amast/ao.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Event" href="event.html" />
+    <link rel="prev" title="Finite State Machine (FSM)" href="fsm.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="event.html" title="Event"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="fsm.html" title="Finite State Machine (FSM)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">AMAST  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Active Object (AO)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="active-object-ao">
+<h1>Active Object (AO)<a class="headerlink" href="#active-object-ao" title="Link to this heading">¶</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>The Active Object (AO) module provides a framework for implementing the Active
+Object design pattern in embedded systems and other concurrent environments. It
+facilitates the encapsulation of threads, event-driven state machines, and
+message queues to enable asynchronous communication and cooperative
+multitasking.</p>
+</section>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Active Object Management</strong>:</p>
+<ul class="simple">
+<li><p>Encapsulation of state machines (<code class="docutils literal notranslate"><span class="pre">am_hsm</span></code>) with thread-like behavior.</p></li>
+<li><p>Priority-based scheduling, supporting up to 64 priority levels
+(configurable).</p></li>
+<li><p>Human-readable naming for better debugging and system diagnostics.</p></li>
+</ul>
+</li>
+<li><p><strong>Event Handling</strong>:</p>
+<ul class="simple">
+<li><p>Publish-subscribe mechanism for event distribution.</p></li>
+<li><p>FIFO (First-In-First-Out) and LIFO (Last-In-First-Out) queuing for event
+posting.</p></li>
+<li><p>Support for gracefully handling queue overflow and event recycling.</p></li>
+</ul>
+</li>
+<li><p><strong>Thread Safety and Debugging</strong>:</p>
+<ul class="simple">
+<li><p>Critical section management with customizable callbacks.</p></li>
+<li><p>Debug hooks for monitoring AO state transitions and events.</p></li>
+</ul>
+</li>
+<li><p><strong>Resource Configuration</strong>:</p>
+<ul class="simple">
+<li><p>Configurable event queue sizes and AO stack sizes to optimize resource
+usage.</p></li>
+<li><p>Maximum limit for the number of active objects ensures predictable memory
+usage.</p></li>
+</ul>
+</li>
+<li><p><strong>Subscription Management</strong>:</p>
+<ul class="simple">
+<li><p>Flexible subscription model allowing objects to subscribe to specific
+events.</p></li>
+<li><p>Efficient bitmask-based subscription list representation.</p></li>
+<li><p>APIs for subscribing, unsubscribing, and bulk subscription operations.</p></li>
+</ul>
+</li>
+<li><p><strong>System-Level Management</strong>:</p>
+<ul class="simple">
+<li><p>Utilities to start, stop, and initialize Active Objects.</p></li>
+<li><p>Support for logging and inspecting event queues and last processed events
+for debugging.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="usage-scenarios">
+<h2>Usage Scenarios<a class="headerlink" href="#usage-scenarios" title="Link to this heading">¶</a></h2>
+<p>The AO module is particularly suited for systems that require:</p>
+<ul class="simple">
+<li><p><strong>Asynchronous Processing</strong>: Decoupling event producers and consumers for
+better responsiveness.</p></li>
+<li><p><strong>State-Driven Logic</strong>: Managing complex workflows through hierarchical state
+machines.</p></li>
+<li><p><strong>Scalability</strong>: Supporting multiple concurrent tasks with varying priorities.</p></li>
+</ul>
+</section>
+<section id="design-considerations">
+<h2>Design Considerations<a class="headerlink" href="#design-considerations" title="Link to this heading">¶</a></h2>
+<ol class="arabic">
+<li><p><strong>Priority-Based Scheduling</strong>:</p>
+<p>Active objects operate with a priority model, ranging from <code class="docutils literal notranslate"><span class="pre">AM_AO_PRIO_MIN</span></code>
+to <code class="docutils literal notranslate"><span class="pre">AM_AO_PRIO_MAX</span></code>. The module ensures deterministic behavior by processing
+higher-priority tasks first.</p>
+</li>
+<li><p><strong>Event Queue Management</strong>:</p>
+<p>Each Active Object maintains an event queue. Events can be posted in FIFO or
+LIFO order. Overflow scenarios are handled either by assertion or graceful
+degradation, depending on the API used.</p>
+</li>
+<li><p><strong>Resource Safety</strong>:</p>
+<p>Critical sections are managed via user-defined callbacks (<code class="docutils literal notranslate"><span class="pre">crit_enter</span></code> and
+<code class="docutils literal notranslate"><span class="pre">crit_exit</span></code>), allowing seamless integration with platform-specific
+synchronization primitives.</p>
+</li>
+<li><p><strong>Debugging and Diagnostics</strong>:</p>
+<p>Debug hooks and logging utilities enable real-time inspection of system
+behavior, facilitating efficient troubleshooting during development and
+deployment.</p>
+</li>
+</ol>
+</section>
+<section id="module-configuration">
+<h2>Module Configuration<a class="headerlink" href="#module-configuration" title="Link to this heading">¶</a></h2>
+<p>The module allows for extensive customization through the following:</p>
+<ul class="simple">
+<li><p><strong>AO State Configuration</strong>: Define callbacks for debugging and critical
+section management.</p></li>
+<li><p><strong>Subscription List Initialization</strong>: Optional support for initializing
+subscription data structures.</p></li>
+<li><p><strong>Event Queue Size and AO Stack Size</strong>: Adjust to meet application-specific
+requirements.</p></li>
+</ul>
+</section>
+<section id="system-integration">
+<h2>System Integration<a class="headerlink" href="#system-integration" title="Link to this heading">¶</a></h2>
+<p>The module can be seamlessly integrated into event-driven systems, real-time
+operating systems (RTOS), or standalone applications. Starting Active Objects
+in priority order (lowest first) is recommended to optimize event queue
+allocation and system startup.</p>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>The maximum number of active objects (<code class="docutils literal notranslate"><span class="pre">AM_AO_NUM_MAX</span></code>) is constrained to 64
+by design for simplicity and resource efficiency.</p></li>
+<li><p>Pub/sub functionality requires explicit initialization if used.</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  
+    
+  
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Active Object (AO)</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#key-features">Key Features</a></li>
+<li><a class="reference internal" href="#usage-scenarios">Usage Scenarios</a></li>
+<li><a class="reference internal" href="#design-considerations">Design Considerations</a></li>
+<li><a class="reference internal" href="#module-configuration">Module Configuration</a></li>
+<li><a class="reference internal" href="#system-integration">System Integration</a></li>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="index.html">Overview</a>
+    <ul>
+          <li>Previous: <a href="fsm.html" title="previous chapter">Finite State Machine (FSM)</a>
+          <li>Next: <a href="event.html" title="next chapter">Event</a>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2025, Adel Mamin.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>
