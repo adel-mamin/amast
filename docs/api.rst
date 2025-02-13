@@ -63,6 +63,21 @@ Singly Linked List
 
 .. doxygenfunction:: am_slist_iterator_pop
 
+Bit
+---
+
+.. doxygenstruct:: am_bit_u64
+
+.. doxygenfunction:: am_bit_u64_is_empty
+
+.. doxygenfunction:: am_bit_u64_msb
+
+.. doxygenfunction:: am_bit_u8_msb
+
+.. doxygenfunction:: am_bit_u64_set
+
+.. doxygenfunction:: am_bit_u64_clear
+
 Ring Buffer
 -----------
 
@@ -122,6 +137,35 @@ Queue
 .. doxygenfunction:: am_queue_push_front
 
 .. doxygenfunction:: am_queue_push_back
+
+Onesize
+-------
+
+.. doxygenstruct:: am_onesize
+
+.. doxygenstruct:: am_onesize_cfg
+
+.. doxygenfunction:: am_onesize_ctor
+
+.. doxygenfunction:: am_onesize_allocate_x
+
+.. doxygenfunction:: am_onesize_allocate
+
+.. doxygenfunction:: am_onesize_free
+
+.. doxygenfunction:: am_onesize_free_all
+
+.. doxygentypedef:: am_onesize_iterate_fn
+
+.. doxygenfunction:: am_onesize_iterate_over_allocated
+
+.. doxygenfunction:: am_onesize_get_nfree
+
+.. doxygenfunction:: am_onesize_get_nfree_min
+
+.. doxygenfunction:: am_onesize_get_block_size
+
+.. doxygenfunction:: am_onesize_get_nblocks
 
 Event
 -----
@@ -332,3 +376,127 @@ FSM
 
 .. doxygenfunction:: am_fsm_set_spy
 
+AO
+--
+
+.. doxygenstruct:: am_ao
+
+.. doxygenstruct:: am_ao_state_cfg
+   :members:
+
+.. doxygendefine:: AM_AO_NUM_MAX
+
+.. doxygendefine:: AM_AO_PRIO_INVALID
+
+.. doxygendefine:: AM_AO_PRIO_MIN
+
+.. doxygendefine:: AM_AO_PRIO_MAX
+
+.. doxygendefine:: AM_AO_PRIO_IS_VALID
+
+.. doxygenstruct:: am_ao_subscribe_list
+
+.. doxygenfunction:: am_ao_publish_exclude_x
+
+.. doxygenfunction:: am_ao_publish_exclude
+
+.. doxygenfunction:: am_ao_publish_x
+
+.. doxygenfunction:: am_ao_publish
+
+.. doxygenfunction:: am_ao_post_fifo_x
+
+.. doxygenfunction:: am_ao_post_fifo
+
+.. doxygenfunction:: am_ao_post_lifo_x
+
+.. doxygenfunction:: am_ao_post_lifo
+
+.. doxygenfunction:: am_ao_ctor
+
+.. doxygenfunction:: am_ao_start
+
+.. doxygenfunction:: am_ao_stop
+
+.. doxygenfunction:: am_ao_state_ctor
+
+.. doxygenfunction:: am_ao_subscribe
+
+.. doxygenfunction:: am_ao_unsubscribe
+
+.. doxygenfunction:: am_ao_unsubscribe_all
+
+.. doxygenfunction:: am_ao_init_subscribe_list
+
+.. doxygenfunction:: am_ao_run_all
+
+.. doxygenfunction:: am_ao_event_queue_is_empty
+
+.. doxygenfunction:: am_ao_log_event_queues
+
+.. doxygenfunction:: am_ao_log_last_events
+
+.. doxygenfunction:: am_ao_wait_start_all
+
+.. doxygenfunction:: am_ao_get_cnt
+
+.. doxygenfunction:: am_ao_get_own_prio
+
+PAL
+---
+
+.. doxygendefine:: AM_PAL_TASK_NUM_MAX
+
+.. doxygendefine:: AM_PAL_TASK_ID_NONE
+
+.. doxygendefine:: AM_PAL_TASK_ID_MAIN
+
+.. doxygendefine:: AM_PAL_TICK_DOMAIN_DEFAULT
+
+.. doxygendefine:: AM_PAL_TICK_DOMAIN_MAX
+
+.. doxygenfunction:: am_pal_ctor
+
+.. doxygenfunction:: am_pal_dtor
+
+.. doxygenfunction:: am_pal_crit_enter
+
+.. doxygenfunction:: am_pal_crit_exit
+
+.. doxygenfunction:: am_pal_mutex_create
+
+.. doxygenfunction:: am_pal_mutex_lock
+
+.. doxygenfunction:: am_pal_mutex_unlock
+
+.. doxygenfunction:: am_pal_mutex_destroy
+
+.. doxygenfunction:: am_pal_task_create
+
+.. doxygenfunction:: am_pal_task_notify
+
+.. doxygenfunction:: am_pal_task_wait
+
+.. doxygenfunction:: am_pal_task_get_own_id
+
+.. doxygenfunction:: am_pal_time_get_ms
+
+.. doxygenfunction:: am_pal_time_get_tick
+
+.. doxygenfunction:: am_pal_time_get_tick_from_ms
+
+.. doxygenfunction:: am_pal_time_get_ms_from_tick
+
+.. doxygenfunction:: am_pal_sleep_ticks
+
+.. doxygenfunction:: am_pal_sleep_till_ticks
+
+.. doxygenfunction:: am_pal_sleep_ms
+
+.. doxygenfunction:: am_pal_sleep_till_ms
+
+.. doxygenfunction:: am_pal_printf
+
+.. doxygenfunction:: am_pal_flush
+
+.. doxygenfunction:: am_pal_on_idle

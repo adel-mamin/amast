@@ -102,7 +102,7 @@ void am_onesize_ctor(struct am_onesize *hnd, const struct am_onesize_cfg *cfg);
 void *am_onesize_allocate_x(struct am_onesize *hnd, int margin);
 
 /**
- * Allocate one memory block of struct am_onesize_cfg::block_size
+ * Allocate one memory block of configured block size.
  *
  * Asserts if no free memory block is available.
  *

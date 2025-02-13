@@ -25,8 +25,6 @@
  */
 
 /**
- * @file
- *
  * Event API implementation.
  */
 

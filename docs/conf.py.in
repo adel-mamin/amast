@@ -29,7 +29,10 @@ breathe_domain_by_extension = {
     "h" : "cpp",
 }
 
-nitpick_ignore = [('cpp:identifier', 'uint8_t')]
+nitpick_ignore = [
+    ('cpp:identifier', 'uint8_t'),
+    ('cpp:identifier', 'uint32_t'),
+]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']

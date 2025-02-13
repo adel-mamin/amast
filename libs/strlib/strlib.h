@@ -292,7 +292,6 @@ int str_lcat(char *dst, const char *src, int lim);
  */
 int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap);
 
-/* @cond */
 /**
  * Same as str_lcat(), but the source buffer is replaced with format string.
  *
@@ -304,7 +303,6 @@ int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap);
  *         It means the initial length of dst plus the length of src.
  */
 AM_PRINTF(3, 4) int str_lcatf(char *dst, int lim, const char *fmt, ...);
-/* @endcond */
 
 /**
  * String tokenizer.

@@ -25,8 +25,6 @@
  */
 
 /**
- * @file
- *
  * Active Object (AO) API implementation.
  */
 

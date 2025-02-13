@@ -214,7 +214,7 @@ void am_pal_sleep_ms(int ms);
 void am_pal_sleep_till_ms(uint32_t ms);
 
 /**
- * printf like logging.
+ * printf-like logging.
  *
  * @param fmt  printf-like format string
  *

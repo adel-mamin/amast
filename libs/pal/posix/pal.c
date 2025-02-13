@@ -25,8 +25,6 @@
  */
 
 /**
- * @file
- *
  * Platform abstraction layer (PAL) API posix implementation
  */
 
@@ -63,28 +61,32 @@ AM_ASSERT_STATIC(_POSIX_C_SOURCE);
 /** Default tick rate [ms] */
 #define AM_PAL_TICK_DOMAIN_DEFAULT_MS 10
 
+/** PAL task descriptor */
 struct am_pal_task {
-    /* pthread data */
+    /** pthread data */
     pthread_t thread;
-    /* mutex to protect condition variable */
+    /** mutex to protect condition variable */
     pthread_mutex_t mutex;
-    /* condition variable for signaling */
+    /** condition variable for signaling */
     pthread_cond_t cond;
-    /* flag to track notification state */
+    /** flag to track notification state */
     bool notified;
-    /* the task is valid */
+    /** the task is valid */
     bool valid;
-    /* entry function */
+    /** entry function */
     void (*entry)(void *arg);
-    /* entry function argument */
+    /** entry function argument */
     void *arg;
 };
 
 static struct am_pal_task task_main_ = {0};
 static struct am_pal_task task_arr_[AM_PAL_TASK_NUM_MAX] = {0};
 
+/** PAL mutex descriptor */
 struct am_pal_mutex {
+    /** pthread mutex */
     pthread_mutex_t mutex;
+    /** internal unique mutex ID */
     bool valid;
 };
 
