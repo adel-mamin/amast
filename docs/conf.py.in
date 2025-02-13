@@ -57,6 +57,7 @@ html_sidebars = {
     "index": ["project.html", "localtoc.html", "searchbox.html", "ethicalads.html"],
     "**": ["localtoc.html", "relations.html", "searchbox.html", "ethicalads.html"],
 }
+html_baseurl = "https://adel-mamin.github.io/amast/"
 singlehtml_sidebars = {"index": ["project.html", "localtoc.html", "ethicalads.html"]}
 # html_static_path = ["_static"]
 # html_favicon = "_static/shortcut-icon.png"
