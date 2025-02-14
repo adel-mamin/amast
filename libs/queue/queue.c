@@ -58,6 +58,7 @@ void am_queue_ctor(
 
     queue->blk = *blk;
     queue->nfree = queue->nfree_min = queue->blk.size / queue->isize;
+    queue->ctor_called = true;
 }
 
 void am_queue_dtor(struct am_queue *queue) {
@@ -67,30 +68,37 @@ void am_queue_dtor(struct am_queue *queue) {
 
 bool am_queue_is_empty(const struct am_queue *queue) {
     AM_ASSERT(queue);
+    AM_ASSERT(queue->ctor_called);
     return (queue->rd == queue->wr) && !queue->full;
 }
 
 bool am_queue_is_full(const struct am_queue *queue) {
     AM_ASSERT(queue);
+    AM_ASSERT(queue->ctor_called);
     return queue->full;
 }
 
 int am_queue_get_nbusy(const struct am_queue *queue) {
+    AM_ASSERT(queue);
+    AM_ASSERT(queue->ctor_called);
     return am_queue_get_capacity(queue) - queue->nfree;
 }
 
 int am_queue_get_capacity(const struct am_queue *queue) {
     AM_ASSERT(queue);
+    AM_ASSERT(queue->ctor_called);
     return queue->blk.size / queue->isize;
 }
 
 int am_queue_item_size(const struct am_queue *queue) {
     AM_ASSERT(queue);
+    AM_ASSERT(queue->ctor_called);
     return queue->isize;
 }
 
 void *am_queue_peek_front(struct am_queue *queue) {
     AM_ASSERT(queue);
+    AM_ASSERT(queue->ctor_called);
 
     if (am_queue_is_empty(queue)) {
         return NULL;
@@ -100,6 +108,7 @@ void *am_queue_peek_front(struct am_queue *queue) {
 
 void *am_queue_peek_back(struct am_queue *queue) {
     AM_ASSERT(queue);
+    AM_ASSERT(queue->ctor_called);
 
     if (am_queue_is_empty(queue)) {
         return NULL;
@@ -111,6 +120,7 @@ void *am_queue_peek_back(struct am_queue *queue) {
 
 void *am_queue_pop_front(struct am_queue *queue) {
     AM_ASSERT(queue);
+    AM_ASSERT(queue->ctor_called);
 
     if (am_queue_is_empty(queue)) {
         return NULL;
@@ -125,6 +135,7 @@ void *am_queue_pop_front(struct am_queue *queue) {
 
 void *am_queue_pop_front_and_copy(struct am_queue *queue, void *buf, int size) {
     AM_ASSERT(queue);
+    AM_ASSERT(queue->ctor_called);
     AM_ASSERT(buf);
     AM_ASSERT(size >= queue->isize);
 
@@ -140,6 +151,7 @@ void *am_queue_pop_front_and_copy(struct am_queue *queue, void *buf, int size) {
 
 bool am_queue_push_back(struct am_queue *queue, const void *ptr, int size) {
     AM_ASSERT(queue);
+    AM_ASSERT(queue->ctor_called);
     AM_ASSERT(ptr);
     AM_ASSERT(size > 0);
     AM_ASSERT(size <= queue->isize);
@@ -161,6 +173,7 @@ bool am_queue_push_back(struct am_queue *queue, const void *ptr, int size) {
 
 bool am_queue_push_front(struct am_queue *queue, const void *ptr, int size) {
     AM_ASSERT(queue);
+    AM_ASSERT(queue->ctor_called);
     AM_ASSERT(ptr);
     AM_ASSERT(size > 0);
     AM_ASSERT(size <= queue->isize);
@@ -183,10 +196,12 @@ bool am_queue_push_front(struct am_queue *queue, const void *ptr, int size) {
 
 int am_queue_get_nfree(const struct am_queue *queue) {
     AM_ASSERT(queue);
+    AM_ASSERT(queue->ctor_called);
     return queue->nfree;
 }
 
 int am_queue_get_nfree_min(const struct am_queue *queue) {
     AM_ASSERT(queue);
+    AM_ASSERT(queue->ctor_called);
     return queue->nfree_min;
 }
