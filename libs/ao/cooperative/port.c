@@ -158,7 +158,9 @@ void am_ao_stop(struct am_ao *ao) {
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(me->aos_cnt);
 
-    am_ao_unsubscribe_all(ao);
+    if (me->subscribe_list_set) {
+        am_ao_unsubscribe_all(ao);
+    }
 
     me->crit_enter();
 

@@ -78,6 +78,8 @@ struct am_ao_state {
     unsigned hsm_init_pend : 1;
     /** mark startup sequence complete */
     unsigned startup_complete : 1;
+    /** safety net to catch missing am_ao_init_subscribe_list() call */
+    unsigned subscribe_list_set : 1;
 };
 
 extern struct am_ao_state am_ao_state_;

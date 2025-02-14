@@ -64,6 +64,7 @@ bool am_ao_publish_exclude_x(
     AM_ASSERT(AM_EVENT_HAS_PUBSUB_ID(event));
     AM_ASSERT(margin >= 0);
     struct am_ao_state *me = &am_ao_state_;
+    AM_ASSERT(me->subscribe_list_set);
     AM_ASSERT(me->sub);
 
     if (!am_event_is_static(event)) {
@@ -177,6 +178,7 @@ void am_ao_subscribe(const struct am_ao *ao, int event) {
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao));
     AM_ASSERT(event >= AM_EVT_USER);
     struct am_ao_state *me = &am_ao_state_;
+    AM_ASSERT(me->subscribe_list_set);
     AM_ASSERT(event < me->nsub);
     AM_ASSERT(me->aos[ao->prio] == ao);
     AM_ASSERT(me->sub);
@@ -195,6 +197,7 @@ void am_ao_unsubscribe(const struct am_ao *ao, int event) {
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao));
     AM_ASSERT(event >= AM_EVT_USER);
     struct am_ao_state *me = &am_ao_state_;
+    AM_ASSERT(me->subscribe_list_set);
     AM_ASSERT(event < me->nsub);
     AM_ASSERT(me->aos[ao->prio] == ao);
     AM_ASSERT(me->sub);
@@ -216,6 +219,7 @@ void am_ao_unsubscribe_all(const struct am_ao *ao) {
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao));
 
     struct am_ao_state *me = &am_ao_state_;
+    AM_ASSERT(me->subscribe_list_set);
     if (!me->sub) {
         return;
     }
@@ -295,6 +299,7 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub) {
     me->sub = sub;
     me->nsub = nsub;
     memset(sub, 0, sizeof(*sub) * (size_t)nsub);
+    me->subscribe_list_set = true;
 }
 
 void am_ao_log_event_queues(
