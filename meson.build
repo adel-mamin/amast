@@ -280,6 +280,7 @@ run_target(
 
 sphinx_cfg = configuration_data()
 sphinx_cfg.set_quoted('DOXYGEN_PATH_XML', meson.project_build_root() / 'xml')
+sphinx_cfg.set_quoted('HTML_STATIC_PATH', meson.project_source_root() / 'docs' / '_static')
 
 configure_file(
     input: 'docs' / 'conf.py.in',
