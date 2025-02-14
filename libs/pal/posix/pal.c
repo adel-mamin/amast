@@ -121,13 +121,18 @@ static void *thread_entry_wrapper(void *arg) {
 }
 
 static pthread_mutex_t critical_section_mutex_ = PTHREAD_MUTEX_INITIALIZER;
+static char critical_section_enter_cnt_ = 0;
 
 void am_pal_crit_enter(void) {
     int rc = pthread_mutex_lock(&critical_section_mutex_);
+    AM_ASSERT(0 == critical_section_enter_cnt_);
+    ++critical_section_enter_cnt_;
     AM_ASSERT(0 == rc);
 }
 
 void am_pal_crit_exit(void) {
+    AM_ASSERT(1 == critical_section_enter_cnt_);
+    --critical_section_enter_cnt_;
     int rc = pthread_mutex_unlock(&critical_section_mutex_);
     AM_ASSERT(0 == rc);
 }
