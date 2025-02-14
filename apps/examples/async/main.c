@@ -73,17 +73,14 @@
 #define CHAR_CURSOR_UP "\033[A"
 
 #define ASYNC_EVT_USER_INPUT AM_EVT_USER
-#define ASYNC_EVT_TIMER_RYG (AM_EVT_USER + 1)
-#define ASYNC_EVT_TIMER_GYR (AM_EVT_USER + 2)
+#define ASYNC_EVT_TIMER (AM_EVT_USER + 1)
 
 struct async {
     struct am_ao ao;
     int ryg_interval_ticks;
     int gyr_interval_ticks;
-    struct am_timer timer_ryg;
-    struct am_timer timer_gyr;
-    struct am_async async_ryg;
-    struct am_async async_gyr;
+    struct am_timer timer;
+    struct am_async async;
 };
 
 static enum am_hsm_rc async_top(struct async *me, const struct am_event *event);
@@ -116,18 +113,18 @@ static enum am_hsm_rc async_ryg(
 ) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
-        am_async_ctor(&me->async_ryg);
+        am_async_ctor(&me->async);
         am_timer_arm(
-            &me->timer_ryg, me->ryg_interval_ticks, me->ryg_interval_ticks
+            &me->timer, me->ryg_interval_ticks, me->ryg_interval_ticks
         );
         return AM_HSM_HANDLED();
 
     case AM_EVT_HSM_EXIT:
-        am_timer_disarm(&me->timer_ryg);
+        am_timer_disarm(&me->timer);
         return AM_HSM_HANDLED();
 
-    case ASYNC_EVT_TIMER_RYG:
-        AM_ASYNC_BEGIN(&me->async_ryg);
+    case ASYNC_EVT_TIMER:
+        AM_ASYNC_BEGIN(&me->async);
 
         /* red */
         am_pal_printf(AM_COLOR_RED CHAR_SOLID_BLOCK AM_COLOR_RESET);
@@ -146,7 +143,6 @@ static enum am_hsm_rc async_ryg(
 
         am_pal_printf("\r               \r");
         am_pal_flush();
-        AM_ASYNC_YIELD();
 
         AM_ASYNC_END();
 
@@ -163,18 +159,18 @@ static enum am_hsm_rc async_gyr(
 ) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
-        am_async_ctor(&me->async_gyr);
+        am_async_ctor(&me->async);
         am_timer_arm(
-            &me->timer_gyr, me->gyr_interval_ticks, me->gyr_interval_ticks
+            &me->timer, me->gyr_interval_ticks, me->gyr_interval_ticks
         );
         return AM_HSM_HANDLED();
 
     case AM_EVT_HSM_EXIT:
-        am_timer_disarm(&me->timer_gyr);
+        am_timer_disarm(&me->timer);
         return AM_HSM_HANDLED();
 
-    case ASYNC_EVT_TIMER_GYR:
-        AM_ASYNC_BEGIN(&me->async_gyr);
+    case ASYNC_EVT_TIMER:
+        AM_ASYNC_BEGIN(&me->async);
 
         /* green */
         am_pal_printf(AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
@@ -193,7 +189,6 @@ static enum am_hsm_rc async_gyr(
 
         am_pal_printf("\r               \r");
         am_pal_flush();
-        AM_ASYNC_YIELD();
 
         AM_ASYNC_END();
 
@@ -216,14 +211,8 @@ static void async_ctor(struct async *me) {
     am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(async_init));
 
     am_timer_ctor(
-        &me->timer_gyr,
-        ASYNC_EVT_TIMER_GYR,
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT,
-        &me->ao
-    );
-    am_timer_ctor(
-        &me->timer_ryg,
-        ASYNC_EVT_TIMER_RYG,
+        &me->timer,
+        ASYNC_EVT_TIMER,
         /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT,
         &me->ao
     );
@@ -261,7 +250,7 @@ static void input_task(void *param) {
         am_pal_printf(CHAR_CURSOR_UP);
         am_pal_flush();
         static struct am_event event = {.id = ASYNC_EVT_USER_INPUT};
-        am_ao_post_fifo_x(&m->ao, &event, /*margin=*/1);
+        am_ao_post_fifo_x(&m->ao, &event, /*margin=*/0);
     }
 }
 
