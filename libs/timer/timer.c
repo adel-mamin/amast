@@ -108,7 +108,7 @@ void am_timer_arm(struct am_timer *timer, int ticks, int interval) {
 
     me->cfg.crit_enter();
 
-    timer->shot_in_ticks = AM_MIN(ticks, 1);
+    timer->shot_in_ticks = AM_MAX(ticks, 1);
     timer->interval_ticks = interval;
     timer->event.pubsub_time = (timer->owner == NULL);
     timer->disarm_pending = 0;
