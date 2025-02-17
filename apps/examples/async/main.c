@@ -28,28 +28,30 @@
  * Demonstrate integration of async with HSM.
  * HSM topology:
  *
- *  +--------------------------+
- *  |       async_top          |
- *  | +---------+  +---------+ |
- *  | |async_ryg|  |async_gyr| |
- *  | +---------+  +---------+ |
- *  +--------------------------+
+ *  +----------------------------------+
+ *  |            async_top             |
+ *  | +-------------+  +-------------+ |
+ *  | |async_regular|  |  async_off  | |
+ *  | +-------------+  +-------------+ |
+ *  +----------------------------------+
  *
- * async_ryg substate prints colored rectangles in the order
- * red-yellow-green (ryg)
- * The print delay of each rectangle is 500ms
+ * It mimics the behavior of traffic lights.
  *
- * async_ryg substate prints colored rectangles in the order
- * green-yellow-red (gyr)
- * The print delay of each rectangle is 1000ms
+ * The async_regular substate prints colored rectangles in the order
+ * red - yellow - green - blinking green
+ * The print delay of each rectangle is different.
+ *
+ * The async_off substate shown blinking yellow.
+ * The blink delay is 700 ms.
  *
  * async_top handles user input. Press ENTER to switch between
- * async_ryg and async_gyr substates.
+ * async_regular and async_off substates.
  *
  * Generally the use of async is warranted if the sequence of
  * steps is known beforehand like in this case.
- * async_ryg calls async_ryg_hnd() to do the printing
- * async_gyr calls async_gyr_hnd() to do the printing
+ *
+ * async_regular calls async_regular_() to do the printing
+ * async_off calls async_off_() to do the printing
  *
  * The example is built in two flavours:
  * async_preemptive and async_cooperative.
@@ -58,6 +60,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "common/compiler.h"
 #include "common/constants.h"
@@ -72,35 +75,41 @@
 #define CHAR_SOLID_BLOCK "\xE2\x96\x88"
 #define CHAR_CURSOR_UP "\033[A"
 
-#define ASYNC_EVT_USER_INPUT AM_EVT_USER
-#define ASYNC_EVT_TIMER (AM_EVT_USER + 1)
+enum {
+    ASYNC_EVT_USER_INPUT = AM_EVT_USER,
+    ASYNC_EVT_TIMER,
+    ASYNC_EVT_START,
+};
 
 struct async {
     struct am_ao ao;
-    int ryg_interval_ticks;
-    int gyr_interval_ticks;
     struct am_timer timer;
     struct am_async async;
+    int i;
 };
 
+static const struct am_event am_evt_start = {.id = ASYNC_EVT_START};
+
 static enum am_hsm_rc async_top(struct async *me, const struct am_event *event);
-static enum am_hsm_rc async_ryg(struct async *me, const struct am_event *event);
-static enum am_hsm_rc async_gyr(struct async *me, const struct am_event *event);
+static enum am_hsm_rc async_regular(
+    struct async *me, const struct am_event *event
+);
+static enum am_hsm_rc async_off(struct async *me, const struct am_event *event);
 
 static enum am_hsm_rc async_top(
     struct async *me, const struct am_event *event
 ) {
     switch (event->id) {
     case AM_EVT_HSM_INIT:
-        return AM_HSM_TRAN(async_ryg);
+        return AM_HSM_TRAN(async_regular);
 
     case ASYNC_EVT_USER_INPUT: {
         am_pal_printf("\r               \r");
         am_pal_flush();
-        if (am_hsm_is_in(&me->ao.hsm, AM_HSM_STATE_CTOR(async_ryg))) {
-            return AM_HSM_TRAN(async_gyr);
+        if (am_hsm_is_in(&me->ao.hsm, AM_HSM_STATE_CTOR(async_regular))) {
+            return AM_HSM_TRAN(async_off);
         }
-        return AM_HSM_TRAN(async_ryg);
+        return AM_HSM_TRAN(async_regular);
     }
     default:
         break;
@@ -108,92 +117,131 @@ static enum am_hsm_rc async_top(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc async_ryg(
+static enum am_async_rc async_regular_(struct async *me) {
+    AM_ASYNC_BEGIN(&me->async);
+
+    /* red */
+    am_pal_printf(AM_COLOR_RED CHAR_SOLID_BLOCK AM_COLOR_RESET);
+    am_pal_flush();
+    int ticks = (int)am_pal_time_get_tick_from_ms(
+        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/2000
+    );
+    am_timer_arm(&me->timer, ticks, /*interval=*/0);
+    AM_ASYNC_YIELD();
+
+    /* yellow */
+    am_pal_printf("\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
+    am_pal_flush();
+    ticks = (int)am_pal_time_get_tick_from_ms(
+        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/1000
+    );
+    am_timer_arm(&me->timer, ticks, /*interval=*/0);
+    AM_ASYNC_YIELD();
+
+    /* green */
+    am_pal_printf("\b" AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
+    am_pal_flush();
+    ticks = (int)am_pal_time_get_tick_from_ms(
+        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/2000
+    );
+    am_timer_arm(&me->timer, ticks, /*interval=*/0);
+    AM_ASYNC_YIELD();
+
+    for (me->i = 0; me->i < 4; ++me->i) {
+        am_pal_printf("\b");
+        am_pal_flush();
+        ticks = (int)am_pal_time_get_tick_from_ms(
+            /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/700
+        );
+        am_timer_arm(&me->timer, ticks, /*interval=*/0);
+        AM_ASYNC_YIELD();
+
+        am_pal_printf(AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
+        am_pal_flush();
+        ticks = (int)am_pal_time_get_tick_from_ms(
+            /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/700
+        );
+        am_timer_arm(&me->timer, ticks, /*interval=*/0);
+        AM_ASYNC_YIELD();
+    }
+    am_pal_printf("\r               \r");
+    am_pal_flush();
+
+    am_ao_post_fifo(&me->ao, &am_evt_start);
+
+    AM_ASYNC_END();
+
+    return AM_ASYNC_RC(&me->async);
+}
+
+static enum am_hsm_rc async_regular(
     struct async *me, const struct am_event *event
 ) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
         am_async_ctor(&me->async);
-        am_timer_arm(
-            &me->timer, me->ryg_interval_ticks, me->ryg_interval_ticks
-        );
+        am_ao_post_fifo(&me->ao, &am_evt_start);
         return AM_HSM_HANDLED();
 
     case AM_EVT_HSM_EXIT:
         am_timer_disarm(&me->timer);
         return AM_HSM_HANDLED();
 
-    case ASYNC_EVT_TIMER:
-        AM_ASYNC_BEGIN(&me->async);
-
-        /* red */
-        am_pal_printf(AM_COLOR_RED CHAR_SOLID_BLOCK AM_COLOR_RESET);
-        am_pal_flush();
-        AM_ASYNC_YIELD();
-
-        /* yellow */
-        am_pal_printf(" " AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
-        am_pal_flush();
-        AM_ASYNC_YIELD();
-
-        /* green */
-        am_pal_printf(" " AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
-        am_pal_flush();
-        AM_ASYNC_YIELD();
-
-        am_pal_printf("\r               \r");
-        am_pal_flush();
-
-        AM_ASYNC_END();
-
+    case ASYNC_EVT_START:
+    case ASYNC_EVT_TIMER: {
+        (void)async_regular_(me);
         return AM_HSM_HANDLED();
-
+    }
     default:
         break;
     }
     return AM_HSM_SUPER(async_top);
 }
 
-static enum am_hsm_rc async_gyr(
+static enum am_async_rc async_off_(struct async *me) {
+    AM_ASYNC_BEGIN(&me->async);
+
+    int ticks = (int)am_pal_time_get_tick_from_ms(
+        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/1000
+    );
+    am_timer_arm(&me->timer, ticks, /*interval=*/0);
+    am_pal_printf("\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
+    am_pal_flush();
+    AM_ASYNC_YIELD();
+
+    ticks = (int)am_pal_time_get_tick_from_ms(
+        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/700
+    );
+    am_timer_arm(&me->timer, ticks, /*interval=*/0);
+    am_pal_printf("\b");
+    am_pal_flush();
+    AM_ASYNC_YIELD();
+
+    am_ao_post_fifo(&me->ao, &am_evt_start);
+
+    AM_ASYNC_END();
+
+    return AM_ASYNC_RC(&me->async);
+}
+
+static enum am_hsm_rc async_off(
     struct async *me, const struct am_event *event
 ) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
         am_async_ctor(&me->async);
-        am_timer_arm(
-            &me->timer, me->gyr_interval_ticks, me->gyr_interval_ticks
-        );
+        am_ao_post_fifo(&me->ao, &am_evt_start);
         return AM_HSM_HANDLED();
 
     case AM_EVT_HSM_EXIT:
         am_timer_disarm(&me->timer);
         return AM_HSM_HANDLED();
 
-    case ASYNC_EVT_TIMER:
-        AM_ASYNC_BEGIN(&me->async);
-
-        /* green */
-        am_pal_printf(AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
-        am_pal_flush();
-        AM_ASYNC_YIELD();
-
-        /* yellow */
-        am_pal_printf(" " AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
-        am_pal_flush();
-        AM_ASYNC_YIELD();
-
-        /* red */
-        am_pal_printf(" " AM_COLOR_RED CHAR_SOLID_BLOCK AM_COLOR_RESET);
-        am_pal_flush();
-        AM_ASYNC_YIELD();
-
-        am_pal_printf("\r               \r");
-        am_pal_flush();
-
-        AM_ASYNC_END();
-
+    case ASYNC_EVT_START:
+    case ASYNC_EVT_TIMER: {
+        (void)async_off_(me);
         return AM_HSM_HANDLED();
-
+    }
     default:
         break;
     }
@@ -208,6 +256,8 @@ static enum am_hsm_rc async_init(
 }
 
 static void async_ctor(struct async *me) {
+    memset(me, 0, sizeof(*me));
+
     am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(async_init));
 
     am_timer_ctor(
@@ -215,13 +265,6 @@ static void async_ctor(struct async *me) {
         ASYNC_EVT_TIMER,
         /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT,
         &me->ao
-    );
-
-    me->ryg_interval_ticks = (int)am_pal_time_get_tick_from_ms(
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/500
-    );
-    me->gyr_interval_ticks = (int)am_pal_time_get_tick_from_ms(
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/1000
     );
 }
 

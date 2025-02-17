@@ -83,7 +83,7 @@ struct am_async {
         (void)am_async_->state;                         \
         am_async_->state = AM_ASYNC_STATE_INIT;         \
         am_async_->rc = AM_ASYNC_RC_DONE;               \
-        break;
+        return AM_ASYNC_RC_DONE;
 
 /**
  * Mark the end of async function block and handle any unexpected states.
@@ -130,7 +130,7 @@ struct am_async {
     case __LINE__:                                      \
         if (!(cond)) {                                  \
             am_async_->rc = AM_ASYNC_RC_BUSY;           \
-            break;                                      \
+            return AM_ASYNC_RC_BUSY;                    \
         }
 
 /**
@@ -145,7 +145,7 @@ struct am_async {
         (void)am_async_->state;                         \
         am_async_->state = __LINE__;                    \
         am_async_->rc = AM_ASYNC_RC_BUSY;               \
-        break;                                          \
+        return AM_ASYNC_RC_BUSY;                        \
     case __LINE__:
 
 /**

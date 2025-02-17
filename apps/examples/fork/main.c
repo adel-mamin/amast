@@ -84,6 +84,29 @@ struct progress {
     struct am_timer timer;
 };
 
+static enum am_async_rc fork_progress(struct progress *me) {
+    AM_ASYNC_BEGIN(&me->async);
+
+    am_pal_printf("\r|");
+    am_pal_flush();
+    AM_ASYNC_YIELD();
+
+    am_pal_printf("\r/");
+    am_pal_flush();
+    AM_ASYNC_YIELD();
+
+    am_pal_printf("\r-");
+    am_pal_flush();
+    AM_ASYNC_YIELD();
+
+    am_pal_printf("\r\\");
+    am_pal_flush();
+
+    AM_ASYNC_END();
+
+    return AM_ASYNC_RC(&me->async);
+}
+
 static enum am_hsm_rc progress_top(
     struct progress *me, const struct am_event *event
 ) {
@@ -104,25 +127,7 @@ static enum am_hsm_rc progress_top(
         exit(-1);
 
     case EVT_PROGRESS_TICK:
-        AM_ASYNC_BEGIN(&me->async);
-
-        am_pal_printf("\r|");
-        am_pal_flush();
-        AM_ASYNC_YIELD();
-
-        am_pal_printf("\r/");
-        am_pal_flush();
-        AM_ASYNC_YIELD();
-
-        am_pal_printf("\r-");
-        am_pal_flush();
-        AM_ASYNC_YIELD();
-
-        am_pal_printf("\r\\");
-        am_pal_flush();
-
-        AM_ASYNC_END();
-
+        (void)fork_progress(me);
         return AM_HSM_HANDLED();
 
     default:
