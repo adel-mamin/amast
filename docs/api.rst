@@ -280,7 +280,7 @@ Async
 
 .. doxygendefine:: AM_ASYNC_BEGIN
 
-.. doxygendefine:: AM_ASYNC_BREAK
+.. doxygendefine:: AM_ASYNC_EXIT
 
 .. doxygendefine:: AM_ASYNC_END
 

@@ -38,12 +38,12 @@ static enum am_async_rc am_async_reentrant(
     AM_ASYNC_LABEL();
     if (*state == 0) {
         *state = 1;
-        AM_ASYNC_BREAK();
+        AM_ASYNC_EXIT();
     }
     AM_ASYNC_LABEL();
     if (*state == 1) {
         *state = 2;
-        AM_ASYNC_BREAK();
+        AM_ASYNC_EXIT();
     }
     AM_ASYNC_END();
 
@@ -152,7 +152,7 @@ static void test_async_yield(void) {
 static enum am_async_rc am_async_exit(struct am_async *me, int *state) {
     AM_ASYNC_BEGIN(me);
     (*state) = 1;
-    AM_ASYNC_BREAK();
+    AM_ASYNC_EXIT();
     AM_DISABLE_WARNING(AM_W_UNREACHABLE_CODE);
     (*state) = 2;
     AM_ENABLE_WARNING(AM_W_UNREACHABLE_CODE);

@@ -78,7 +78,7 @@ struct am_async {
  * Reset the async state to the initial state and set return value to
  * #AM_ASYNC_RC_DONE, indicating that the async operation has completed.
  */
-#define AM_ASYNC_BREAK()                                \
+#define AM_ASYNC_EXIT()                                \
         /* to suppress cppcheck warnings */             \
         (void)am_async_->state;                         \
         am_async_->state = AM_ASYNC_STATE_INIT;         \
@@ -89,12 +89,12 @@ struct am_async {
  * Mark the end of async function block and handle any unexpected states.
  *
  * Ensure proper handling for completed and unexpected states.
- * Call AM_ASYNC_BREAK() internally to reset the async state.
+ * Call AM_ASYNC_EXIT() internally to reset the async state.
  */
 #define AM_ASYNC_END()                                  \
         /* FALLTHROUGH */                               \
     case AM_ASYNC_RC_DONE:                              \
-        AM_ASYNC_BREAK();                               \
+        AM_ASYNC_EXIT();                               \
     default:                                            \
         AM_ASSERT(0);                                   \
     }}
