@@ -30,8 +30,8 @@ Glossary
        the entry event.
 
    state
-       an event handler. *A*,*B*,*C*,*D*,*E*,*F*,*am_hsm_top* are all states
-       (see state diagram in :ref:`example-hsm` section below)
+       an event handler. *A*, *B*, *C*, *D*, *E*, *F*, *am_hsm_top* are all
+       states (see state diagram in :ref:`example-hsm` section below)
 
    current state
        the state which currently gets the incoming events
@@ -61,7 +61,7 @@ Glossary
 
    superstate
        an HSM state that is a parent (ancestor) of one or more other states
-       (children, substates). *A*,*B*,*D*,*am_hsm_top* are all superstates.
+       (children, substates). *A*, *B*, *D*, *am_hsm_top* are all superstates.
 
    top (super)state
        the ultimate root of the state hierarchy.
@@ -70,7 +70,7 @@ Glossary
    substate
        a state that has a superstate as its parent (ancestor).
        A state can be substate and superstate simultaneously.
-       *A*,*B*,*C*,*D*,*E*,*F* are all substates (see state diagram in
+       *A*, *B*, *C*, *D*, *E*, *F* are all substates (see state diagram in
        :ref:`example-hsm` section below).
 
    child state
@@ -85,7 +85,7 @@ Glossary
    ancestor chain
        the parent-child relation chain from a state to the top level superstate.
        In the state diagram in :ref:`example-hsm` section below
-       *B*-*A*-*am_hsm_top* is an ancestor chain. Same is *F*-*am_hsm_top etc*.
+       *B*-*A*-*am_hsm_top* is an ancestor chain. Same is *F* - *am_hsm_top* etc.
 
    nearest common ancestor (NCA)
        the first common ancestor in two ancestor chains constructed from
@@ -215,11 +215,11 @@ case of the self-transition. So *C* will be sent the exit event then
 the entry event followed by the init event.
 
 If *C* is the current state and the transition is initiated by *A* with the
-target state *A*, then NCA is *A*, the exit events are sent to *C*,*B*,*A* and
+target state *A*, then NCA is *A*, the exit events are sent to *C*, *B*, *A* and
 then the entry event is sent to *A* followed by the init event.
 
 If *C* is the current state and the transition is initiated by *C* with the
-target state *A*, then NCA is *A*, the exit events are sent to *C*,*B* and then
+target state *A*, then NCA is *A*, the exit events are sent to *C*, *B* and then
 the init event is sent to *A*. Please note that the state *A* is not exited in
 this case.
 
@@ -238,7 +238,7 @@ Initial State Transition
 ========================
 
 If *C* is the current state and the transition is initiated by *A* with the
-target state *D*, then NCA is *A*, the exit events are sent to *C*,*B* and
+target state *D*, then NCA is *A*, the exit events are sent to *C*, *B* and
 then the entry event is sent to *D* followed by the init event. The init event
 triggers the initial state transition to *E*. So, the entry event is sent to *E*
 followed by the init event.
