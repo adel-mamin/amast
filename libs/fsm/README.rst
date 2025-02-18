@@ -180,7 +180,7 @@ Given the following example:
    +---+   +---+  +---+
 
 the transition to history technique can be
-demonstrated as follows. Assume that the FSM is in the state A.
+demonstrated as follows. Assume that the FSM is in the state *A*.
 The user code stores the current state in a local variable of type
 **am_fsm_state_fn**. This is done with:
 
@@ -203,7 +203,7 @@ The user code stores the current state in a local variable of type
        return AM_FSM_HANDLED();
    }
 
-Then the transition to state C happens, which is then followed by a request
+Then the transition to state *C* happens, which is then followed by a request
 to transition back to the previous state. Since the previous state is captured
 in **me->history** it can be achieved by doing this:
 
