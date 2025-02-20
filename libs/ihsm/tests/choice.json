@@ -1,0 +1,83 @@
+{
+    "states": [
+        {
+            "name": "^fraud?",
+            "type": "choice",
+            "actions": [
+                {
+                    "type": "activity",
+                    "body": "transaction fraudulent?"
+                }
+            ]
+        },
+        {
+            "name": "initial",
+            "type": "initial"
+        },
+        {
+            "name": "reserved",
+            "type": "regular"
+        },
+        {
+            "name": "quoted",
+            "type": "regular"
+        },
+        {
+            "name": "ticketed",
+            "type": "regular"
+        },
+        {
+            "name": "removed",
+            "type": "regular"
+        },
+        {
+            "name": "final",
+            "type": "final"
+        }
+    ],
+    "transitions": [
+        {
+            "from": "initial",
+            "to": "reserved",
+            "id": 1
+        },
+        {
+            "from": "reserved",
+            "to": "quoted",
+            "label": "quote\n    requested",
+            "event": "quote\n    requested",
+            "id": 2
+        },
+        {
+            "from": "quoted",
+            "to": "^fraud?",
+            "label": "payment",
+            "event": "payment",
+            "id": 3
+        },
+        {
+            "from": "^fraud?",
+            "to": "ticketed",
+            "label": "[no]",
+            "cond": "no",
+            "id": 4
+        },
+        {
+            "from": "^fraud?",
+            "to": "removed",
+            "label": "[yes]",
+            "cond": "yes",
+            "id": 5
+        },
+        {
+            "from": "ticketed",
+            "to": "final",
+            "id": 6
+        },
+        {
+            "from": "removed",
+            "to": "final",
+            "id": 7
+        }
+    ]
+}

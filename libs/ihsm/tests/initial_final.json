@@ -1,0 +1,46 @@
+{
+    "transitions": [
+        {
+            "from": "initial",
+            "to": "todo",
+            "id": 1
+        },
+        {
+            "from": "todo",
+            "to": "doing",
+            "id": 2
+        },
+        {
+            "from": "doing",
+            "to": "done",
+            "id": 3
+        },
+        {
+            "from": "done",
+            "to": "final",
+            "id": 4
+        }
+    ],
+    "states": [
+        {
+            "name": "initial",
+            "type": "initial"
+        },
+        {
+            "name": "todo",
+            "type": "regular"
+        },
+        {
+            "name": "doing",
+            "type": "regular"
+        },
+        {
+            "name": "done",
+            "type": "regular"
+        },
+        {
+            "name": "final",
+            "type": "final"
+        }
+    ]
+}

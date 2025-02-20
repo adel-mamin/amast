@@ -1,0 +1,100 @@
+{
+    "states": [
+        {
+            "name": "initial",
+            "type": "initial"
+        },
+        {
+            "name": "tape player off",
+            "type": "regular"
+        },
+        {
+            "name": "tape player on",
+            "type": "regular",
+            "statemachine": {
+                "states": [
+                    {
+                        "name": "stopped",
+                        "type": "regular"
+                    },
+                    {
+                        "name": "playing",
+                        "type": "regular"
+                    },
+                    {
+                        "name": "paused",
+                        "type": "regular"
+                    }
+                ],
+                "transitions": [
+                    {
+                        "from": "stopped",
+                        "to": "playing",
+                        "label": "play",
+                        "event": "play",
+                        "id": 6
+                    },
+                    {
+                        "from": "playing",
+                        "to": "stopped",
+                        "label": "stop",
+                        "event": "stop",
+                        "id": 7
+                    },
+                    {
+                        "from": "playing",
+                        "to": "paused",
+                        "label": "pause",
+                        "event": "pause",
+                        "id": 8
+                    },
+                    {
+                        "from": "paused",
+                        "to": "playing",
+                        "label": "pause",
+                        "event": "pause",
+                        "id": 9
+                    },
+                    {
+                        "from": "paused",
+                        "to": "stopped",
+                        "label": "stop",
+                        "event": "stop",
+                        "id": 10
+                    }
+                ]
+            },
+            "actions": [
+                {
+                    "type": "entry",
+                    "body": "LED on"
+                },
+                {
+                    "type": "exit",
+                    "body": "LED off"
+                }
+            ]
+        }
+    ],
+    "transitions": [
+        {
+            "from": "initial",
+            "to": "tape player off",
+            "id": 11
+        },
+        {
+            "from": "tape player off",
+            "to": "stopped",
+            "label": "power",
+            "event": "power",
+            "id": 12
+        },
+        {
+            "from": "tape player on",
+            "to": "tape player off",
+            "label": "power",
+            "event": "power",
+            "id": 13
+        }
+    ]
+}

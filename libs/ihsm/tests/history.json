@@ -1,0 +1,84 @@
+{
+    "states": [
+        {
+            "name": "initial",
+            "type": "initial"
+        },
+        {
+            "name": "power off",
+            "type": "regular"
+        },
+        {
+            "name": "running",
+            "type": "regular",
+            "statemachine": {
+                "states": [
+                    {
+                        "name": "running.history",
+                        "type": "history"
+                    },
+                    {
+                        "name": "washing",
+                        "type": "regular"
+                    },
+                    {
+                        "name": "rinsing",
+                        "type": "regular"
+                    },
+                    {
+                        "name": "spinning",
+                        "type": "regular"
+                    }
+                ],
+                "transitions": [
+                    {
+                        "from": "washing",
+                        "to": "rinsing",
+                        "label": "20 min",
+                        "event": "20 min",
+                        "id": 1
+                    },
+                    {
+                        "from": "rinsing",
+                        "to": "spinning",
+                        "label": "20 min",
+                        "event": "20 min",
+                        "id": 2
+                    },
+                    {
+                        "from": "spinning",
+                        "to": "final",
+                        "label": "20 min",
+                        "event": "20 min",
+                        "id": 3
+                    }
+                ]
+            }
+        },
+        {
+            "name": "final",
+            "type": "final"
+        }
+    ],
+    "transitions": [
+        {
+            "from": "initial",
+            "to": "washing",
+            "id": 4
+        },
+        {
+            "from": "running",
+            "to": "power off",
+            "label": "power out",
+            "event": "power out",
+            "id": 5
+        },
+        {
+            "from": "power off",
+            "to": "running.history",
+            "label": "restore power",
+            "event": "restore power",
+            "id": 6
+        }
+    ]
+}

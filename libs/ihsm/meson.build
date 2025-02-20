@@ -24,43 +24,24 @@
 # SOFTWARE.
 #
 
-inc = [include_directories('.')]
+ihsm_src = [files('ihsm.c')]
 
-libraries = []
-
-subdir('common')
-subdir('pal')
-subdir('crc')
-subdir('slist')
-subdir('dlist')
-subdir('bit')
-subdir('cobszpe')
-subdir('queue')
-subdir('strlib')
-subdir('onesize')
-subdir('event')
-subdir('timer')
-subdir('async')
-subdir('ringbuf')
-subdir('fsm')
-subdir('hsm')
-subdir('ihsm')
-subdir('ao')
-
-library_paths = []
-
-foreach library : libraries
-    library_paths += library.full_path()
-endforeach
-
-library_sizes_rst = custom_target(
-    'library_sizes_rst',
-    output: 'library_sizes.rst',
-    command: [
-        GENERATE_LIB_SIZES,
-        '@OUTPUT@'
-    ] + library_paths,
-    depends: libraries,
-    build_by_default: true
+ihsm_inc = include_directories(
+    'tests',
 )
 
+libihsm = library(
+    'ihsm',
+    [ihsm_src],
+    c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
+    include_directories: [inc, ihsm_inc]
+)
+
+libihsm_dep = declare_dependency(
+    sources: [
+        ihsm_src,
+    ],
+    include_directories: [inc, ihsm_inc]
+)
+
+libraries += libihsm
