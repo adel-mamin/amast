@@ -29,7 +29,7 @@ Library name | Code size [kB] | Data size [kB]
 ao_cooperative | 3.71 | 0.57
 ao_preemptive | 3.69 | 0.56
 dlist | 1.29 | 0.00
-event | 2.85 | 0.24
+event | 2.83 | 0.24
 fsm | 0.91 | 0.02
 hsm | 2.47 | 0.03
 onesize | 1.40 | 0.00
