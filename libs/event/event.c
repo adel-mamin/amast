@@ -415,7 +415,6 @@ bool am_event_defer_x(
 
 bool am_event_recall(struct am_queue *queue, am_event_recall_fn cb, void *ctx) {
     AM_ASSERT(queue);
-    AM_ASSERT(cb);
 
     struct am_event_state *me = &am_event_state_;
 
@@ -423,13 +422,18 @@ bool am_event_recall(struct am_queue *queue, am_event_recall_fn cb, void *ctx) {
 
     const struct am_event **event =
         (const struct am_event **)am_queue_pop_front(queue);
+
     me->crit_exit();
+
     if (NULL == event) {
         return false;
     }
     const struct am_event *e = *event;
     AM_ASSERT(e);
-    cb(ctx, e);
+
+    if (cb) {
+        cb(ctx, e);
+    }
 
     if (am_event_is_static(e)) {
         return true;

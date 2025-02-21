@@ -508,7 +508,11 @@ typedef void (*am_event_recall_fn)(void *ctx, const struct am_event *event);
  * Thread safe, if critical section callbacks were configured.
  *
  * @param queue  queue of deferred events
- * @param cb     the recalled event is provided to this callback
+ * @param cb     the recalled event is provided to this callback.
+ *               If set to NULL, then event is recalled and immediately
+ *               recycled. Therefore cb set to NULL can be used, when
+ *               the queue of deferred events needs to be fully or
+ *               partially emptied to make space for newer events.
  * @param ctx    the callback context
  *
  * @retval true   an event was recalled
