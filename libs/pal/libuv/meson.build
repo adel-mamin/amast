@@ -24,14 +24,31 @@
 # SOFTWARE.
 #
 
-if pal == 'stubs'
-    subdir('stubs')
-elif pal == 'posix'
-    subdir('posix')
-elif pal == 'win'
-    subdir('win')
-elif pal == 'freertos'
-    subdir('freertos')
-elif pal == 'libuv'
-    subdir('libuv')
-endif
+pal_src = [files('pal.c')]
+
+libuv_proj = subproject('libuv',
+    default_options: [
+        'warning_level=0',
+        'build_benchmarks=false',
+        'build_tests=false',
+    ]
+)
+libuv_dep = libuv_proj.get_variable('libuv_dep')
+
+libpal = library(
+    'pal',
+    [pal_src],
+    c_args: [
+        '-std=gnu11', # https://github.com/libuv/libuv/issues/1160
+    ],
+    include_directories: inc,
+    dependencies: [
+        libuv_dep,
+        dependency('threads', required: true)
+    ]
+)
+libpal_dep = declare_dependency(
+    link_with : libpal,
+    include_directories : inc,
+    dependencies: libuv_dep
+)

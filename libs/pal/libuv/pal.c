@@ -36,6 +36,8 @@
 
 #include <uv.h>
 
+#include "common/compiler.h"
+#include "common/macros.h"
 #include "pal/pal.h"
 
 /** PAL task descriptor */
@@ -100,6 +102,10 @@ int am_pal_task_create(
     void (*entry)(void *),
     void *arg
 ) {
+    (void)name;
+    (void)priority;
+    (void)stack;
+    (void)stack_size;
     AM_ASSERT(ntasks_ < AM_PAL_TASK_NUM_MAX);
 
     tasks_[ntasks_].entry = entry;
@@ -129,29 +135,48 @@ int am_pal_task_get_own_id(void) {
 
 uint32_t am_pal_time_get_ms(void) { return (uint32_t)uv_hrtime() / 1000000; }
 
-uint32_t am_pal_time_get_tick(int domain) { return am_pal_time_get_ms(); }
+uint32_t am_pal_time_get_tick(int domain) {
+    (void)domain;
+    return am_pal_time_get_ms();
+}
 
-uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms) { return ms; }
+uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms) {
+    (void)domain;
+    return ms;
+}
 
 uint32_t am_pal_time_get_ms_from_tick(int domain, uint32_t tick) {
+    (void)domain;
     return tick;
 }
 
-void am_pal_sleep_ticks(int domain, int ticks) { uv_sleep(ticks); }
+void am_pal_sleep_ticks(int domain, int ticks) {
+    (void)domain;
+    AM_ASSERT(ticks >= 0);
+    AM_ASSERT(ticks <= INT_MAX);
+    uv_sleep((unsigned)ticks);
+}
 
 void am_pal_sleep_till_ticks(int domain, uint32_t ticks) {
     uint32_t now = am_pal_time_get_tick(domain);
     if (ticks > now) {
-        am_pal_sleep_ticks(domain, ticks - now);
+        uint32_t diff = ticks - now;
+        AM_ASSERT(diff <= INT_MAX);
+        am_pal_sleep_ticks(domain, (int)diff);
     }
 }
 
-void am_pal_sleep_ms(int ms) { uv_sleep(ms); }
+void am_pal_sleep_ms(int ms) {
+    AM_ASSERT(ms >= 0);
+    uv_sleep((unsigned)ms);
+}
 
 void am_pal_sleep_till_ms(uint32_t ms) {
     uint32_t now = am_pal_time_get_ms();
     if (ms > now) {
-        am_pal_sleep_ms(ms - now);
+        uint32_t diff = ms - now;
+        AM_ASSERT(diff <= INT_MAX);
+        am_pal_sleep_ms((int)diff);
     }
 }
 
