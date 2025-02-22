@@ -62,6 +62,7 @@ If you want to use Amast features that require porting, then also add the follow
 port to you project:
 
 - `amast_posix.c`
+- `amast_libuv.c`
 
 If you want to run Amast unit tests, then also include `amast_test.h` and `amast_test.c`.
 
