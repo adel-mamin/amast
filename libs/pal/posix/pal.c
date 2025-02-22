@@ -437,3 +437,8 @@ void am_pal_on_idle(void) {
     am_pal_task_wait(task);
     am_pal_crit_enter();
 }
+
+int am_pal_run_all(enum am_pal_run_all_mode mode) {
+    (void)mode;
+    return 0;
+}

@@ -92,3 +92,8 @@ AM_PRINTF(1, 2) int am_pal_printf(const char *fmt, ...) {
 }
 
 void am_pal_flush(void) {}
+
+int am_pal_run_all(enum am_pal_run_all_mode mode) {
+    (void)mode;
+    return 0;
+}

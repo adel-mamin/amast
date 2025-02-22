@@ -77,6 +77,7 @@ bool am_ao_run_all(void) {
         am_pal_mutex_unlock(me->startup_mutex);
         me->startup_complete = true;
     }
+    am_pal_run_all(AM_PAL_RUN_ALL_DEFAULT);
     /* wait all AOs to complete */
     am_pal_task_wait(AM_PAL_TASK_ID_MAIN);
     return false;
