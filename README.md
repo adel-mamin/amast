@@ -27,7 +27,7 @@ Some x86-64 size figures to get an idea:
 Library name | Code size [kB] | Data size [kB]
 -------------|----------------|---------------
 ao_cooperative | 3.71 | 0.57
-ao_preemptive | 3.69 | 0.56
+ao_preemptive | 3.70 | 0.56
 dlist | 1.29 | 0.00
 event | 2.83 | 0.24
 fsm | 0.91 | 0.02
