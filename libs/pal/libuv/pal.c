@@ -52,24 +52,74 @@ struct am_pal_task {
     void *arg;
     /** libuv thread ID */
     int id;
+    /** mak task as valid */
+    bool valid;
+};
+
+/** PAL mutex descriptor */
+struct am_pal_mutex {
+    /** libuv mutex */
+    uv_mutex_t mutex;
+    /** the mutex is valid */
+    bool valid;
 };
 
 static uv_loop_t *loop_;
 static uv_mutex_t crit_section_;
-static uv_mutex_t mutexes_[AM_PAL_TASK_NUM_MAX];
+
+/** Maximum number of mutexes */
+#ifndef AM_PAL_MUTEX_NUM_MAX
+#define AM_PAL_MUTEX_NUM_MAX 2
+#endif
+
+static struct am_pal_mutex mutexes_[AM_PAL_MUTEX_NUM_MAX];
+
+static struct am_pal_task task_main_ = {0};
 static struct am_pal_task tasks_[AM_PAL_TASK_NUM_MAX];
 static int ntasks_ = 0;
+
+static int am_pal_index_from_id(int id) {
+    AM_ASSERT(id > 0);
+    return id - 1;
+}
+
+static int am_pal_id_from_index(int index) {
+    AM_ASSERT(index >= 0);
+    return index + 1;
+}
 
 void am_pal_ctor(void) {
     loop_ = malloc(sizeof(uv_loop_t));
     uv_loop_init(loop_);
     uv_mutex_init(&crit_section_);
+
+    struct am_pal_task *task = &task_main_;
+
+    memset(task, 0, sizeof(*task));
+
+    task->valid = true;
+    task->thread = uv_thread_self();
+    uv_sem_init(&task->semaphore, 0);
 }
 
 void am_pal_dtor(void) {
     uv_loop_close(loop_);
     free(loop_);
     uv_mutex_destroy(&crit_section_);
+
+    for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
+        struct am_pal_mutex *mutex = &mutexes_[i];
+        if (mutex->valid) {
+            uv_mutex_destroy(&mutex->mutex);
+        }
+    }
+    for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
+        struct am_pal_task *task = &tasks_[i];
+        if (task->valid) {
+            uv_sem_destroy(&task->semaphore);
+            task->valid = false;
+        }
+    }
 }
 
 void am_pal_crit_enter(void) { uv_mutex_lock(&crit_section_); }
@@ -77,17 +127,40 @@ void am_pal_crit_enter(void) { uv_mutex_lock(&crit_section_); }
 void am_pal_crit_exit(void) { uv_mutex_unlock(&crit_section_); }
 
 int am_pal_mutex_create(void) {
-    static int mutex_id = 0;
-    AM_ASSERT(mutex_id < AM_PAL_TASK_NUM_MAX);
-    uv_mutex_init(&mutexes_[mutex_id]);
-    return mutex_id++;
+    int mutex = -1;
+    uv_mutex_t *me = NULL;
+    for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
+        if (!mutexes_[i].valid) {
+            mutex = i;
+            me = &mutexes_[i].mutex;
+            mutexes_[i].valid = true;
+            break;
+        }
+    }
+    AM_ASSERT(me && (mutex >= 0));
+
+    uv_mutex_init(me);
+
+    return am_pal_id_from_index(mutex);
 }
 
-void am_pal_mutex_lock(int mutex) { uv_mutex_lock(&mutexes_[mutex]); }
+void am_pal_mutex_lock(int mutex) {
+    int index = am_pal_index_from_id(mutex);
+    AM_ASSERT(index < AM_COUNTOF(mutexes_));
+    uv_mutex_lock(&mutexes_[index].mutex);
+}
 
-void am_pal_mutex_unlock(int mutex) { uv_mutex_unlock(&mutexes_[mutex]); }
+void am_pal_mutex_unlock(int mutex) {
+    int index = am_pal_index_from_id(mutex);
+    AM_ASSERT(index < AM_COUNTOF(mutexes_));
+    uv_mutex_unlock(&mutexes_[index].mutex);
+}
 
-void am_pal_mutex_destroy(int mutex) { uv_mutex_destroy(&mutexes_[mutex]); }
+void am_pal_mutex_destroy(int mutex) {
+    int index = am_pal_index_from_id(mutex);
+    AM_ASSERT(index < AM_COUNTOF(mutexes_));
+    uv_mutex_destroy(&mutexes_[index].mutex);
+}
 
 static void task_entry_wrapper(void *arg) {
     struct am_pal_task *task = (struct am_pal_task *)arg;
@@ -108,29 +181,67 @@ int am_pal_task_create(
     (void)stack_size;
     AM_ASSERT(ntasks_ < AM_PAL_TASK_NUM_MAX);
 
-    tasks_[ntasks_].entry = entry;
-    tasks_[ntasks_].arg = arg;
-    tasks_[ntasks_].id = ntasks_;
-    uv_sem_init(&tasks_[ntasks_].semaphore, 0);
-    uv_thread_create(
-        &tasks_[ntasks_].thread, task_entry_wrapper, &tasks_[ntasks_]
-    );
+    int index = -1;
+    struct am_pal_task *task = NULL;
+    for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
+        if (!tasks_[i].valid) {
+            index = i;
+            task = &tasks_[i];
+            tasks_[i].valid = true;
+            break;
+        }
+    }
+    AM_ASSERT(task && (index >= 0));
 
-    return ntasks_++;
+    task->entry = entry;
+    task->arg = arg;
+    task->id = am_pal_id_from_index(index);
+    uv_sem_init(&task->semaphore, 0);
+    uv_thread_create(&task->thread, task_entry_wrapper, task);
+
+    return task->id;
 }
 
-void am_pal_task_notify(int task) { uv_sem_post(&tasks_[task].semaphore); }
+void am_pal_task_notify(int task) {
+    AM_ASSERT(task != AM_PAL_TASK_ID_NONE);
 
-void am_pal_task_wait(int task) { uv_sem_wait(&tasks_[task].semaphore); }
+    struct am_pal_task *t = NULL;
+    if (AM_PAL_TASK_ID_MAIN == task) {
+        t = &task_main_;
+    } else {
+        t = &tasks_[am_pal_index_from_id(task)];
+    }
+    uv_sem_post(&t->semaphore);
+}
+
+void am_pal_task_wait(int task) {
+    if (AM_PAL_TASK_ID_NONE == task) {
+        task = am_pal_task_get_own_id();
+    }
+    AM_ASSERT(task != AM_PAL_TASK_ID_NONE);
+
+    struct am_pal_task *t = NULL;
+    if (AM_PAL_TASK_ID_MAIN == task) {
+        t = &task_main_;
+    } else {
+        t = &tasks_[am_pal_index_from_id(task)];
+    }
+    uv_sem_wait(&t->semaphore);
+}
 
 int am_pal_task_get_own_id(void) {
+    uv_thread_t thread = uv_thread_self();
+    if (task_main_.thread == thread) {
+        return AM_PAL_TASK_ID_MAIN;
+    }
     uv_thread_t self = uv_thread_self();
-    for (int i = 0; i < ntasks_; i++) {
-        if (uv_thread_equal(&tasks_[i].thread, &self)) {
+    for (int i = 0; i < AM_COUNTOF(tasks_); i++) {
+        if (tasks_[i].valid && uv_thread_equal(&tasks_[i].thread, &self)) {
             return tasks_[i].id;
         }
     }
-    return -1;
+    AM_ASSERT(0);
+    return AM_PAL_TASK_ID_NONE;
 }
 
 uint32_t am_pal_time_get_ms(void) { return (uint32_t)uv_hrtime() / 1000000; }
@@ -194,4 +305,19 @@ void am_pal_on_idle(void) {
     am_pal_crit_exit();
     am_pal_task_wait(am_pal_task_get_own_id());
     am_pal_crit_enter();
+}
+
+int am_pal_run_all(enum am_pal_run_all_mode mode) {
+    int rc;
+    switch (mode) {
+    case AM_PAL_RUN_ALL_DEFAULT:
+        rc = uv_run(loop_, UV_RUN_DEFAULT);
+        break;
+    case AM_PAL_RUN_ALL_NOBLOCK:
+        rc = uv_run(loop_, UV_RUN_NOWAIT);
+        break;
+    default:
+        AM_ASSERT(0);
+    }
+    return rc;
 }
