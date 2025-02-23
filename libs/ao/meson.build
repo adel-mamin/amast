@@ -58,7 +58,7 @@ libao_preemptive_dep = declare_dependency(
 libraries += libao_cooperative
 libraries += libao_preemptive
 
-if unit_test
+if pal != 'stubs'
     e = executable(
         'minimal_preemptive',
         [

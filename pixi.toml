@@ -7,27 +7,31 @@ platforms = ["linux-64"]
 version = "0.1.0"
 
 [tasks]
-setup_posix = "meson setup builds/posix -Dunit_test=true -Dpal=posix"
-setup_libuv = "meson setup builds/libuv -Dunit_test=true -Dpal=libuv"
+setup_stubs = "meson setup builds/stubs -Dunit_test=true -Dpal=stubs"
+setup_posix = "meson setup builds/posix -Dpal=posix"
+setup_libuv = "meson setup builds/libuv -Dpal=libuv"
 
-style_posix = "meson compile -C builds/posix style"
-cspell = "meson compile -C builds/posix cspell"
-cppcheck_posix = "meson compile -C builds/posix cppcheck"
-tidy_posix = "meson compile -C builds/posix tidy"
+style = "meson compile -C builds/stubs style"
+cspell = "meson compile -C builds/stubs cspell"
+cppcheck = "meson compile -C builds/stubs cppcheck"
+tidy = "meson compile -C builds/stubs tidy"
+iwyu = "meson compile -C builds/stubs iwyu"
+doxygen = "meson compile -C builds/stubs doxygen"
+sphinx = "meson compile -C builds/stubs sphinx"
 
+test_stubs = "meson test -C builds/stubs"
 test_posix = "meson test -C builds/posix"
 test_libuv = "meson test -C builds/libuv"
 
+libs_stubs = "meson compile -C builds/stubs"
 libs_posix = "meson compile -C builds/posix"
 libs_libuv = "meson compile -C builds/libuv"
 
-iwyu_posix = "meson compile -C builds/posix iwyu"
-doxygen = "meson compile -C builds/posix doxygen"
-sphinx = "meson compile -C builds/posix sphinx"
-
-posix = { depends-on = ["setup_posix", "cspell", "doxygen", "sphinx", "iwyu_posix", "style_posix", "libs_posix", "cppcheck_posix", "test_posix"] }
+stubs = { depends-on = ["setup_stubs", "libs_stubs", "cspell", "doxygen", "sphinx", "iwyu", "style", "cppcheck", "test_stubs"] }
+posix = { depends-on = ["setup_posix", "libs_posix", "test_posix"] }
 libuv = { depends-on = ["setup_libuv", "libs_libuv", "test_libuv"] }
-all = { depends-on = ["posix", "libuv"] }
+
+all = { depends-on = ["stubs", "posix", "libuv"] }
 
 [dependencies]
 meson = ">=1.7.0,<2"
