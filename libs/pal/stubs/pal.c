@@ -30,10 +30,16 @@
  * Platform abstraction layer (PAL) API stubs
  */
 
-#include <stddef.h>
+#include <stdarg.h>
 #include <stdint.h>
+#include <stdio.h>
 
+#include "common/compiler.h"
 #include "pal/pal.h"
+
+void am_pal_ctor(void) {}
+
+void am_pal_on_idle(void) {}
 
 void am_pal_crit_enter(void) {}
 
@@ -61,6 +67,14 @@ void am_pal_task_notify(int task_id) { (void)task_id; }
 
 void am_pal_task_wait(int task_id) { (void)task_id; }
 
+int am_pal_mutex_create(void) { return 0; }
+
+void am_pal_mutex_lock(int mutex) { (void)mutex; }
+
+void am_pal_mutex_unlock(int mutex) { (void)mutex; }
+
+void am_pal_mutex_destroy(int mutex) { (void)mutex; }
+
 uint32_t am_pal_time_get_ms(void) { return 0; }
 
 uint32_t am_pal_time_get_tick(int domain) {
@@ -75,6 +89,11 @@ uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms) {
 }
 
 void am_pal_sleep_ticks(int domain, int ticks) {
+    (void)domain;
+    (void)ticks;
+}
+
+void am_pal_sleep_till_ticks(int domain, uint32_t ticks) {
     (void)domain;
     (void)ticks;
 }
