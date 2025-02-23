@@ -235,23 +235,6 @@ void am_pal_flush(void);
  */
 void am_pal_on_idle(void);
 
-/** PAL run all modes */
-enum am_pal_run_all_mode {
-    /** default mode */
-    AM_PAL_RUN_ALL_DEFAULT,
-    /** non blocking mode */
-    AM_PAL_RUN_ALL_NOBLOCK,
-};
-
-/**
- * Run PAL bookkeeping.
- *
- * @param mode  the bookkeeping mode
- * @retval 0    all done
- * @retval !=0  call again
- */
-int am_pal_run_all(enum am_pal_run_all_mode mode);
-
 #ifdef __cplusplus
 }
 #endif

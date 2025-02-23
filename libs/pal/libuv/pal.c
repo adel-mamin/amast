@@ -306,18 +306,3 @@ void am_pal_on_idle(void) {
     am_pal_task_wait(am_pal_task_get_own_id());
     am_pal_crit_enter();
 }
-
-int am_pal_run_all(enum am_pal_run_all_mode mode) {
-    int rc;
-    switch (mode) {
-    case AM_PAL_RUN_ALL_DEFAULT:
-        rc = uv_run(loop_, UV_RUN_DEFAULT);
-        break;
-    case AM_PAL_RUN_ALL_NOBLOCK:
-        rc = uv_run(loop_, UV_RUN_NOWAIT);
-        break;
-    default:
-        AM_ASSERT(0);
-    }
-    return rc;
-}

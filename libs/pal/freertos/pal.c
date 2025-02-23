@@ -166,8 +166,3 @@ void am_pal_sleep_ms(int ms) {
         am_pal_time_get_tick_from_ms(AM_PAL_TICK_DOMAIN_DEFAULT, ms);
     vTaskDelay(ticks);
 }
-
-int am_pal_run_all(enum am_pal_run_all_mode mode) {
-    (void)mode;
-    return 0;
-}
