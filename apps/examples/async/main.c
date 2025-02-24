@@ -104,7 +104,7 @@ static enum am_hsm_rc async_top(
         return AM_HSM_TRAN(async_regular);
 
     case ASYNC_EVT_USER_INPUT: {
-        am_pal_printf("\r               \r");
+        am_pal_printf("\b");
         am_pal_flush();
         if (am_hsm_is_in(&me->ao.hsm, AM_HSM_STATE_CTOR(async_regular))) {
             return AM_HSM_TRAN(async_off);
