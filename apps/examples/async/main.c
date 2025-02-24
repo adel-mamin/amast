@@ -164,7 +164,7 @@ static enum am_async_rc async_regular_(struct async *me) {
         am_timer_arm(&me->timer, ticks, /*interval=*/0);
         AM_ASYNC_YIELD();
     }
-    am_pal_printf("\r               \r");
+    am_pal_printf("\b");
     am_pal_flush();
 
     am_ao_post_fifo(&me->ao, &am_evt_start);
