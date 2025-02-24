@@ -244,7 +244,7 @@ int am_pal_task_get_own_id(void) {
     return AM_PAL_TASK_ID_NONE;
 }
 
-uint32_t am_pal_time_get_ms(void) { return (uint32_t)uv_hrtime() / 1000000; }
+uint32_t am_pal_time_get_ms(void) { return (uint32_t)(uv_hrtime() / 1000000); }
 
 uint32_t am_pal_time_get_tick(int domain) {
     (void)domain;
