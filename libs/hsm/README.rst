@@ -25,7 +25,7 @@ Glossary
        The event has ID **AM_EVT_HSM_EXIT**.
 
    init event
-       an event sent to a target state, when the state is entered
+       an event sent to a target state, when the state is entered.
        The event has ID **AM_EVT_HSM_INIT**. It immediately follows
        the entry event.
 
@@ -34,7 +34,7 @@ Glossary
        states (see state diagram in :ref:`example-hsm` section below)
 
    current state
-       the state which currently gets the incoming events
+       the state which currently receives incoming events
 
    active state
        same as current state
@@ -43,14 +43,14 @@ Glossary
        the process of changing of the current state to another or to itself
 
    source state
-       the state that initiates a state transition
+       the state that initiates the state transition
 
    target state
-       the destination state of a state transition
+       the destination state of the state transition
 
    initial transition
        the state transition that may optionally happen after entering a state,
-       if the state is a target state of a state transition.
+       if the state is a target state of the state transition.
        In the state diagram :ref:`example-hsm` section below
        the state *D* has the initial transition,
        whereas state *B* does not. The initial transition in the state *D*
@@ -65,7 +65,7 @@ Glossary
 
    top (super)state
        the ultimate root of the state hierarchy.
-       It is defined by **am_hsm_top()** state.
+       It is predefined by **am_hsm_top()** state.
 
    substate
        a state that has a superstate as its parent (ancestor).
@@ -85,11 +85,12 @@ Glossary
    ancestor chain
        the parent-child relation chain from a state to the top level superstate.
        In the state diagram in :ref:`example-hsm` section below
-       *B*-*A*-*am_hsm_top* is an ancestor chain. Same is *F* - *am_hsm_top* etc.
+       *B*-*A*-*am_hsm_top* is the ancestor chain.
+       Another one is *F* - *am_hsm_top* etc.
 
    nearest common ancestor (NCA)
        the first common ancestor in two ancestor chains constructed from
-       source and target states.
+       source and target states to the top level superstate.
        For example, given the state diagram in :ref:`example-hsm` section below:
 
        1. for *B*-*A*-*am_hsm_top* and *F*-*am_hsm_top* the NCA is *am_hsm_top*
@@ -105,8 +106,9 @@ Introduction
 
 HSM differs from a Finite State Machine (FSM) in that a state can have a
 parent state that can be used to share behavior via a mechanism similar to
-inheritance - behavioral inheritance. The parent-child relationship between
-states impacts both event handling and transitions.
+inheritance, which is called behavioral inheritance.
+The parent-child relationship between states impacts both event handling and
+transitions.
 
 The HSM is a combination of one or more state-handler functions of
 type **am_hsm_state_fn**.
@@ -149,6 +151,18 @@ of *B* and *D*, respectively.  State *F* has no children.
 Both *A* and *F* have the default parent *am_hsm_top* provided by
 the library (**am_hsm_top()**).
 
+Event Dispatching
+=================
+
+Event dispatching is always done by calling **am_hsm_dispatch()** function.
+It takes state machine as first parameter and event to dispatch as second
+parameter.
+
+The dispatching is the synchronous procedure, which means that by the time
+the function returns the event is processed by the state machine.
+If event triggers a state transition, then the state transition including
+all exit, entry and init actions is also complete.
+
 Event Propagation
 =================
 
@@ -159,17 +173,18 @@ however, the state chooses to pass, then the event will be sent to the state's
 parent. At this point the parent must make the same decision. Event handling
 ends when the state or one of its ancestors consumes the event or the event
 reaches the default superstate **am_hsm_top()**. The default top level
-superstate **am_hsm_top()** always returns **AM_HSM_RC_HANDLED** for all events.
+superstate **am_hsm_top()** always returns **AM_HSM_RC_HANDLED** for all events
+meaning that it is consumed.
 
 Assume that the state *C* shown in the state diagram in :ref:`example-hsm` above
 is active and an event is sent to the state machine. State *C* will be the first
 state to receive this event. If it chooses to pass then, the event will be sent
-to state *B*, its direct parent. If state *B* also chooses to pass, then
-the event will finally be sent to state *A*. If *A* chooses to pass then event
-is consumed by **am_hsm_top()**.
+to state *B*, which is its direct parent. If state *B* also chooses to pass,
+then the event will finally be sent to state *A*. If *A* chooses to pass, then
+the event is consumed by **am_hsm_top()**.
 
-**am_hsm_top()** does nothing with events and serves as the ultimate event
-propagation termination point.
+*am_hsm_top* (**am_hsm_top()**) does nothing with events and serves as
+the ultimate event propagation termination point.
 
 To inform the library that an event is handled the event handler function
 must return **AM_HSM_HANDLED()**.
@@ -189,12 +204,12 @@ superstate *B* and then to the superstate *A*, which decides to make
 a transition to the state *F*.  In this case the current state is *C*,
 the source state is *A* and the target state is *F*.
 
-When transitioning, exit events (**AM_EVT_HSM_EXIT**) are sent up the ancestor
-chain until reaching the nearest common ancestor (NCA) of the source and
-target states. Then, entry events (**AM_EVT_HSM_ENTRY**) are sent down
-the ancestor chain to the target state. Finally the library sends init event
-(**AM_EVT_HSM_INIT**) to the target state. The NCA does not receive
-the exit event nor does it receive the entry and init events.
+When transitioning, exit events (**AM_EVT_HSM_EXIT**) are sent by the library
+automatically up the ancestor chain until reaching the nearest common ancestor (NCA)
+of the source and target states. Then, entry events (**AM_EVT_HSM_ENTRY**) are
+sent automatically by the library down the ancestor chain to the target state.
+Finally the library sends the init event (**AM_EVT_HSM_INIT**) to the target state.
+The NCA does not receive the exit event nor does it receive the entry and init events.
 
 There is a special case when the source and target states match
 (a self-transition). In this scenario the source state will be sent
@@ -228,11 +243,13 @@ To initiate a transition the state handler function must return
 
 If state handler function returns **AM_HSM_TRAN_REDISPATCH(target_state)**,
 then the transition is executed first and then the same event is
-dispatched to the new current state. This is a convenience feature,
-that allows HSM to handle the event in the state that expects it.
+dispatched to the new current state in the same **am_hsm_dispatch()** call.
+This is a convenience feature, that allows HSM to handle the event in
+the state that expects it.
 
 HSM states cannot initiate state transitions when processing entry and exit
-events.
+events. This means that the HSM states cannot return **AM_HSM_TRAN(target_state)**
+or **AM_HSM_TRAN_REDISPATCH(target_state)**.
 
 Initial State Transition
 ========================
@@ -260,6 +277,13 @@ Initial State
 In addition to regular states every HSM must declare the initial state,
 which the HSM library invokes to execute the topmost initial transition.
 
+The initial state is entered, when calling **am_hsm_init()** function.
+The initial state must always return **AM_HSM_TRAN(target_state)**.
+
+The transition from the initial state to the target state is done by
+the time **am_hsm_init()** exits.
+
+
 HSM Initialization
 ==================
 
@@ -273,8 +297,8 @@ HSM Topology
 ============
 
 HSM library discovers the user HSM topology by sending **AM_EVT_HSM_EMPTY** event
-to state event handlers. The state event handlers should explicitly process
-the event and always return **AM_HSM_SUPER(superstate)** in response.
+to state event handlers. The state event handlers should always return
+**AM_HSM_SUPER(superstate)** in response.
 
 HSM Coding Rules
 ================
@@ -289,12 +313,18 @@ HSM Coding Rules
    For example, the first argument can be **struct foo *me**, where
    **struct foo** is defined like this:
 
-.. code-block:: C
+   .. code-block:: C
 
-   struct foo {
-       struct am_hsm hsm;
-       ...
-   };
+      struct foo {
+          struct am_hsm hsm;
+          ...
+      };
+
+   The event handler in this case could look like this:
+
+   .. code-block:: C
+
+      enum am_hsm_rc foo_handler(struct foo *me, const struct am_event *event);
 
 4. Each user event handler should be implemented as a switch-case of handled
    events.
@@ -315,12 +345,13 @@ Transition To History
 =====================
 
 Transition to history is a useful technique that is convenient to apply in
-certain use cases. It does not require to use any dedicated HSM API.
+certain use cases. It does not require to use any dedicated HSM library API.
 
-Given the example HSM above the transition to history technique can be
-demonstrated as follows. Assume that the HSM is in the state *B*.
-The user code stores the current state in a local variable of type
-**struct am_hsm_state**. This is done with:
+Given the state diagram :ref:`example-hsm` section above the transition
+to history technique can be demonstrated as follows. Assume that the HSM
+is in the state *B*.
+On entry to the state user code stores the state in a local variable
+of type **struct am_hsm_state**. This is done with:
 
 .. code-block:: C
 
@@ -343,7 +374,7 @@ The user code stores the current state in a local variable of type
 
 Then the transition to state *F* happens, which is then followed by a request
 to transition back to the previous state. Since the previous state is captured
-in **me->history** it can be achieved by doing this:
+in **me->history** the transition can be achieved by doing this:
 
 .. code-block:: C
 
