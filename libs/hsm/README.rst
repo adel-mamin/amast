@@ -65,7 +65,7 @@ Glossary
 
    top (super)state
        the ultimate root of the state hierarchy.
-       It is predefined by **am_hsm_top()** state.
+       It is predefined by :cpp:func:`am_hsm_top()` state.
 
    substate
        a state that has a superstate as its parent (ancestor).
@@ -111,7 +111,7 @@ The parent-child relationship between states impacts both event handling and
 transitions.
 
 The HSM is a combination of one or more state-handler functions of
-type **am_hsm_state_fn**.
+type :cpp:type:`am_hsm_state_fn`.
 
 .. _example-hsm:
 
@@ -149,14 +149,14 @@ State Relations
 States *B* and *D* are children of *A*. States *C* and *E* are children
 of *B* and *D*, respectively.  State *F* has no children.
 Both *A* and *F* have the default parent *am_hsm_top* provided by
-the library (**am_hsm_top()**).
+the library (:cpp:func:`am_hsm_top()`).
 
 Event Dispatching
 =================
 
-Event dispatching is always done by calling **am_hsm_dispatch()** function.
-It takes state machine as first parameter and event to dispatch as second
-parameter.
+Event dispatching is always done by calling :cpp:func:`am_hsm_dispatch()`
+function. It takes state machine as first parameter and event to dispatch
+as second parameter.
 
 The dispatching is the synchronous procedure, which means that by the time
 the function returns the event is processed by the state machine.
@@ -172,25 +172,26 @@ chooses to consume the event then event handling ends with the state. If,
 however, the state chooses to pass, then the event will be sent to the state's
 parent. At this point the parent must make the same decision. Event handling
 ends when the state or one of its ancestors consumes the event or the event
-reaches the default superstate **am_hsm_top()**. The default top level
-superstate **am_hsm_top()** always returns **AM_HSM_RC_HANDLED** for all events
-meaning that it is consumed.
+reaches the default superstate :cpp:func:`am_hsm_top()`. The default top level
+superstate :cpp:func:`am_hsm_top()` always returns **AM_HSM_RC_HANDLED** for
+all events meaning that it is consumed.
 
 Assume that the state *C* shown in the state diagram in :ref:`example-hsm` above
 is active and an event is sent to the state machine. State *C* will be the first
 state to receive this event. If it chooses to pass then, the event will be sent
 to state *B*, which is its direct parent. If state *B* also chooses to pass,
 then the event will finally be sent to state *A*. If *A* chooses to pass, then
-the event is consumed by **am_hsm_top()**.
+the event is consumed by :cpp:func:`am_hsm_top()`.
 
-*am_hsm_top* (**am_hsm_top()**) does nothing with events and serves as
+*am_hsm_top* (:cpp:func:`am_hsm_top()`) does nothing with events and serves as
 the ultimate event propagation termination point.
 
 To inform the library that an event is handled the event handler function
-must return **AM_HSM_HANDLED()**.
+must return :c:macro:`AM_HSM_HANDLED()`.
 
 To inform the library that an event is passed to superstate the event
-handler function must return **AM_HSM_SUPER(superstate)**.
+handler function must return :c:macro:`AM_HSM_SUPER()`, which provides the
+name of the superstate event handler.
 
 State Transition
 ================
@@ -239,17 +240,18 @@ the init event is sent to *A*. Please note that the state *A* is not exited in
 this case.
 
 To initiate a transition the state handler function must return
-**AM_HSM_TRAN(target_state)** or **AM_HSM_TRAN_REDISPATCH(target_state)**.
+:c:macro:`AM_HSM_TRAN()` or :c:macro:`AM_HSM_TRAN_REDISPATCH()` pointing
+to target state.
 
-If state handler function returns **AM_HSM_TRAN_REDISPATCH(target_state)**,
-then the transition is executed first and then the same event is
-dispatched to the new current state in the same **am_hsm_dispatch()** call.
+If state handler function returns :c:macro:`AM_HSM_TRAN_REDISPATCH()` pointing
+to target state, then the transition is executed first and then the same event is
+dispatched to the new current state in the same :cpp:func:`am_hsm_dispatch()` call.
 This is a convenience feature, that allows HSM to handle the event in
 the state that expects it.
 
 HSM states cannot initiate state transitions when processing entry and exit
-events. This means that the HSM states cannot return **AM_HSM_TRAN(target_state)**
-or **AM_HSM_TRAN_REDISPATCH(target_state)**.
+events. This means that the HSM states cannot return :c:macro:`AM_HSM_TRAN()`
+or :c:macro:`AM_HSM_TRAN_REDISPATCH()` pointing to target state.
 
 Initial State Transition
 ========================
@@ -277,11 +279,12 @@ Initial State
 In addition to regular states every HSM must declare the initial state,
 which the HSM library invokes to execute the topmost initial transition.
 
-The initial state is entered, when calling **am_hsm_init()** function.
-The initial state must always return **AM_HSM_TRAN(target_state)**.
+The initial state is entered, when calling :cpp:func:`am_hsm_init()` function.
+The initial state must always return :c:macro:`AM_HSM_TRAN()` pointing to
+target state.
 
 The transition from the initial state to the target state is done by
-the time **am_hsm_init()** exits.
+the time :cpp:func:`am_hsm_init()` exits.
 
 
 HSM Initialization
@@ -290,25 +293,25 @@ HSM Initialization
 HSM initialization is divided into the following two steps for increased
 flexibility and better control of the initialization timeline:
 
-1. the state machine constructor (**am_hsm_ctor()**)
-2. the top-most initial transition (**am_hsm_init()**).
+1. the state machine constructor (:cpp:func:`am_hsm_ctor()`)
+2. the top-most initial transition (:cpp:func:`am_hsm_init()`).
 
 HSM Topology
 ============
 
 HSM library discovers the user HSM topology by sending **AM_EVT_HSM_EMPTY** event
 to state event handlers. The state event handlers should always return
-**AM_HSM_SUPER(superstate)** in response.
+:c:macro:`AM_HSM_SUPER()` in response.
 
 HSM Coding Rules
 ================
 
-1. HSM states must be represented by event handlers of type **am_hsm_state_fn**.
+1. HSM states must be represented by event handlers of type :cpp:type:`am_hsm_state_fn`.
 2. The name of the first argument of all user event handler functions
    must be **me**.
-3. For convenience instead of using **struct am_hsm *me** the first argument
-   can point to a user structure. In this case the user structure
-   must have **struct am_hsm** instance as its first field.
+3. For convenience instead of using **struct** :cpp:struct:`am_hsm` ***me**
+   the first argument can point to a user structure. In this case the user structure
+   must have **struct** :cpp:struct:`am_hsm` instance as its first field.
 
    For example, the first argument can be **struct foo *me**, where
    **struct foo** is defined like this:
@@ -332,11 +335,11 @@ HSM Coding Rules
    event handlers.
 6. Processing of **AM_EVT_HSM_ENTRY** and **AM_EVT_HSM_EXIT** events should
    not trigger state transitions. It means that user event handlers should
-   not return **AM_HSM_TRAN()** or **AM_HSM_TRAN_REDISPATCH()** for
+   not return :c:macro:`AM_HSM_TRAN()` or :c:macro:`AM_HSM_TRAN_REDISPATCH()` for
    these events.
 7. Processing of **AM_EVT_HSM_INIT** event can optionally only trigger
-   transition by returning the result of **AM_HSM_TRAN()** macro.
-   The use of **AM_HSM_TRAN_REDISPATCH()** is not allowed in this case.
+   transition by returning the result of :c:macro:`AM_HSM_TRAN()` macro.
+   The use of :c:macro:`AM_HSM_TRAN_REDISPATCH()` is not allowed in this case.
 8. Processing of **AM_EVT_HSM_INIT** event can optionally only trigger
    transition to a substate of the state triggering the transition.
    Transition to peer states of superstates is not allowed in this case.
@@ -351,7 +354,7 @@ Given the state diagram :ref:`example-hsm` section above the transition
 to history technique can be demonstrated as follows. Assume that the HSM
 is in the state *B*.
 On entry to the state user code stores the state in a local variable
-of type **struct am_hsm_state**. This is done with:
+of type **struct** :cpp:struct:`am_hsm_state`. This is done with:
 
 .. code-block:: C
 
@@ -479,9 +482,9 @@ Here is how it is coded in pseudocode:
    }
 
 Please note that any transitions between states within submachines as well as
-all references to any submachine state via **AM_HSM_SUPER()**  must be done
+all references to any submachine state via :c:macro:`AM_HSM_SUPER()`  must be done
 with explicit specification of state instance, which can be retrieved by
-calling **am_hsm_get_instance()** API.
+calling :cpp:func:`am_hsm_get_instance()` API.
 
 The complete implementation of the given submachine example can be found
 in **tests/submachine/basic/test.c**
