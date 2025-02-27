@@ -7,8 +7,8 @@ Credit
 
 The design and implementation of the HSM library is heavily inspired by
 `Practical UML Statecharts in C/C++: Event-Driven Programming for Embedded Systems 2nd Edition <https://www.state-machine.com/psicc2>`_
-by Miro Samek. Also the example HSM state diagram in **hsm.png** is borrowed
-from the book.
+by Miro Samek. Also the example HSM state diagram in
+:download:`hsm.png <../libs/hsm/hsm.png>` is borrowed from the book.
 
 Glossary
 ========
@@ -18,16 +18,16 @@ Glossary
 
    entry event
        an event sent to a state when the state is entered.
-       The event has ID **AM_EVT_HSM_ENTRY**.
+       The event has ID :cpp:enumerator:`AM_EVT_HSM_ENTRY <am_hsm_evt_id::AM_EVT_HSM_ENTRY>`.
 
    exit event
        an event sent to a state when the state is exited.
-       The event has ID **AM_EVT_HSM_EXIT**.
+       The event has ID :cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>`.
 
    init event
        an event sent to a target state, when the state is entered.
-       The event has ID **AM_EVT_HSM_INIT**. It immediately follows
-       the entry event.
+       The event has ID :cpp:enumerator:`AM_EVT_HSM_INIT <am_hsm_evt_id::AM_EVT_HSM_INIT>`.
+       It immediately follows the entry event.
 
    state
        an event handler. *A*, *B*, *C*, *D*, *E*, *F*, *am_hsm_top* are all
@@ -173,7 +173,8 @@ however, the state chooses to pass, then the event will be sent to the state's
 parent. At this point the parent must make the same decision. Event handling
 ends when the state or one of its ancestors consumes the event or the event
 reaches the default superstate :cpp:func:`am_hsm_top()`. The default top level
-superstate :cpp:func:`am_hsm_top()` always returns **AM_HSM_RC_HANDLED** for
+superstate :cpp:func:`am_hsm_top()` always returns
+:cpp:enumerator:`AM_HSM_RC_HANDLED <am_hsm_rc::AM_HSM_RC_HANDLED>` for
 all events meaning that it is consumed.
 
 Assume that the state *C* shown in the state diagram in :ref:`example-hsm` above
@@ -205,11 +206,14 @@ superstate *B* and then to the superstate *A*, which decides to make
 a transition to the state *F*.  In this case the current state is *C*,
 the source state is *A* and the target state is *F*.
 
-When transitioning, exit events (**AM_EVT_HSM_EXIT**) are sent by the library
-automatically up the ancestor chain until reaching the nearest common ancestor (NCA)
-of the source and target states. Then, entry events (**AM_EVT_HSM_ENTRY**) are
-sent automatically by the library down the ancestor chain to the target state.
-Finally the library sends the init event (**AM_EVT_HSM_INIT**) to the target state.
+When transitioning, exit events
+(:cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>`) are sent
+by the library automatically up the ancestor chain until reaching the nearest
+common ancestor (NCA) of the source and target states.
+Then, entry events (:cpp:enumerator:`AM_EVT_HSM_ENTRY <am_hsm_evt_id::AM_EVT_HSM_ENTRY>`)
+are sent automatically by the library down the ancestor chain to the target state.
+Finally the library sends the init event
+(:cpp:enumerator:`AM_EVT_HSM_INIT <am_hsm_evt_id::AM_EVT_HSM_INIT>`) to the target state.
 The NCA does not receive the exit event nor does it receive the entry and init events.
 
 There is a special case when the source and target states match
@@ -299,7 +303,8 @@ flexibility and better control of the initialization timeline:
 HSM Topology
 ============
 
-HSM library discovers the user HSM topology by sending **AM_EVT_HSM_EMPTY** event
+HSM library discovers the user HSM topology by sending
+:cpp:enumerator:`AM_EVT_HSM_EMPTY <am_hsm_evt_id::AM_EVT_HSM_EMPTY>` event
 to state event handlers. The state event handlers should always return
 :c:macro:`AM_HSM_SUPER()` in response.
 
@@ -333,15 +338,18 @@ HSM Coding Rules
    events.
 5. Avoid placing any code with side effects outside of the switch-case of
    event handlers.
-6. Processing of **AM_EVT_HSM_ENTRY** and **AM_EVT_HSM_EXIT** events should
+6. Processing of :cpp:enumerator:`AM_EVT_HSM_ENTRY <am_hsm_evt_id::AM_EVT_HSM_ENTRY>`
+   and :cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>` events should
    not trigger state transitions. It means that user event handlers should
    not return :c:macro:`AM_HSM_TRAN()` or :c:macro:`AM_HSM_TRAN_REDISPATCH()` for
    these events.
-7. Processing of **AM_EVT_HSM_INIT** event can optionally only trigger
-   transition by returning the result of :c:macro:`AM_HSM_TRAN()` macro.
+7. Processing of :cpp:enumerator:`AM_EVT_HSM_INIT <am_hsm_evt_id::AM_EVT_HSM_INIT>`
+   event can optionally only trigger transition by returning the result of
+   :c:macro:`AM_HSM_TRAN()` macro.
    The use of :c:macro:`AM_HSM_TRAN_REDISPATCH()` is not allowed in this case.
-8. Processing of **AM_EVT_HSM_INIT** event can optionally only trigger
-   transition to a substate of the state triggering the transition.
+8. Processing of :cpp:enumerator:`AM_EVT_HSM_INIT <am_hsm_evt_id::AM_EVT_HSM_INIT>`
+   event can optionally only trigger transition to a substate of the state triggering
+   the transition.
    Transition to peer states of superstates is not allowed in this case.
 
 Transition To History
@@ -393,7 +401,7 @@ in **me->history** the transition can be achieved by doing this:
 So, that is essentially all about it.
 
 Another example of the usage of the transition to history technique can be seen
-in **tests/history.c** unit test.
+in :download:`tests/history.c <../libs/hsm/tests/history.c>` unit test.
 
 Submachines
 ===========
@@ -487,8 +495,8 @@ with explicit specification of state instance, which can be retrieved by
 calling :cpp:func:`am_hsm_get_instance()` API.
 
 The complete implementation of the given submachine example can be found
-in **tests/submachine/basic/test.c**
+in :download:`tests/submachine/basic/test.c <../libs/hsm/tests/submachine/basic/test.c>`
 
 A submachine (sub)state can also be a superstate of itself, which creates
 a recursion. The example of the submachines recursion can be seen in
-**tests/submachine/complex/submachine.c**.
+:download:`tests/submachine/complex/submachine.c <../libs/hsm/tests/submachine/complex/submachine.c>`.
