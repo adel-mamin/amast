@@ -18,16 +18,29 @@ Glossary
 
    entry event
        an event sent to a state when the state is entered.
+       The state can optionally run entry actions on it.
        The event has ID :cpp:enumerator:`AM_EVT_HSM_ENTRY <am_hsm_evt_id::AM_EVT_HSM_ENTRY>`.
 
    exit event
        an event sent to a state when the state is exited.
+       The state can optionally run exit actions on it.
        The event has ID :cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>`.
 
+   external transition
+       An external transition is a transition that moves from one state to another,
+       possibly re-entering the same state.
+       The source state is exited, the target state is entered and initialized.
+       Synonym of **state transition**.
+
    init event
-       an event sent to a target state, when the state is entered.
+       an event sent to a target state, right after the state was entered.
+       The state can optionally trigger transition to a substate on it.
        The event has ID :cpp:enumerator:`AM_EVT_HSM_INIT <am_hsm_evt_id::AM_EVT_HSM_INIT>`.
        It immediately follows the entry event.
+
+   internal transition
+       An internal transition is a transition that occurs within a state without
+       causing an exit and re-entry.
 
    state
        an event handler. *A*, *B*, *C*, *D*, *E*, *F*, *am_hsm_top* are all

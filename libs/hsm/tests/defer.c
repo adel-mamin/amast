@@ -180,8 +180,8 @@ static void test_defer(void) {
         const char *out;
     };
     static const struct test in[] = {
-        {HSM_EVT_A, "s1-A;"},
-        {HSM_EVT_B, "s1-B;s2-A;"},
+        {.event = HSM_EVT_A, .out = "s1-A;"},
+        {.event = HSM_EVT_B, .out = "s1-B;s2-A;"},
     };
 
     for (int i = 0; i < AM_COUNTOF(in); ++i) {
