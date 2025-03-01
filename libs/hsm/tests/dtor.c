@@ -39,7 +39,7 @@ static struct dtor_hsm m_dtor_hsm;
 
 /* test am_hsm_dtor() */
 
-static enum am_hsm_rc dtor_hsm_s(
+static enum am_hsm_rc dtor_s(
     struct dtor_hsm *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -51,7 +51,7 @@ static enum am_hsm_rc dtor_hsm_s(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc dtor_hsm_sinit(
+static enum am_hsm_rc dtor_sinit(
     struct dtor_hsm *me, const struct am_event *event
 ) {
     (void)event;

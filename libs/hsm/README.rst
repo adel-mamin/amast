@@ -513,3 +513,76 @@ in :download:`tests/submachine/basic/test.c <../libs/hsm/tests/submachine/basic/
 A submachine (sub)state can also be a superstate of itself, which creates
 a recursion. The example of the submachines recursion can be seen in
 :download:`tests/submachine/complex/submachine.c <../libs/hsm/tests/submachine/complex/submachine.c>`.
+
+
+HSM Examples And Unit Tests
+===========================
+
+Defer
+-----
+
+Test simple HSM with event queue and deferred event queue.
+
+The source code is in `defer.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/defer.c>`_.
+
+The HSM topology:
+
+::
+
+    +-------------+
+    | defer_sinit |
+    +------+------+
+           |
+    +------|--------------------------+
+    |      |    am_hsm_top            |
+    | +----v-----+       +----------+ |
+    | | A/defer  |       | A/       | |
+    | | X:recall |       |          | |
+    | |          |   B   |          | |
+    | | defer_s1 +-------> defer_s2 | |
+    | +----------+       +----------+ |
+    +---------------------------------+
+
+, where
+
+- A is short of **HSM_EVT_A**
+- B is short of **HSM_EVT_B**
+- X is short of :cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>`
+
+The test steps:
+
+1. Initialize the HSM. The init state transition activates **defer_s1**
+2. Send **A** event, which triggers an internal transition in **defer_s1** by deferring the event.
+3. Send **B** event, which triggers an external transition to **defer_s2** and
+   recalls **A** on exit.
+4. Event **A** is handled in **defer_s2**.
+
+All internal and external transitions in HSM are logged and compared against
+expected patterns stored in **struct test::out**.
+
+Dtor
+----
+
+Tests :cpp:func:`am_hsm_dtor()` API.
+
+The source code is in `dtor.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/dtor.c>`_.
+
+The HSM topology:
+
+::
+
+    +-------------+
+    |  dtor_sinit |
+    +------+------+
+           |
+    +------|-------------+
+    |      |  am_hsm_top |
+    | +----v---+         |
+    | | dtor_s |         |
+    | +--------+         |
+    +--------------------+
+
+The test steps:
+
+1. Initialize the HSM. The init state transition activates **dtor_s**.
+2. Call :cpp:func:`am_hsm_dtor()` for the HSM and check if it destructs the HSM.
