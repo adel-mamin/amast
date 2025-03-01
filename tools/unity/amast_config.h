@@ -46,9 +46,7 @@
 /** Enable am_assert_failure() implementation */
 #define AM_ASSERT_FAILURE
 
-/**
- * The max number of event pools.
- */
+/** The max number of event pools. */
 #define AM_EVENT_POOLS_NUM_MAX 3
 
 /** The maximum number of active objects. */
