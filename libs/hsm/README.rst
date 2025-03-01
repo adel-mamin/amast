@@ -316,7 +316,7 @@ flexibility and better control of the initialization timeline:
 HSM Topology
 ============
 
-HSM library discovers the user HSM topology by sending
+HSM library discovers the user HSM topology at run time by sending
 :cpp:enumerator:`AM_EVT_HSM_EMPTY <am_hsm_evt_id::AM_EVT_HSM_EMPTY>` event
 to state event handlers. The state event handlers should always return
 :c:macro:`AM_HSM_SUPER()` in response.
