@@ -107,7 +107,7 @@ int am_queue_get_nbusy(const struct am_queue *queue);
  *
  * @param queue  the queue
  *
- * @return queue capacity
+ * @return queue capacity in number of items (slots)
  */
 int am_queue_get_capacity(const struct am_queue *queue);
 
@@ -127,9 +127,8 @@ int am_queue_item_size(const struct am_queue *queue);
  *
  * @param queue  the queue
  *
- * @return The popped item. The memory is owned by the queue.
- *         Do not free it!
- *         If queue is empty, then NULL is returned.
+ * @return The popped item or NULL if queue was empty.
+ *         The memory is owned by the queue. Do not free it!
  */
 void *am_queue_pop_front(struct am_queue *queue);
 
@@ -142,7 +141,8 @@ void *am_queue_pop_front(struct am_queue *queue);
  * @param buf    the popped item is copied here
  * @param size   the byte size of buf
  *
- * @return The popped item. NULL if queue was empty.
+ * @return The popped item or NULL if queue was empty.
+ *         The memory is owned by the queue. Do not free it!.
  */
 void *am_queue_pop_front_and_copy(struct am_queue *queue, void *buf, int size);
 
@@ -153,9 +153,8 @@ void *am_queue_pop_front_and_copy(struct am_queue *queue, void *buf, int size);
  *
  * @param queue  the queue
  *
- * @return The peeked item. The memory is owned by the queue.
- *         Do not free it!
- *         If queue is empty, then NULL is returned.
+ * @return The peeked item or NULL if queue is empty.
+ *         The memory is owned by the queue. Do not free it!
  */
 void *am_queue_peek_front(struct am_queue *queue);
 
@@ -166,9 +165,8 @@ void *am_queue_peek_front(struct am_queue *queue);
  *
  * @param queue  the queue
  *
- * @return The peeked item. The memory is owned by the queue.
- *         Do not free it!
- *         If queue is empty, then NULL is returned.
+ * @return The peeked item or NULL if queue is empty.
+ *         The memory is owned by the queue. Do not free it!
  */
 void *am_queue_peek_back(struct am_queue *queue);
 
@@ -179,7 +177,7 @@ void *am_queue_peek_back(struct am_queue *queue);
  *
  * @param queue  the queue
  * @param ptr    the new queue item.
- *               The API copies the content of ptr.
+ *               The API copies the content of \p ptr.
  * @param size   the size of the new queue item in bytes.
  *               Must be <= than queue item size.
  *
@@ -195,7 +193,7 @@ bool am_queue_push_front(struct am_queue *queue, const void *ptr, int size);
  *
  * @param queue  the queue
  * @param ptr    the new queue item.
- *               The API copies the content of ptr.
+ *               The API copies the content of \p ptr.
  * @param size   the size of the new queue item in bytes.
  *               Must be <= than queue item size.
  *
@@ -205,7 +203,7 @@ bool am_queue_push_front(struct am_queue *queue, const void *ptr, int size);
 bool am_queue_push_back(struct am_queue *queue, const void *ptr, int size);
 
 /**
- * Get minimum number of free slots available in queue.
+ * Get number of free slots available in queue.
  *
  * @param queue  the queue
  *
@@ -214,13 +212,13 @@ bool am_queue_push_back(struct am_queue *queue, const void *ptr, int size);
 int am_queue_get_nfree(const struct am_queue *queue);
 
 /**
- * Get minimum number of free slots available so far in queue.
+ * Get minimum number of free slots observed in queue.
  *
  * Could be used to assess the usage of the queue.
  *
  * @param queue  the queue
  *
- * @return the minimum number of slots available so far
+ * @return the minimum number of slots observed so far
  */
 int am_queue_get_nfree_min(const struct am_queue *queue);
 
