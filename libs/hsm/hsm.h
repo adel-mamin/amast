@@ -31,6 +31,7 @@
  * Hierarchical State Machine (HSM) module API declaration.
  * Configuration defines:
  * AM_HSM_SPY - enables HSM spy callback support for debugging
+ * AM_HSM_HIERARCHY_DEPTH_MAX - HSM hierarchy maximum depth
  */
 
 #ifndef AM_HSM_H_INCLUDED
@@ -176,8 +177,8 @@ struct am_hsm_state {
     AM_GET_MACRO_2_(__VA_ARGS__, AM_STATE2_, AM_STATE1_, _)(__VA_ARGS__)
 
 /** HSM hierarchy maximum depth */
-#ifndef HSM_HIERARCHY_DEPTH_MAX
-#define HSM_HIERARCHY_DEPTH_MAX 16
+#ifndef AM_HSM_HIERARCHY_DEPTH_MAX
+#define AM_HSM_HIERARCHY_DEPTH_MAX 16
 #endif
 
 /** HSM hierarchy level representation bits number */
@@ -186,7 +187,7 @@ struct am_hsm_state {
 /** HSM hierarchy level representation bits mask */
 #define AM_HSM_HIERARCHY_LEVEL_MASK ((1U << AM_HSM_HIERARCHY_LEVEL_BITS) - 1)
 
-AM_ASSERT_STATIC(HSM_HIERARCHY_DEPTH_MAX <= AM_HSM_HIERARCHY_LEVEL_MASK);
+AM_ASSERT_STATIC(AM_HSM_HIERARCHY_DEPTH_MAX <= AM_HSM_HIERARCHY_LEVEL_MASK);
 
 /** HSM state. */
 struct am_hsm {
@@ -201,7 +202,7 @@ struct am_hsm {
      */
     uint8_t smi;
     /**
-     * Active state hierarchy level [0,HSM_HIERARCHY_DEPTH_MAX]
+     * Active state hierarchy level [0,AM_HSM_HIERARCHY_DEPTH_MAX]
      * (level 0 is assigned to am_hsm_top()).
      * Used internally to speed up state transitions.
      */

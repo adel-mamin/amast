@@ -43,7 +43,7 @@ struct am_hsm_path {
      * states in superstate - substate relationship
      * state[i] is always a substate of state[i-1]
      */
-    struct am_hsm_state state[HSM_HIERARCHY_DEPTH_MAX];
+    struct am_hsm_state state[AM_HSM_HIERARCHY_DEPTH_MAX];
     /** the actual size of \p state */
     int len;
 };
@@ -246,14 +246,15 @@ static enum am_hsm_rc hsm_dispatch(
      * propagate event up the ancestor chain till it is either
      * handled or ignored or triggers transition
      */
-    int cnt = HSM_HIERARCHY_DEPTH_MAX;
+    int cnt = AM_HSM_HIERARCHY_DEPTH_MAX;
     do {
         src = hsm->state;
         hsm->state = state;
         /* preserve hsm->smi as the submachine instance of src.fn */
         rc = src.fn(hsm, event);
         --cnt;
-        AM_ASSERT(cnt); /* HSM hierarchy depth exceeds HSM_HIERARCHY_DEPTH_MAX*/
+        /* check if HSM hierarchy depth exceeds #AM_HSM_HIERARCHY_DEPTH_MAX */
+        AM_ASSERT(cnt);
     } while (AM_HSM_RC_SUPER == rc);
 
     bool tran = (AM_HSM_RC_TRAN == rc) || (AM_HSM_RC_TRAN_REDISPATCH == rc);

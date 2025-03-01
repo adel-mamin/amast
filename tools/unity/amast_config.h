@@ -55,7 +55,7 @@
 #define AM_AO_NUM_MAX 64
 
 /** HSM hierarchy maximum depth */
-#define HSM_HIERARCHY_DEPTH_MAX 16
+#define AM_HSM_HIERARCHY_DEPTH_MAX 16
 
 /** total number of tick domains */
 #define AM_PAL_TICK_DOMAIN_MAX 1

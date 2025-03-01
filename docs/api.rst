@@ -309,7 +309,7 @@ HSM
 
 .. doxygendefine:: AM_HSM_STATE_CTOR
 
-.. doxygendefine:: HSM_HIERARCHY_DEPTH_MAX
+.. doxygendefine:: AM_HSM_HIERARCHY_DEPTH_MAX
 
 .. doxygenstruct:: am_hsm
 
