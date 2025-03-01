@@ -39,7 +39,7 @@
 #define AM_POOL_BLOCK_SIZEOF(t) AM_MAX(sizeof(struct am_slist), sizeof(t))
 #define AM_POOL_BLOCK_ALIGNMENT(a) AM_MAX(AM_ALIGNOF_SLIST, a)
 
-/** onesize memory allocator descriptor */
+/** Onesize memory allocator descriptor. */
 struct am_onesize {
     struct am_blk pool; /**< the pool */
     int block_size;     /**< maximum size of allocated block [bytes] */
@@ -78,10 +78,12 @@ extern "C" {
 /**
  * Construct a new onesize allocator.
  *
- * Allocation requests up to block_size bytes are
- * rounded up to block_size bytes and served from a singly-linked
- * list of buffers. Due to the simplicity of onesize allocator
- * management, allocations from it are fast.
+ * Allocation requests up to block size bytes from onesize configuration are
+ * rounded up to block size bytes and served from a singly-linked
+ * list of buffers.
+ *
+ * Due to the simplicity of onesize allocator management,
+ * allocations from it are fast.
  *
  * @param hnd  the allocator
  * @param cfg  configuration
@@ -89,10 +91,10 @@ extern "C" {
 void am_onesize_ctor(struct am_onesize *hnd, const struct am_onesize_cfg *cfg);
 
 /**
- * Allocate memory block of struct of block_size (eXtended version).
+ * Allocate memory block of configured block size (eXtended version).
  *
  * Checks if there are more free memory blocks available than \p margin.
- * If not, then returns NULL. Otherwise allocates memory block and returns it.o
+ * If not, then returns NULL. Otherwise allocates memory block and returns it.
  *
  * @param hnd     the allocator
  * @param margin  free memory blocks to remain available after the allocation
@@ -123,7 +125,7 @@ void *am_onesize_allocate(struct am_onesize *hnd);
 void am_onesize_free(struct am_onesize *hnd, const void *ptr);
 
 /**
- * Reclaim all memory allocated so far.
+ * Free all memory allocated so far.
  *
  * @param hnd  the allocator
  */
