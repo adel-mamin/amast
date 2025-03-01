@@ -38,7 +38,8 @@
 /**
  * Ring buffer descriptor.
  *
- * Only exposed to allow ring buffer users to allocate (possibly static) memory for it.
+ * Only exposed to allow ring buffer users to allocate (possibly static) memory
+ * for it.
  */
 struct am_ringbuf {
     /** dropped bytes counter */
