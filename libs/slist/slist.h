@@ -75,13 +75,13 @@ struct am_slist_item {
     struct am_slist_item *next; /**< next item in the list */
 };
 
-/** Singly linked list handler */
+/** Singly linked list handler. */
 struct am_slist {
     struct am_slist_item sentinel; /**< beginning of the list */
     struct am_slist_item *back;    /**< end of the list */
 };
 
-/** Singly linked list iterator handler */
+/** Singly linked list iterator handler. */
 struct am_slist_iterator {
     struct am_slist *list;      /**< the list */
     struct am_slist_item *cur;  /**< current item of the list */
@@ -174,15 +174,16 @@ typedef bool (*am_slist_item_found_fn)(
 );
 
 /**
- * Find item in list using predicate function.
+ * Find item in list using predicate callback function.
+ *
+ * The found item is not popped from the list.
  *
  * @param list      the list
  * @param is_found  the predicate callback
  * @param context   the context, which is provided verbatim to predicate
  *
- * @return the item, found by the predicate callback function
- *         NULL, if nothing was found. The found item is not popped
- *         from the list.
+ * @return the item, found by the predicate callback function or
+ *         NULL, if nothing was found.
  */
 struct am_slist_item *am_slist_find(
     const struct am_slist *list, am_slist_item_found_fn is_found, void *context
@@ -195,8 +196,7 @@ struct am_slist_item *am_slist_find(
  *
  * @param list  the list
  *
- * @return the item at the front of the list or NULL, if no
- *         item exists at the given index
+ * @return the item at the front of the list or NULL, if list is empty
  */
 struct am_slist_item *am_slist_peek_front(const struct am_slist *list);
 
@@ -207,8 +207,7 @@ struct am_slist_item *am_slist_peek_front(const struct am_slist *list);
  *
  * @param list  the list
  *
- * @return the item at the back of the list or NULL, if no
- *         item exists at the given index.
+ * @return the item at the back of the list or NULL, if list is empty
  */
 struct am_slist_item *am_slist_peek_back(const struct am_slist *list);
 
@@ -225,7 +224,7 @@ void am_slist_push_front(struct am_slist *list, struct am_slist_item *item);
  *
  * @param list  the list
  *
- * @return the popped item or NULL, if the list was empty
+ * @return the popped item or NULL, if the list is empty
  */
 struct am_slist_item *am_slist_pop_front(struct am_slist *list);
 
@@ -239,6 +238,8 @@ void am_slist_push_back(struct am_slist *list, struct am_slist_item *item);
 
 /**
  * Check if given item is part of list.
+ *
+ * Takes O(n) to complete.
  *
  * @param list  the list
  * @param item  the item to be checked
@@ -267,8 +268,8 @@ struct am_slist_item *am_slist_next_item(
  *
  * @param to    append to this list
  * @param from  append this list.
- *              If \p from list is not empty, then it is initialized after
- *              it is appended to \p to list.
+ *              The handler is initialized after the list is appended.
+ *              So this list becomes empty after it gets appended to \p to list.
  */
 void am_slist_append(struct am_slist *to, struct am_slist *from);
 
@@ -276,9 +277,11 @@ void am_slist_append(struct am_slist *to, struct am_slist *from);
  * Construct new iterator.
  *
  * Must be called before calling am_slist_iterator_next().
+ *
  * If the iterator is used to traverse the list once, then
  * it must be re-constructed by calling this function in order to
  * be used with am_slist_iterator_next() again.
+ *
  * The only valid operation with the iterator after this one is
  * am_slist_iterator_next() or am_slist_iterator_pop().
  * Otherwise the behavior is undefined.
@@ -307,9 +310,12 @@ struct am_slist_item *am_slist_iterator_next(struct am_slist_iterator *it);
 /**
  * Pop item pointed by iterator.
  *
- * The popped item is returned. The iterator is still usable after the removal.
+ * The popped item is returned.
+ *
+ * The iterator is still usable after the removal.
  * At least one am_slist_iterator_next() call is expected for the iterator
  * before this function is called. Otherwise the behavior is undefined.
+ *
  * The valid operations possible after this call are am_slist_iterator_next()
  * or am_slist_iterator_ctor(). Otherwise the behavior is undefined.
  *

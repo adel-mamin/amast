@@ -35,7 +35,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-/** A 64 bit array */
+/** A 64 bit array. */
 struct am_bit_u64 {
     unsigned char bytes;   /**< redundant byte mask */
     unsigned char bits[8]; /**< the 64 bit array itself */
@@ -48,7 +48,7 @@ extern "C" {
 /**
  * Check if bit array has no bits set to 1.
  *
- * @param u64  the bit array to check
+ * @param u64  the bit array
  *
  * @retval true   bit array is empty
  * @retval false  bit array is not empty
@@ -58,7 +58,7 @@ bool am_bit_u64_is_empty(const struct am_bit_u64 *u64);
 /**
  * Return the index of the most significant bit (MSB) set to 1.
  *
- * @param u64  the bit array to check
+ * @param u64  the bit array
  *
  * @return the MSB index
  */
@@ -67,14 +67,14 @@ int am_bit_u64_msb(const struct am_bit_u64 *u64);
 /**
  * Return the index of the most significant bit (MSB) set to 1.
  *
- * @param u8  the bit array to check
+ * @param u8  the bit array
  *
  * @return the MSB index
  */
 int am_bit_u8_msb(uint8_t u8);
 
 /**
- * Set bit with index n to 1.
+ * Set bit with index \p n to 1.
  *
  * @param u64  the bit array
  * @param n    the index of bit to set. Zero based. The valid range [0..63].
@@ -82,7 +82,7 @@ int am_bit_u8_msb(uint8_t u8);
 void am_bit_u64_set(struct am_bit_u64 *u64, int n);
 
 /**
- * Clears a bit to 1 with index n.
+ * Clears a bit with index n to 1.
  *
  * @param u64  the bit array
  * @param n    the index. Zero based. The valid range [0..63].

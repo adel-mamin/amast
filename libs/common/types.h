@@ -32,9 +32,9 @@
 #ifndef AM_TYPES_H_INCLUDED
 #define AM_TYPES_H_INCLUDED
 
-/** Memory block descriptor */
+/** Memory block descriptor. */
 struct am_blk {
-    void *ptr; /**< memory */
+    void *ptr; /**< memory pointer */
     int size;  /**< memory size [bytes] */
 };
 
