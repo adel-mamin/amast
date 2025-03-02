@@ -15,7 +15,6 @@ build:
     install:
       - curl -fsSL https://pixi.sh/install.sh | bash
       - /home/docs/.pixi/bin/pixi install
-      - /home/docs/.pixi/bin/pixi shell
     build:
       html:
         - /home/docs/.pixi/bin/pixi setup_stubs
