@@ -17,10 +17,11 @@ python:
 sphinx:
   configuration: builds/stubs/conf.py  # Pointing to the generated conf.py
 
-commands:
-  - meson setup builds/stubs -Dpal=stubs
-  - meson compile -C builds/stubs doxygen
-  - meson compile -C builds/stubs sphinx
+build:
+  commands:
+    - meson setup builds/stubs -Dpal=stubs
+    - meson compile -C builds/stubs doxygen
+    - meson compile -C builds/stubs sphinx
 
 output:
   html: builds/stubs/docs/sphinx  # Directory where the HTML files are generated
