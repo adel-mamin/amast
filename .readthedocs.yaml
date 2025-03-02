@@ -1,3 +1,5 @@
+---
+
 # Read the Docs configuration file
 # See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
 
@@ -8,7 +10,10 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.10"
-
+  commands:
+    - meson setup builds/stubs -Dpal=stubs
+    - meson compile -C builds/stubs doxygen
+    - meson compile -C builds/stubs sphinx
 python:
   install:
     - method: pip
@@ -16,12 +21,6 @@ python:
 
 sphinx:
   configuration: builds/stubs/conf.py  # Pointing to the generated conf.py
-
-build:
-  commands:
-    - meson setup builds/stubs -Dpal=stubs
-    - meson compile -C builds/stubs doxygen
-    - meson compile -C builds/stubs sphinx
 
 output:
   html: builds/stubs/docs/sphinx  # Directory where the HTML files are generated
