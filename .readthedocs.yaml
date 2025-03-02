@@ -12,7 +12,7 @@ build:
     python: "3.10"
 
   jobs:
-    install
+    install:
       - curl -fsSL https://pixi.sh/install.sh | bash
       - pixi install
       - pixi shell
