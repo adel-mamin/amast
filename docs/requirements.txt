@@ -1,6 +1,6 @@
-sphinx
-breathe
-pallets-sphinx-themes
-meson
-ninja
-doxygen
+sphinx==8.2.1
+breathe==4.36.0
+pallets-sphinx-themes==2.30
+meson==1.7.0
+ninja==1.12.1
+doxygen==1.13.2
