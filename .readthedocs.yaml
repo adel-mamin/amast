@@ -17,7 +17,7 @@ build:
 
 python:
   install:
-    -requirements: docs/requirements.txt
+    - requirements: docs/requirements.txt
 
 sphinx:
   configuration: builds/stubs/conf.py  # Pointing to the generated conf.py
