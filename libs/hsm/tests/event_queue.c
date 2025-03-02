@@ -83,7 +83,7 @@ static void hsmq_commit(void) {
     }
 }
 
-static enum am_hsm_rc hsmq_init(
+static enum am_hsm_rc hsmq_sinit(
     struct am_hsmq *me, const struct am_event *event
 ) {
     (void)event;
@@ -92,7 +92,7 @@ static enum am_hsm_rc hsmq_init(
 
 static void hsmq_ctor(void (*log)(const char *fmt, ...)) {
     struct am_hsmq *me = &am_hsmq_;
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(hsmq_init));
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(hsmq_sinit));
     me->log = log;
 
     /* setup HSM event queue */
@@ -165,7 +165,10 @@ int main(void) {
     static const struct hsmq_test {
         int event;
         const char *out;
-    } in[] = {{AM_EVT_A, "a-A;b-B;"}, {AM_EVT_C, "b-C;"}};
+    } in[] = {
+        {.event = AM_EVT_A, .out = "a-A;b-B;"},
+        {.event = AM_EVT_C, .out = "b-C;"}
+    };
 
     for (int i = 0; i < AM_COUNTOF(in); ++i) {
         struct am_event e = {.id = in[i].event};
