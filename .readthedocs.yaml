@@ -14,8 +14,8 @@ build:
   jobs:
     install:
       - curl -fsSL https://pixi.sh/install.sh | bash
-      - pixi install
-      - pixi shell
+      - /home/docs/.pixi/bin/pixi install
+      - /home/docs/.pixi/bin/pixi shell
     build:
       html:
         - meson setup builds/stubs -Dpal=stubs
