@@ -14,10 +14,10 @@ build:
     - meson setup builds/stubs -Dpal=stubs
     - meson compile -C builds/stubs doxygen
     - meson compile -C builds/stubs sphinx
+
 python:
   install:
-    - method: pip
-      path: docs/requirements.txt
+    -requirements: docs/requirements.txt
 
 sphinx:
   configuration: builds/stubs/conf.py  # Pointing to the generated conf.py
