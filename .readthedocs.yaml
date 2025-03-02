@@ -6,24 +6,19 @@
 # required
 version: 2
 
+python:
+  install:
+    - requirements: docs/requirements.txt
+
 build:
   os: ubuntu-22.04
   tools:
     python: "3.10"
-    doxygen: "1.13.2"
-    meson: "1.7.0"
-    ninja: "1.12.1"
-    sphinx: "8.2.1"
-    breathe: "4.36.0"
 
   commands:
     - meson setup builds/stubs -Dpal=stubs
     - meson compile -C builds/stubs doxygen
     - meson compile -C builds/stubs sphinx
-
-python:
-  install:
-    - requirements: docs/requirements.txt
 
 sphinx:
   configuration: builds/stubs/conf.py  # Pointing to the generated conf.py
