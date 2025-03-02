@@ -21,6 +21,3 @@ python:
 
 sphinx:
   configuration: builds/stubs/conf.py  # Pointing to the generated conf.py
-
-output:
-  html: builds/stubs/docs/sphinx  # Directory where the HTML files are generated
