@@ -8,9 +8,6 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.10"
-    meson: "1.7.0"
-    ninja: "1.12.1"
-    doxygen: "1.13.2"
 
 python:
   install:

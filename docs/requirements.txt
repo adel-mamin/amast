@@ -1,3 +1,6 @@
 sphinx
 breathe
 pallets-sphinx-themes
+meson
+ninja
+doxygen
