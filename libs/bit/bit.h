@@ -82,7 +82,7 @@ int am_bit_u8_msb(uint8_t u8);
 void am_bit_u64_set(struct am_bit_u64 *u64, int n);
 
 /**
- * Clears a bit with index n to 1.
+ * Clear a bit with index n to 1.
  *
  * @param u64  the bit array
  * @param n    the index. Zero based. The valid range [0..63].

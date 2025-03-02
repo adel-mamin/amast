@@ -5,16 +5,22 @@ API
 
 This part of the documentation covers all the interfaces of Amast.
 
+.. _common_constants:
+
 Common Constants
 ----------------
 
 .. doxygendefine:: AM_ALIGN_MAX
+
+.. _common_types:
 
 Common Types
 ------------
 
 .. doxygenstruct:: am_blk
    :members:
+
+.. _singly_linked_list_api:
 
 Singly Linked List
 ------------------
@@ -63,6 +69,8 @@ Singly Linked List
 
 .. doxygenfunction:: am_slist_iterator_pop
 
+.. _bit_api:
+
 Bit
 ---
 
@@ -77,6 +85,8 @@ Bit
 .. doxygenfunction:: am_bit_u64_set
 
 .. doxygenfunction:: am_bit_u64_clear
+
+.. _ring_buffer_api:
 
 Ring Buffer
 -----------
@@ -102,6 +112,8 @@ Ring Buffer
 .. doxygenfunction:: am_ringbuf_get_dropped
 
 .. doxygenfunction:: am_ringbuf_clear_dropped
+
+.. _queue_api:
 
 Queue
 -----
@@ -138,12 +150,15 @@ Queue
 
 .. doxygenfunction:: am_queue_push_back
 
+.. _onesize_api:
+
 Onesize
 -------
 
 .. doxygenstruct:: am_onesize
 
 .. doxygenstruct:: am_onesize_cfg
+   :members:
 
 .. doxygenfunction:: am_onesize_ctor
 
@@ -166,6 +181,8 @@ Onesize
 .. doxygenfunction:: am_onesize_get_block_size
 
 .. doxygenfunction:: am_onesize_get_nblocks
+
+.. _event_api:
 
 Event
 -----
@@ -237,6 +254,8 @@ Event
 
 .. doxygenfunction:: am_event_flush_queue
 
+.. _timer_api:
+
 Timer
 -----
 
@@ -269,6 +288,8 @@ Timer
 
 .. doxygenfunction:: am_timer_get_interval
 
+.. _async_api:
+
 Async
 -----
 
@@ -294,8 +315,14 @@ Async
 
 .. doxygenfunction:: am_async_ctor
 
+.. _hsm_api:
+
 HSM
 ---
+
+Hierarchical State Machine (HSM) API documentation.
+
+The source code of the corresponding header file is in `hsm.h <https://github.com/adel-mamin/amast/blob/main/libs/hsm/hsm.h>`_.
 
 .. doxygenenum:: am_hsm_evt_id
 
@@ -341,6 +368,8 @@ HSM
 
 .. doxygenfunction:: am_hsm_top
 
+.. _fsm_api:
+
 FSM
 ---
 
@@ -375,6 +404,8 @@ FSM
 .. doxygenfunction:: am_fsm_init
 
 .. doxygenfunction:: am_fsm_set_spy
+
+.. _ao_api:
 
 AO
 --
@@ -441,6 +472,8 @@ AO
 .. doxygenfunction:: am_ao_get_cnt
 
 .. doxygenfunction:: am_ao_get_own_prio
+
+.. _pal_api:
 
 PAL
 ---

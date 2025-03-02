@@ -55,7 +55,7 @@ struct am_onesize {
 
 /** Onesize configuration. */
 struct am_onesize_cfg {
-    /** the memory pool */
+    /** The memory pool. */
     struct am_blk pool;
     /**
      * The maximum size of the memory block the allocator
@@ -63,11 +63,11 @@ struct am_onesize_cfg {
      * bigger that this size will fail.
      */
     int block_size;
-    /** The alignment of allocated memory blocks [bytes] */
+    /** The alignment of allocated memory blocks [bytes]. */
     int alignment;
-    /** Enter critical section */
+    /** Enter critical section. */
     void (*crit_enter)(void);
-    /** Exit critical section */
+    /** Exit critical section. */
     void (*crit_exit)(void);
 };
 
@@ -117,8 +117,6 @@ void *am_onesize_allocate(struct am_onesize *hnd);
 /**
  * Free a memory block.
  *
- * Inserts the block at the front of the free list.
- *
  * @param hnd  the allocator
  * @param ptr  memory block to free
  */
@@ -132,7 +130,7 @@ void am_onesize_free(struct am_onesize *hnd, const void *ptr);
 void am_onesize_free_all(struct am_onesize *hnd);
 
 /**
- * The type of callback to be used with am_onesize_iterate_over_allocated()
+ * The type of callback to be used with am_onesize_iterate_over_allocated().
  *
  * @param ctx    the caller's context
  * @param index  the buffer index
@@ -158,7 +156,7 @@ void am_onesize_iterate_over_allocated(
 );
 
 /**
- * Returns the number of free blocks available for allocation.
+ * Return the number of free blocks available for allocation.
  *
  * @param hnd  the allocator
  *
@@ -167,18 +165,18 @@ void am_onesize_iterate_over_allocated(
 int am_onesize_get_nfree(const struct am_onesize *hnd);
 
 /**
- * The minimum number of free memory blocks of size block_size available so far.
+ * The minimum number of free memory blocks observed so far.
  *
  * Could be used to assess the usage of the underlying memory pool.
  *
  * @param hnd  the allocator
  *
- * @return the minimum number of blocks of size block_size available so far
+ * @return the minimum number of free memory blocks observed so far
  */
 int am_onesize_get_nfree_min(const struct am_onesize *hnd);
 
 /**
- * Returns the memory block size.
+ * Return the memory block size.
  *
  * @param hnd  the allocator
  *
@@ -191,7 +189,7 @@ int am_onesize_get_block_size(const struct am_onesize *hnd);
  *
  * @param hnd  the allocator
  *
- * @return the total number of blocks
+ * @return the total number of memory blocks
  */
 int am_onesize_get_nblocks(const struct am_onesize *hnd);
 

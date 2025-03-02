@@ -99,7 +99,7 @@ extern const int am_alignof_slist_item;
 #define AM_ALIGNOF_SLIST_ITEM am_alignof_slist_item
 
 /**
- * Singly linked list construction.
+ * Construct singly linked list.
  *
  * @param list  the list
  */
@@ -162,6 +162,8 @@ struct am_slist_item *am_slist_pop_after(
 
 /**
  * Predicate callback type that tells if item is found.
+ *
+ * Used by am_slist_find() API.
  *
  * @param context  the predicate context
  * @param item     item to analyze
@@ -278,7 +280,7 @@ void am_slist_append(struct am_slist *to, struct am_slist *from);
  *
  * Must be called before calling am_slist_iterator_next().
  *
- * If the iterator is used to traverse the list once, then
+ * If the iterator was already used to traverse the list once, then
  * it must be re-constructed by calling this function in order to
  * be used with am_slist_iterator_next() again.
  *
@@ -297,12 +299,14 @@ void am_slist_iterator_ctor(
  * Iterate over list.
  *
  * Is supposed to be called in iterative way to traverse part or full list.
+ *
  * The iteration can visit each item only once. When all items of
  * the list were visited, the next invocation of the function returns NULL.
+ *
  * The current visited item can only be popped with am_slist_iterator_pop().
  *
  * @param it  the iterator constructed by am_slist_iterator_ctor()
- * @return the visited item or NULL if the iteration is over.
+ * @return the visited item or NULL, if the iteration is over.
  *         The item is not popped from the list.
  */
 struct am_slist_item *am_slist_iterator_next(struct am_slist_iterator *it);

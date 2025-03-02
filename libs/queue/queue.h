@@ -53,7 +53,7 @@ extern "C" {
 #endif
 
 /**
- * Queue construction with a memory block.
+ * Construct queue with a memory block.
  *
  * @param queue      the queue
  * @param isize      item size [bytes].
@@ -67,7 +67,7 @@ void am_queue_ctor(
 );
 
 /**
- * Queue destruction.
+ * Destruct queue.
  *
  * @param queue  the queue
  */
@@ -212,7 +212,7 @@ bool am_queue_push_back(struct am_queue *queue, const void *ptr, int size);
 int am_queue_get_nfree(const struct am_queue *queue);
 
 /**
- * Get minimum number of free slots observed in queue.
+ * Get minimum number of free slots ever observed in queue.
  *
  * Could be used to assess the usage of the queue.
  *
