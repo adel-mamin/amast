@@ -17,9 +17,9 @@ build:
       - /home/docs/.pixi/bin/pixi install
     build:
       html:
-        - /home/docs/.pixi/bin/pixi setup_stubs
-        - /home/docs/.pixi/bin/pixi doxygen
-        - /home/docs/.pixi/bin/pixi sphinx
+        - /home/docs/.pixi/bin/pixi run setup_stubs
+        - /home/docs/.pixi/bin/pixi run doxygen
+        - /home/docs/.pixi/bin/pixi run sphinx
 
 sphinx:
   configuration: builds/stubs/conf.py  # Pointing to the generated conf.py
