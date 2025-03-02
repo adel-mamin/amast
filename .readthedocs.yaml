@@ -18,9 +18,9 @@ build:
       - /home/docs/.pixi/bin/pixi shell
     build:
       html:
-        - meson setup builds/stubs -Dpal=stubs
-        - meson compile -C builds/stubs doxygen
-        - meson compile -C builds/stubs sphinx
+        - /home/docs/.pixi/bin/pixi setup_stubs
+        - /home/docs/.pixi/bin/pixi doxygen
+        - /home/docs/.pixi/bin/pixi sphinx
 
 sphinx:
   configuration: builds/stubs/conf.py  # Pointing to the generated conf.py
