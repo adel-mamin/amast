@@ -15,6 +15,9 @@ build:
   tools:
     python: "3.10"
 
+  apt_packages:
+    - doxygen
+
   jobs:
     build:
       html:
