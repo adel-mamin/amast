@@ -48,7 +48,7 @@
 #define AM_EVT_INTERNAL_MAX AM_EVT_RANGE_SM_END
 
 /**
- * The event IDs below this value are reserved
+ * The event IDs smaller than this value are reserved
  * and should not be used for user events.
  */
 #define AM_EVT_USER (AM_EVT_INTERNAL_MAX + 1) /* 7 */
@@ -66,8 +66,8 @@
  * Check if event has a valid user event ID.
  *
  * @param event   event to check
- * @retval true   the event has user event ID
- * @retval false  the event does not have user event ID
+ * @retval true   the event has valid user event ID
+ * @retval false  the event does not have valid user event ID
  */
 #define AM_EVENT_HAS_USER_ID(event) \
     (((const struct am_event *)(event))->id >= AM_EVT_USER)
@@ -134,7 +134,7 @@ extern "C" {
  * Must be called before calling any other event APIs.
  * Not thread safe.
  *
- * @param cfg  event state configuration
+ * @param cfg  event state configuration.
  *             The event module makes an internal copy of the configuration.
  */
 void am_event_state_ctor(const struct am_event_state_cfg *cfg);
@@ -143,8 +143,10 @@ void am_event_state_ctor(const struct am_event_state_cfg *cfg);
  * Add event memory pool.
  *
  * Event memory pools must be added in the order of increasing block sizes.
- * Not thread safe. Must be called at initialization if event allocation
- * API is used.
+ *
+ * Not thread safe.
+ *
+ * Must be called before using any event allocation APIs.
  *
  * @param pool        the memory pool pointer
  * @param size        the memory pool size [bytes]
@@ -157,11 +159,13 @@ void am_event_add_pool(void *pool, int size, int block_size, int alignment);
  * Get minimum number of free memory blocks observed so far.
  *
  * Could be used to assess the usage of the underlying memory pool.
+ *
  * Thread safe, if critical section callbacks were configured.
  *
  * @param index  memory pool index
  *
- * @return the minimum number of blocks of size block_size observed so far
+ * @return the minimum number of memory blocks observed so far
+ *         in the memory pool
  */
 int am_event_get_pool_nfree_min(int index);
 
@@ -169,11 +173,12 @@ int am_event_get_pool_nfree_min(int index);
  * Get number of free memory blocks.
  *
  * Thread safe, if critical section callbacks were configured.
+ *
  * Use sparingly as the return value could be volatile due to multitasking.
  *
  * @param index  memory pool index
  *
- * @return the number of free blocks of size block_size available now
+ * @return the number of free blocks available now in the memory pool
  */
 int am_event_get_pool_nfree(int index);
 
