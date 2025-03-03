@@ -12,6 +12,7 @@ build:
       - curl -fsSL https://pixi.sh/install.sh | bash
       - /home/docs/.pixi/bin/pixi install
       - /home/docs/.pixi/bin/pixi run setup_stubs
+      - cat builds/stubs/Doxyfile
       - /home/docs/.pixi/bin/pixi run doxygen
       - /home/docs/.pixi/bin/pixi run sphinx
 
