@@ -8,15 +8,12 @@ version: 2
 
 build:
   os: ubuntu-24.04
-  jobs:
-    install:
+  commands:
       - curl -fsSL https://pixi.sh/install.sh | bash
       - /home/docs/.pixi/bin/pixi install
-    build:
-      html:
-        - /home/docs/.pixi/bin/pixi run setup_stubs
-        - /home/docs/.pixi/bin/pixi run doxygen
-        - /home/docs/.pixi/bin/pixi run sphinx
+      - /home/docs/.pixi/bin/pixi run setup_stubs
+      - /home/docs/.pixi/bin/pixi run doxygen
+      - /home/docs/.pixi/bin/pixi run sphinx
 
 sphinx:
   configuration: builds/stubs/conf.py  # Pointing to the generated conf.py
