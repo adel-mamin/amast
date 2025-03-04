@@ -389,7 +389,8 @@ int am_event_get_ref_cnt(const struct am_event *event);
  *
  * @param queue   the event queue
  * @param event   the event to push
- * @param margin  free event queue slots to be available after the event was pushed
+ * @param margin  free event queue slots to be available after the event was
+ * pushed
  *
  * @retval AM_EVENT_RC_OK                  the event was pushed
  * @retval AM_EVENT_RC_OK_QUEUE_WAS_EMPTY  the event was pushed, queue was empty
@@ -433,7 +434,8 @@ enum am_event_rc am_event_push_back(
  *
  * @param queue   the event queue
  * @param event   the event to push
- * @param margin  free event queue slots to be available after the event was pushed
+ * @param margin  free event queue slots to be available after the event was
+ * pushed
  *
  * @retval AM_EVENT_RC_OK                  the event was pushed
  * @retval AM_EVENT_RC_OK_QUEUE_WAS_EMPTY  the event was pushed, queue was empty
@@ -488,7 +490,8 @@ const struct am_event *am_event_pop_front(struct am_queue *queue);
  *
  * @param queue   the queue to store the deferred event
  * @param event   the event to defer
- * @param margin  free event queue slots to be available after the event is deferred
+ * @param margin  free event queue slots to be available after the event is
+ * deferred
  *
  * @retval true   the event was deferred
  * @retval false  the event was not deferred
@@ -500,7 +503,7 @@ bool am_event_defer_x(
 /**
  * Defer event.
  *
- * Deferes the event by pushing the event to the back of the event queue.
+ * Defers the event by pushing the event to the back of the event queue.
  *
  * Asserts if the event was not deferred.
  *
