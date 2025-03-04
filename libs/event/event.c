@@ -191,7 +191,7 @@ int am_event_get_pool_nblocks(int index) {
     return am_onesize_get_nblocks(&me->pool[index]);
 }
 
-int am_event_get_pools_num(void) { return am_event_state_.npool; }
+int am_event_get_npools(void) { return am_event_state_.npool; }
 
 struct am_event *am_event_dup_x(
     const struct am_event *event, int size, int margin

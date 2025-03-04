@@ -210,7 +210,7 @@ Event
 
 .. doxygenfunction:: am_event_get_pool_nblocks
 
-.. doxygenfunction:: am_event_get_pools_num
+.. doxygenfunction:: am_event_get_npools
 
 .. doxygenfunction:: am_event_allocate_x
 
