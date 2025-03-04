@@ -29,7 +29,8 @@
 
 /**
  * @file
- * string utilities API
+ *
+ * String utilities API
  */
 
 #ifndef AM_STRLIB_H_INCLUDED

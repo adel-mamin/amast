@@ -24,6 +24,12 @@
  * SOFTWARE.
  */
 
+/**
+ * @file
+ *
+ * Timer API declaration.
+ */
+
 #ifndef AM_TIMER_H_INCLUDED
 #define AM_TIMER_H_INCLUDED
 
@@ -48,10 +54,12 @@ typedef void (*am_timer_post_fn)(void *owner, const struct am_event *event);
  */
 typedef void (*am_timer_publish_fn)(const struct am_event *event);
 
-/** Timer module state configuration. */
+/**
+ * Timer module state configuration.
+ *
+ * Either post or publish callback must be non-NULL.
+ */
 struct am_timer_state_cfg {
-    /** either post or publish callback must be non-NULL */
-
     /**
      * Expired timer events are posted using this callback.
      * Posting is a one-to-one event delivery mechanism.
@@ -110,7 +118,7 @@ extern "C" {
 /**
  * Timer state constructor.
  *
- * @param cfg  timer state configuration
+ * @param cfg  timer state configuration.
  *             The timer module makes an internal copy of the configuration.
  */
 void am_timer_state_ctor(const struct am_timer_state_cfg *cfg);
@@ -121,7 +129,7 @@ void am_timer_state_ctor(const struct am_timer_state_cfg *cfg);
  * @param timer   the timer to construct
  * @param id      the timer event identifier
  * @param domain  tick domain the timer belongs to
- * @param owner   the timer's owner that gets the posted event.
+ * @param owner   the timer's owner, which receives the posted event.
  *                Can be NULL, in which case the timer event is published.
  */
 void am_timer_ctor(struct am_timer *timer, int id, int domain, void *owner);
@@ -132,15 +140,17 @@ void am_timer_ctor(struct am_timer *timer, int id, int domain, void *owner);
  * Cannot fail. Cannot be freed. Never garbage collected.
  * The returned timer is fully constructed.
  * No need to call am_timer_ctor() for it.
+ *
  * Provides an alternative way to reserve memory for timers in
- * addition to the static allocation in user code.
+ * addition to static allocation in user code.
+ *
  * Allocation of timer using this API is preferred as it
  * improves cache locality of timer structures.
  *
  * @param id      the timer event id
  * @param size    the timer size [bytes]
- * @param domain  the clock domain [0-AM_PAL_TICK_DOMAIN_MAX[
- * @param owner   the timer's owner that gets the posted event.
+ * @param domain  the clock domain [0-#AM_PAL_TICK_DOMAIN_MAX[
+ * @param owner   the timer's owner, which receives the posted event.
  *                Can be NULL, in which case the timer event is published.
  */
 struct am_timer *am_timer_allocate(int id, int size, int domain, void *owner);
@@ -159,6 +169,7 @@ void am_timer_tick(int domain);
  * Arm timer.
  *
  * Sends timer event to owner in specified number of ticks.
+ *
  * It is fine to arm an already armed timer.
  *
  * The owner is set in am_timer_ctor() or am_timer_allocate() calls.

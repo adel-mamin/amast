@@ -202,7 +202,7 @@ struct am_hsm {
      */
     uint8_t smi;
     /**
-     * Active state hierarchy level [0,AM_HSM_HIERARCHY_DEPTH_MAX]
+     * Active state hierarchy level [0,#AM_HSM_HIERARCHY_DEPTH_MAX]
      * (level 0 is assigned to am_hsm_top()).
      * Used internally to speed up state transitions.
      */

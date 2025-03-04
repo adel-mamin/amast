@@ -24,9 +24,6 @@
  * SOFTWARE.
  */
 
-#ifndef AM_ASYNC_H_INCLUDED
-#define AM_ASYNC_H_INCLUDED
-
 /**
  * @file
  *
@@ -39,6 +36,9 @@
  * - https://github.com/naasking/async.h
  * - https://dunkels.com/adam/pt/
  */
+
+#ifndef AM_ASYNC_H_INCLUDED
+#define AM_ASYNC_H_INCLUDED
 
 /** Init state of async function */
 #define AM_ASYNC_STATE_INIT 0

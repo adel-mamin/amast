@@ -157,7 +157,7 @@ uint32_t am_pal_time_get_ms(void);
 /**
  * Get current time in ticks.
  *
- * @param domain  tick domain [0..AM_PAL_TICK_DOMAIN_MAX]
+ * @param domain  tick domain [0..#AM_PAL_TICK_DOMAIN_MAX]
  *
  * @return current time [tick]
  */
@@ -166,7 +166,7 @@ uint32_t am_pal_time_get_tick(int domain);
 /**
  * Convert ms to ticks for the given tick domain.
  *
- * @param domain  tick domain [0..AM_PAL_TICK_DOMAIN_MAX]
+ * @param domain  tick domain [0..#AM_PAL_TICK_DOMAIN_MAX]
  * @param ms      milliseconds to convert
  *
  * @return time [tick]
@@ -176,7 +176,7 @@ uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms);
 /**
  * Convert ticks from the given tick domain to milliseconds.
  *
- * @param domain  tick domain [0..AM_PAL_TICK_DOMAIN_MAX]
+ * @param domain  tick domain [0..#AM_PAL_TICK_DOMAIN_MAX]
  * @param tick    ticks to convert
  *
  * @return time [ms]
@@ -186,7 +186,7 @@ uint32_t am_pal_time_get_ms_from_tick(int domain, uint32_t tick);
 /**
  * Sleep for given number of ticks from the given tick domain.
  *
- * @param domain  tick domain [0..AM_PAL_TICK_DOMAIN_MAX]
+ * @param domain  tick domain [0..#AM_PAL_TICK_DOMAIN_MAX]
  * @param ticks   ticks to sleep. Sleep forever if ticks < 0.
  */
 void am_pal_sleep_ticks(int domain, int ticks);
@@ -194,7 +194,7 @@ void am_pal_sleep_ticks(int domain, int ticks);
 /**
  * Sleep till the given number of ticks from the given tick domain.
  *
- * @param domain  tick domain [0..AM_PAL_TICK_DOMAIN_MAX]
+ * @param domain  tick domain [0..#AM_PAL_TICK_DOMAIN_MAX]
  * @param ticks   sleep till this ticks value
  */
 void am_pal_sleep_till_ticks(int domain, uint32_t ticks);

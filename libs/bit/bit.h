@@ -26,6 +26,7 @@
 
 /**
  * @file
+ *
  * Bit utilities interface.
  */
 
