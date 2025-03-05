@@ -88,7 +88,7 @@ static void test_arm(void) {
     am_timer_ctor(
         &event, /*id=*/EVT_TEST, AM_PAL_TICK_DOMAIN_DEFAULT, &m_owner
     );
-    am_timer_arm(&event, /*ticks=*/1, /*interval=*/0);
+    am_timer_arm_ticks(&event, /*ticks=*/1, /*interval=*/0);
     AM_ASSERT(am_timer_is_armed(&event));
 
     struct am_timer *event2 = am_timer_allocate(
@@ -99,7 +99,7 @@ static void test_arm(void) {
     );
     AM_ASSERT(event2);
 
-    am_timer_arm(event2, /*ticks=*/1, /*interval=*/0);
+    am_timer_arm_ticks(event2, /*ticks=*/1, /*interval=*/0);
     AM_ASSERT(am_timer_is_armed(event2));
     am_timer_disarm(event2);
     AM_ASSERT(!am_timer_is_armed(event2));
@@ -113,13 +113,13 @@ static void test_arm(void) {
     am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     AM_ASSERT(1 == m_owner.npost);
 
-    am_timer_arm(&event, /*ticks=*/1, /*interval=*/0);
+    am_timer_arm_ticks(&event, /*ticks=*/1, /*interval=*/0);
     AM_ASSERT(am_timer_is_armed(&event));
 
     am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     AM_ASSERT(2 == m_owner.npost);
 
-    am_timer_arm(event2, /*ticks=*/1, /*interval=*/0);
+    am_timer_arm_ticks(event2, /*ticks=*/1, /*interval=*/0);
     AM_ASSERT(am_timer_is_armed(event2));
 
     am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);

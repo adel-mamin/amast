@@ -31,6 +31,7 @@
 
 #include <string.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include "common/macros.h"
 #include "slist/slist.h"
@@ -92,7 +93,7 @@ void am_timer_ctor(struct am_timer *timer, int id, int domain, void *owner) {
     timer->owner = owner;
 }
 
-void am_timer_arm(struct am_timer *timer, int ticks, int interval) {
+void am_timer_arm_ticks(struct am_timer *timer, int ticks, int interval) {
     struct am_timer_state *me = &am_timer_;
 
     AM_ASSERT(timer);
@@ -120,6 +121,17 @@ void am_timer_arm(struct am_timer *timer, int ticks, int interval) {
     }
 
     me->cfg.crit_exit();
+}
+
+void am_timer_arm_ms(struct am_timer *timer, int ms, int interval) {
+    AM_ASSERT(timer);
+    AM_ASSERT(ms >= 0);
+    AM_ASSERT(interval >= 0);
+    int domain = timer->event.tick_domain;
+    int ticks = (int)am_pal_time_get_tick_from_ms(domain, (uint32_t)ms);
+    int interval_ticks =
+        (int)am_pal_time_get_tick_from_ms(domain, (uint32_t)interval);
+    am_timer_arm_ticks(timer, ticks, interval_ticks);
 }
 
 bool am_timer_disarm(struct am_timer *timer) {

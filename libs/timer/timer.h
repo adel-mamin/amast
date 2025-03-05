@@ -180,7 +180,24 @@ void am_timer_tick(int domain);
  *                  after the event is sent for the fist time.
  *                  Can be 0, in which case the timer is one shot.
  */
-void am_timer_arm(struct am_timer *timer, int ticks, int interval);
+void am_timer_arm_ticks(struct am_timer *timer, int ticks, int interval);
+
+/**
+ * Arm timer.
+ *
+ * Sends timer event to owner in specified number of milliseconds.
+ *
+ * It is fine to arm an already armed timer.
+ *
+ * The owner is set in am_timer_ctor() or am_timer_allocate() calls.
+ *
+ * @param timer     the timer to arm
+ * @param ms        the timer event is to be sent in these many milliseconds
+ * @param interval  the timer event is to be re-sent in these many milliseconds
+ *                  after the event is sent for the fist time.
+ *                  Can be 0, in which case the timer is one shot.
+ */
+void am_timer_arm_ms(struct am_timer *timer, int ms, int interval);
 
 /**
  * Disarm timer.

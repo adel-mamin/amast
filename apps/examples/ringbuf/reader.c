@@ -67,7 +67,7 @@ static int ringbuf_reader_proc(
         uint8_t *ptr = NULL;
         int size = am_ringbuf_get_read_ptr(&g_ringbuf, &ptr);
         if (size < me->len) {
-            am_timer_arm(&me->timer_wait, /*ticks=*/1, /*interval=*/0);
+            am_timer_arm_ticks(&me->timer_wait, /*ticks=*/1, /*interval=*/0);
             return AM_HSM_HANDLED();
         }
         AM_ASSERT(ptr);

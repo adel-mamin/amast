@@ -123,45 +123,30 @@ static enum am_async_rc async_regular_(struct async *me) {
     /* red */
     am_pal_printf(AM_COLOR_RED CHAR_SOLID_BLOCK AM_COLOR_RESET);
     am_pal_flush();
-    int ticks = (int)am_pal_time_get_tick_from_ms(
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/2000
-    );
-    am_timer_arm(&me->timer, ticks, /*interval=*/0);
+    am_timer_arm_ms(&me->timer, /*ms=*/2000, /*interval=*/0);
     AM_ASYNC_YIELD();
 
     /* yellow */
     am_pal_printf("\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
     am_pal_flush();
-    ticks = (int)am_pal_time_get_tick_from_ms(
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/1000
-    );
-    am_timer_arm(&me->timer, ticks, /*interval=*/0);
+    am_timer_arm_ms(&me->timer, /*ms=*/1000, /*interval=*/0);
     AM_ASYNC_YIELD();
 
     /* green */
     am_pal_printf("\b" AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
     am_pal_flush();
-    ticks = (int)am_pal_time_get_tick_from_ms(
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/2000
-    );
-    am_timer_arm(&me->timer, ticks, /*interval=*/0);
+    am_timer_arm_ms(&me->timer, /*ms=*/2000, /*interval=*/0);
     AM_ASYNC_YIELD();
 
     for (me->i = 0; me->i < 4; ++me->i) {
         am_pal_printf("\b");
         am_pal_flush();
-        ticks = (int)am_pal_time_get_tick_from_ms(
-            /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/700
-        );
-        am_timer_arm(&me->timer, ticks, /*interval=*/0);
+        am_timer_arm_ms(&me->timer, /*ms=*/700, /*interval=*/0);
         AM_ASYNC_YIELD();
 
         am_pal_printf(AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
         am_pal_flush();
-        ticks = (int)am_pal_time_get_tick_from_ms(
-            /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/700
-        );
-        am_timer_arm(&me->timer, ticks, /*interval=*/0);
+        am_timer_arm_ms(&me->timer, /*ms=*/700, /*interval=*/0);
         AM_ASYNC_YIELD();
     }
     am_pal_printf("\b");
@@ -201,18 +186,12 @@ static enum am_hsm_rc async_regular(
 static enum am_async_rc async_off_(struct async *me) {
     AM_ASYNC_BEGIN(&me->async);
 
-    int ticks = (int)am_pal_time_get_tick_from_ms(
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/1000
-    );
-    am_timer_arm(&me->timer, ticks, /*interval=*/0);
+    am_timer_arm_ms(&me->timer, /*ms=*/1000, /*interval=*/0);
     am_pal_printf("\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
     am_pal_flush();
     AM_ASYNC_YIELD();
 
-    ticks = (int)am_pal_time_get_tick_from_ms(
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/700
-    );
-    am_timer_arm(&me->timer, ticks, /*interval=*/0);
+    am_timer_arm_ms(&me->timer, /*ms=*/700, /*interval=*/0);
     am_pal_printf("\b");
     am_pal_flush();
     AM_ASYNC_YIELD();

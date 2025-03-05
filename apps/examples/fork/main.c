@@ -113,7 +113,7 @@ static enum am_hsm_rc progress_top(
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
         am_async_ctor(&me->async);
-        am_timer_arm(&me->timer, me->progress_ticks, me->progress_ticks);
+        am_timer_arm_ticks(&me->timer, me->progress_ticks, me->progress_ticks);
         return AM_HSM_HANDLED();
 
     case AM_EVT_HSM_EXIT:
