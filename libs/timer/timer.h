@@ -131,7 +131,12 @@ void am_timer_state_ctor(const struct am_timer_state_cfg *cfg);
  * @param domain  tick clock domain the timer belongs to.
  *                The valid range is [0-#AM_PAL_TICK_DOMAIN_MAX[.
  * @param owner   the timer's owner, which receives the posted event.
- *                Can be NULL, in which case the timer event is published.
+ *                If NULL, then timer event is published and
+ *                the configuration parameter am_timer_state_cfg::publish
+ *                must be not NULL.
+ *                If not NULL, then timer event is posted and
+ *                the configuration parameter am_timer_state_cfg::post
+ *                must be not NULL.
  */
 void am_timer_ctor(struct am_timer *timer, int id, int domain, void *owner);
 
@@ -153,14 +158,21 @@ void am_timer_ctor(struct am_timer *timer, int id, int domain, void *owner);
  * @param domain  the clock domain.
  *                The valid range is [0-#AM_PAL_TICK_DOMAIN_MAX[.
  * @param owner   the timer's owner, which receives the posted event.
- *                Can be NULL, in which case the timer event is published.
+ *                If NULL, then timer event is published and
+ *                the configuration parameter am_timer_state_cfg::publish
+ *                must be not NULL.
+ *                If not NULL, then timer event is posted and
+ *                the configuration parameter am_timer_state_cfg::post
+ *                must be not NULL.
  */
 struct am_timer *am_timer_allocate(int id, int size, int domain, void *owner);
 
 /**
  * Tick timer.
  *
- * Update all armed timers and fire expired timers.
+ * Update all armed timers in the given time tick domain
+ * and fire expired timers.
+ *
  * Must be called every tick.
  *
  * @param domain  only tick timers in this tick domain.
@@ -248,7 +260,7 @@ bool am_timer_domain_is_empty(int domain);
  *
  * @param timer  the timer handler
  *
- * @return the timer event is sent in this number of ticks
+ * @return the timer event will be sent in this number of ticks
  */
 int am_timer_get_ticks(const struct am_timer *timer);
 
