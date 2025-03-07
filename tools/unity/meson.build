@@ -32,7 +32,7 @@ files_txt = configure_file(
     }
 )
 
-configure_file(
+amast_cfg = configure_file(
     input: 'amast_config.h',
     output: 'amast_config.h',
     copy: true
@@ -72,6 +72,29 @@ amast_src = custom_target(
     ],
     build_always_stale: true,
     depends: [amast_exe, amast_makefile]
+)
+
+custom_target(
+    'tarball',
+    output: 'amast.tar.gz',
+    command: [
+        'tar', 'czf', '@OUTPUT@',
+        '--transform', 's,^.*/unity/,amast/,',
+    ] +
+    amast_src[0] +
+    amast_src[1] +
+    amast_src[2] +
+    amast_src[3] +
+    amast_src[4] +
+    amast_src[5] +
+    amast_src[6] +
+    amast_src[7] +
+    meson.current_build_dir() / 'amast_libuv.c' +
+    amast_cfg +
+    amast_makefile,
+    depends: [amast_src, amast_makefile],
+    build_always_stale: true,
+    build_by_default: true,
 )
 
 if unit_test
