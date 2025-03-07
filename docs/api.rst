@@ -25,6 +25,10 @@ Common Types
 Singly Linked List
 ------------------
 
+Singly linked list API documentation.
+
+The source code of the corresponding header file is in `slist.h <https://github.com/adel-mamin/amast/blob/main/libs/slist/slist.h>`_.
+
 .. doxygenstruct:: am_slist_item
 
 .. doxygenstruct:: am_slist
@@ -74,6 +78,10 @@ Singly Linked List
 Bit
 ---
 
+Bit API documentation.
+
+The source code of the corresponding header file is in `bit.h <https://github.com/adel-mamin/amast/blob/main/libs/bit/bit.h>`_.
+
 .. doxygenstruct:: am_bit_u64
 
 .. doxygenfunction:: am_bit_u64_is_empty
@@ -90,6 +98,10 @@ Bit
 
 Ring Buffer
 -----------
+
+Ring buffer API documentation.
+
+The source code of the corresponding header file is in `ringbuf.h <https://github.com/adel-mamin/amast/blob/main/libs/ringbuf/ringbuf.h>`_.
 
 .. doxygenstruct:: am_ringbuf
 
@@ -117,6 +129,10 @@ Ring Buffer
 
 Queue
 -----
+
+Queue API documentation.
+
+The source code of the corresponding header file is in `queue.h <https://github.com/adel-mamin/amast/blob/main/libs/bit/bit.h>`_.
 
 .. doxygenstruct:: am_queue
 
@@ -155,6 +171,10 @@ Queue
 Onesize
 -------
 
+Onesize memory allocator API documentation.
+
+The source code of the corresponding header file is in `onesize.h <https://github.com/adel-mamin/amast/blob/main/libs/async/onesize.h>`_.
+
 .. doxygenstruct:: am_onesize
 
 .. doxygenstruct:: am_onesize_cfg
@@ -186,6 +206,10 @@ Onesize
 
 Event
 -----
+
+Event API documentation.
+
+The source code of the corresponding header file is in `event.h <https://github.com/adel-mamin/amast/blob/main/libs/async/event.h>`_.
 
 .. doxygendefine:: AM_EVT_USER
 
@@ -259,6 +283,10 @@ Event
 Timer
 -----
 
+Async API documentation.
+
+The source code of the corresponding header file is in `timer.h <https://github.com/adel-mamin/amast/blob/main/libs/timer/timer.h>`_.
+
 .. doxygentypedef:: am_timer_post_fn
 
 .. doxygentypedef:: am_timer_publish_fn
@@ -294,6 +322,10 @@ Timer
 
 Async
 -----
+
+Async API documentation.
+
+The source code of the corresponding header file is in `async.h <https://github.com/adel-mamin/amast/blob/main/libs/async/async.h>`_.
 
 .. doxygendefine:: AM_ASYNC_STATE_INIT
 
@@ -375,6 +407,10 @@ The source code of the corresponding header file is in `hsm.h <https://github.co
 FSM
 ---
 
+Finite State Machine (FSM) API documentation.
+
+The source code of the corresponding header file is in `fsm.h <https://github.com/adel-mamin/amast/blob/main/libs/fsm/fsm.h>`_.
+
 .. doxygenenum:: am_fsm_evt_id
 
 .. doxygenenum:: am_fsm_rc
@@ -411,6 +447,10 @@ FSM
 
 AO
 --
+
+Active Object (AO API documentation.
+
+The source code of the corresponding header file is in `ao.h <https://github.com/adel-mamin/amast/blob/main/libs/ao/ao.h>`_.
 
 .. doxygenstruct:: am_ao
 
@@ -479,6 +519,10 @@ AO
 
 PAL
 ---
+
+Platform Abstraction Layer (PAL) API documentation.
+
+The source code of the corresponding header file is in `pal.h <https://github.com/adel-mamin/amast/blob/main/libs/pal/pal.h>`_.
 
 .. doxygendefine:: AM_PAL_TASK_NUM_MAX
 

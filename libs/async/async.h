@@ -118,7 +118,7 @@ struct am_async {
  *
  * Checks the provided condition `cond`.
  * If the condition is not met (false) - returns #AM_ASYNC_RC_BUSY
- * and on next invocation of the function the condition is avaluated again.
+ * and on next invocation of the function the condition is evaluated again.
  *
  * Continues the function execution once the `cond` evaluates to `true`.
  *

@@ -1,7 +1,7 @@
 [project]
 authors = ["Adel Mamin <adel@mm.st>"]
 channels = ["conda-forge"]
-description = "Add a short description here"
+description = "A Minimalist Asynchronous Toolkit"
 name = "amast"
 platforms = ["linux-64"]
 version = "0.1.0"
