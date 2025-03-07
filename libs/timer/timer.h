@@ -240,12 +240,16 @@ bool am_timer_is_armed(const struct am_timer *timer);
  * Check if timer domain has armed timers.
  *
  * The function is to be called from a critical section.
- * So, it can be called to check if there are any pending timers
- * just before going to sleep mode.
+ *
+ * Can be used to check if there are any pending timers
+ * just before going to sleep mode while in critical section.
+ * As it does not enter critical section internally there is no
+ * risk of recursive critical section entry.
  *
  * Please read the article called
  * "Use an MCU's low-power modes in foreground/background systems"
- * by Miro Samek for more information about the reasoning of the approach.
+ * by Miro Samek for more information about the reasoning why
+ * critical section is not used in the function implementation.
  *
  * @param domain  the domain to check.
  *                The valid range is [0-#AM_PAL_TICK_DOMAIN_MAX[.
