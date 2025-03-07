@@ -40,16 +40,16 @@
 #ifndef AM_ASYNC_H_INCLUDED
 #define AM_ASYNC_H_INCLUDED
 
-/** Init state of async function */
+/** Init state of async function. */
 #define AM_ASYNC_STATE_INIT 0
 
-/** Async function return codes */
+/** Async function return codes. */
 enum am_async_rc {
-    AM_ASYNC_RC_DONE = -2, /**< Async function is done */
-    AM_ASYNC_RC_BUSY = -1  /**< Async function is busy */
+    AM_ASYNC_RC_DONE = -2, /**< async function is done */
+    AM_ASYNC_RC_BUSY = -1  /**< async function is busy */
 };
 
-/** Async state */
+/** Async state. */
 struct am_async {
     int state;           /**< a line number or #AM_ASYNC_STATE_INIT constant */
     enum am_async_rc rc; /**< return code */
@@ -75,7 +75,7 @@ struct am_async {
 /**
  * Mark the end of async function and return completion.
  *
- * Reset the async state to the initial state and set return value to
+ * Resets the async state to the initial state and sets return value to
  * #AM_ASYNC_RC_DONE, indicating that the async operation has completed.
  */
 #define AM_ASYNC_EXIT()                                \
@@ -88,8 +88,8 @@ struct am_async {
 /**
  * Mark the end of async function block and handle any unexpected states.
  *
- * Ensure proper handling for completed and unexpected states.
- * Call AM_ASYNC_EXIT() internally to reset the async state.
+ * Calls AM_ASYNC_EXIT() internally to reset the async state to
+ * the initial state.
  */
 #define AM_ASYNC_END()                                  \
         /* FALLTHROUGH */                               \
@@ -102,7 +102,7 @@ struct am_async {
 /**
  * Set label in async function.
  *
- * Store the current line number in the `state` field,
+ * Stores the current line number in the `struct am_async``::state` field,
  * enabling the async function to resume from this point.
  */
 #define AM_ASYNC_LABEL()                                \
@@ -116,9 +116,11 @@ struct am_async {
 /**
  * Await a condition before proceeding.
  *
- * Check the provided condition "cond". If the condition
- * is not met (false) - return #AM_ASYNC_RC_BUSY, allowing
- * the caller to re-enter the function later.
+ * Checks the provided condition `cond`.
+ * If the condition is not met (false) - returns #AM_ASYNC_RC_BUSY
+ * and on next invocation of the function the condition is avaluated again.
+ *
+ * Continues the function execution once the `cond` evaluates to `true`.
  *
  * @param cond  the condition to check for continuation
  */
@@ -134,10 +136,11 @@ struct am_async {
         }
 
 /**
- * Yield control back to the caller.
+ * Yield control back to caller.
  *
- * Allow the async function to yield, returning
+ * Allows the async function to yield, returning
  * #AM_ASYNC_RC_BUSY to signal that the operation is not yet complete.
+ *
  * Control resumes after this point, when the function is called again.
  */
 #define AM_ASYNC_YIELD()                                \
@@ -151,7 +154,11 @@ struct am_async {
 /**
  * Return code of async operation.
  *
+ * Used as a return values from async function.
+ *
  * @param me  the async instance pointer
+ *
+ * @return one of `am_async_rc` values
  */
 #define AM_ASYNC_RC(me) ((struct am_async*)(me))->rc
 
@@ -164,7 +171,7 @@ extern "C" {
 /**
  * Construct async state.
  *
- * Set the async state to #AM_ASYNC_STATE_INIT
+ * Sets the async state to #AM_ASYNC_STATE_INIT
  * preparing it for use in async operation.
  *
  * @param me  the async state to construct
