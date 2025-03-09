@@ -8,7 +8,7 @@ Credit
 The design and implementation of the HSM library is heavily inspired by
 `Practical UML Statecharts in C/C++: Event-Driven Programming for Embedded Systems 2nd Edition <https://www.state-machine.com/psicc2>`_
 by Miro Samek. Also the example HSM state diagram in
-:download:`hsm.png <../libs/hsm/hsm.png>` is borrowed from the book.
+`hsm.png <https://github.com/adel-mamin/amast/blob/main/libs/hsm/hsm.png>`_ is borrowed from the book.
 
 Glossary
 ========
@@ -414,7 +414,7 @@ in **me->history** the transition can be achieved by doing this:
 So, that is essentially all about it.
 
 Another example of the usage of the transition to history technique can be seen
-in :download:`tests/history.c <../libs/hsm/tests/history.c>` unit test.
+in `tests/history.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/history.c>`_ unit test.
 
 Submachines
 ===========
@@ -508,11 +508,11 @@ with explicit specification of state instance, which can be retrieved by
 calling :cpp:func:`am_hsm_get_instance()` API.
 
 The complete implementation of the given submachine example can be found
-in :download:`tests/submachine/basic/test.c <../libs/hsm/tests/submachine/basic/test.c>`
+in `tests/submachine/basic/test.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/submachine/basic/test.c>`_
 
 A submachine (sub)state can also be a superstate of itself, which creates
 a recursion. The example of the submachines recursion can be seen in
-:download:`tests/submachine/complex/submachine.c <../libs/hsm/tests/submachine/complex/submachine.c>`.
+`tests/submachine/complex/submachine.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/submachine/complex/submachine.c>`_.
 
 
 HSM Examples And Unit Tests
