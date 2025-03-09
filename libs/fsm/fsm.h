@@ -49,14 +49,18 @@ extern "C" {
 enum am_fsm_evt_id {
     /**
      * Entry event.
+     *
      * Run entry action(s) for a given state.
+     *
      * No state transition is allowed in response to this event.
      */
     AM_EVT_FSM_ENTRY = AM_EVT_RANGE_SM_BEGIN,
 
     /**
      * Exit event.
+     *
      * Run exit action(s) for a given state.
+     *
      * No state transition is allowed in response to this event.
      */
     AM_EVT_FSM_EXIT,
@@ -66,20 +70,38 @@ AM_ASSERT_STATIC(AM_EVT_FSM_EXIT <= AM_EVT_RANGE_SM_END);
 
 /**
  * FSM state handler return codes.
+ *
  * These return codes are not used directly in user code.
  * Instead user code is expected to use as return values the macros
- * listed in descriptions to each of the constants.
+ * listed in descriptions of each of the constants.
  */
 enum am_fsm_rc {
-    /** Returned by AM_FSM_HANDLED() */
+    /**
+     * Event was handled.
+     *
+     * Returned by AM_FSM_HANDLED().
+     */
     AM_FSM_RC_HANDLED = 1,
-    /** Returned by AM_FSM_TRAN() */
+    /**
+     * Event caused state transition.
+     *
+     * The library does the requested state transition.
+     *
+     * Returned by AM_FSM_TRAN().
+     */
     AM_FSM_RC_TRAN,
-    /** Returned by AM_FSM_TRAN_REDISPATCH() */
+    /**
+     * Event caused state transition and redispatch.
+     *
+     * The library does the requested state transition
+     * and redispatches the event to the new state.
+     *
+     * Returned by AM_FSM_TRAN_REDISPATCH().
+     */
     AM_FSM_RC_TRAN_REDISPATCH,
 };
 
-/** forward declaration */
+/** Forward declaration. */
 struct am_fsm;
 
 /**
@@ -97,10 +119,14 @@ typedef enum am_fsm_rc (*am_fsm_state_fn)(
  * FSM spy callback type.
  *
  * Used as one place to catch all events for the given FSM.
+ *
  * Called on each user event BEFORE the event is processes by the FSM.
+ *
  * Should only be used for debugging purposes.
+ *
  * Set by am_fsm_set_spy().
- * Only supported if "fsm.c" is compiled with AM_FSM_SPY defined.
+ *
+ * Only supported, if the FSM library is compiled with `AM_FSM_SPY` defined.
  *
  * @param fsm    the handler of FSM to spy
  * @param event  the event to spy
@@ -108,34 +134,41 @@ typedef enum am_fsm_rc (*am_fsm_state_fn)(
 typedef void (*am_fsm_spy_fn)(struct am_fsm *fsm, const struct am_event *event);
 
 /**
- * Get FSM state from FSM event handler.
+ * Construct FSM state from FSM event handler.
  *
  * @param s  FSM event handler
- * @return FSM state
+ * @return constructed FSM state structure
  */
 #define AM_FSM_STATE_CTOR(s) ((am_fsm_state_fn)(s))
 
-/** FSM state */
+/** FSM state. */
 struct am_fsm {
-    /** active state */
+    /** Active state. */
     am_fsm_state_fn state;
 #ifdef AM_FSM_SPY
-    /** FSM spy callback */
+    /** FSM spy callback. */
     am_fsm_spy_fn spy;
 #endif
-    /** safety net to catch missing am_hsm_init() call */
+    /** Safety net to catch missing am_fsm_init() call. */
     uint8_t init_called : 1;
-    /** safety net to catch erroneous reentrant am_hsm_dispatch() call */
+    /** Safety net to catch erroneous reentrant am_fsm_dispatch() call. */
     uint8_t dispatch_in_progress : 1;
 };
 
 /**
- * Event processing is over. No transition is taken.
+ * Event processing is over.
+ *
+ * No transition is taken.
+ *
  * Used as a default return value from FSM event handlers.
  */
 #define AM_FSM_HANDLED() AM_FSM_RC_HANDLED
 
-/** Helper macro. Not to be used directly. */
+/**
+ * Helper macro.
+ *
+ * Not to be used directly.
+ */
 #define AM_FSM_SET_(s) (((struct am_fsm *)me)->state = (am_fsm_state_fn)(s))
 
 /**
@@ -151,6 +184,7 @@ struct am_fsm {
  * Event redispatch is requested. Transition is taken.
  *
  * It should never be returned for #AM_EVT_FSM_ENTRY or #AM_EVT_FSM_EXIT events.
+ *
  * Do not redispatch the same event more than once within same
  * am_fsm_dispatch() call.
  *
@@ -167,10 +201,14 @@ struct am_fsm {
 void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event);
 
 /**
- * Test whether FSM is in a given state.
+ * Check whether FSM is in a given state.
+ *
+ * Use sparingly to check states of other state machine(s) as
+ * it breaks encapsulation.
  *
  * @param fsm     the FSM
  * @param state   the state to check
+ *
  * @retval false  not in the state
  * @retval true   in the state
  */
@@ -180,6 +218,7 @@ bool am_fsm_is_in(const struct am_fsm *fsm, am_fsm_state_fn state);
  * Get FSM's active state.
  *
  * @param fsm  the FSM
+ *
  * @return the active state
  */
 am_fsm_state_fn am_fsm_get_state(const struct am_fsm *fsm);
@@ -188,8 +227,9 @@ am_fsm_state_fn am_fsm_get_state(const struct am_fsm *fsm);
  * FSM constructor.
  *
  * @param fsm    the FSM to construct
- * @param state  the initial state of the FSM object
- *               The initial state must return AM_FSM_TRAN(s)
+ *
+ * @param state  the initial state of the FSM object.
+ *               The initial state must return AM_FSM_TRAN(s).
  */
 void am_fsm_ctor(struct am_fsm *fsm, am_fsm_state_fn state);
 
@@ -197,6 +237,7 @@ void am_fsm_ctor(struct am_fsm *fsm, am_fsm_state_fn state);
  * FSM destructor.
  *
  * Exits any FSM state.
+ *
  * Call am_fsm_ctor() to construct FSM again.
  *
  * @param fsm  the FSM to destruct
@@ -207,7 +248,7 @@ void am_fsm_dtor(struct am_fsm *fsm);
  * Perform FSM initial transition.
  *
  * Call the initial state set by am_fsm_ctor() with provided
- * optional init event.
+ * optional init event and performs the initial transition.
  *
  * @param fsm         the FSM to init
  * @param init_event  the init event. Can be NULL.
@@ -217,10 +258,12 @@ void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event);
 /**
  * Set spy user callback as one place to catch all events for the given FSM.
  *
- * It is only available if "fsm.c" is compiled with AM_FSM_SPY defined.
+ * Is only available if the FSM library is compiled with AM_FSM_SPY defined.
+ *
  * Should only be used for debugging purposes.
+ *
  * Should only be called after calling am_fsm_ctor() and not during ongoing
- * FSM event processing.
+ * FSM event processing in am_fsm_dispatch() call.
  *
  * @param fsm  the FSM to spy
  * @param spy  the spy callback. Use NULL to unset.

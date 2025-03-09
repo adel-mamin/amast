@@ -143,7 +143,7 @@ typedef enum am_hsm_rc (*am_hsm_state_fn)(
  *
  * Set by am_hsm_set_spy().
  *
- * Only supported if the HSM library is compiled with `AM_HSM_SPY` defined.
+ * Only supported, if the HSM library is compiled with `AM_HSM_SPY` defined.
  *
  * @param hsm    the handler of HSM to spy
  * @param event  the event to spy
@@ -171,7 +171,8 @@ struct am_hsm_state {
     (struct am_hsm_state) { .fn = (am_hsm_state_fn)(s), .smi = (uint8_t)(i) }
 
 /**
- * Get HSM state from HSM event handler and optionally HSM submachine instance.
+ * Construct HSM state from HSM event handler and optionally
+ * HSM submachine instance.
  *
  * AM_HSM_STATE_CTOR(s)     is converted to
  *                          @code{.c}
@@ -212,7 +213,7 @@ AM_ASSERT_STATIC(AM_HSM_HIERARCHY_DEPTH_MAX <= AM_HSM_HIERARCHY_LEVEL_MASK);
 
 /** HSM state. */
 struct am_hsm {
-    /** active state */
+    /** Active state. */
     struct am_hsm_state state;
     /**
      * While am_hsm::state::smi maintains submachine instance of active state,
