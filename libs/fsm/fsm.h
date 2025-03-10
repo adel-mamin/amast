@@ -247,7 +247,7 @@ void am_fsm_dtor(struct am_fsm *fsm);
 /**
  * Perform FSM initial transition.
  *
- * Call the initial state set by am_fsm_ctor() with provided
+ * Calls the initial state set by am_fsm_ctor() with provided
  * optional init event and performs the initial transition.
  *
  * @param fsm         the FSM to init
@@ -256,14 +256,13 @@ void am_fsm_dtor(struct am_fsm *fsm);
 void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event);
 
 /**
- * Set spy user callback as one place to catch all events for the given FSM.
+ * Set spy user callback as a one place to catch all events for the given FSM.
  *
  * Is only available if the FSM library is compiled with AM_FSM_SPY defined.
  *
  * Should only be used for debugging purposes.
  *
- * Should only be called after calling am_fsm_ctor() and not during ongoing
- * FSM event processing in am_fsm_dispatch() call.
+ * Should only be called after calling am_fsm_ctor().
  *
  * @param fsm  the FSM to spy
  * @param spy  the spy callback. Use NULL to unset.

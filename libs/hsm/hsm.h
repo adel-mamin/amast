@@ -433,14 +433,13 @@ void am_hsm_dtor(struct am_hsm *hsm);
 void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event);
 
 /**
- * Set spy user callback as one place to catch all events for the given HSM.
+ * Set spy user callback as a one place to catch all events for the given HSM.
  *
  * Is only available if the HSM library is compiled with AM_HSM_SPY defined.
  *
  * Should only be used for debugging purposes.
  *
- * Should only be called after calling am_hsm_ctor() and not during ongoing
- * HSM event processing in am_hsm_dispatch() call.
+ * Should only be called after calling am_hsm_ctor().
  *
  * @param hsm  the HSM to spy
  * @param spy  the spy callback. Use NULL to unset.

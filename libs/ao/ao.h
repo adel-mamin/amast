@@ -67,13 +67,13 @@ struct am_ao_state_cfg {
     /** Debug callback. */
     void (*debug)(const struct am_ao *ao, const struct am_event *e);
     /**
-     * Callback to enter low power mode
+     * Callback to enter low power mode.
      *
      * The callback is called with critical section being entered
      * (struct am_ao_state_cfg::crit_enter()) to allow for race condition free
      * transition to low power mode(s).
-     * The ao_state_cfg::crit_exit() is called by the library after the callback
-     * is returned.
+     * The am_ao_state_cfg::crit_exit() is called by the library after
+     * the callback is returned.
      *
      * Please read the article called
      * "Use an MCU's low-power modes in foreground/background systems"
@@ -81,9 +81,9 @@ struct am_ao_state_cfg {
      */
     void (*on_idle)(void);
 
-    /** Enter critical section. */
+    /** Callback to enter critical section. */
     void (*crit_enter)(void);
-    /** Exit critical section. */
+    /** Callback to exit critical section. */
     void (*crit_exit)(void);
 };
 
@@ -99,7 +99,14 @@ struct am_ao_state_cfg {
 /** The maximum AO priority level. */
 #define AM_AO_PRIO_MAX (AM_AO_NUM_MAX - 1)
 
-/** Checks if active object priority is valid. */
+/**
+ * Check if active object priority is valid.
+ *
+ * @param ao  the active object
+ *
+ * @retval true   the priority is valid
+ * @retval false  the priority is invalid.
+ */
 #define AM_AO_PRIO_IS_VALID(ao) \
     ((AM_AO_PRIO_MIN <= (ao)->prio) && ((ao)->prio <= AM_AO_PRIO_MAX))
 
@@ -115,13 +122,14 @@ extern "C" {
 #endif
 
 /**
- * Publish event to all subscribed active objects except one (eXtended version).
+ * Publish event to all subscribed active objects except the given one
+ * (eXtended version).
  *
  * The event is delivered to event queues of all the active objects,
  * which are subscribed to the event ID excluding the specified AO.
  * The event is then handled asynchronously by the active objects.
  *
- * Might be useful if the AO publishing the event does not want
+ * Might be useful, if the AO publishing the event does not want
  * the library to route the same event back to this AO.
  *
  * Use am_ao_subscribe() to subscribe an active object to an event ID.
@@ -131,9 +139,8 @@ extern "C" {
  * Guarantees availability of \p margin free slots in destination event queues
  * after the event was delivered to subscribed active objects.
  *
- * If any active object has full event queue and cannot
- * accommodate the event, then the function skips the event delivery
- * to the active object.
+ * If any active object cannot accommodate the event, then the function skips
+ * the event delivery to the active object.
  *
  * If your application is not prepared for loosing the event,
  * then use am_ao_publish_exclude() function instead.
@@ -162,15 +169,15 @@ extern "C" {
  *                active object after the event is pushed to their event queues
  *
  * @retval true   the event was delivered to all subscribed active objects
- *                except the active object given as the parameter
- * @retval false  at least one delivery has failed
+ *                except the active object \par ao
+ * @retval false  at least one delivery of he event has failed
  */
 bool am_ao_publish_exclude_x(
     const struct am_event *event, const struct am_ao *ao, int margin
 );
 
 /**
- * Publish event to all subscribed active objects except one.
+ * Publish event to all subscribed active objects except the given one.
  *
  * Same as am_ao_publish_exclude_x() except this function
  * crashes with assert if it fails delivering the event to at
@@ -180,7 +187,7 @@ bool am_ao_publish_exclude_x(
  * @param ao     do not post the event to this active object even
  *               if it is subscribed to the event.
  *               If set to NULL, the the API behaves same way as
- *               am_ao_publish()
+ *               am_ao_publish().
  */
 void am_ao_publish_exclude(
     const struct am_event *event, const struct am_ao *ao
@@ -197,9 +204,11 @@ void am_ao_publish_exclude(
  * Use am_ao_unsubscribe() to unsubscribe it from the event ID
  * or am_ao_unsubscribe_all() to unsubscribe it from all event IDs.
  *
- * If any active object has full event queue and cannot
- * accommodate the event, then the function skips the event delivery
- * to the active object.
+ * Guarantees availability of \p margin free slots in destination event queues
+ * after the event was delivered to subscribed active objects.
+ *
+ * If any active object cannot accommodate the event, then the function skips
+ * the event delivery to the active object.
  *
  * If your application is not prepared for loosing the event,
  * then use am_ao_publish() function instead.
