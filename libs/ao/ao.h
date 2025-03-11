@@ -349,7 +349,7 @@ void am_ao_ctor(struct am_ao *ao, struct am_hsm_state state);
  * @param ao          the active object to start
  * @param prio        priority level [#AM_AO_PRIO_MIN, #AM_AO_PRIO_MAX]
  * @param queue       the active object's event queue
- * @param queue_size  the event queue size [sizeof(struct am_event*)]
+ * @param queue_size  the event queue size [sizeof(struct am_event *)]
  * @param stack       active object stack
  * @param stack_size  the stack size [bytes]
  * @param name        human readable name of active object.

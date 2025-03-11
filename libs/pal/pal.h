@@ -27,7 +27,7 @@
 /**
  * @file
  *
- * Platform abstraction layer (PAL) API
+ * Platform Abstraction Layer (PAL) API documentation.
  */
 
 #ifndef AM_PAL_H_INCLUDED

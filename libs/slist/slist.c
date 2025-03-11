@@ -25,7 +25,6 @@
  */
 
 /**
- * @file
  * Singly linked list implementation.
  */
 

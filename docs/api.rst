@@ -3,14 +3,14 @@ API
 
 .. module:: amast
 
-This part of the documentation covers all the interfaces of Amast.
+This part of the documentation covers all the Amast interfaces.
 
 .. _common_constants:
 
 Common Constants
 ----------------
 
-.. doxygendefine:: AM_ALIGN_MAX
+.. doxygenfile:: alignment.h
 
 .. _common_types:
 
@@ -173,7 +173,7 @@ Onesize
 
 Onesize memory allocator API documentation.
 
-The source code of the corresponding header file is in `onesize.h <https://github.com/adel-mamin/amast/blob/main/libs/async/onesize.h>`_.
+The source code of the corresponding header file is in `onesize.h <https://github.com/adel-mamin/amast/blob/main/libs/onesize/onesize.h>`_.
 
 .. doxygenstruct:: am_onesize
 
@@ -209,7 +209,7 @@ Event
 
 Event API documentation.
 
-The source code of the corresponding header file is in `event.h <https://github.com/adel-mamin/amast/blob/main/libs/async/event.h>`_.
+The source code of the corresponding header file is in `event.h <https://github.com/adel-mamin/amast/blob/main/libs/event/event.h>`_.
 
 .. doxygendefine:: AM_EVT_USER
 
@@ -520,62 +520,6 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 PAL
 ---
 
-Platform Abstraction Layer (PAL) API documentation.
-
 The source code of the corresponding header file is in `pal.h <https://github.com/adel-mamin/amast/blob/main/libs/pal/pal.h>`_.
 
-.. doxygendefine:: AM_PAL_TASK_NUM_MAX
-
-.. doxygendefine:: AM_PAL_TASK_ID_NONE
-
-.. doxygendefine:: AM_PAL_TASK_ID_MAIN
-
-.. doxygendefine:: AM_PAL_TICK_DOMAIN_DEFAULT
-
-.. doxygendefine:: AM_PAL_TICK_DOMAIN_MAX
-
-.. doxygenfunction:: am_pal_ctor
-
-.. doxygenfunction:: am_pal_dtor
-
-.. doxygenfunction:: am_pal_crit_enter
-
-.. doxygenfunction:: am_pal_crit_exit
-
-.. doxygenfunction:: am_pal_mutex_create
-
-.. doxygenfunction:: am_pal_mutex_lock
-
-.. doxygenfunction:: am_pal_mutex_unlock
-
-.. doxygenfunction:: am_pal_mutex_destroy
-
-.. doxygenfunction:: am_pal_task_create
-
-.. doxygenfunction:: am_pal_task_notify
-
-.. doxygenfunction:: am_pal_task_wait
-
-.. doxygenfunction:: am_pal_task_get_own_id
-
-.. doxygenfunction:: am_pal_time_get_ms
-
-.. doxygenfunction:: am_pal_time_get_tick
-
-.. doxygenfunction:: am_pal_time_get_tick_from_ms
-
-.. doxygenfunction:: am_pal_time_get_ms_from_tick
-
-.. doxygenfunction:: am_pal_sleep_ticks
-
-.. doxygenfunction:: am_pal_sleep_till_ticks
-
-.. doxygenfunction:: am_pal_sleep_ms
-
-.. doxygenfunction:: am_pal_sleep_till_ms
-
-.. doxygenfunction:: am_pal_printf
-
-.. doxygenfunction:: am_pal_flush
-
-.. doxygenfunction:: am_pal_on_idle
+.. doxygenfile:: pal.h
