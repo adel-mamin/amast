@@ -155,8 +155,8 @@ extern "C" {
  * subscribed active objects handled it.
  * This is done asynchronously after this function returns.
  *
- * Statically allocated events, i.e. the events for which am_event_is_static()
- * returns true, are never freed.
+ * Statically allocated events, i.e. the events for which
+ * am_event_is_static() returns true, are never freed.
  *
  * The function is fast, thread safe and usable from
  * interrupt service routines (ISR).

@@ -25,7 +25,6 @@
  */
 
 /**
- * @file
  * Finite State Machine (FSM) API implementation.
  */
 

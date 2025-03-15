@@ -25,7 +25,6 @@
  */
 
 /**
- * @file
  * onesize memory allocator implementation
  */
 

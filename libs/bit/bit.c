@@ -25,7 +25,6 @@
  */
 
 /**
- * @file
  * Bit utilities.
  */
 

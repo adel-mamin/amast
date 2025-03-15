@@ -514,7 +514,6 @@ A submachine (sub)state can also be a superstate of itself, which creates
 a recursion. The example of the submachines recursion can be seen in
 `tests/submachine/complex/submachine.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/submachine/complex/submachine.c>`_.
 
-
 HSM Examples And Unit Tests
 ===========================
 
@@ -622,8 +621,8 @@ The test steps:
 All internal and external transitions in HSM are logged and compared against
 expected patterns stored in **struct test::out**.
 
-Dtor
-----
+HSM destructor
+--------------
 
 Tests :cpp:func:`am_hsm_dtor()` API.
 
@@ -648,3 +647,7 @@ The test steps:
 
 1. Initialize the HSM. The init state transition activates **dtor_s**.
 2. Call :cpp:func:`am_hsm_dtor()` for the HSM and check if it destructs the HSM.
+
+HSM history
+-----------
+

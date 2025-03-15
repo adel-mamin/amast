@@ -25,7 +25,6 @@
  */
 
 /**
- * @file
  * Timer API implementation.
  */
 

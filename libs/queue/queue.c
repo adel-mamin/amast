@@ -25,7 +25,6 @@
  */
 
 /**
- * @file
  * Queue API implementation.
  */
 

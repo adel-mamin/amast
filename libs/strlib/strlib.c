@@ -27,7 +27,6 @@
  */
 
 /**
- * @file
  * string utilities API implementation
  */
 

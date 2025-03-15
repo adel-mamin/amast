@@ -25,7 +25,6 @@
  */
 
 /**
- * @file
  * Hierarchical State Machine (HSM) API implementation.
  */
 

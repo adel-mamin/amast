@@ -25,8 +25,6 @@
  */
 
 /**
- * @file
- *
  * Assert implementation
  */
 

@@ -175,11 +175,10 @@ static void test_defer(void) {
     struct test_defer *me = &m_test_defer;
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
 
-    struct test {
+    static const struct test {
         int event;
         const char *out;
-    };
-    static const struct test in[] = {
+    } in[] = {
         {.event = HSM_EVT_A, .out = "s1-A;"},
         {.event = HSM_EVT_B, .out = "s1-B;s2-A;"},
     };

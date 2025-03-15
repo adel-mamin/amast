@@ -25,7 +25,6 @@
  */
 
 /**
- * @file
  * Doubly linked list implementation.
  */
 

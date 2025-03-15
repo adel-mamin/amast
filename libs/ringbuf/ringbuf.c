@@ -25,8 +25,6 @@
  */
 
 /**
- * @file
- *
  * Ring buffer API implementation.
  */
 
