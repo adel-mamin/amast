@@ -448,7 +448,7 @@ The source code of the corresponding header file is in `fsm.h <https://github.co
 AO
 --
 
-Active Object (AO API documentation.
+Active Object (AO) API documentation.
 
 The source code of the corresponding header file is in `ao.h <https://github.com/adel-mamin/amast/blob/main/libs/ao/ao.h>`_.
 

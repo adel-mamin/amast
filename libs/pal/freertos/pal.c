@@ -24,9 +24,7 @@
  * SOFTWARE.
  */
 
-/**
- * @file
- *
+/*
  * Platform abstraction layer (PAL) API implementation for FreeRTOS
  */
 

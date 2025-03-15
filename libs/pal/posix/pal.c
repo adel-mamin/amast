@@ -24,9 +24,7 @@
  * SOFTWARE.
  */
 
-/**
- * Platform abstraction layer (PAL) API posix implementation
- */
+/* Platform abstraction layer (PAL) API posix implementation */
 
 #include <stdarg.h> /* IWYU pragma: keep */
 #include <stdbool.h>

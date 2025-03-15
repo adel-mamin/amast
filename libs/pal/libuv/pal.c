@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-/**
+/*
  * Platform abstraction layer (PAL) API libuv implementation
  */
 

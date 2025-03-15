@@ -24,11 +24,7 @@
  * SOFTWARE.
  */
 
-/**
- * @file
- *
- * Platform abstraction layer (PAL) API stubs
- */
+/* Platform abstraction layer (PAL) API stubs */
 
 #include <stdarg.h>
 #include <stdint.h>

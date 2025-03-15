@@ -35,16 +35,16 @@
 
 #include <stdint.h>
 
-/** Maximum number of PAL tasks */
+/** Maximum number of PAL tasks. */
 #define AM_PAL_TASK_NUM_MAX 64
 
-/** Invalid task ID */
+/** Invalid task ID. */
 #define AM_PAL_TASK_ID_NONE 0
 
-/** Main task ID */
+/** Main task ID. */
 #define AM_PAL_TASK_ID_MAIN -1
 
-/** Default tick domain */
+/** Default tick domain. */
 #define AM_PAL_TICK_DOMAIN_DEFAULT 0
 
 #ifndef AM_PAL_TICK_DOMAIN_MAX
@@ -85,21 +85,21 @@ int am_pal_mutex_create(void);
 /**
  * Lock mutex.
  *
- * @param mutex  mutex ID returned by am_pal_mutex_create()
+ * @param mutex  the mutex ID returned by am_pal_mutex_create()
  */
 void am_pal_mutex_lock(int mutex);
 
 /**
  * Unlock mutex.
  *
- * @param mutex  mutex ID returned by am_pal_mutex_create()
+ * @param mutex  the mutex ID returned by am_pal_mutex_create()
  */
 void am_pal_mutex_unlock(int mutex);
 
 /**
  * Destroy mutex.
  *
- * @param mutex  mutex ID returned by am_pal_mutex_create()
+ * @param mutex  the mutex ID returned by am_pal_mutex_create()
  */
 void am_pal_mutex_destroy(int mutex);
 
@@ -136,7 +136,7 @@ void am_pal_task_notify(int task);
 /**
  * Block PAL task till am_pal_task_notify() is called.
  *
- * @param task  task ID returned by am_pal_task_create()
+ * @param task  the task ID returned by am_pal_task_create()
  */
 void am_pal_task_wait(int task);
 

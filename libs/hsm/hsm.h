@@ -100,13 +100,37 @@ AM_ASSERT_STATIC(AM_EVT_HSM_EXIT <= AM_EVT_RANGE_SM_END);
  * listed in descriptions to each of the constants.
  */
 enum am_hsm_rc {
-    /** Returned by AM_HSM_HANDLED() */
+    /**
+     * Event was handled.
+     *
+     * Returned by AM_HSM_HANDLED().
+     */
     AM_HSM_RC_HANDLED = 1,
-    /** Returned by AM_HSM_TRAN() */
+    /**
+     * Event caused state transition.
+     *
+     * The library does the requested state transition.
+     *
+     * Returned by AM_HSM_TRAN().
+     */
     AM_HSM_RC_TRAN,
-    /** Returned by AM_HSM_TRAN_REDISPATCH() */
+    /**
+     * Event caused state transition and redispatch.
+     *
+     * The library does the requested state transition
+     * and redispatches the same event to the new state.
+     *
+     * Returned by AM_HSM_TRAN_REDISPATCH().
+     */
     AM_HSM_RC_TRAN_REDISPATCH,
-    /** Returned by AM_HSM_SUPER() */
+
+    /**
+     * Event propagation to superstate was requested.
+     *
+     * The library does the event propagation.
+     *
+     * Returned by AM_HSM_SUPER().
+     */
     AM_HSM_RC_SUPER
 };
 
@@ -133,7 +157,7 @@ typedef enum am_hsm_rc (*am_hsm_state_fn)(
 );
 
 /**
- * HSM spy callback type.
+ * HSM spy user callback type.
  *
  * Used as one place to catch all events for a given HSM.
  *
@@ -145,7 +169,7 @@ typedef enum am_hsm_rc (*am_hsm_state_fn)(
  *
  * Only supported, if the HSM library is compiled with `AM_HSM_SPY` defined.
  *
- * @param hsm    the handler of HSM to spy
+ * @param hsm    the handler of the HSM to spy
  * @param event  the event to spy
  */
 typedef void (*am_hsm_spy_fn)(struct am_hsm *hsm, const struct am_event *event);
@@ -185,9 +209,9 @@ struct am_hsm_state {
  *
  * @def AM_HSM_STATE_CTOR(s, i)
  *
- * \a s  is HSM event handler (mandatory)
+ * \a s  is the HSM event handler (mandatory)
  *
- * \a i  is HSM submachine instance (optional, default is 0)
+ * \a i  is the HSM submachine instance (optional, default is 0)
  *
  * @return constructed HSM state structure
  */
@@ -263,7 +287,9 @@ struct am_hsm {
 /**
  * Event processing is over. Transition is triggered.
  *
- * It should never be returned for #AM_EVT_HSM_ENTRY or #AM_EVT_HSM_EXIT events.
+ * It should never be returned in response to
+ * #AM_EVT_HSM_ENTRY or #AM_EVT_HSM_EXIT events.
+ *
  * Conversely, the response to #AM_EVT_HSM_INIT event can optionally use
  * this macro as a return value to designate transition to
  * the provided state. The target state in this case must be
@@ -286,7 +312,7 @@ struct am_hsm {
 #define AM_TRAN_REDISP2_(s, i) (AM_HSM_SET_(s, i), AM_HSM_RC_TRAN_REDISPATCH)
 
 /**
- * Event redispatch is requested. Transition is triggered.
+ * Same event redispatch is requested. Transition is triggered.
  *
  * It should never be returned for #AM_EVT_HSM_ENTRY, #AM_EVT_HSM_EXIT or
  * #AM_EVT_HSM_INIT events.
@@ -414,6 +440,7 @@ void am_hsm_ctor(struct am_hsm *hsm, struct am_hsm_state state);
  *
  * Exits all HSM states.
  *
+ * The HSM is not usable after this call.
  * Call am_hsm_ctor() to construct HSM again.
  *
  * @param hsm  the HSM to destruct
@@ -423,7 +450,7 @@ void am_hsm_dtor(struct am_hsm *hsm);
 /**
  * Perform HSM initial transition.
  *
- * Calls the initial state event handler set by am_hsm_ctor() with provided
+ * Calls the initial state event handler set by am_hsm_ctor() with the provided
  * optional initial event and performs the initial transition including
  * all recursive initial transitions if any.
  *
@@ -435,7 +462,7 @@ void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event);
 /**
  * Set spy user callback as a one place to catch all events for the given HSM.
  *
- * Is only available if the HSM library is compiled with AM_HSM_SPY defined.
+ * Is only available if the HSM library is compiled with `AM_HSM_SPY` defined.
  *
  * Should only be used for debugging purposes.
  *
@@ -454,7 +481,7 @@ void am_hsm_set_spy(struct am_hsm *hsm, am_hsm_spy_fn spy);
  *
  * Users should never target the top superstate in a state transition.
  *
- * Has the same signature as #am_hsm_state_fn
+ * Has the same signature as #am_hsm_state_fn.
  */
 enum am_hsm_rc am_hsm_top(struct am_hsm *hsm, const struct am_event *event);
 

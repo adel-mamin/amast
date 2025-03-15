@@ -94,7 +94,7 @@ enum am_fsm_rc {
      * Event caused state transition and redispatch.
      *
      * The library does the requested state transition
-     * and redispatches the event to the new state.
+     * and redispatches the same event to the new state.
      *
      * Returned by AM_FSM_TRAN_REDISPATCH().
      */
@@ -116,7 +116,7 @@ typedef enum am_fsm_rc (*am_fsm_state_fn)(
 );
 
 /**
- * FSM spy callback type.
+ * FSM spy user callback type.
  *
  * Used as one place to catch all events for the given FSM.
  *
@@ -128,7 +128,7 @@ typedef enum am_fsm_rc (*am_fsm_state_fn)(
  *
  * Only supported, if the FSM library is compiled with `AM_FSM_SPY` defined.
  *
- * @param fsm    the handler of FSM to spy
+ * @param fsm    the handler of the FSM to spy
  * @param event  the event to spy
  */
 typedef void (*am_fsm_spy_fn)(struct am_fsm *fsm, const struct am_event *event);
@@ -136,7 +136,7 @@ typedef void (*am_fsm_spy_fn)(struct am_fsm *fsm, const struct am_event *event);
 /**
  * Construct FSM state from FSM event handler.
  *
- * @param s  FSM event handler
+ * @param s  the FSM event handler
  * @return constructed FSM state structure
  */
 #define AM_FSM_STATE_CTOR(s) ((am_fsm_state_fn)(s))
@@ -174,14 +174,15 @@ struct am_fsm {
 /**
  * Event processing is over. Transition is taken.
  *
- * It should never be returned for #AM_EVT_FSM_ENTRY or #AM_EVT_FSM_EXIT events.
+ * It should never be returned in response to
+ * #AM_EVT_FSM_ENTRY or #AM_EVT_FSM_EXIT events.
  *
  * @param s  the new state of type #am_fsm_state_fn
  */
 #define AM_FSM_TRAN(s) (AM_FSM_SET_(s), AM_FSM_RC_TRAN)
 
 /**
- * Event redispatch is requested. Transition is taken.
+ * Same event redispatch is requested. Transition is taken.
  *
  * It should never be returned for #AM_EVT_FSM_ENTRY or #AM_EVT_FSM_EXIT events.
  *
@@ -238,7 +239,8 @@ void am_fsm_ctor(struct am_fsm *fsm, am_fsm_state_fn state);
  *
  * Exits any FSM state.
  *
- * Call am_fsm_ctor() to construct FSM again.
+ * The FSM is not usable after this call.
+ * Call am_fsm_ctor() to construct the FSM again.
  *
  * @param fsm  the FSM to destruct
  */
@@ -247,7 +249,7 @@ void am_fsm_dtor(struct am_fsm *fsm);
 /**
  * Perform FSM initial transition.
  *
- * Calls the initial state set by am_fsm_ctor() with provided
+ * Calls the initial state set by am_fsm_ctor() with the provided
  * optional init event and performs the initial transition.
  *
  * @param fsm         the FSM to init
@@ -258,7 +260,7 @@ void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event);
 /**
  * Set spy user callback as a one place to catch all events for the given FSM.
  *
- * Is only available if the FSM library is compiled with AM_FSM_SPY defined.
+ * Is only available if the FSM library is compiled with `AM_FSM_SPY` defined.
  *
  * Should only be used for debugging purposes.
  *
