@@ -42,7 +42,7 @@
  * The print delay of each rectangle varies.
  *
  * The async_off substate shows blinking yellow mimicking unregulated
- * intersection.
+ * road intersection.
  * The blink delay is 700 ms.
  *
  * async_top handles user input. Press ENTER to switch between
@@ -121,39 +121,40 @@ static enum am_hsm_rc async_top(
 static enum am_async_rc async_regular_(struct async *me) {
     AM_ASYNC_BEGIN(&me->async);
 
-    /* red */
-    am_pal_printf(AM_COLOR_RED CHAR_SOLID_BLOCK AM_COLOR_RESET);
-    am_pal_flush();
-    am_timer_arm_ms(&me->timer, /*ms=*/2000, /*interval=*/0);
-    AM_ASYNC_YIELD();
+    for (;;) {
+        /* red */
+        am_pal_printf(AM_COLOR_RED CHAR_SOLID_BLOCK AM_COLOR_RESET);
+        am_pal_flush();
+        am_timer_arm_ms(&me->timer, /*ms=*/2000, /*interval=*/0);
+        AM_ASYNC_YIELD();
 
-    /* yellow */
-    am_pal_printf("\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
-    am_pal_flush();
-    am_timer_arm_ms(&me->timer, /*ms=*/1000, /*interval=*/0);
-    AM_ASYNC_YIELD();
+        /* yellow */
+        am_pal_printf("\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
+        am_pal_flush();
+        am_timer_arm_ms(&me->timer, /*ms=*/1000, /*interval=*/0);
+        AM_ASYNC_YIELD();
 
-    /* green */
-    am_pal_printf("\b" AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
-    am_pal_flush();
-    am_timer_arm_ms(&me->timer, /*ms=*/2000, /*interval=*/0);
-    AM_ASYNC_YIELD();
+        /* green */
+        am_pal_printf("\b" AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
+        am_pal_flush();
+        am_timer_arm_ms(&me->timer, /*ms=*/2000, /*interval=*/0);
+        AM_ASYNC_YIELD();
 
-    for (me->i = 0; me->i < 4; ++me->i) {
+        /* blinking green */
+        for (me->i = 0; me->i < 4; ++me->i) {
+            am_pal_printf("\b");
+            am_pal_flush();
+            am_timer_arm_ms(&me->timer, /*ms=*/700, /*interval=*/0);
+            AM_ASYNC_YIELD();
+
+            am_pal_printf(AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
+            am_pal_flush();
+            am_timer_arm_ms(&me->timer, /*ms=*/700, /*interval=*/0);
+            AM_ASYNC_YIELD();
+        }
         am_pal_printf("\b");
         am_pal_flush();
-        am_timer_arm_ms(&me->timer, /*ms=*/700, /*interval=*/0);
-        AM_ASYNC_YIELD();
-
-        am_pal_printf(AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
-        am_pal_flush();
-        am_timer_arm_ms(&me->timer, /*ms=*/700, /*interval=*/0);
-        AM_ASYNC_YIELD();
     }
-    am_pal_printf("\b");
-    am_pal_flush();
-
-    am_ao_post_fifo(&me->ao, &am_evt_start);
 
     AM_ASYNC_END();
 
@@ -290,6 +291,7 @@ int main(void) {
 
     static const struct am_event *m_queue[1];
 
+    /* traffic lights controlling active object */
     am_ao_start(
         &m.ao,
         /*prio=*/AM_AO_PRIO_MAX,
@@ -301,6 +303,7 @@ int main(void) {
         /*init_event=*/NULL
     );
 
+    /* ticker thread to feed timers */
     am_pal_task_create(
         "ticker",
         AM_AO_PRIO_MIN,
@@ -310,6 +313,7 @@ int main(void) {
         /*arg=*/NULL
     );
 
+    /* user input controlling thread */
     am_pal_task_create(
         "input",
         AM_AO_PRIO_MIN,
