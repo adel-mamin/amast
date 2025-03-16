@@ -87,20 +87,16 @@ struct progress {
 static enum am_async_rc fork_progress(struct progress *me) {
     AM_ASYNC_BEGIN(&me->async);
 
-    am_pal_printf("\r|");
-    am_pal_flush();
+    am_pal_printff("\r|");
     AM_ASYNC_YIELD();
 
-    am_pal_printf("\r/");
-    am_pal_flush();
+    am_pal_printff("\r/");
     AM_ASYNC_YIELD();
 
-    am_pal_printf("\r-");
-    am_pal_flush();
+    am_pal_printff("\r-");
     AM_ASYNC_YIELD();
 
-    am_pal_printf("\r\\");
-    am_pal_flush();
+    am_pal_printff("\r\\");
 
     AM_ASYNC_END();
 
