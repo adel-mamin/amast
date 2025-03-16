@@ -291,12 +291,40 @@ void am_pal_sleep_till_ms(uint32_t ms) {
     }
 }
 
+int am_pal_vprintf(const char *fmt, va_list args) {
+    am_pal_crit_enter();
+    int rc = vprintf(fmt, args);
+    am_pal_crit_exit();
+    return rc;
+}
+
+int am_pal_vprintff(const char *fmt, va_list args) {
+    am_pal_crit_enter();
+    int rc = vprintf(fmt, args);
+    am_pal_flush();
+    am_pal_crit_exit();
+    return rc;
+}
+
 int am_pal_printf(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    int ret = vprintf(fmt, args);
+    am_pal_crit_enter();
+    int rc = vprintf(fmt, args);
+    am_pal_crit_exit();
     va_end(args);
-    return ret;
+    return rc;
+}
+
+int am_pal_printff(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    am_pal_crit_enter();
+    int rc = vprintf(fmt, args);
+    am_pal_flush();
+    am_pal_crit_exit();
+    va_end(args);
+    return rc;
 }
 
 void am_pal_flush(void) { fflush(stdout); }

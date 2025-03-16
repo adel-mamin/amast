@@ -115,9 +115,7 @@ int am_pal_printff(const char *fmt, ...) {
     return rc;
 }
 
-int am_pal_vprintf(const char *fmt, va_list args) {
-    return vprintf(fmt, args);
-}
+int am_pal_vprintf(const char *fmt, va_list args) { return vprintf(fmt, args); }
 
 int am_pal_vprintff(const char *fmt, va_list args) {
     int rc = vprintf(fmt, args);
