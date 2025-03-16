@@ -19,6 +19,7 @@ author = 'Adel Mamin'
 extensions = [
     'breathe',
     'pallets_sphinx_themes',
+    'sphinxcontrib.plantuml'
 ]
 
 breathe_default_project = "amast"

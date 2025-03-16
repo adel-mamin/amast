@@ -50,7 +50,9 @@ doxygen = ">=1.13.2,<2"
 sphinx = ">=8.2.3,<9"
 breathe = ">=4.36.0,<5"
 yamllint = ">=1.36.0,<2"
+plantuml = ">=1.2025.2,<2"
 
 [pypi-dependencies]
 setuptools-scm = ">=8.2.0, <9"
 pallets-sphinx-themes = ">=2.3.0, <3"
+sphinxcontrib-plantuml = ">=0.30, <0.31"
