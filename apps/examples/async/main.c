@@ -41,7 +41,7 @@
  * red - yellow - green - blinking green
  * The print delay of each rectangle varies.
  *
- * The async_off substate shows blinking yellow mimicing unregulated
+ * The async_off substate shows blinking yellow mimicking unregulated
  * intersection.
  * The blink delay is 700 ms.
  *
