@@ -105,8 +105,7 @@ static enum am_hsm_rc async_top(
         return AM_HSM_TRAN(async_regular);
 
     case ASYNC_EVT_USER_INPUT: {
-        am_pal_printf("\b");
-        am_pal_flush();
+        am_pal_printff("\b");
         if (am_hsm_is_in(&me->ao.hsm, AM_HSM_STATE_CTOR(async_regular))) {
             return AM_HSM_TRAN(async_off);
         }
@@ -123,37 +122,31 @@ static enum am_async_rc async_regular_(struct async *me) {
 
     for (;;) {
         /* red */
-        am_pal_printf(AM_COLOR_RED CHAR_SOLID_BLOCK AM_COLOR_RESET);
-        am_pal_flush();
+        am_pal_printff(AM_COLOR_RED CHAR_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm_ms(&me->timer, /*ms=*/2000, /*interval=*/0);
         AM_ASYNC_YIELD();
 
         /* yellow */
-        am_pal_printf("\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
-        am_pal_flush();
+        am_pal_printff("\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm_ms(&me->timer, /*ms=*/1000, /*interval=*/0);
         AM_ASYNC_YIELD();
 
         /* green */
-        am_pal_printf("\b" AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
-        am_pal_flush();
+        am_pal_printff("\b" AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm_ms(&me->timer, /*ms=*/2000, /*interval=*/0);
         AM_ASYNC_YIELD();
 
         /* blinking green */
         for (me->i = 0; me->i < 4; ++me->i) {
-            am_pal_printf("\b");
-            am_pal_flush();
+            am_pal_printff("\b");
             am_timer_arm_ms(&me->timer, /*ms=*/700, /*interval=*/0);
             AM_ASYNC_YIELD();
 
-            am_pal_printf(AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
-            am_pal_flush();
+            am_pal_printff(AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
             am_timer_arm_ms(&me->timer, /*ms=*/700, /*interval=*/0);
             AM_ASYNC_YIELD();
         }
-        am_pal_printf("\b");
-        am_pal_flush();
+        am_pal_printff("\b");
     }
 
     AM_ASYNC_END();
@@ -189,13 +182,11 @@ static enum am_async_rc async_off_(struct async *me) {
     AM_ASYNC_BEGIN(&me->async);
 
     am_timer_arm_ms(&me->timer, /*ms=*/1000, /*interval=*/0);
-    am_pal_printf("\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
-    am_pal_flush();
+    am_pal_printff("\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
     AM_ASYNC_YIELD();
 
     am_timer_arm_ms(&me->timer, /*ms=*/700, /*interval=*/0);
-    am_pal_printf("\b");
-    am_pal_flush();
+    am_pal_printff("\b");
     AM_ASYNC_YIELD();
 
     am_ao_post_fifo(&me->ao, &am_evt_start);
@@ -271,8 +262,7 @@ static void input_task(void *param) {
         if (ch != '\n') {
             continue;
         }
-        am_pal_printf(CHAR_CURSOR_UP);
-        am_pal_flush();
+        am_pal_printff(CHAR_CURSOR_UP);
         static struct am_event event = {.id = ASYNC_EVT_USER_INPUT};
         am_ao_post_fifo_x(&m->ao, &event, /*margin=*/0);
     }

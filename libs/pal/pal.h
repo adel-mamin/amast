@@ -34,6 +34,7 @@
 #define AM_PAL_H_INCLUDED
 
 #include <stdint.h>
+#include <stdarg.h>
 
 /** Maximum number of PAL tasks. */
 #define AM_PAL_TASK_NUM_MAX 64
@@ -221,6 +222,35 @@ void am_pal_sleep_till_ms(uint32_t ms);
  * @return printf-like return value
  */
 AM_PRINTF(1, 2) int am_pal_printf(const char *fmt, ...);
+
+/**
+ * printf-like logging + flushing.
+ *
+ * @param fmt  printf-like format string
+ *
+ * @return printf-like return value
+ */
+AM_PRINTF(1, 2) int am_pal_printff(const char *fmt, ...);
+
+/**
+ * vprintf-like logging.
+ *
+ * @param fmt   printf-like format string
+ * @param args  va_list argument returned by standard va_start() call
+ *
+ * @return vprintf-like return value
+ */
+int am_pal_vprintf(const char *fmt, va_list args);
+
+/**
+ * vprintf-like logging + flushing.
+ *
+ * @param fmt   printf-like format string
+ * @param args  va_list argument returned by standard va_start() call
+ *
+ * @return vprintf-like return value
+ */
+int am_pal_vprintff(const char *fmt, va_list args);
 
 /** Flush am_pal_printf() intermediate buffer. */
 void am_pal_flush(void);

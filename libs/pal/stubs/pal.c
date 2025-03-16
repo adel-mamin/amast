@@ -106,4 +106,23 @@ AM_PRINTF(1, 2) int am_pal_printf(const char *fmt, ...) {
     return rc;
 }
 
+int am_pal_printff(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    int rc = vprintf(fmt, args);
+    va_end(args);
+    am_pal_flush();
+    return rc;
+}
+
+int am_pal_vprintf(const char *fmt, va_list args) {
+    return vprintf(fmt, args);
+}
+
+int am_pal_vprintff(const char *fmt, va_list args) {
+    int rc = vprintf(fmt, args);
+    am_pal_flush();
+    return rc;
+}
+
 void am_pal_flush(void) {}

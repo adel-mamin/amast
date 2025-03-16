@@ -385,11 +385,37 @@ void am_pal_sleep_till_ticks(int domain, uint32_t ticks) {
     usleep(us);
 }
 
+int am_pal_vprintf(const char *fmt, va_list args) {
+    am_pal_crit_enter();
+    int rc = vprintf(fmt, args);
+    am_pal_crit_exit();
+    return rc;
+}
+
+int am_pal_vprintff(const char *fmt, va_list args) {
+    am_pal_crit_enter();
+    int rc = vprintf(fmt, args);
+    am_pal_flush();
+    am_pal_crit_exit();
+    return rc;
+}
+
 int am_pal_printf(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     am_pal_crit_enter();
     int rc = vprintf(fmt, args);
+    am_pal_crit_exit();
+    va_end(args);
+    return rc;
+}
+
+int am_pal_printff(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    am_pal_crit_enter();
+    int rc = vprintf(fmt, args);
+    am_pal_flush();
     am_pal_crit_exit();
     va_end(args);
     return rc;

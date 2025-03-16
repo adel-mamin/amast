@@ -33,6 +33,7 @@ breathe_domain_by_extension = {
 nitpick_ignore = [
     ('cpp:identifier', 'uint8_t'),
     ('cpp:identifier', 'uint32_t'),
+    ('cpp:identifier', 'va_list'),
 ]
 
 templates_path = ['_templates']
