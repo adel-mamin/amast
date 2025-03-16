@@ -588,27 +588,30 @@ The source code is in `defer.c <https://github.com/adel-mamin/amast/blob/main/li
 
 The HSM topology:
 
-::
+.. uml::
 
-    +-------------+
-    | defer_sinit |
-    +------+------+
-           |
-    +------|--------------------------+
-    |      |    am_hsm_top            |
-    | +----v-----+       +----------+ |
-    | | A/defer  |       | A/       | |
-    | | X:recall |       |          | |
-    | |          |   B   |          | |
-    | | defer_s1 +-------> defer_s2 | |
-    | +----------+       +----------+ |
-    +---------------------------------+
+   @startuml
+
+   [*] --> defer_s1
+
+   state am_hsm_top {
+       state defer_s1
+       state defer_s2
+   }
+
+   defer_s1 : A / defer
+   defer_s1 : X / recall
+   defer_s1 --> defer_s2 : B
+
+   defer_s2 : A /
+
+   @enduml
 
 , where
 
-- A is short of **HSM_EVT_A**
-- B is short of **HSM_EVT_B**
-- X is short of :cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>`
+- **A** is short of **HSM_EVT_A**
+- **B** is short of **HSM_EVT_B**
+- **X** is short of :cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>`
 
 The test steps:
 
@@ -630,18 +633,17 @@ The source code is in `dtor.c <https://github.com/adel-mamin/amast/blob/main/lib
 
 The HSM topology:
 
-::
+.. uml::
 
-    +-------------+
-    |  dtor_sinit |
-    +------+------+
-           |
-    +------|-------------+
-    |      |  am_hsm_top |
-    | +----v---+         |
-    | | dtor_s |         |
-    | +--------+         |
-    +--------------------+
+   @startuml
+
+   [*] --> dtor_s
+
+   state am_hsm_top {
+       state dtor_s
+   }
+
+   @enduml
 
 The test steps:
 
@@ -651,3 +653,48 @@ The test steps:
 HSM history
 -----------
 
+Demonstrates the HSM history pattern usage modeling the operation of
+a microwave oven.
+
+The source code is in `history.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/history.c>`_.
+
+The HSM topology:
+
+.. uml::
+
+    @startuml
+
+    [*] --> open : door open
+    [*] --> closed : door closed
+
+    state closed {
+        [*] --> H
+        H --> off
+        state H <<history>>
+        state on
+        state off
+    }
+
+    open --> closed : close door
+    closed --> open : open door
+
+    on --> off : ON
+    off --> on : OFF
+
+    @enduml
+
+The test steps:
+
+1. Initialize the HSM.
+   The init state does two things:
+
+   - sets history state to **off**
+   - requests transition to either **open** or **closed** state depending on
+     whether the oven door is open or closed. The oven door is closed.
+     So, the transition is done to **closed** state and **off** substate.
+
+   Check that the current state is **off**.
+
+2. Send **ON** event. Check that the current state is **on**.
+3. Send **OPEN** event. Check that the current state is **open**.
+4. Send **CLOSE** event. Check that the current state is **on**.

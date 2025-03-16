@@ -24,6 +24,21 @@
  * SOFTWARE.
  */
 
+/**
+ * The topology of the tested HSM:
+ *
+ *  +-------------+
+ *  |  dtor_sinit |
+ *  +------+------+
+ *         |
+ *  +------|-------------+
+ *  |      |  am_hsm_top |
+ *  | +----v---+         |
+ *  | | dtor_s |         |
+ *  | +--------+         |
+ *  +--------------------+
+ */
+
 #include <stddef.h>
 
 #include "common/macros.h"

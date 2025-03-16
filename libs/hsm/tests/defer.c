@@ -40,6 +40,24 @@
 #include "queue/queue.h"
 #include "pal/pal.h"
 
+/**
+ * The topology of the tested HSM:
+ *
+ *  +-------------+
+ *  | defer_sinit |
+ *  +------+------+
+ *         |
+ *  +------|--------------------------+
+ *  |      |    am_hsm_top            |
+ *  | +----v-----+       +----------+ |
+ *  | | A/defer  |       | A/       | |
+ *  | | X:recall |       |          | |
+ *  | |          |   B   |          | |
+ *  | | defer_s1 +-------> defer_s2 | |
+ *  | +----------+       +----------+ |
+ *  +---------------------------------+
+ */
+
 struct test_defer {
     struct am_hsm hsm;
     struct am_queue event_queue;
