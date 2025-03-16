@@ -39,19 +39,20 @@
  *
  * The async_regular substate prints colored rectangles in the order
  * red - yellow - green - blinking green
- * The print delay of each rectangle is different.
+ * The print delay of each rectangle varies.
  *
- * The async_off substate shown blinking yellow.
+ * The async_off substate shows blinking yellow mimicing unregulated
+ * intersection.
  * The blink delay is 700 ms.
  *
  * async_top handles user input. Press ENTER to switch between
  * async_regular and async_off substates.
  *
  * Generally the use of async is warranted if the sequence of
- * steps is known beforehand like in this case.
+ * steps can be represented as a flowchart like in this case.
  *
  * async_regular calls async_regular_() to do the printing
- * async_off calls async_off_() to do the printing
+ * async_off calls async_off_() to do the printing.
  *
  * The example is built in two flavours:
  * async_preemptive and async_cooperative.
