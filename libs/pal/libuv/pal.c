@@ -103,10 +103,6 @@ void am_pal_ctor(void) {
 }
 
 void am_pal_dtor(void) {
-    uv_loop_close(loop_);
-    free(loop_);
-    uv_mutex_destroy(&crit_section_);
-
     for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
         struct am_pal_mutex *mutex = &mutexes_[i];
         if (mutex->valid) {
@@ -120,6 +116,9 @@ void am_pal_dtor(void) {
             task->valid = false;
         }
     }
+    uv_loop_close(loop_);
+    free(loop_);
+    uv_mutex_destroy(&crit_section_);
 }
 
 void am_pal_crit_enter(void) { uv_mutex_lock(&crit_section_); }
