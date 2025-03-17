@@ -111,6 +111,8 @@ AM_NORETURN static void test_ringbuf_threading(void) {
     for (;;) {
         am_ao_run_all();
     }
+
+    am_ao_state_dtor();
 }
 
 int main(void) {

@@ -291,6 +291,8 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     am_timer_state_ctor(&cfg_timer);
 }
 
+void am_ao_state_dtor(void) { am_pal_dtor(); }
+
 void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub) {
     AM_ASSERT(sub);
     AM_ASSERT(nsub >= AM_EVT_USER);

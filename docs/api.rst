@@ -493,6 +493,8 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygenfunction:: am_ao_state_ctor
 
+.. doxygenfunction:: am_ao_state_dtor
+
 .. doxygenfunction:: am_ao_subscribe
 
 .. doxygenfunction:: am_ao_unsubscribe

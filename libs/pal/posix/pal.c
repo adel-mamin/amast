@@ -440,7 +440,7 @@ void am_pal_dtor(void) {
     for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
         struct am_pal_mutex *mutex = &mutexes_[i];
         if (mutex->valid) {
-            int rc =pthread_mutex_destroy(&mutex->mutex);
+            int rc = pthread_mutex_destroy(&mutex->mutex);
             AM_ASSERT(0 == rc);
             mutex->valid = false;
         }

@@ -398,6 +398,11 @@ void am_ao_stop(struct am_ao *ao);
 void am_ao_state_ctor(const struct am_ao_state_cfg *cfg);
 
 /**
+ * Active object library state destructor.
+ */
+void am_ao_state_dtor(void);
+
+/**
  * Subscribe active object to \p event ID.
  *
  * The \p event ID must be smaller than the the number of elements

@@ -102,11 +102,18 @@ void am_pal_ctor(void) {
     uv_sem_init(&task->semaphore, 0);
 }
 
+/* callback to close handles */
+static void close_cb(uv_handle_t *handle, void *arg) {
+    (void)arg;
+    uv_close(handle, NULL);
+}
+
 void am_pal_dtor(void) {
     for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
         struct am_pal_mutex *mutex = &mutexes_[i];
         if (mutex->valid) {
             uv_mutex_destroy(&mutex->mutex);
+            mutex->valid = false;
         }
     }
     for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
@@ -116,9 +123,16 @@ void am_pal_dtor(void) {
             task->valid = false;
         }
     }
+    uv_mutex_destroy(&crit_section_);
+
+    /* close all handles */
+    uv_walk(loop_, close_cb, NULL);
+
+    /* run the loop one last time to process closing handles */
+    uv_run(loop_, UV_RUN_DEFAULT);
+
     uv_loop_close(loop_);
     free(loop_);
-    uv_mutex_destroy(&crit_section_);
 }
 
 void am_pal_crit_enter(void) { uv_mutex_lock(&crit_section_); }
@@ -159,6 +173,7 @@ void am_pal_mutex_destroy(int mutex) {
     int index = am_pal_index_from_id(mutex);
     AM_ASSERT(index < AM_COUNTOF(mutexes_));
     uv_mutex_destroy(&mutexes_[index].mutex);
+    mutexes_[index].valid = false;
 }
 
 static void task_entry_wrapper(void *arg) {

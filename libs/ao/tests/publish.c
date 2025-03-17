@@ -132,6 +132,8 @@ static void test_publish(void) {
     am_ao_run_all();
 
     AM_ASSERT('\0' == m_publish.log_buf[0]);
+
+    am_ao_state_dtor();
 }
 
 int main(void) {
