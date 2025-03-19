@@ -324,6 +324,9 @@ void am_ao_log_event_queues(
             continue;
         }
         struct am_queue *q = &ao->event_queue;
+        if (!am_queue_is_valid(q)) {
+            continue;
+        }
         const int cap = am_queue_get_capacity(q);
         const int nbusy = am_queue_get_nbusy(q);
         const int tnum = AM_MIN(num, nbusy);
