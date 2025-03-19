@@ -109,6 +109,12 @@ static void close_cb(uv_handle_t *handle, void *arg) {
 }
 
 void am_pal_dtor(void) {
+    for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
+        if (tasks_[i].valid) {
+            uv_thread_join(&tasks_[i].thread);
+            tasks_[i].valid = false;
+        }
+    }
     for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
         struct am_pal_mutex *mutex = &mutexes_[i];
         if (mutex->valid) {
@@ -128,10 +134,12 @@ void am_pal_dtor(void) {
     /* close all handles */
     uv_walk(loop_, close_cb, NULL);
 
-    /* run the loop one last time to process closing handles */
+    /* run the loop to process closing handles */
     uv_run(loop_, UV_RUN_DEFAULT);
+    uv_run(loop_, UV_RUN_NOWAIT);
 
-    uv_loop_close(loop_);
+    int rc = uv_loop_close(loop_);
+    AM_ASSERT(0 == rc);
     free(loop_);
 }
 
