@@ -41,6 +41,7 @@
 #include "ao/ao.h"
 
 #define AM_EVT_MIN AM_EVT_USER
+#define AM_EVT_SHUTDOWN (AM_EVT_USER + 1)
 
 static const struct am_event m_min_event = {.id = AM_EVT_MIN};
 
@@ -56,12 +57,19 @@ static struct loopback_test {
     int cnt;
 } m_loopback_test;
 
+static struct am_event event_shutdown_ = {.id = AM_EVT_SHUTDOWN};
+
 static int loopback_proc(struct loopback *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_MIN:
         AM_ASSERT(am_ao_get_own_prio() == (AM_AO_PRIO_MAX - 1));
         am_ao_post_fifo(&m_loopback_test.ao, event);
         return AM_HSM_HANDLED();
+
+    case AM_EVT_SHUTDOWN:
+        am_ao_stop(&me->ao);
+        return AM_HSM_HANDLED();
+
     default:
         break;
     }
@@ -82,7 +90,9 @@ static int loopback_test_proc(
         AM_ASSERT(am_ao_get_own_prio() == AM_AO_PRIO_MAX);
         ++me->cnt;
         if (100 == me->cnt) {
-            exit(0);
+            am_ao_post_fifo(&m_loopback.ao, &event_shutdown_);
+            am_ao_stop(&me->ao);
+            return AM_HSM_HANDLED();
         }
         am_ao_post_fifo(&m_loopback.ao, event);
         return AM_HSM_HANDLED();
