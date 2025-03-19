@@ -389,8 +389,8 @@ int am_event_get_ref_cnt(const struct am_event *event);
  *
  * @param queue   the event queue
  * @param event   the event to push
- * @param margin  free event queue slots to be available after the event was
- * pushed
+ * @param margin  free event queue slots to be available after
+ *                the event was pushed
  *
  * @retval AM_EVENT_RC_OK                  the event was pushed
  * @retval AM_EVENT_RC_OK_QUEUE_WAS_EMPTY  the event was pushed, queue was empty
@@ -419,6 +419,28 @@ enum am_event_rc am_event_push_back(
 );
 
 /**
+ * Push event to the back of event queue without using critical section
+ * (unsafe).
+ *
+ * Asserts if the event was not pushed.
+ *
+ * Thread unsafe.
+ *
+ * So far the only use of this function was as a part of the implementation
+ * of `am_timer_publish_fn` callback in timer module.
+ *
+ * @param queue  the event queue
+ * @param event  the event to push
+ *
+ * @retval AM_EVENT_RC_OK                  the event was pushed
+ * @retval AM_EVENT_RC_OK_QUEUE_WAS_EMPTY  the event was pushed, queue was empty
+ * @retval AM_EVENT_RC_ERR                 the event was not pushed
+ */
+enum am_event_rc am_event_push_back_unsafe(
+    struct am_queue *queue, const struct am_event *event
+);
+
+/**
  * Push event to the front of event queue with margin.
  *
  * Checks if there are more free queue slots available than \p margin.
@@ -434,8 +456,8 @@ enum am_event_rc am_event_push_back(
  *
  * @param queue   the event queue
  * @param event   the event to push
- * @param margin  free event queue slots to be available after the event was
- * pushed
+ * @param margin  free event queue slots to be available after
+ *                the event was pushed
  *
  * @retval AM_EVENT_RC_OK                  the event was pushed
  * @retval AM_EVENT_RC_OK_QUEUE_WAS_EMPTY  the event was pushed, queue was empty

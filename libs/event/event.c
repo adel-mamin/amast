@@ -377,6 +377,14 @@ enum am_event_rc am_event_push_back(
     return am_event_push_back_x(queue, event, /*margin=*/0);
 }
 
+enum am_event_rc am_event_push_back_unsafe(
+    struct am_queue *queue, const struct am_event *event
+) {
+    return am_event_push_x(
+        queue, event, /*margin=*/0, /*safe=*/false, am_queue_push_back
+    );
+}
+
 enum am_event_rc am_event_push_front_x(
     struct am_queue *queue, const struct am_event *event, int margin
 ) {
