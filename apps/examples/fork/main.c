@@ -270,7 +270,7 @@ int main(int argc, const char *argv[]) {
         /*arg=*/AM_CAST(void *, argv)
     );
 
-    for (;;) {
+    while (am_ao_get_cnt() > 0) {
         am_ao_run_all();
     }
 

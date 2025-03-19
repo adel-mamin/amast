@@ -62,7 +62,7 @@ AM_NORETURN static void ticker_task(void *param) {
     }
 }
 
-AM_NORETURN static void test_ringbuf_threading(void) {
+static void test_ringbuf_threading(void) {
     uint8_t buf[32];
 
     am_ringbuf_ctor(&g_ringbuf, buf, AM_COUNTOF(buf));
@@ -108,7 +108,7 @@ AM_NORETURN static void test_ringbuf_threading(void) {
         /*arg=*/NULL
     );
 
-    for (;;) {
+    while (am_ao_get_cnt() > 0) {
         am_ao_run_all();
     }
 

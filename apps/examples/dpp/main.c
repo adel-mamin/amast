@@ -101,13 +101,13 @@ AM_NORETURN void am_assert_failure(
     __builtin_trap();
 }
 
-AM_NORETURN static void ticker_task(void *param) {
+static void ticker_task(void *param) {
     (void)param;
 
     am_ao_wait_start_all();
 
     uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
-    for (;;) {
+    while (am_ao_get_cnt() > 0) {
         am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
         am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
@@ -173,7 +173,7 @@ int main(void) {
         /*arg=*/NULL
     );
 
-    for (;;) {
+    while (am_ao_get_cnt() > 0) {
         am_ao_run_all();
     }
 

@@ -134,7 +134,7 @@ int main(void) {
         /*init_event=*/NULL
     );
 
-    for (;;) {
+    while (am_ao_get_cnt() > 0) {
         am_ao_run_all();
     }
 
