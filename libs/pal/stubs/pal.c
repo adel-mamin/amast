@@ -35,6 +35,8 @@
 
 void am_pal_ctor(void) {}
 
+void am_pal_dtor(void) {}
+
 void am_pal_on_idle(void) {}
 
 void am_pal_crit_enter(void) {}
