@@ -148,7 +148,21 @@ bool am_ao_post_fifo_x(
     return (AM_EVENT_RC_OK == rc) || (AM_EVENT_RC_OK_QUEUE_WAS_EMPTY == rc);
 }
 
+static void am_ao_post_fifo_unsafe(
+    struct am_ao *ao, const struct am_event *event
+) {
+    AM_ASSERT(ao);
+    AM_ASSERT(event);
+
+    enum am_event_rc rc = am_event_push_back_unsafe(&ao->event_queue, event);
+    if (AM_EVENT_RC_OK_QUEUE_WAS_EMPTY == rc) {
+        am_ao_notify(ao);
+    }
+}
+
 void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event) {
+    AM_ASSERT(ao);
+    AM_ASSERT(event);
     bool posted = am_ao_post_fifo_x(ao, event, /*margin=*/0);
     AM_ASSERT(posted);
 }
@@ -284,7 +298,7 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     am_event_state_ctor(&cfg_event);
 
     struct am_timer_state_cfg cfg_timer = {
-        .post = (am_timer_post_fn)am_ao_post_fifo,
+        .post = (am_timer_post_fn)am_ao_post_fifo_unsafe,
         .crit_enter = cfg->crit_enter,
         .crit_exit = cfg->crit_exit,
     };

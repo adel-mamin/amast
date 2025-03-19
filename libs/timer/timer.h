@@ -50,7 +50,12 @@ typedef void (*am_timer_post_fn)(void *owner, const struct am_event *event);
 
 /**
  * Expired timer events are published using this callback.
+ *
  * Publishing is a one-to-many event delivery mechanism.
+ *
+ * Called from critical section. So the callback should not use critical
+ * sections in its implementation.
+ *
  */
 typedef void (*am_timer_publish_fn)(const struct am_event *event);
 

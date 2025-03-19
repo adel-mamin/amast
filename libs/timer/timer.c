@@ -213,11 +213,9 @@ void am_timer_tick(int domain) {
             me->cfg.crit_exit();
             me->cfg.publish(&t->event);
             me->cfg.crit_enter();
-        } else {
+        } else if (!timer->disarm_pending) {
             AM_ASSERT(me->cfg.post);
-            me->cfg.crit_exit();
             me->cfg.post(t->owner, &t->event);
-            me->cfg.crit_enter();
         }
     }
     me->cfg.crit_exit();
