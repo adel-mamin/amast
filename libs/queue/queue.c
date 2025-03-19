@@ -65,6 +65,10 @@ void am_queue_dtor(struct am_queue *queue) {
     memset(queue, 0, sizeof(*queue));
 }
 
+bool am_queue_is_valid(const struct am_queue *queue) {
+    return queue->ctor_called;
+}
+
 bool am_queue_is_empty(const struct am_queue *queue) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);

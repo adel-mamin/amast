@@ -74,6 +74,16 @@ void am_queue_ctor(
 void am_queue_dtor(struct am_queue *queue);
 
 /**
+ * Check if constructor was called for queue.
+ *
+ * @param queue  the queue
+ *
+ * @retval true   the queue is valid
+ * @retval false  the queue is invalid
+ */
+bool am_queue_is_valid(const struct am_queue *queue);
+
+/**
  * Check if queue is empty.
  *
  * @param queue  the queue

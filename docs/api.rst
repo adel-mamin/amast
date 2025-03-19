@@ -140,6 +140,8 @@ The source code of the corresponding header file is in `queue.h <https://github.
 
 .. doxygenfunction:: am_queue_dtor
 
+.. doxygenfunction:: am_queue_is_valid
+
 .. doxygenfunction:: am_queue_is_empty
 
 .. doxygenfunction:: am_queue_is_full
