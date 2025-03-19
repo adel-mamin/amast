@@ -206,10 +206,6 @@ int am_pal_task_create(
     AM_ASSERT(0 == ret);
     pthread_attr_destroy(&attr);
 
-    /* detach the thread so it cleans up after finishing */
-    ret = pthread_detach(task->thread);
-    AM_ASSERT(0 == ret);
-
     pthread_setname_np(task->thread, name);
 
     return am_pal_id_from_index(index);
@@ -437,6 +433,12 @@ void am_pal_ctor(void) {
 }
 
 void am_pal_dtor(void) {
+    for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
+        if (tasks_[i].valid) {
+            pthread_join(tasks_[i].thread, /*__thread_return=*/NULL);
+            tasks_[i].valid = false;
+        }
+    }
     for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
         struct am_pal_mutex *mutex = &mutexes_[i];
         if (mutex->valid) {
