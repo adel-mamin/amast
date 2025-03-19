@@ -53,9 +53,22 @@ struct am_ao *g_ao_philo[PHILO_NUM] = {
     &m_philo[4].ao,
 };
 
+static int philo_top(struct philo *me, const struct am_event *event);
 static int philo_thinking(struct philo *me, const struct am_event *event);
 static int philo_hungry(struct philo *me, const struct am_event *event);
 static int philo_eating(struct philo *me, const struct am_event *event);
+
+static int philo_top(struct philo *me, const struct am_event *event) {
+    switch (event->id) {
+    case EVT_SHUTDOWN:
+        am_timer_disarm(me->timer);
+        am_ao_stop(&me->ao);
+        return AM_HSM_HANDLED();
+    default:
+        break;
+    }
+    return AM_HSM_SUPER(am_hsm_top);
+}
 
 static int philo_thinking(struct philo *me, const struct am_event *event) {
     switch (event->id) {
@@ -76,7 +89,7 @@ static int philo_thinking(struct philo *me, const struct am_event *event) {
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return AM_HSM_SUPER(philo_top);
 }
 
 static int philo_hungry(struct philo *me, const struct am_event *event) {
@@ -95,7 +108,7 @@ static int philo_hungry(struct philo *me, const struct am_event *event) {
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return AM_HSM_SUPER(philo_top);
 }
 
 static int philo_eating(struct philo *me, const struct am_event *event) {
@@ -116,12 +129,13 @@ static int philo_eating(struct philo *me, const struct am_event *event) {
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return AM_HSM_SUPER(philo_top);
 }
 
 static int philo_init(struct philo *me, const struct am_event *event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_EAT);
+    am_ao_subscribe(&me->ao, EVT_SHUTDOWN);
     return AM_HSM_TRAN(philo_thinking);
 }
 

@@ -24,7 +24,6 @@
  * SOFTWARE.
  */
 
-#include <stdlib.h>
 #include <string.h>
 
 #include "common/compiler.h"
@@ -47,6 +46,8 @@ static struct table {
 } m_table;
 
 struct am_ao *g_ao_table = &m_table.ao;
+
+static struct am_event event_shutdown_ = {.id = EVT_SHUTDOWN};
 
 static int philo_is_eating(int philo) {
     AM_ASSERT(philo >= 0);
@@ -104,7 +105,8 @@ static void table_serve(int philo) {
         am_pal_printf("table session %d\n", m_table.nsession);
     }
     if (!m_table.nsession) {
-        exit(0);
+        am_ao_publish(&event_shutdown_);
+        am_ao_stop(&m_table.ao);
     }
 }
 
