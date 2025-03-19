@@ -412,7 +412,6 @@ enum am_event_rc am_event_push_back_x(
  *
  * @retval AM_EVENT_RC_OK                  the event was pushed
  * @retval AM_EVENT_RC_OK_QUEUE_WAS_EMPTY  the event was pushed, queue was empty
- * @retval AM_EVENT_RC_ERR                 the event was not pushed
  */
 enum am_event_rc am_event_push_back(
     struct am_queue *queue, const struct am_event *event
@@ -434,7 +433,6 @@ enum am_event_rc am_event_push_back(
  *
  * @retval AM_EVENT_RC_OK                  the event was pushed
  * @retval AM_EVENT_RC_OK_QUEUE_WAS_EMPTY  the event was pushed, queue was empty
- * @retval AM_EVENT_RC_ERR                 the event was not pushed
  */
 enum am_event_rc am_event_push_back_unsafe(
     struct am_queue *queue, const struct am_event *event
@@ -479,7 +477,6 @@ enum am_event_rc am_event_push_front_x(
  *
  * @retval AM_EVENT_RC_OK                  the event was pushed
  * @retval AM_EVENT_RC_OK_QUEUE_WAS_EMPTY  the event was pushed, queue was empty
- * @retval AM_EVENT_RC_ERR                 the event was not pushed
  */
 enum am_event_rc am_event_push_front(
     struct am_queue *queue, const struct am_event *event

@@ -338,7 +338,7 @@ static enum am_event_rc am_event_push_x(
     }
 
     int nfree = am_queue_get_nfree(queue);
-    if (margin && (nfree <= margin)) {
+    if (nfree <= margin) {
         me->crit_exit();
         am_event_free(&event);
         return AM_EVENT_RC_ERR;
@@ -374,15 +374,19 @@ enum am_event_rc am_event_push_back_x(
 enum am_event_rc am_event_push_back(
     struct am_queue *queue, const struct am_event *event
 ) {
-    return am_event_push_back_x(queue, event, /*margin=*/0);
+    enum am_event_rc rc = am_event_push_back_x(queue, event, /*margin=*/0);
+    AM_ASSERT(AM_EVENT_RC_ERR != rc);
+    return rc;
 }
 
 enum am_event_rc am_event_push_back_unsafe(
     struct am_queue *queue, const struct am_event *event
 ) {
-    return am_event_push_x(
+    enum am_event_rc rc = am_event_push_x(
         queue, event, /*margin=*/0, /*safe=*/false, am_queue_push_back
     );
+    AM_ASSERT(AM_EVENT_RC_ERR != rc);
+    return rc;
 }
 
 enum am_event_rc am_event_push_front_x(
@@ -396,7 +400,9 @@ enum am_event_rc am_event_push_front_x(
 enum am_event_rc am_event_push_front(
     struct am_queue *queue, const struct am_event *event
 ) {
-    return am_event_push_front_x(queue, event, /*margin=*/0);
+    enum am_event_rc rc = am_event_push_front_x(queue, event, /*margin=*/0);
+    AM_ASSERT(AM_EVENT_RC_ERR != rc);
+    return rc;
 }
 
 const struct am_event *am_event_pop_front(struct am_queue *queue) {
