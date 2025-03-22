@@ -156,7 +156,7 @@ static void am_ao_post_fifo_unsafe(
 
     enum am_event_rc rc = am_event_push_back_unsafe(&ao->event_queue, event);
     if (AM_EVENT_RC_OK_QUEUE_WAS_EMPTY == rc) {
-        am_ao_notify(ao);
+        am_ao_notify_unsafe(ao);
     }
 }
 
