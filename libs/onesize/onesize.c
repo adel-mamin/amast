@@ -136,26 +136,18 @@ void am_onesize_iterate_over_allocated(
     int iterated = 0;
     num = AM_MIN(num, hnd->ntotal);
 
-    hnd->crit_enter();
-
     for (int i = 0; (i < hnd->ntotal) && (iterated < num); ++i) {
         AM_ASSERT(AM_ALIGNOF_PTR(ptr) >= AM_ALIGNOF_SLIST_ITEM);
         struct am_slist_item *item = AM_CAST(struct am_slist_item *, ptr);
         if (am_slist_owns(&hnd->fl, item)) {
             continue; /* the item is free */
         }
-        /* the item is allocated */
-        hnd->crit_exit();
 
         cb(ctx, iterated, (char *)item, hnd->block_size);
-
-        hnd->crit_enter();
 
         ptr += hnd->block_size;
         ++iterated;
     }
-
-    hnd->crit_exit();
 }
 
 int am_onesize_get_nfree(const struct am_onesize *hnd) {
