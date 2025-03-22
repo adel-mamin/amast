@@ -87,9 +87,20 @@ extern struct am_ao_state am_ao_state_;
 /**
  * Notify active object about availability of new event(s).
  *
+ * Thread safe.
+ *
  * @param ao  the active object to notify
  */
 void am_ao_notify(const struct am_ao *ao);
+
+/**
+ * Notify active object about availability of new event(s).
+ *
+ * Thread unsafe.
+ *
+ * @param ao  the active object to notify
+ */
+void am_ao_notify_unsafe(const struct am_ao *ao);
 
 /**
  * Internal active object library state constructor.

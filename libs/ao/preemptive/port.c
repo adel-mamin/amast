@@ -175,6 +175,8 @@ void am_ao_notify(const struct am_ao *ao) {
     am_pal_task_notify(ao->task_id);
 }
 
+void am_ao_notify_unsafe(const struct am_ao *ao) { am_ao_notify(ao); }
+
 void am_ao_wait_start_all(void) {
     const struct am_ao_state *me = &am_ao_state_;
     am_pal_mutex_lock(me->startup_mutex);

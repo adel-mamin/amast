@@ -189,19 +189,21 @@ void am_ao_stop(struct am_ao *ao) {
     ao->ctor_called = false;
 }
 
-void am_ao_notify(const struct am_ao *ao) {
-    AM_ASSERT(ao);
-
+void am_ao_notify_unsafe(const struct am_ao *ao) {
     if (AM_PAL_TASK_ID_NONE == ao->task_id) {
         return;
     }
-    struct am_ao_state *me = &am_ao_state_;
-
-    me->crit_enter();
     am_bit_u64_set(&am_ready_aos_, ao->prio);
-    me->crit_exit();
-
     am_pal_task_notify(ao->task_id);
+}
+
+void am_ao_notify(const struct am_ao *ao) {
+    AM_ASSERT(ao);
+
+    struct am_ao_state *me = &am_ao_state_;
+    me->crit_enter();
+    am_ao_notify_unsafe(ao);
+    me->crit_exit();
 }
 
 void am_ao_wait_start_all(void) {}
