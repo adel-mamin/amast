@@ -234,7 +234,7 @@ AM_PRINTF(1, 2) int am_pal_printf(const char *fmt, ...);
  *
  * @return printf-like return value
  */
-AM_PRINTF(1, 2) int am_pal_printf_unsafe(const char *fmt, ...)
+AM_PRINTF(1, 2) int am_pal_printf_unsafe(const char *fmt, ...);
 
 /**
  * printf-like logging + flushing.

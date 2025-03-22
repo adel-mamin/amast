@@ -30,7 +30,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "common/compiler.h"
+#include "common/compiler.h" /* IWYU pragma: keep */
 #include "pal/pal.h"
 
 void am_pal_ctor(void) {}
@@ -100,7 +100,15 @@ void am_pal_sleep_ms(int ms) { (void)ms; }
 
 int am_pal_task_get_own_id(void) { return -1; }
 
-AM_PRINTF(1, 2) int am_pal_printf(const char *fmt, ...) {
+int am_pal_printf(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    int rc = vprintf(fmt, args);
+    va_end(args);
+    return rc;
+}
+
+int am_pal_printf_unsafe(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     int rc = vprintf(fmt, args);
