@@ -106,9 +106,6 @@ static void table_serve(int philo) {
         --m_table.nsession;
         am_pal_printf("table session %d\n", m_table.nsession);
     }
-    if (!m_table.nsession) {
-        am_ao_publish(&event_shutdown_);
-    }
 }
 
 static int table_shutting_down(struct table *me, const struct am_event *event) {
