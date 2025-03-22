@@ -217,6 +217,8 @@ void am_pal_sleep_till_ms(uint32_t ms);
 /**
  * printf-like logging.
  *
+ * Thread safe.
+ *
  * @param fmt  printf-like format string
  *
  * @return printf-like return value
@@ -224,7 +226,20 @@ void am_pal_sleep_till_ms(uint32_t ms);
 AM_PRINTF(1, 2) int am_pal_printf(const char *fmt, ...);
 
 /**
+ * printf-like logging.
+ *
+ * Thread unsafe.
+ *
+ * @param fmt  printf-like format string
+ *
+ * @return printf-like return value
+ */
+AM_PRINTF(1, 2) int am_pal_printf_unsafe(const char *fmt, ...)
+
+/**
  * printf-like logging + flushing.
+ *
+ * Thread safe.
  *
  * @param fmt  printf-like format string
  *
@@ -235,6 +250,8 @@ AM_PRINTF(1, 2) int am_pal_printff(const char *fmt, ...);
 /**
  * vprintf-like logging.
  *
+ * Thread safe.
+ *
  * @param fmt   printf-like format string
  * @param args  va_list argument returned by standard va_start() call
  *
@@ -244,6 +261,8 @@ int am_pal_vprintf(const char *fmt, va_list args);
 
 /**
  * vprintf-like logging + flushing.
+ *
+ * Thread safe.
  *
  * @param fmt   printf-like format string
  * @param args  va_list argument returned by standard va_start() call

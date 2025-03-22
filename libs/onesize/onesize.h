@@ -146,6 +146,8 @@ typedef void (*am_onesize_iterate_fn)(
  *
  * Could be used for inspection of allocated memory for debugging.
  *
+ * Not thread safe.
+ *
  * @param hnd  the allocator
  * @param num  the number of allocated blocks to iterate over
  * @param cb   the callback to call for each allocated memory block

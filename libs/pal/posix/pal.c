@@ -406,6 +406,14 @@ int am_pal_printf(const char *fmt, ...) {
     return rc;
 }
 
+int am_pal_printf_unsafe(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    int rc = vprintf(fmt, args);
+    va_end(args);
+    return rc;
+}
+
 int am_pal_printff(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);

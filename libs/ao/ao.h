@@ -489,6 +489,8 @@ bool am_ao_event_queue_is_empty(struct am_ao *ao);
  *
  * Used for debugging.
  *
+ * Not thread safe.
+ *
  * @param num  the number of events to log. Use -1 to log all events.
  * @param log  the logging callback
  */
