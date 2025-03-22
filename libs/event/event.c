@@ -134,10 +134,7 @@ struct am_event *am_event_allocate(int id, int size) {
     return event;
 }
 
-void am_event_free(const struct am_event **event) {
-    AM_ASSERT(event);
-    AM_ASSERT(*event); /* double free? */
-
+static void am_event_free_unsafe(const struct am_event **event) {
     if (am_event_is_static(*event)) {
         return; /* the event is statically allocated */
     }
@@ -145,20 +142,24 @@ void am_event_free(const struct am_event **event) {
     struct am_event *e = AM_CAST(struct am_event *, *event);
     AM_ASSERT(e->pool_index_plus_one <= AM_EVENT_POOLS_NUM_MAX);
 
-    struct am_event_state *me = &am_event_state_;
-    me->crit_enter();
-
     if (e->ref_counter > 1) {
         --e->ref_counter;
-        me->crit_exit();
         return;
     }
 
     am_onesize_free(&am_event_state_.pool[e->pool_index_plus_one - 1], e);
 
-    me->crit_exit();
-
     *event = NULL;
+}
+
+void am_event_free(const struct am_event **event) {
+    AM_ASSERT(event);
+    AM_ASSERT(*event); /* double free? */
+
+    struct am_event_state *me = &am_event_state_;
+    me->crit_enter();
+    am_event_free_unsafe(event);
+    me->crit_exit();
 }
 
 int am_event_get_pool_nfree_min(int index) {
@@ -339,8 +340,12 @@ static enum am_event_rc am_event_push_x(
 
     int nfree = am_queue_get_nfree(queue);
     if (nfree <= margin) {
-        me->crit_exit();
-        am_event_free(&event);
+        if (safe) {
+            me->crit_exit();
+            am_event_free(&event);
+        } else {
+            am_event_free_unsafe(&event);
+        }
         return AM_EVENT_RC_ERR;
     }
     AM_ASSERT(nfree > 0);
