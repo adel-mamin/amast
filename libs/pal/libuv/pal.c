@@ -218,8 +218,10 @@ int am_pal_task_create(
     task->entry = entry;
     task->arg = arg;
     task->id = am_pal_id_from_index(index);
-    uv_sem_init(&task->semaphore, 0);
-    uv_thread_create(&task->thread, task_entry_wrapper, task);
+    int rc = uv_sem_init(&task->semaphore, 0);
+    AM_ASSERT(rc == 0);
+    rc = uv_thread_create(&task->thread, task_entry_wrapper, task);
+    AM_ASSERT(rc == 0);
 
     return task->id;
 }
