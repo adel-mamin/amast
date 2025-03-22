@@ -53,6 +53,8 @@ struct am_ao *g_ao_philo[PHILO_NUM] = {
     &m_philo[4].ao,
 };
 
+static struct am_event event_shutdown_done_ = {.id = EVT_SHUTDOWN_DONE};
+
 static int philo_top(struct philo *me, const struct am_event *event);
 static int philo_thinking(struct philo *me, const struct am_event *event);
 static int philo_hungry(struct philo *me, const struct am_event *event);
@@ -62,6 +64,7 @@ static int philo_top(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case EVT_SHUTDOWN:
         am_timer_disarm(me->timer);
+        am_ao_post_fifo(g_ao_table, &event_shutdown_done_);
         am_ao_stop(&me->ao);
         return AM_HSM_HANDLED();
     default:

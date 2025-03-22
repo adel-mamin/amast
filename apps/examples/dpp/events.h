@@ -34,6 +34,7 @@ enum events {
     EVT_EAT,
     EVT_TIMEOUT,
     EVT_SHUTDOWN,
+    EVT_SHUTDOWN_DONE,
     AM_AO_EVT_PUB_MAX,
 
     EVT_HUNGRY,

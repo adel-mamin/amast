@@ -24,6 +24,7 @@
  * SOFTWARE.
  */
 
+#include <stdbool.h>
 #include <string.h>
 
 #include "common/compiler.h"
@@ -43,6 +44,7 @@ static struct table {
     struct am_ao ao;
     int philo[PHILO_NUM];
     int nsession;
+    int nshutdown;
 } m_table;
 
 struct am_ao *g_ao_table = &m_table.ao;
@@ -106,8 +108,26 @@ static void table_serve(int philo) {
     }
     if (!m_table.nsession) {
         am_ao_publish(&event_shutdown_);
-        am_ao_stop(&m_table.ao);
     }
+}
+
+static int table_shutting_down(struct table *me, const struct am_event *event) {
+    switch (event->id) {
+    case EVT_SHUTDOWN_DONE: {
+        ++me->nshutdown;
+        if (me->nshutdown == PHILO_NUM) {
+            am_ao_stop(&m_table.ao);
+        }
+        return AM_HSM_HANDLED();
+    }
+    default:
+        break;
+    }
+    return AM_HSM_SUPER(am_hsm_top);
+}
+
+static bool table_is_shutdown(const struct table *me) {
+    return me->nsession == 0;
 }
 
 static int table_serving(struct table *me, const struct am_event *event) {
@@ -117,6 +137,10 @@ static int table_serving(struct table *me, const struct am_event *event) {
         AM_ASSERT(!philo_is_hungry(hungry->philo));
         if (table_can_serve(hungry->philo)) {
             table_serve(hungry->philo);
+            if (table_is_shutdown(me)) {
+                am_ao_publish(&event_shutdown_);
+                return AM_HSM_TRAN(table_shutting_down);
+            }
             return AM_HSM_HANDLED();
         }
         philo_mark_hungry(hungry->philo);
@@ -138,6 +162,10 @@ static int table_serving(struct table *me, const struct am_event *event) {
             if (table_can_serve(right)) {
                 table_serve(right);
             }
+        }
+        if (table_is_shutdown(me)) {
+            am_ao_publish(&event_shutdown_);
+            return AM_HSM_TRAN(table_shutting_down);
         }
         return AM_HSM_HANDLED();
     }
