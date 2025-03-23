@@ -86,6 +86,12 @@ uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms) {
     return 0;
 }
 
+uint32_t am_pal_time_get_ms_from_tick(int domain, uint32_t tick) {
+    (void)domain;
+    (void)tick;
+    return 0;
+}
+
 void am_pal_sleep_ticks(int domain, int ticks) {
     (void)domain;
     (void)ticks;
