@@ -58,11 +58,11 @@
     ((int)(sizeof(arr) / sizeof(0 [arr]) / !(sizeof(arr) % sizeof(0 [arr]))))
 #endif /* __cppcheck__ */
 
-/** Returns maximum element */
+/** Returns maximum element. */
 #define AM_MAX(a, b) ((a) > (b) ? (a) : (b))
-/** Returns minimum element */
+/** Returns minimum element. */
 #define AM_MIN(a, b) ((a) < (b) ? (a) : (b))
-/** Returns absolute value */
+/** Returns absolute value. */
 #define AM_ABS(x) (((x) >= 0) ? (x) : -(x))
 
 #ifdef __FILE_NAME__
@@ -76,7 +76,7 @@ AM_NORETURN void am_assert_failure(
     const char *assertion, const char *file, int line
 );
 
-/** Assert macro */
+/** Assert macro. */
 #define AM_ASSERT(x) \
     AM_LIKELY(x) ? (void)(0) : am_assert_failure(#x, AM_FILE_NAME, __LINE__)
 
@@ -87,36 +87,36 @@ AM_NORETURN void am_assert_failure(
 #define AM_ISNAN(x) ((x) != (x))
 
 /**
-   Determines whether the memory architecture of current processor is
-   little-endian.
-
-   @retval true  Little-endian
-   @retval false Not little-endian
+ * Determines whether the memory architecture of current processor is
+ * little-endian.
+ *
+ * @retval true   little-endian
+ * @retval false  not little-endian
  */
 #define AM_IS_LITTLE_ENDIAN() (((*(char *)"21") & 0xFF) == '2')
 
 /**
-   Determines whether the memory architecture of current processor is
-   big-endian.
-
-   @retval true  Big-endian
-   @retval false Not big-endian
+ * Determines whether the memory architecture of current processor is
+ * big-endian.
+ *
+ * @retval true   big-endian
+ * @retval false  not big-endian
  */
 #define AM_IS_BIG_ENDIAN() (((*(char *)"21") & 0xFF) == '1')
 
-/** Convert degrees to radians */
+/** Convert degrees to radians. */
 #define AM_DEG2RAD(x) ((x) * (PI / 180.))
 
-/** Convert radians to degrees */
+/** Convert radians to degrees. */
 #define AM_RAD2DEG(x) ((x) * (180. / PI))
 
-/** Do division and round up the result */
+/** Do division and round up the result. */
 #define AM_DIV_CEIL(n, d) ((n) / (d) + ((n) % (d) != 0))
 
-/** Return number of bits in the representation of the given parameter */
+/** Return number of bits in the representation of the given parameter. */
 #define AM_BITS_IN_REPRESENTATION(x) ((int)(sizeof(x) * CHAR_BIT))
 
-/** A value with a magnitude of to and the sign of from */
+/** A value with a magnitude of to and the sign of from. */
 #define AM_COPYSIGN(to, from) (((from) > 0) ? (to) : -(to))
 
 /** Taken from http://nullprogram.com/blog/2015/02/17/ */
@@ -128,13 +128,13 @@ AM_NORETURN void am_assert_failure(
  * https://stackoverflow.com/questions/3378560/how-to-disable-gcc-warnings-for-a-few-lines-of-code
  */
 
-/** Stringification macro */
+/** Stringification macro. */
 #define AM_STRINGIFY_(s) #s
 #define AM_STRINGIFY(s) AM_STRINGIFY_(s)
-/** Join x and y together */
+/** Join x and y together. */
 #define AM_JOINSTR_(x, y) AM_STRINGIFY(x##y)
 
-/** Counts the number of trailing zeros in a word */
+/** Counts the number of trailing zeros in a word. */
 #define AM_COUNT_TRAILING_ZEROS(word)           \
     EXTENSION({                                 \
         int ret__;                              \
@@ -180,35 +180,35 @@ AM_NORETURN void am_assert_failure(
         }                      \
     } while (0)
 
-/** Run \p cmd immediately and then repeat every \p ms milliseconds */
-#define AM_DO_EACH_MS(ms, cmd)                    \
-    do {                                          \
-        if ((ms) < 0) {                           \
-            break;                                \
-        }                                         \
-        uint32_t now_ms__ = am_pal_time_get_ms(); \
-        static uint32_t prev_ms__ = 0;            \
-        static char armed__ = 0;                  \
-        static int elapsed_ms__ = 0;              \
-        if (!armed__) {                           \
-            prev_ms__ = now_ms__;                 \
-            armed__ = 1;                          \
-            /* run cmd the first time around */   \
-            elapsed_ms__ = ms;                    \
-        }                                         \
-        elapsed_ms__ += now_ms__ - prev_ms__;     \
-        prev_ms__ = now_ms__;                     \
-        if (elapsed_ms__ < (ms)) {                \
-            break;                                \
-        }                                         \
-        elapsed_ms__ = 0;                         \
-        cmd                                       \
+/** Run \p cmd immediately and then repeat every \p ms milliseconds. */
+#define AM_DO_EACH_MS(ms, cmd)                       \
+    do {                                             \
+        if ((ms) < 0) {                              \
+            break;                                   \
+        }                                            \
+        uint32_t now_ms__ = am_pal_time_get_ms();    \
+        static uint32_t prev_ms__ = 0;               \
+        static char armed__ = 0;                     \
+        static int elapsed_ms__ = 0;                 \
+        if (!armed__) {                              \
+            prev_ms__ = now_ms__;                    \
+            armed__ = 1;                             \
+            /* run cmd the first time around */      \
+            elapsed_ms__ = ms;                       \
+        }                                            \
+        elapsed_ms__ += (int)(now_ms__ - prev_ms__); \
+        prev_ms__ = now_ms__;                        \
+        if (elapsed_ms__ < (ms)) {                   \
+            break;                                   \
+        }                                            \
+        elapsed_ms__ = 0;                            \
+        cmd                                          \
     } while (0)
 
-/** Test \p d1 and \p d2 for equality within \p tolerance */
+/** Test \p d1 and \p d2 for equality within \p tolerance. */
 #define AM_DOUBLE_EQ(d1, d2, tolerance) (fabs((d1) - (d2)) <= (tolerance))
 
-/** Test \p d1 and \p d2 for equality within \p tolerance */
+/** Test \p d1 and \p d2 for equality within \p tolerance. */
 #define AM_FLOAT_EQ(d1, d2, tolerance) (fabsf((d1) - (d2)) <= (tolerance))
 
 #endif /* AM_MACROS_H_INCLUDED */

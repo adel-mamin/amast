@@ -33,7 +33,7 @@
 #ifndef AM_ALIGNMENT_H_INCLUDED
 #define AM_ALIGNMENT_H_INCLUDED
 
-/** The maximum compiler alignment [bytes] */
+/** The maximum compiler alignment [bytes]. */
 #if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L))
 #include <stddef.h>
 #define AM_ALIGN_MAX AM_ALIGNOF(max_align_t)
@@ -52,7 +52,7 @@
     ((int)(1U << (unsigned)__builtin_ctz(AM_CAST(unsigned, ptr))))
 
 /**
- * Align pointer to the bigger value, which has \p align alignment
+ * Align pointer to the bigger value, which has \p align alignment.
  *
  * @param ptr    the pointer to align
  * @param align  the alignment
@@ -64,7 +64,7 @@
               ~(uintptr_t)((align) - 1)))
 
 /**
- * Align pointer to the smaller value, which has \p align alignment
+ * Align pointer to the smaller value, which has \p align alignment.
  *
  * @param ptr    the pointer to align
  * @param align  the alignment
@@ -75,13 +75,15 @@
     ((void *)((uintptr_t)(ptr) & ~(uintptr_t)((align) - 1)))
 
 /**
- * Return 'size' + the byte difference between aligned and unaligned 'size'
+ * Return \p size + the byte difference between aligned and unaligned \p size.
  *
  * For example,
  *
- * AM_ALIGN_SIZE(3, 4) == 4
- * AM_ALIGN_SIZE(4, 4) == 4
- * AM_ALIGN_SIZE(5, 4) == 8
+ * `AM_ALIGN_SIZE(3, 4) == 4`
+ *
+ * `AM_ALIGN_SIZE(4, 4) == 4`
+ *
+ * `AM_ALIGN_SIZE(5, 4) == 8`
  */
 #define AM_ALIGN_SIZE(size, align)                       \
     ((int)(((unsigned)(size) + (unsigned)(align) - 1u) & \
