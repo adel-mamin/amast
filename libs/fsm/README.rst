@@ -53,18 +53,23 @@ Example FSM
 Below is an example of a simple FSM with three states
 (`Idle`, `Processing`, and `Completed`) and basic transitions:
 
-::
+.. uml::
 
-          * Initial State
-          |
-      +---v------+    Start     +------------+
-      |   Idle   |------------->| Processing |
-      +----^-----+              +------------+
-           |                         |
-           | Reset                   | Complete
-           |     +-------------+     |
-           +-----|  Completed  <-----+
-                 +-------------+
+    @startuml
+
+    left to right direction
+
+    [*] --> Idle
+
+    state Idle
+    state Processing
+    state Completed
+
+    Idle --> Processing : Start
+    Processing --> Completed : Complete
+    Completed --> Idle : Reset
+
+    @enduml
 
 This FSM transitions from `Idle` to `Processing` upon receiving a `Start` event,
 completes the processing, and then returns to `Idle` with a `Reset` event.
@@ -171,16 +176,33 @@ Transition To History
 Transition to history is a useful technique that is convenient to apply in
 certain use cases. It does not require to use any dedicated FSM API.
 
-Given the following example:
+Given the following three states:
 
-::
+.. uml::
 
-   +---+   +---+  +---+
-   | A |   | B |  | C |
-   +---+   +---+  +---+
+    @startuml
+
+    [*] --> A
+
+    state A #LightBlue {
+        C --> [H] : E4
+    }
+    state B #LightBlue {
+        C --> [H] : E4
+    }
+    state C #LightBlue
+
+    A --> C : E1
+    A --> B : E2
+    B --> C : E3
+
+    @enduml
 
 the transition to history technique can be
-demonstrated as follows. Assume that the FSM is in the state *A*.
+demonstrated as follows. Assume that transition to the state *C* may
+happen from state *A* or state *B*. As an example, assume the the FSM
+is in the state *A*.
+
 The user code stores the current state in a local variable of type
 **am_fsm_state_fn**. This is done with:
 
@@ -203,22 +225,26 @@ The user code stores the current state in a local variable of type
        return AM_FSM_HANDLED();
    }
 
-Then the transition to state *C* happens, which is then followed by a request
+Then the transition to the state *C* happens, which is then followed by a request
 to transition back to the previous state. Since the previous state is captured
-in **me->history** it can be achieved by doing this:
+in **me->history** it can be done by doing this:
 
 .. code-block:: C
 
    static enum am_fsm_rc C(struct foo *me, const struct event *event) {
        switch (event->id) {
-       case FSM_EVT_FOO:
+       case FSM_EVT_E4:
            return AM_FSM_TRAN(me->history);
        ...
        }
        return AM_FSM_HANDLED();
    }
 
-So, that is essentially all about it.
+As you can see the state *C* does not need to specify the previous
+state explicitly - it simply uses whatever state was previously stored in
+**me->history** as the target state of the transition.
+
+So, this is essentially all about it.
 
 Another example of the usage of the transition to history technique can be seen
 in **tests/history.c** unit test.

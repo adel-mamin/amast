@@ -592,6 +592,8 @@ The HSM topology:
 
    @startuml
 
+   left to right direction
+
    [*] --> defer_s1
 
    state am_hsm_top {
@@ -637,6 +639,8 @@ The HSM topology:
 
    @startuml
 
+   left to right direction
+
    [*] --> dtor_s
 
    state am_hsm_top {
@@ -663,6 +667,8 @@ The HSM topology:
 .. uml::
 
     @startuml
+
+    left to right direction
 
     [*] --> open : door open
     [*] --> closed : door closed
