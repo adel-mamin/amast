@@ -66,7 +66,7 @@ port to you project:
 
 If you want to run Amast unit tests, then also include `amast_test.h` and `amast_test.c`.
 
-`Makefile` is available for optional use. Run `make test` to run unit tests.
+`Makefile` is available for optional use. Run `make test` to run the unit tests.
 
 ## Features, Bugs, etc.
 
