@@ -257,7 +257,7 @@ AM_PRINTF(1, 2) int am_pal_printff(const char *fmt, ...);
  *
  * @return vprintf-like return value
  */
-int am_pal_vprintf(const char *fmt, va_list args);
+AM_PRINTF(1, 0) int am_pal_vprintf(const char *fmt, va_list args);
 
 /**
  * vprintf-like logging + flushing.
@@ -269,7 +269,7 @@ int am_pal_vprintf(const char *fmt, va_list args);
  *
  * @return vprintf-like return value
  */
-int am_pal_vprintff(const char *fmt, va_list args);
+AM_PRINTF(1, 0) int am_pal_vprintff(const char *fmt, va_list args);
 
 /** Flush am_pal_printf() intermediate buffer. */
 void am_pal_flush(void);
