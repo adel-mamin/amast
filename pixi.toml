@@ -31,6 +31,8 @@ stubs = { depends-on = ["setup_stubs", "libs_stubs", "cspell", "doxygen", "sphin
 posix = { depends-on = ["setup_posix", "libs_posix", "test_posix"] }
 libuv = { depends-on = ["setup_libuv", "libs_libuv", "test_libuv"] }
 
+docs = { depends-on = ["setup_stubs", "doxygen", "sphinx"] }
+
 all = { depends-on = ["stubs", "posix", "libuv"] }
 
 [dependencies]
