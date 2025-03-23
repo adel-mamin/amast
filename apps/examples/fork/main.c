@@ -53,7 +53,6 @@
 #include "common/macros.h"
 #include "event/event.h"
 #include "timer/timer.h"
-#include "async/async.h"
 #include "ao/ao.h"
 #include "pal/pal.h"
 #include "hsm/hsm.h"
@@ -80,27 +79,23 @@ static struct am_ao_subscribe_list m_pubsub_list[EVT_PUB_MAX];
 struct progress {
     struct am_ao ao;
     int progress_ticks;
-    struct am_async async;
     struct am_timer timer;
+    int iprog;
+    unsigned prog_ms;
+    int rc;
 };
 
-static enum am_async_rc fork_progress(struct progress *me) {
-    AM_ASYNC_BEGIN(&me->async);
-
-    am_pal_printff("\r|");
-    AM_ASYNC_YIELD();
-
-    am_pal_printff("\r/");
-    AM_ASYNC_YIELD();
-
-    am_pal_printff("\r-");
-    AM_ASYNC_YIELD();
-
-    am_pal_printff("\r\\");
-
-    AM_ASYNC_END();
-
-    return AM_ASYNC_RC(&me->async);
+static enum am_hsm_rc progress_done(
+    struct progress *me, const struct am_event *event
+) {
+    switch (event->id) {
+    case AM_EVT_HSM_ENTRY:
+        exit(me->rc);
+        return AM_HSM_HANDLED();
+    default:
+        break;
+    }
+    return AM_HSM_SUPER(am_hsm_top);
 }
 
 static enum am_hsm_rc progress_top(
@@ -108,24 +103,29 @@ static enum am_hsm_rc progress_top(
 ) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
-        am_async_ctor(&me->async);
         am_timer_arm_ticks(&me->timer, me->progress_ticks, me->progress_ticks);
         return AM_HSM_HANDLED();
 
     case AM_EVT_HSM_EXIT:
         am_timer_disarm(&me->timer);
+        am_pal_printff("\r                  \r"); /* clean the terminal output*/
         return AM_HSM_HANDLED();
 
     case EVT_FORK_SUCCESS:
-        exit(0);
+        me->rc = 0;
+        return AM_HSM_TRAN(progress_done);
 
     case EVT_FORK_FAILURE:
-        exit(-1);
+        me->rc = -1;
+        return AM_HSM_TRAN(progress_done);
 
-    case EVT_PROGRESS_TICK:
-        (void)fork_progress(me);
+    case EVT_PROGRESS_TICK: {
+        static const char prog[] = {'|', '/', '-', '\\'};
+        am_pal_printff("\r%c running %us", prog[me->iprog], me->prog_ms / 1000);
+        me->iprog = (me->iprog + 1) % AM_COUNTOF(prog);
+        me->prog_ms += PROGRESS_UPDATE_RATE_MS;
         return AM_HSM_HANDLED();
-
+    }
     default:
         break;
     }
