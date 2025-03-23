@@ -124,7 +124,7 @@ RUN_CLANG_TIDY = find_program('run-clang-tidy', required: false, disabler: true)
 CPPCHECK = find_program('cppcheck', required: false, disabler: true)
 FIND = find_program('find', required: false, disabler: true)
 PYTHON = find_program('python3')
-IWYU = find_program('include-what-you-use', required: false, disabler: true)
+IWYU = find_program('iwyu_tool.py', required: false, disabler: true)
 CSPELL = find_program('cspell', required: false, disabler: true)
 GENERATE_LIB_SIZES = find_program('tools' / 'generate_lib_sizes.py')
 DOXYGEN = find_program('doxygen')
@@ -232,7 +232,7 @@ run_target(
     'iwyu',
     command: [
         PYTHON,
-        '@0@/.pixi/envs/default/bin/iwyu_tool.py'.format(meson.project_source_root()),
+        IWYU,
         '-j',
         '@0@'.format(run_command('nproc', check: true).stdout().strip()),
         '-p',
