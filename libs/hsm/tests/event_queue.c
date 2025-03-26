@@ -27,7 +27,23 @@
 /**
  * Test HSM with event queue.
  * Test event allocation, sending and garbage collection.
- * HSM has two states: hsmq_a and hsmq_b.
+ *
+ * HSM topology:
+ *
+ *  +------------+
+ *  | hsmq_sinit |
+ *  +------+-----+
+ *         |
+ *  +------|--------------------------+
+ *  |      |    am_hsm_top            |
+ *  | +----v-----+       +----------+ |
+ *  | |          |       | B/       | |
+ *  | |          |       | C/       | |
+ *  | |          |   A   |          | |
+ *  | |  hsmq_a  +------->  hsmq_b  | |
+ *  | +----------+       +----------+ |
+ *  +---------------------------------+
+ *
  * On handling of event A HSM allocates event B, sends it to itself and
  * transition to state hsm_b, where the event B is processed.
  */

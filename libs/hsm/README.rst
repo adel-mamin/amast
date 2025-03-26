@@ -134,27 +134,26 @@ Example HSM
 In order to explore how event handling and transitions work in an HSM,
 consider the below state machine:
 
-::
+.. uml::
 
-       +----------------------------------------------+
-       |                                              |
-       |                am_hsm_top                    |
-       |      (HSM top superstate am_hsm_top())       |
-       |                                              |
-       |  +---------------------------------+  +---+  |
-       |  |  A                              |  | F |  |
-       |  |  +-----------+  +------------+  |  +---+  |
-       |  |  |  B        |  |  D    *    |  |         |
-       |  |  |           |  |       |    |  |         |
-       |  |  |  +-----+  |  |  +----v-+  |  |         |
-       |  |  |  |  C  |  |  |  |   E  |  |  |         |
-       |  |  |  +-----+  |  |  +------+  |  |         |
-       |  |  |           |  |            |  |         |
-       |  |  +-----------+  +------------+  |         |
-       |  |                                 |         |
-       |  +---------------------------------+         |
-       |                                              |
-       +----------------------------------------------+
+    @startuml
+
+    [*] --> A
+
+    state am_hsm_top #LightBlue {
+        state A #LightBlue {
+            state B #LightBlue {
+                state C #LightBlue
+            }
+            state D #LightBlue {
+                [*] --> E
+                state E #LightBlue
+            }
+        }
+        state F #LightBlue
+    }
+
+    @enduml
 
 State Relations
 ===============
@@ -427,28 +426,30 @@ The main purpose of submachines is code reuse.
 Here is an example of submachine with one reusable state *s1*.
 It shows two instances of *s1* called *s1/0* and *s1/1*.
 
-::
+.. uml::
 
-            *
-       +----|----------------------------------+
-       |    |          am_hsm_top              |
-       |    | (HSM top superstate am_hsm_top())|
-       |    |                                  |
-       |  +-v-------------------------------+  |
-       |  |               s                 |  |
-       |  |  +-----------+  +------------+  |  |
-       |  |  |    s1/0   |  |    s1/1    |  |  |
-       |  |  |   *       |  |   *        |  |  |
-       |  |  |   |       |  |   |        |  |  |
-       |  |  | +-v-----+ |  | +-v------+ |  |  |
-       |  |  | |   s2  | |  | |   s3   | |  |  |
-       |  |  | +-------+ |  | +--------+ |  |  |
-       |  |  +---^-------+  +---^--------+  |  |
-       |  |      | FOO          | BAR       |  |
-       |  +------+-------^--+---+-----------+  |
-       |                 |  |                  |
-       |                 +--+ BAZ              |
-       +---------------------------------------+
+    @startuml
+
+    [*] --> s
+
+    state am_hsm_top #LightBlue {
+        state s #LightBlue {
+            state s1_0 #LightBlue {
+                [*] --> s2
+                state s2 #LightBlue
+            }
+            state s1_1 #LightBlue {
+                [*] --> s3
+                state s3 #LightBlue
+            }
+        }
+
+        s --> s1_0 : FOO
+        s --> s1_1 : BAR
+        s --> s : BAZ
+    }
+
+    @enduml
 
 Here is how it is coded in pseudocode:
 
@@ -526,8 +527,8 @@ Different libraries are mixed together to demonstrate:
 - how HSM can send events to itself
 - how the events sent to itself are then dispatched back the the HSM
 - how events can be allocated on stack or from event memory pool
-- how the events allocated from the memory pool are then garbage
-  collected by the event library
+- how the events allocated from the memory pool are then freed
+  by the event library
 
 The key libraries at play here are:
 
@@ -540,21 +541,28 @@ The source code is in `event_queue.c <https://github.com/adel-mamin/amast/blob/m
 
 The HSM topology:
 
-::
+.. uml::
 
-    +------------+
-    | hsmq_sinit |
-    +------+-----+
-           |
-    +------|--------------------------+
-    |      |    am_hsm_top            |
-    | +----v-----+       +----------+ |
-    | |          |       | B/       | |
-    | |          |       | C/       | |
-    | |          |   A   |          | |
-    | |  hsmq_a  +------->  hsmq_b  | |
-    | +----------+       +----------+ |
-    +---------------------------------+
+    @startuml
+
+    left to right direction
+
+    [*] --> hsmq_a
+
+    state am_hsm_top #LightBlue {
+        state hsmq_a #LightBlue
+        state hsmq_b #LightBlue {
+        }
+
+        hsmq_a --> hsmq_b : A
+    }
+
+    hsmq_b : B /
+    hsmq_b : C /
+
+    @enduml
+
+::
 
 , where
 
@@ -596,9 +604,9 @@ The HSM topology:
 
    [*] --> defer_s1
 
-   state am_hsm_top {
-       state defer_s1
-       state defer_s2
+   state am_hsm_top #LightBlue {
+       state defer_s1 #LightBlue
+       state defer_s2 #LightBlue
    }
 
    defer_s1 : A / defer
@@ -643,8 +651,8 @@ The HSM topology:
 
    [*] --> dtor_s
 
-   state am_hsm_top {
-       state dtor_s
+   state am_hsm_top #LightBlue {
+       state dtor_s #LightBlue
    }
 
    @enduml
@@ -673,13 +681,14 @@ The HSM topology:
     [*] --> open : door open
     [*] --> closed : door closed
 
-    state closed {
+    state closed #LightBlue {
         [*] --> H
         H --> off
         state H <<history>>
-        state on
-        state off
+        state on #LightBlue
+        state off #LightBlue
     }
+    state open #LightBlue
 
     open --> closed : close door
     closed --> open : open door

@@ -61,9 +61,9 @@ Below is an example of a simple FSM with three states
 
     [*] --> Idle
 
-    state Idle
-    state Processing
-    state Completed
+    state Idle #LightBlue
+    state Processing #LightBlue
+    state Completed #LightBlue
 
     Idle --> Processing : Start
     Processing --> Completed : Complete
