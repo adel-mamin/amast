@@ -713,3 +713,38 @@ The test steps:
 2. Send **ON** event. Check that the current state is **on**.
 3. Send **OPEN** event. Check that the current state is **open**.
 4. Send **CLOSE** event. Check that the current state is **on**.
+
+am_hsm_top as NCA
+-----------------
+
+Demonstrates the use of :cpp:func:`am_hsm_top()` as nearest common ancestor (NCA).
+
+The source code is in `hsm_top_as_nca.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/hsm_top_as_nca.c>`_.
+
+The HSM topology:
+
+.. uml::
+
+    @startuml
+
+    left to right direction
+
+    [*] --> nca_s1
+
+    state am_hsm_top #LightBlue {
+        state nca_s1 #LightBlue {
+            [*] --> nca_s11
+            state nca_s11 #LightBlue
+        }
+        state nca_s2 #LightBlue
+    }
+
+    nca_s11 --> nca_s2 : HSM_EVT_A
+
+    @enduml
+
+The key thing to notice here is that NCA of **nca_s11** and **nca_s2** is :cpp:func:`am_hsm_top()`.
+
+The test checks that the transition from **nca_s11** to **nca_s2** is done correctly
+on the reception of **HSM_EVT_A**.
+
