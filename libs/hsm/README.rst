@@ -681,14 +681,16 @@ The HSM topology:
     [*] --> open : door open
     [*] --> closed : door closed
 
-    state closed #LightBlue {
-        [*] --> H
-        H --> off
-        state H <<history>>
-        state on #LightBlue
-        state off #LightBlue
+    state am_hsm_top #LightBlue {
+        state closed #LightBlue {
+            [*] --> H
+            H --> off
+            state H <<history>>
+            state on #LightBlue
+            state off #LightBlue
+        }
+        state open #LightBlue
     }
-    state open #LightBlue
 
     open --> closed : close door
     closed --> open : open door
@@ -748,3 +750,37 @@ The key thing to notice here is that NCA of **nca_s11** and **nca_s2** is :cpp:f
 The test checks that the transition from **nca_s11** to **nca_s2** is done correctly
 on the reception of **HSM_EVT_A**.
 
+HSM Event Redispatch
+--------------------
+
+Demonstrates the use of event redispatch with the :c:macro:`AM_HSM_TRAN_REDISPATCH()` macro.
+
+The source code is in `redispatch.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/redispatch.c>`_.
+
+The HSM topology:
+
+.. uml::
+
+    @startuml
+
+    left to right direction
+
+    [*] --> redisp_s1
+
+    state am_hsm_top #LightBlue {
+        state redisp_s1 #LightBlue
+        state redisp_s2 #LightBlue
+    }
+
+    redisp_s1 --> redisp_s2 : HSM_EVT_A
+    redisp_s1 : HSM_EVT_B / me->foo2 = 2
+
+    redisp_s2 --> redisp_s1 : HSM_EVT_B
+    redisp_s2 : HSM_EVT_A / me->foo = 1
+
+    @enduml
+
+Notice in the source code how event **HSM_EVT_A** is redispatched to a new state **redisp_s2**
+using :c:macro:`AM_HSM_TRAN_REDISPATCH()` macro and then handled in the new state.
+
+Same happens with the event **HSM_EVT_B** in the state **redisp_s2**.
