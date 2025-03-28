@@ -37,7 +37,7 @@
 #include "timer/timer.h"
 #include "pal/pal.h"
 
-/** Timer module state descriptor. */
+/** Timer library state descriptor. */
 struct am_timer_state {
     /**
      * Timer event domains.
@@ -58,7 +58,7 @@ struct am_timer_state {
      * between timer owners the ticker thread/ISR.
      */
     struct am_slist domains_pend[AM_PAL_TICK_DOMAIN_MAX];
-    /** timer module configuration */
+    /** timer library configuration */
     struct am_timer_state_cfg cfg;
 };
 

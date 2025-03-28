@@ -45,7 +45,7 @@
 
 #include "ao/ao.h"
 
-/** Active object (AO) module internal state instance. */
+/** Active object (AO) library internal state instance. */
 struct am_ao_state am_ao_state_;
 
 bool am_ao_event_queue_is_empty(struct am_ao *ao) {

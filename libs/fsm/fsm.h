@@ -27,7 +27,7 @@
 /**
  * @file
  *
- * Finite State Machine (FSM) module API declaration.
+ * Finite State Machine (FSM) libary API declaration.
  * Configuration defines:
  * AM_FSM_SPY - enables FSM spy callback support for debugging
  */

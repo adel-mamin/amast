@@ -27,7 +27,7 @@
 /**
  * @file
  *
- * Interpreted Hierarchical State Machine (IHSM) module API declaration.
+ * Interpreted Hierarchical State Machine (IHSM) library API declaration.
  *
  * Configuration defines:
  *

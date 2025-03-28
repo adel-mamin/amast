@@ -28,7 +28,7 @@
 /**
  * @file
  *
- * Hierarchical State Machine (HSM) module API declaration.
+ * Hierarchical State Machine (HSM) library API declaration.
  * Configuration defines:
  * AM_HSM_SPY - enables HSM spy callback support for debugging
  * AM_HSM_HIERARCHY_DEPTH_MAX - HSM hierarchy maximum depth

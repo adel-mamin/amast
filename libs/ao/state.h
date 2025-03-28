@@ -43,7 +43,7 @@ extern "C" {
 #define AM_EVENT_HAS_PUBSUB_ID(event) \
     (((const struct am_event *)(event))->id < am_ao_state_.nsub)
 
-/** Active object module internal state. */
+/** Active object library internal state. */
 struct am_ao_state {
     /** User defined pubsub list. */
     struct am_ao_subscribe_list *sub;

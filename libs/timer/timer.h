@@ -60,7 +60,7 @@ typedef void (*am_timer_post_fn)(void *owner, const struct am_event *event);
 typedef void (*am_timer_publish_fn)(const struct am_event *event);
 
 /**
- * Timer module state configuration.
+ * Timer library state configuration.
  *
  * Either post or publish callback must be non-NULL.
  */
@@ -124,7 +124,7 @@ extern "C" {
  * Timer state constructor.
  *
  * @param cfg  timer state configuration.
- *             The timer module makes an internal copy of the configuration.
+ *             The timer library makes an internal copy of the configuration.
  */
 void am_timer_state_ctor(const struct am_timer_state_cfg *cfg);
 

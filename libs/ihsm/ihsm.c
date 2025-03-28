@@ -27,7 +27,7 @@
 /**
  * @file
  *
- * Interpreted Hierarchical State Machine (IHSM) module API implementation.
+ * Interpreted Hierarchical State Machine (IHSM) libary API implementation.
  */
 
 #include "common/macros.h"

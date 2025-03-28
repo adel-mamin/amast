@@ -116,7 +116,7 @@ struct am_event {
     unsigned pubsub_time : 1;
 };
 
-/** Event module state configuration. */
+/** Event library state configuration. */
 struct am_event_state_cfg {
     /** Enter critical section. */
     void (*crit_enter)(void);
@@ -136,7 +136,7 @@ extern "C" {
  * Not thread safe.
  *
  * @param cfg  event state configuration.
- *             The event module makes an internal copy of the configuration.
+ *             The event library makes an internal copy of the configuration.
  */
 void am_event_state_ctor(const struct am_event_state_cfg *cfg);
 
@@ -426,7 +426,7 @@ enum am_event_rc am_event_push_back(
  * Thread unsafe.
  *
  * So far the only use of this function was as a part of the implementation
- * of `am_timer_publish_fn` callback in timer module.
+ * of `am_timer_publish_fn` callback in timer library.
  *
  * @param queue  the event queue
  * @param event  the event to push

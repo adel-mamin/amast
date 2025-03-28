@@ -392,7 +392,7 @@ void am_ao_stop(struct am_ao *ao);
  * Active object library state constructor.
  *
  * @param cfg  active object library configuration
- *             The active object module makes an internal copy of
+ *             The active object library makes an internal copy of
  *             the configuration.
  */
 void am_ao_state_ctor(const struct am_ao_state_cfg *cfg);
