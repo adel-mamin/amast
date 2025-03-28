@@ -95,9 +95,9 @@ AM_ASSERT_STATIC(AM_EVT_HSM_EXIT <= AM_EVT_RANGE_SM_END);
 /**
  * HSM state handler return codes.
  *
- * These return codes are not used directly in user code.
+ * These return codes are not supposed to be used directly in user code.
  * Instead user code is expected to use as return values the macros
- * listed in descriptions to each of the constants.
+ * listed in descriptions of each of the constants.
  */
 enum am_hsm_rc {
     /**
@@ -125,9 +125,9 @@ enum am_hsm_rc {
     AM_HSM_RC_TRAN_REDISPATCH,
 
     /**
-     * Event propagation to superstate was requested.
+     * Event propagation to superstate(s) was requested.
      *
-     * The library does the event propagation.
+     * The library does the event propagation to the superstate(s).
      *
      * Returned by AM_HSM_SUPER().
      */
@@ -141,7 +141,7 @@ struct am_hsm;
  * HSM state (event handler) function type.
  *
  * Do not assume that a state handler is invoked only for
- * processing event IDs enlisted in the case statement of internal
+ * processing event IDs enlisted in case statements of internal
  * switch statement.
  *
  * Event handlers should avoid using any code outside
