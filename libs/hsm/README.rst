@@ -784,3 +784,47 @@ Notice in the source code how event **HSM_EVT_A** is redispatched to a new state
 using :c:macro:`AM_HSM_TRAN_REDISPATCH()` macro and then handled in the new state.
 
 Same happens with the event **HSM_EVT_B** in the state **redisp_s2**.
+HSM State Reenter
+-----------------
+
+Demonstrates HSW state reenter with corresponding entry and exit actions perfomed on the state transition.
+
+The source code is in `reenter.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/reenter.c>`_.
+
+The HSM topology:
+
+.. uml::
+
+    @startuml
+
+    left to right direction
+
+    [*] --> s
+
+    state am_hsm_top #LightBlue {
+        state s #LightBlue {
+             [*] --> s1
+            state s1 #LightBlue
+        }
+    }
+
+    s --> s : A / log("s-A;")
+    s1 --> s1 : B / log("s1-B;")
+    s1 --> s : C / log("s1-C;")
+
+    s : E / log("s-ENTRY;")
+    s : X / log("s-EXIT;")
+
+    s1 : E / log("s1-ENTRY;")
+    s1 : X / log("s1-EXIT;")
+
+    @enduml
+
+The test checks that given events generate the expected sequence of actions:
+
+1. event: **A**, actions: **s-A;s1-EXIT;s-EXIT;s-ENTRY;s1-ENTRY;**
+2. event: **B**, actions: **s1-B;s1-EXIT;s1-ENTRY;**
+3. event: **C**, actions: **s1-C;s1-EXIT;s1-ENTRY;**
+
+For example, notice how the processing of the event **A** triggers exit from
+**s1** and **s** with subsequent entry into the same states.
