@@ -122,7 +122,9 @@ static void hsmq_ctor(void (*log)(const char *fmt, ...)) {
     );
 }
 
-static enum am_hsm_rc hsmq_s1(struct am_hsmq *me, const struct am_event *event) {
+static enum am_hsm_rc hsmq_s1(
+    struct am_hsmq *me, const struct am_event *event
+) {
     switch (event->id) {
     case AM_EVT_A: {
         me->log("a-A;");
@@ -137,7 +139,9 @@ static enum am_hsm_rc hsmq_s1(struct am_hsmq *me, const struct am_event *event) 
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc hsmq_s2(struct am_hsmq *me, const struct am_event *event) {
+static enum am_hsm_rc hsmq_s2(
+    struct am_hsmq *me, const struct am_event *event
+) {
     switch (event->id) {
     case AM_EVT_B: {
         me->log("b-B;");

@@ -13,104 +13,105 @@ by Miro Samek. Also the example HSM state diagram in
 Glossary
 ========
 
-   event
+   *event*
        a unique ID plus optionally some data associated with it
 
-   entry event
+   *entry event*
        an event sent to a state when the state is entered.
        The state can optionally run entry actions on it.
        The event has ID :cpp:enumerator:`AM_EVT_HSM_ENTRY <am_hsm_evt_id::AM_EVT_HSM_ENTRY>`.
 
-   exit event
+   *exit event*
        an event sent to a state when the state is exited.
        The state can optionally run exit actions on it.
        The event has ID :cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>`.
 
-   external transition
+   *external transition*
        An external transition is a transition that moves from one state to another,
        possibly re-entering the same state.
        The source state is exited, the target state is entered and initialized.
        Synonym of **state transition**.
 
-   init event
+   *init event*
        an event sent to a target state, right after the state was entered.
        The state can optionally trigger transition to a substate on it.
        The event has ID :cpp:enumerator:`AM_EVT_HSM_INIT <am_hsm_evt_id::AM_EVT_HSM_INIT>`.
        It immediately follows the entry event.
 
-   internal transition
+   *internal transition*
        An internal transition is a transition that occurs within a state without
        causing an exit and re-entry.
 
-   state
-       an event handler. *A*, *B*, *C*, *D*, *E*, *F*, *am_hsm_top* are all
+   *state*
+       an event handler. *s1*, *s11*, *s111*, *s12*, *s121*, *s2*, *am_hsm_top* are all
        states (see state diagram in :ref:`example-hsm` section below)
 
-   current state
+   *current state*
        the state which currently receives incoming events
 
-   active state
+   *active state*
        same as current state
 
-   state transition
+   *state transition*
        the process of changing of the current state to another or to itself
 
-   source state
+   *source state*
        the state that initiates the state transition
 
-   target state
+   *target state*
        the destination state of the state transition
 
-   initial transition
+   *initial transition*
        the state transition that may optionally happen after entering a state,
        if the state is a target state of the state transition.
        In the state diagram :ref:`example-hsm` section below
-       the state *D* has the initial transition,
-       whereas state *B* does not. The initial transition in the state *D*
-       is only activated, if the state *D* is a target state of a state transition.
-       For example, if *B* triggers the transition to *D*, then the initial
-       transition is activated. However if *B* triggers the transition to *A*, then
-       the initial transition in *D* is not activated.
+       the state *s12* has the initial transition,
+       whereas state *s11* does not. The initial transition in the state *s12*
+       is only activated, if the state *s12* is the target state of a state transition.
+       For example, if *s11* triggers the transition to *s12*, then the initial
+       transition is activated. However if *s11* triggers the transition to *s1*, then
+       the initial transition in *s12* is not activated.
 
-   superstate
+   *superstate*
        an HSM state that is a parent (ancestor) of one or more other states
-       (children, substates). *A*, *B*, *D*, *am_hsm_top* are all superstates.
+       (children, substates). *s1*, *s11*, *s12*, *am_hsm_top* are all superstates.
+       Whereas *s2* is not as it is not a parent of any state(s).
 
-   top (super)state
+   *top (super)state*
        the ultimate root of the state hierarchy.
        It is predefined by :cpp:func:`am_hsm_top()` state.
 
-   substate
+   *substate*
        a state that has a superstate as its parent (ancestor).
        A state can be substate and superstate simultaneously.
-       *A*, *B*, *C*, *D*, *E*, *F* are all substates (see state diagram in
+       *s1*, *s11*, *s111*, *s12*, *s121*, *s2* are all substates (see state diagram in
        :ref:`example-hsm` section below).
 
-   child state
+   *child state*
        same as substate
 
-   parent state
+   *parent state*
        same as superstate
 
-   ancestor state
+   *ancestor state*
        same as superstate
 
-   ancestor chain
+   *ancestor chain*
        the parent-child relation chain from a state to the top level superstate.
        In the state diagram in :ref:`example-hsm` section below
-       *B*-*A*-*am_hsm_top* is the ancestor chain.
-       Another one is *F* - *am_hsm_top* etc.
+       *s11*-*s1*-*am_hsm_top* is the ancestor chain.
+       Another one is *s2* - *am_hsm_top* etc.
 
-   nearest common ancestor (NCA)
+   *nearest common ancestor (NCA)*
        the first common ancestor in two ancestor chains constructed from
        source and target states to the top level superstate.
        For example, given the state diagram in :ref:`example-hsm` section below:
 
-       1. for *B*-*A*-*am_hsm_top* and *F*-*am_hsm_top* the NCA is *am_hsm_top*
-       2. for *C*-*B*-*A*-*am_hsm_top* and *D*-*A*-*am_hsm_top* the NCA is *A*
-       3. for *C*-*B*-*A*-*am_hsm_top* and *B*-*A*-*am_hsm_top* the NCA is *B*
+       1. for *s11*-*s1*-*am_hsm_top* and *s2*-*am_hsm_top* the NCA is *am_hsm_top*
+       2. for *s111*-*s11*-*s1*-*am_hsm_top* and *s12*-*s1*-*am_hsm_top* the NCA is *s1*
+       3. for *s111*-*s11*-*s1*-*am_hsm_top* and *s11*-*s1*-*am_hsm_top* the NCA is *s1*
 
-   topology
+   *topology*
        HSM topology is the architecture of HSM - the set of all parent -
        child relations between HSM states
 
@@ -138,19 +139,19 @@ consider the below state machine:
 
     @startuml
 
-    [*] --> A
+    [*] --> s1
 
     state am_hsm_top #LightBlue {
-        state A #LightBlue {
-            state B #LightBlue {
-                state C #LightBlue
+        state s1 #LightBlue {
+            state s11 #LightBlue {
+                state s111 #LightBlue
             }
-            state D #LightBlue {
-                [*] --> E
-                state E #LightBlue
+            state s12 #LightBlue {
+                [*] --> s121
+                state s121 #LightBlue
             }
         }
-        state F #LightBlue
+        state s2 #LightBlue
     }
 
     @enduml
@@ -158,9 +159,9 @@ consider the below state machine:
 State Relations
 ===============
 
-States *B* and *D* are children of *A*. States *C* and *E* are children
-of *B* and *D*, respectively.  State *F* has no children.
-Both *A* and *F* have the default parent *am_hsm_top* provided by
+States *s11* and *s12* are children of *s1*. States *s111* and *s121* are children
+of *s11* and *s12*, respectively.  State *s2* has no children.
+Both *s1* and *s2* have the default parent *am_hsm_top* provided by
 the library (:cpp:func:`am_hsm_top()`).
 
 Event Dispatching
@@ -189,11 +190,11 @@ superstate :cpp:func:`am_hsm_top()` always returns
 :cpp:enumerator:`AM_HSM_RC_HANDLED <am_hsm_rc::AM_HSM_RC_HANDLED>` for
 all events meaning that it is consumed.
 
-Assume that the state *C* shown in the state diagram in :ref:`example-hsm` above
-is active and an event is sent to the state machine. State *C* will be the first
+Assume that the state *s111* shown in the state diagram in :ref:`example-hsm` above
+is active and an event is sent to the state machine. State *s111* will be the first
 state to receive this event. If it chooses to pass then, the event will be sent
-to state *B*, which is its direct parent. If state *B* also chooses to pass,
-then the event will finally be sent to state *A*. If *A* chooses to pass, then
+to state *s11*, which is its direct parent. If state *s11* also chooses to pass,
+then the event will finally be sent to state *s1*. If *s1* chooses to pass, then
 the event is consumed by :cpp:func:`am_hsm_top()`.
 
 *am_hsm_top* (:cpp:func:`am_hsm_top()`) does nothing with events and serves as
@@ -213,10 +214,10 @@ When transitioning it is important to distinguish the current state and the
 source state. They are not necessarily the same state.
 
 In the state diagram in :ref:`example-hsm` above consider the case when
-the current state is *C*, an event is received by *C* and passed first to the
-superstate *B* and then to the superstate *A*, which decides to make
-a transition to the state *F*.  In this case the current state is *C*,
-the source state is *A* and the target state is *F*.
+the current state is *s111*, an event is received by *s111* and passed first to the
+superstate *s11* and then to the superstate *s1*, which decides to make
+a transition to the state *s2*.  In this case the current state is *s111*,
+the source state is *s1* and the target state is *s2*.
 
 When transitioning, exit events
 (:cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>`) are sent
@@ -232,27 +233,27 @@ There is a special case when the source and target states match
 (a self-transition). In this scenario the source state will be sent
 the exit and then the entry event followed by the init event.
 
-For example, if *C* is the source state and *E* is the target state, then the
-NCA is state *A*. This means that the exit events are sent to *C*
-and *B* and then the entry events are sent to *D* and *E*. Then the init event
-is sent to *E*.
+For example, if *s111* is the source state and *s121* is the target state, then the
+NCA is state *s1*. This means that the exit events are sent to *s111*
+and *s11* and then the entry events are sent to *s12* and *s121*. Then the init event
+is sent to *s121*.
 
-If *B* is the source state and *F* is the target state, then the NCA
+If *s11* is the source state and *s2* is the target state, then the NCA
 is the default top level state *am_hsm_top*, so exit events are sent
-to *B* and *A* and then an entry event is sent to *F*.
-Then the init event is sent to *F*.
+to *s11* and *s1* and then an entry event is sent to *s2*.
+Then the init event is sent to *s2*.
 
-If *C* is the source state and the target state, this exercises the special
-case of the self-transition. So *C* will be sent the exit event then
+If *s111* is the source state and the target state, this exercises the special
+case of the self-transition. So *s111* will be sent the exit event then
 the entry event followed by the init event.
 
-If *C* is the current state and the transition is initiated by *A* with the
-target state *A*, then NCA is *A*, the exit events are sent to *C*, *B*, *A* and
-then the entry event is sent to *A* followed by the init event.
+If *s111* is the current state and the transition is initiated by *s1* with the
+target state *s1*, then NCA is *s1*, the exit events are sent to *s111*, *s11*, *s1* and
+then the entry event is sent to *s1* followed by the init event.
 
-If *C* is the current state and the transition is initiated by *C* with the
-target state *A*, then NCA is *A*, the exit events are sent to *C*, *B* and then
-the init event is sent to *A*. Please note that the state *A* is not exited in
+If *s111* is the current state and the transition is initiated by *s111* with the
+target state *s1*, then NCA is *s1*, the exit events are sent to *s111*, *s11* and then
+the init event is sent to *s1*. Please note that the state *s1* is not exited in
 this case.
 
 To initiate a transition the state handler function must return
@@ -272,13 +273,13 @@ or :c:macro:`AM_HSM_TRAN_REDISPATCH()` pointing to target state.
 Initial State Transition
 ========================
 
-If *C* is the current state and the transition is initiated by *A* with the
-target state *D*, then NCA is *A*, the exit events are sent to *C*, *B* and
-then the entry event is sent to *D* followed by the init event. The init event
-triggers the initial state transition to *E*. So, the entry event is sent to *E*
+If *s111* is the current state and the transition is initiated by *s1* with the
+target state *s12*, then NCA is *s1*, the exit events are sent to *s11*, *s1* and
+then the entry event is sent to *s12* followed by the init event. The init event
+triggers the initial state transition to *s121*. So, the entry event is sent to *s121*
 followed by the init event.
 
-If *E* had an initial transition, then that transition would be executed too
+If *s121* had an initial transition, then that transition would be executed too
 in a similar manner all the way down the hierarchy chain until target state
 does not do initial transition anymore.
 
@@ -286,7 +287,7 @@ The initial state transition must necessarily target a direct or transitive
 substate of a given state. An initial transition cannot target a peer state
 or go up in state hierarchy to higher-level states.
 
-For example, the initial transition of state *D* can only target *E* and no any
+For example, the initial transition of state *s12* can only target *s121* and no any
 other state.
 
 Initial State
@@ -372,7 +373,7 @@ certain use cases. It does not require to use any dedicated HSM library API.
 
 Given the state diagram :ref:`example-hsm` section above the transition
 to history technique can be demonstrated as follows. Assume that the HSM
-is in the state *B*.
+is in the state *s11*.
 On entry to the state user code stores the state in a local variable
 of type **struct** :cpp:struct:`am_hsm_state`. This is done with:
 
@@ -385,7 +386,7 @@ of type **struct** :cpp:struct:`am_hsm_state`. This is done with:
        ...
    };
    ...
-   static enum am_hsm_rc B(struct foo *me, const struct event *event) {
+   static enum am_hsm_rc s11(struct foo *me, const struct event *event) {
        switch (event->id) {
        case AM_EVT_HSM_ENTRY:
            me->history  = am_hsm_get_state(&me->hsm);
@@ -395,13 +396,13 @@ of type **struct** :cpp:struct:`am_hsm_state`. This is done with:
        return AM_HSM_SUPER(A);
    }
 
-Then the transition to state *F* happens, which is then followed by a request
+Then the transition to state *s2* happens, which is then followed by a request
 to transition back to the previous state. Since the previous state is captured
 in **me->history** the transition can be achieved by doing this:
 
 .. code-block:: C
 
-   static enum am_hsm_rc F(struct foo *me, const struct event *event) {
+   static enum am_hsm_rc s2(struct foo *me, const struct event *event) {
        switch (event->id) {
        case HSM_EVT_FOO:
            return AM_HSM_TRAN(me->history.fn, me->history.instance);
@@ -547,18 +548,18 @@ The HSM topology:
 
     left to right direction
 
-    [*] --> hsmq_a
+    [*] --> s1
 
     state am_hsm_top #LightBlue {
-        state hsmq_a #LightBlue
-        state hsmq_b #LightBlue {
+        state s1 #LightBlue
+        state s2 #LightBlue {
         }
 
-        hsmq_a --> hsmq_b : A
+        s1 --> s2 : A
     }
 
-    hsmq_b : B /
-    hsmq_b : C /
+    s1 : B /
+    s2 : C /
 
     @enduml
 
@@ -574,7 +575,7 @@ The test steps:
 
 1. Construct the HSM by calling **hsmq_ctor()**.
    The HSM construction includes the HSM event queue setup.
-2. Initialize the HSM. The init state transition activates **hsmq_a**.
+2. Initialize the HSM. The init state transition activates **hsmq_s1**.
 3. Enter the cycle of injection of external events with ID listed in
    **in[]** array: **AM_EVT_A** and **AM_EVT_C**.
    The injection is done by calling :cpp:func:`am_hsm_dispatch()` followed
@@ -602,18 +603,18 @@ The HSM topology:
 
    left to right direction
 
-   [*] --> defer_s1
+   [*] --> s1
 
    state am_hsm_top #LightBlue {
-       state defer_s1 #LightBlue
-       state defer_s2 #LightBlue
+       state s1 #LightBlue
+       state s2 #LightBlue
    }
 
-   defer_s1 : A / defer
-   defer_s1 : X / recall
-   defer_s1 --> defer_s2 : B
+   s1 : A / defer
+   s1 : X / recall
+   s1 --> s2 : B
 
-   defer_s2 : A /
+   s2 : A /
 
    @enduml
 
@@ -625,11 +626,11 @@ The HSM topology:
 
 The test steps:
 
-1. Initialize the HSM. The init state transition activates **defer_s1**
-2. Send **A** event, which triggers an internal transition in **defer_s1** by deferring the event.
-3. Send **B** event, which triggers an external transition to **defer_s2** and
+1. Initialize the HSM. The init state transition activates **s1**
+2. Send **A** event, which triggers an internal transition in **s1** by deferring the event.
+3. Send **B** event, which triggers an external transition to **s2** and
    recalls **A** on exit.
-4. Event **A** is handled in **defer_s2**.
+4. Event **A** is handled in **s2**.
 
 All internal and external transitions in HSM are logged and compared against
 expected patterns stored in **struct test::out**.
@@ -649,17 +650,17 @@ The HSM topology:
 
    left to right direction
 
-   [*] --> dtor_s
+   [*] --> s
 
    state am_hsm_top #LightBlue {
-       state dtor_s #LightBlue
+       state s #LightBlue
    }
 
    @enduml
 
 The test steps:
 
-1. Initialize the HSM. The init state transition activates **dtor_s**.
+1. Initialize the HSM. The init state transition activates **s**.
 2. Call :cpp:func:`am_hsm_dtor()` for the HSM and check if it destructs the HSM.
 
 HSM history
@@ -731,24 +732,24 @@ The HSM topology:
 
     left to right direction
 
-    [*] --> nca_s1
+    [*] --> s1
 
     state am_hsm_top #LightBlue {
-        state nca_s1 #LightBlue {
-            [*] --> nca_s11
-            state nca_s11 #LightBlue
+        state s1 #LightBlue {
+            [*] --> s11
+            state s11 #LightBlue
         }
-        state nca_s2 #LightBlue
+        state s2 #LightBlue
     }
 
-    nca_s11 --> nca_s2 : HSM_EVT_A
+    s11 --> s2 : A
 
     @enduml
 
-The key thing to notice here is that NCA of **nca_s11** and **nca_s2** is :cpp:func:`am_hsm_top()`.
+The key thing to notice here is that NCA of **s11** and **s2** is :cpp:func:`am_hsm_top()`.
 
-The test checks that the transition from **nca_s11** to **nca_s2** is done correctly
-on the reception of **HSM_EVT_A**.
+The test checks that the transition from **s11** to **s2** is done correctly
+on the reception of **A**.
 
 HSM Event Redispatch
 --------------------
@@ -765,29 +766,30 @@ The HSM topology:
 
     left to right direction
 
-    [*] --> redisp_s1
+    [*] --> s1
 
     state am_hsm_top #LightBlue {
-        state redisp_s1 #LightBlue
-        state redisp_s2 #LightBlue
+        state s1 #LightBlue
+        state s2 #LightBlue
     }
 
-    redisp_s1 --> redisp_s2 : HSM_EVT_A
-    redisp_s1 : HSM_EVT_B / me->foo2 = 2
+    s1 --> s2 : A
+    s1 : B / me->foo2 = 2
 
-    redisp_s2 --> redisp_s1 : HSM_EVT_B
-    redisp_s2 : HSM_EVT_A / me->foo = 1
+    s2 --> s1 : B
+    s2 : A / me->foo = 1
 
     @enduml
 
-Notice in the source code how event **HSM_EVT_A** is redispatched to a new state **redisp_s2**
+Notice in the source code how event **A** is re-dispatched to a new state **s2**
 using :c:macro:`AM_HSM_TRAN_REDISPATCH()` macro and then handled in the new state.
 
-Same happens with the event **HSM_EVT_B** in the state **redisp_s2**.
+Same happens with the event **B** in the state **s2**.
+
 HSM State Reenter
 -----------------
 
-Demonstrates HSW state reenter with corresponding entry and exit actions perfomed on the state transition.
+Demonstrates HSW state reenter with corresponding entry and exit actions performed on the state transition.
 
 The source code is in `reenter.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/reenter.c>`_.
 
