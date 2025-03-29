@@ -53,15 +53,15 @@ static enum am_hsm_rc reenter_hsm_s(
 ) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
-        me->log("s-AM_EVT_HSM_ENTRY;");
+        me->log("s-ENTRY;");
         return AM_HSM_HANDLED();
     case AM_EVT_HSM_INIT:
         return AM_HSM_TRAN(reenter_hsm_s1);
     case HSM_EVT_A:
-        me->log("s-HSM_EVT_A;");
+        me->log("s-EVT_A;");
         return AM_HSM_TRAN(reenter_hsm_s);
     case AM_EVT_HSM_EXIT:
-        me->log("s-AM_EVT_HSM_EXIT;");
+        me->log("s-EXIT;");
         return AM_HSM_HANDLED();
     default:
         break;
@@ -74,17 +74,17 @@ static enum am_hsm_rc reenter_hsm_s1(
 ) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
-        me->log("s1-AM_EVT_HSM_ENTRY;");
+        me->log("s1-ENTRY;");
         return AM_HSM_HANDLED();
         break;
     case HSM_EVT_B:
-        me->log("s1-HSM_EVT_B;");
+        me->log("s1-EVT_B;");
         return AM_HSM_TRAN(reenter_hsm_s1);
     case HSM_EVT_C:
-        me->log("s1-HSM_EVT_C;");
+        me->log("s1-EVT_C;");
         return AM_HSM_TRAN(reenter_hsm_s);
     case AM_EVT_HSM_EXIT:
-        me->log("s1-AM_EVT_HSM_EXIT;");
+        me->log("s1-EXIT;");
         return AM_HSM_HANDLED();
     default:
         break;
@@ -123,7 +123,7 @@ static void test_reenter_hsm(void) {
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
 
     {
-        const char *out = "s-AM_EVT_HSM_ENTRY;s1-AM_EVT_HSM_ENTRY;";
+        const char *out = "s-ENTRY;s1-ENTRY;";
         AM_ASSERT(0 == strncmp(m_reenter_hsm.log_buf, out, strlen(out)));
         m_reenter_hsm.log_buf[0] = '\0';
     }
@@ -134,9 +134,9 @@ static void test_reenter_hsm(void) {
     };
     static const struct test in[] = {
         /* clang-format off */
-        {HSM_EVT_A, "s-HSM_EVT_A;s1-AM_EVT_HSM_EXIT;s-AM_EVT_HSM_EXIT;s-AM_EVT_HSM_ENTRY;s1-AM_EVT_HSM_ENTRY;"},
-        {HSM_EVT_B, "s1-HSM_EVT_B;s1-AM_EVT_HSM_EXIT;s1-AM_EVT_HSM_ENTRY;"},
-        {HSM_EVT_C, "s1-HSM_EVT_C;s1-AM_EVT_HSM_EXIT;s1-AM_EVT_HSM_ENTRY;"},
+        {HSM_EVT_A, "s-EVT_A;s1-EXIT;s-EXIT;s-ENTRY;s1-ENTRY;"},
+        {HSM_EVT_B, "s1-EVT_B;s1-EXIT;s1-ENTRY;"},
+        {HSM_EVT_C, "s1-EVT_C;s1-EXIT;s1-ENTRY;"},
         /* clang-format on */
     };
 
