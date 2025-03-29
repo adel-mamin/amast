@@ -5,32 +5,32 @@ Finite State Machine (FSM)
 Glossary
 ========
 
-   event
+   *event*
        a unique ID plus optionally some data associated with it
 
-   entry event
+   *entry event*
        an event sent to a state when the state is entered (**AM_EVT_FSM_ENTRY**)
 
-   exit event
+   *exit event*
        an event sent to a state when the state is exited (**AM_EVT_FSM_EXIT**)
 
-   state
+   *state*
        an event handler. `Idle`, `Processing` and `Completed` are all states
        (see the diagram below)
 
-   current state
+   *current state*
        the state which currently gets incoming events
 
-   active state
+   *active state*
        same as current state
 
-   state transition
+   *state transition*
        the process of changing of the current state to another or to itself
 
-   source state
+   *source state*
        the state that initiates the state transition
 
-   target state
+   *target state*
        the destination state of a state transition
 
 Introduction
