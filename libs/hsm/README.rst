@@ -7,8 +7,7 @@ Credit
 
 The design and implementation of the HSM library is heavily inspired by
 `Practical UML Statecharts in C/C++: Event-Driven Programming for Embedded Systems 2nd Edition <https://www.state-machine.com/psicc2>`_
-by Miro Samek. Also the example HSM state diagram in
-`hsm.png <https://github.com/adel-mamin/amast/blob/main/libs/hsm/hsm.png>`_ is borrowed from the book.
+by Miro Samek.
 
 Glossary
 ========
@@ -519,6 +518,20 @@ a recursion. The example of the submachines recursion can be seen in
 HSM Examples And Unit Tests
 ===========================
 
+Regular State Machine
+---------------------
+
+The example HSM state diagram exercised by the test was borrowed from the book
+`Practical UML Statecharts in C/C++: Event-Driven Programming for Embedded Systems 2nd Edition <https://www.state-machine.com/psicc2>`_
+by Miro Samek.
+
+The source code of the test is in `regular.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/regular/regular.c>`_.
+
+.. image:: _static/hsm.png
+
+This is a contrived hierarchical state machine that contains all possible
+state transition topologies up to four level of state nesting.
+
 HSM With Event Queue
 --------------------
 
@@ -830,3 +843,7 @@ The test checks that given events generate the expected sequence of actions:
 
 For example, notice how the processing of the event **A** triggers exit from
 **s1** and **s** with subsequent entry into the same states.
+
+Complex Submachine
+------------------
+
