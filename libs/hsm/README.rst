@@ -532,6 +532,12 @@ The source code of the test is in `regular.c <https://github.com/adel-mamin/amas
 This is a contrived hierarchical state machine that contains all possible
 state transition topologies up to four level of state nesting.
 
+There is command line tool in `example.c <https://github.com/adel-mamin/amast/blob/main/apps/examples/hsm/regular/example.c>`_.
+It allows to explore the behavior of the state machine by generating
+all possible events, activating all existing states and observing
+state transition sequences: exit, entry and init events generated
+by the library.
+
 HSM With Event Queue
 --------------------
 
