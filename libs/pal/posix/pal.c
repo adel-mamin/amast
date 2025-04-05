@@ -33,6 +33,7 @@
 
 #define _GNU_SOURCE
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -78,7 +79,7 @@ struct am_pal_task {
 };
 
 static struct am_pal_task task_main_ = {0};
-static struct am_pal_task tasks_[AM_PAL_TASK_NUM_MAX] = {0};
+static struct am_pal_task am_pal_tasks_[AM_PAL_TASK_NUM_MAX] = {0};
 
 /** PAL mutex descriptor */
 struct am_pal_mutex {
@@ -93,7 +94,7 @@ struct am_pal_mutex {
 #define AM_PAL_MUTEX_NUM_MAX 2
 #endif
 
-static struct am_pal_mutex mutexes_[AM_PAL_MUTEX_NUM_MAX] = {0};
+static struct am_pal_mutex am_pal_mutexes_[AM_PAL_MUTEX_NUM_MAX] = {0};
 
 static int am_pal_index_from_id(int id) {
     AM_ASSERT(id > 0);
@@ -118,20 +119,20 @@ static void *thread_entry_wrapper(void *arg) {
     return NULL;
 }
 
-static pthread_mutex_t critical_section_mutex_ = PTHREAD_MUTEX_INITIALIZER;
-static char critical_section_enter_cnt_ = 0;
+static pthread_mutex_t am_pal_crit_mutex_ = PTHREAD_MUTEX_INITIALIZER;
+static bool am_pal_crit_entered_ = false;
 
 void am_pal_crit_enter(void) {
-    int rc = pthread_mutex_lock(&critical_section_mutex_);
-    AM_ASSERT(0 == critical_section_enter_cnt_);
-    ++critical_section_enter_cnt_;
+    int rc = pthread_mutex_lock(&am_pal_crit_mutex_);
+    AM_ASSERT(!am_pal_crit_entered_);
+    am_pal_crit_entered_ = true;
     AM_ASSERT(0 == rc);
 }
 
 void am_pal_crit_exit(void) {
-    AM_ASSERT(1 == critical_section_enter_cnt_);
-    --critical_section_enter_cnt_;
-    int rc = pthread_mutex_unlock(&critical_section_mutex_);
+    AM_ASSERT(am_pal_crit_entered_);
+    am_pal_crit_entered_ = false;
+    int rc = pthread_mutex_unlock(&am_pal_crit_mutex_);
     AM_ASSERT(0 == rc);
 }
 
@@ -140,8 +141,9 @@ int am_pal_task_get_own_id(void) {
     if (task_main_.thread == thread) {
         return AM_PAL_TASK_ID_MAIN;
     }
-    for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
-        if (tasks_[i].valid && (tasks_[i].thread == thread)) {
+    for (int i = 0; i < AM_COUNTOF(am_pal_tasks_); ++i) {
+        struct am_pal_task *me = &am_pal_tasks_[i];
+        if (me->valid && (me->thread == thread)) {
             return am_pal_id_from_index(i);
         }
     }
@@ -164,20 +166,20 @@ int am_pal_task_create(
     AM_ASSERT(priority >= 0);
 
     int index = -1;
-    struct am_pal_task *task = NULL;
-    for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
-        if (!tasks_[i].valid) {
+    struct am_pal_task *me = NULL;
+    for (int i = 0; i < AM_COUNTOF(am_pal_tasks_); ++i) {
+        me = &am_pal_tasks_[i];
+        if (!me->valid) {
             index = i;
-            task = &tasks_[i];
-            tasks_[i].valid = true;
+            me->valid = true;
             break;
         }
     }
-    AM_ASSERT(task && (index >= 0));
+    AM_ASSERT(index >= 0);
 
-    am_pal_mutex_init(&task->mutex);
+    am_pal_mutex_init(&me->mutex);
 
-    int ret = pthread_cond_init(&task->cond, /*attr=*/NULL);
+    int ret = pthread_cond_init(&me->cond, /*attr=*/NULL);
     AM_ASSERT(0 == ret);
 
     pthread_attr_t attr;
@@ -199,14 +201,14 @@ int am_pal_task_create(
     ret = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
     AM_ASSERT(0 == ret);
 
-    task->entry = entry;
-    task->arg = arg;
+    me->entry = entry;
+    me->arg = arg;
 
-    ret = pthread_create(&task->thread, &attr, thread_entry_wrapper, task);
+    ret = pthread_create(&me->thread, &attr, thread_entry_wrapper, me);
     AM_ASSERT(0 == ret);
     pthread_attr_destroy(&attr);
 
-    pthread_setname_np(task->thread, name);
+    pthread_setname_np(me->thread, name);
 
     return am_pal_id_from_index(index);
 }
@@ -218,7 +220,7 @@ void am_pal_task_notify(int task) {
     if (AM_PAL_TASK_ID_MAIN == task) {
         t = &task_main_;
     } else {
-        t = &tasks_[am_pal_index_from_id(task)];
+        t = &am_pal_tasks_[am_pal_index_from_id(task)];
     }
     pthread_mutex_lock(&t->mutex);
     AM_ATOMIC_STORE_N(&t->notified, true);
@@ -236,7 +238,7 @@ void am_pal_task_wait(int task) {
     if (AM_PAL_TASK_ID_MAIN == task) {
         t = &task_main_;
     } else {
-        t = &tasks_[am_pal_index_from_id(task)];
+        t = &am_pal_tasks_[am_pal_index_from_id(task)];
     }
     pthread_mutex_lock(&t->mutex);
     while (!AM_ATOMIC_LOAD_N(&t->notified)) {
@@ -260,48 +262,46 @@ static void am_pal_mutex_init(pthread_mutex_t *me) {
 
 int am_pal_mutex_create(void) {
     int mutex = -1;
-    pthread_mutex_t *me = NULL;
-    for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
-        if (!mutexes_[i].valid) {
+    for (int i = 0; i < AM_COUNTOF(am_pal_mutexes_); ++i) {
+        struct am_pal_mutex *me = &am_pal_mutexes_[i];
+        if (!me->valid) {
             mutex = i;
-            me = &mutexes_[i].mutex;
-            mutexes_[i].valid = true;
+            me->valid = true;
+            am_pal_mutex_init(&me->mutex);
             break;
         }
     }
-    AM_ASSERT(me && (mutex >= 0));
-
-    am_pal_mutex_init(me);
+    AM_ASSERT(mutex >= 0);
 
     return am_pal_id_from_index(mutex);
 }
 
 void am_pal_mutex_lock(int mutex) {
     int index = am_pal_index_from_id(mutex);
-    AM_ASSERT(index < AM_COUNTOF(mutexes_));
-    AM_ASSERT(mutexes_[index].valid);
+    AM_ASSERT(index < AM_COUNTOF(am_pal_mutexes_));
+    AM_ASSERT(am_pal_mutexes_[index].valid);
 
-    int rc = pthread_mutex_lock(&mutexes_[index].mutex);
+    int rc = pthread_mutex_lock(&am_pal_mutexes_[index].mutex);
     AM_ASSERT(0 == rc);
 }
 
 void am_pal_mutex_unlock(int mutex) {
     int index = am_pal_index_from_id(mutex);
-    AM_ASSERT(index < AM_COUNTOF(mutexes_));
-    AM_ASSERT(mutexes_[index].valid);
+    AM_ASSERT(index < AM_COUNTOF(am_pal_mutexes_));
+    AM_ASSERT(am_pal_mutexes_[index].valid);
 
-    int rc = pthread_mutex_unlock(&mutexes_[index].mutex);
+    int rc = pthread_mutex_unlock(&am_pal_mutexes_[index].mutex);
     AM_ASSERT(0 == rc);
 }
 
 void am_pal_mutex_destroy(int mutex) {
     int index = am_pal_index_from_id(mutex);
-    AM_ASSERT(index < AM_COUNTOF(mutexes_));
-    AM_ASSERT(mutexes_[index].valid);
+    AM_ASSERT(index < AM_COUNTOF(am_pal_mutexes_));
+    AM_ASSERT(am_pal_mutexes_[index].valid);
 
-    int rc = pthread_mutex_destroy(&mutexes_[index].mutex);
+    int rc = pthread_mutex_destroy(&am_pal_mutexes_[index].mutex);
     AM_ASSERT(0 == rc);
-    mutexes_[mutex].valid = false;
+    am_pal_mutexes_[mutex].valid = false;
 }
 
 uint32_t am_pal_time_get_ms(void) {
@@ -441,22 +441,23 @@ void am_pal_ctor(void) {
 }
 
 void am_pal_dtor(void) {
-    for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
-        if (tasks_[i].valid) {
-            pthread_join(tasks_[i].thread, /*__thread_return=*/NULL);
-            tasks_[i].valid = false;
+    for (int i = 0; i < AM_COUNTOF(am_pal_tasks_); ++i) {
+        struct am_pal_task *me = &am_pal_tasks_[i];
+        if (me->valid) {
+            pthread_join(me->thread, /*__thread_return=*/NULL);
+            me->valid = false;
         }
     }
-    for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
-        struct am_pal_mutex *mutex = &mutexes_[i];
+    for (int i = 0; i < AM_COUNTOF(am_pal_mutexes_); ++i) {
+        struct am_pal_mutex *mutex = &am_pal_mutexes_[i];
         if (mutex->valid) {
             int rc = pthread_mutex_destroy(&mutex->mutex);
             AM_ASSERT(0 == rc);
             mutex->valid = false;
         }
     }
-    for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
-        struct am_pal_task *task = &tasks_[i];
+    for (int i = 0; i < AM_COUNTOF(am_pal_tasks_); ++i) {
+        struct am_pal_task *task = &am_pal_tasks_[i];
         if (task->valid) {
             int rc = pthread_mutex_destroy(&task->mutex);
             AM_ASSERT(0 == rc);
