@@ -59,12 +59,6 @@ struct am_pal_task {
     struct k_thread thread;
     /** thread ID */
     k_tid_t tid;
-    /** mutex to protect condition variable */
-    pthread_mutex_t mutex;
-    /** condition variable for signaling */
-    pthread_cond_t cond;
-    /** flag to track notification state */
-    bool notified;
     /** the task is valid */
     bool valid;
     /** entry function */
@@ -182,6 +176,9 @@ int am_pal_task_create(
     AM_ASSERT(index >= 0);
 
     int zephyr_prio = AM_PAL_TASK_NUM_MAX - priority;
+
+    me->entry = entry;
+    me->arg = arg;
 
     me->tid = k_thread_create(
         /*new_thread=*/&me->thread,
