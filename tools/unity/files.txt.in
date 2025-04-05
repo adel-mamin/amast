@@ -10,6 +10,7 @@
 @SRC_ROOT@/libs/pal/freertos/pal.c
 @SRC_ROOT@/libs/pal/posix/pal.c
 @SRC_ROOT@/libs/pal/libuv/pal.c
+@SRC_ROOT@/libs/pal/zephyr/pal.c
 @SRC_ROOT@/libs/pal/stubs/pal.c
 
 @SRC_ROOT@/libs/bit/bit.h

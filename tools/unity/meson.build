@@ -61,10 +61,11 @@ amast_src = custom_target(
         'amast_test.c',         # 1
         'amast_freertos.c',     # 2
         'amast_posix.c',        # 3
-        'amast_cooperative.c',  # 4
-        'amast_preemptive.c',   # 5
-        'amast.h',              # 6
-        'amast_test.h'          # 7
+        'amast_zephyr.c',       # 4
+        'amast_cooperative.c',  # 5
+        'amast_preemptive.c',   # 6
+        'amast.h',              # 7
+        'amast_test.h'          # 8
     ],
     command : [
         amast_exe, '-f', '@INPUT@', '-o', '@OUTDIR@' , '&&',
@@ -89,6 +90,7 @@ custom_target(
     amast_src[5] +
     amast_src[6] +
     amast_src[7] +
+    amast_src[8] +
     meson.current_build_dir() / 'amast_libuv.c' +
     amast_cfg +
     amast_makefile,
