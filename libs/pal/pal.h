@@ -86,12 +86,27 @@ int am_pal_mutex_create(void);
 /**
  * Lock mutex.
  *
+ * If the mutex is locked by another thread,
+ * the calling thread waits until the mutex becomes available.
+ *
+ * A thread is not permitted to lock a mutex it has already locked.
+ *
+ * May not be called from ISRs.
+ *
  * @param mutex  the mutex ID returned by am_pal_mutex_create()
  */
 void am_pal_mutex_lock(int mutex);
 
 /**
  * Unlock mutex.
+ *
+ * The mutex must already be locked with am_pal_mutex_lock()
+ * by the calling thread.
+ *
+ * The mutex cannot be claimed by another thread until it has been
+ * unlocked by the calling thread.
+ *
+ * Mutexes may not be unlocked in ISRs.
  *
  * @param mutex  the mutex ID returned by am_pal_mutex_create()
  */
@@ -105,11 +120,15 @@ void am_pal_mutex_unlock(int mutex);
 void am_pal_mutex_destroy(int mutex);
 
 /**
- * Create task.
+ * Initialize a task, then schedules it for execution.
+ *
+ * The new task may be scheduled for immediate execution.
+ * The kernel scheduler may preempt the current task to allow
+ * the new task to execute.
  *
  * @param name        human readable task name. Not copied.
  *                    Must remain valid after the call.
- * @param priority    task priority (>=0)
+ * @param priority    task priority [0, AM_PAL_TASK_NUM_MAX[
  * @param stack       task stack
  * @param stack_size  task stack size [bytes]
  * @param entry       task entry function
