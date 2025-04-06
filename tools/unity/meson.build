@@ -107,12 +107,6 @@ if unit_test
             amast_src[1], # 'amast_test.c'
         ],
         include_directories: libs_inc,
-        c_args: [
-            '-flto=auto',
-            '-O2',
-            '-ffunction-sections', '-fdata-sections'
-        ],
-        link_args: ['-Wl,--gc-sections'],
         dependencies: [libm_dep, libassert_dep]
     )
     test('unity', e)

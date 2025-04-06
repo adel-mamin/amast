@@ -31,6 +31,7 @@ project('amast', 'c',
             'warning_level=3',
             'buildtype=release',
             'werror=true',
+            'b_lto=true',
             'default_library=static',
             'b_sanitize=address,undefined'
         ],
