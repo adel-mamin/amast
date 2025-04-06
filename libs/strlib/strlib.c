@@ -46,6 +46,7 @@
 #include "strlib/strlib.h"
 
 /* https://stackoverflow.com/a/30734030/2410359 */
+/* NOLINTBEGIN(clang-diagnostic-shadow) */
 int str_icmp(const char *s1, const char *s2) {
     int ca;
     int cb;
@@ -59,6 +60,7 @@ int str_icmp(const char *s1, const char *s2) {
     } while (ca == cb && ca != '\0');
     return ca - cb;
 }
+/* NOLINTEND(clang-diagnostic-shadow) */
 
 bool str_is_bool(const char *str, bool *extracted_val) {
     if (0 == str_icmp(str, "true")) {
