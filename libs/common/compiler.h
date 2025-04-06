@@ -91,17 +91,6 @@
 #endif
 #endif /* AM_COMPILER_ID */
 
-#if (64 == AM_COMPILER_BITS)
-typedef long ssize_t;
-#define SSIZE_MAX LONG_MAX
-#define SSIZE_MIN LONG_MINXS
-#else
-/** ssize_t definition */
-typedef int ssize_t;
-#define SSIZE_MAX INT_MAX /*!< ssize_t maximum value */
-#define SSIZE_MIN INT_MIN /*!< ssize_t minimum value */
-#endif
-
 /* Optimization hints. */
 #if (AM_COMPILER_ID == AM_COMPILER_GCC) || (AM_COMPILER_ID == AM_COMPILER_CLANG)
 /** the condition x is likely */
