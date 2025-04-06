@@ -29,7 +29,6 @@ slist_src = [files('slist.c')]
 libslist = library(
     'slist',
     [slist_src],
-    c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
     include_directories: [inc]
 )
 
@@ -44,7 +43,6 @@ if unit_test
     e = executable(
         'slist',
         ['slist.c', 'test.c'],
-        c_args: ['-fno-sanitize=all', '-O0', '-fno-trapv', '-fno-lto', '-ggdb'],
         link_with: libassert,
         include_directories: inc
     )

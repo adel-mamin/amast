@@ -29,7 +29,6 @@ timer_src = [files('timer.c')]
 libtimer = library(
     'timer',
     [timer_src],
-    c_args: ['-fno-sanitize=all', '-Os', '-fno-trapv'],
     include_directories: inc
 )
 
@@ -44,7 +43,6 @@ if unit_test
     e = executable(
         'timer',
         ['timer.c', 'test.c', slist_src],
-        c_args: ['-fno-sanitize=all', '-O0', '-fno-trapv', '-fno-lto', '-ggdb'],
         dependencies : [
             libassert_dep,
             libpal_dep,
