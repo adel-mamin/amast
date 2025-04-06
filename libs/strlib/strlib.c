@@ -40,6 +40,8 @@
 #include <stdarg.h>
 #include <complex.h>
 
+/* IWYU pragma: no_include "asm-generic/errno-base.h" */
+
 #include "common/macros.h"
 #include "strlib/strlib.h"
 

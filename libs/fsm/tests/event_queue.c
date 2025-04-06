@@ -33,7 +33,6 @@
  */
 
 #include <stdarg.h>
-#include <stddef.h>
 #include <string.h>
 
 #include "common/alignment.h"

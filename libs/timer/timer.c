@@ -28,8 +28,9 @@
  * Timer API implementation.
  */
 
+#include <stdbool.h>
+#include <stddef.h> /* IWYU pragma: keep */
 #include <string.h>
-#include <stddef.h>
 #include <stdint.h>
 
 #include "common/macros.h"

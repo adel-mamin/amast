@@ -28,7 +28,6 @@
  * Queue API implementation.
  */
 
-#include <stddef.h>
 #include <stdbool.h>
 #include <string.h>
 

@@ -28,6 +28,7 @@
  * Event API implementation.
  */
 
+#include <stdbool.h>
 #include <string.h>
 #include <stddef.h>
 

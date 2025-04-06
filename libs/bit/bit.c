@@ -28,6 +28,7 @@
  * Bit utilities.
  */
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "common/macros.h"

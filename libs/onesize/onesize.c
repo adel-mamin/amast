@@ -28,7 +28,6 @@
  * onesize memory allocator implementation
  */
 
-#include <stddef.h>
 #include <string.h>
 
 #include "common/compiler.h"
