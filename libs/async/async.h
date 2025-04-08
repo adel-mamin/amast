@@ -93,8 +93,7 @@ struct am_async {
  */
 #define AM_ASYNC_END()                                  \
         /* FALLTHROUGH */                               \
-    case AM_ASYNC_RC_DONE:                              \
-        AM_ASYNC_EXIT();                               \
+        AM_ASYNC_EXIT();                                \
     default:                                            \
         AM_ASSERT(0);                                   \
     }}
