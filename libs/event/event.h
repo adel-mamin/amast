@@ -94,7 +94,7 @@ enum am_event_rc {
     AM_EVENT_RC_OK = 0,   /**< success */
     /**
      * Success.
-     * Also tells that event queue was empty before the call.
+     * Also tells that event queue was empty before the corresponding call.
      * This allows to signal the event queue owner about
      * new event available for processing.
      */
@@ -129,13 +129,13 @@ extern "C" {
 #endif
 
 /**
- * Event state constructor.
+ * Event library state constructor.
  *
- * Must be called before calling any other event APIs.
+ * Must be called before calling any other event library APIs.
  *
  * Not thread safe.
  *
- * @param cfg  event state configuration.
+ * @param cfg  event library state configuration.
  *             The event library makes an internal copy of the configuration.
  */
 void am_event_state_ctor(const struct am_event_state_cfg *cfg);
@@ -260,7 +260,7 @@ void am_event_free(const struct am_event **event);
 /**
  * Duplicate an event (eXtended version).
  *
- * Allocates it from memory pools provided with am_event_add_pool() function.
+ * Allocates it from memory pools provided by am_event_add_pool() function.
  *
  * Checks if there are more free memory blocks available than \p margin.
  * If not, then returns NULL. Otherwise allocates memory block
@@ -281,7 +281,7 @@ struct am_event *am_event_dup_x(
 /**
  * Duplicate an event.
  *
- * Allocates it from memory pools provided with am_event_add_pool() function.
+ * Allocates it from memory pools provided by am_event_add_pool() function.
  *
  * The function asserts if there is no memory left to allocated the event.
  *

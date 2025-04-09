@@ -22,7 +22,7 @@ Key Features
 
 2. **Tick-Based Operation**:
 
-   - Timers operate on a tick-based system, updated with ``am_timer_tick``.
+   - Timers operate on a tick-based system, updated with :cpp:func:`am_timer_tick`.
    - Multiple tick domains are supported for independent timer operation.
 
 3. **Thread Safety**:
