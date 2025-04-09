@@ -51,7 +51,7 @@ struct am_async {
 /* clang-format off */
 
 /**
- * Mark the beginning of async function block.
+ * Mark the beginning of async function.
  *
  * Should be called at the beginning of async function.
  *
@@ -66,7 +66,7 @@ struct am_async {
     case __LINE__:
 
 /**
- * Mark the end of async function and return completion.
+ * Mark the end of async function.
  *
  * Resets the async state to the initial state
  * indicating that the async operation has completed.
@@ -78,30 +78,15 @@ struct am_async {
         return;
 
 /**
- * Mark the end of async function block and handle any unexpected states.
+ * Mark the end of async function block.
  *
- * Calls AM_ASYNC_EXIT() internally to reset the async state to
- * the initial state.
+ * Resets the async state.
  */
 #define AM_ASYNC_END()                                  \
         AM_ASYNC_EXIT();                                \
     default:                                            \
         AM_ASSERT(0);                                   \
     }}
-
-/**
- * Set label in async function.
- *
- * Stores the current line number in the `struct am_async``::state` field,
- * enabling the async function to resume from this point.
- */
-#define AM_ASYNC_LABEL()                                \
-        /* to suppress cppcheck warnings */             \
-        (void)am_async_->state;                         \
-        am_async_->state = __LINE__;                    \
-        /* FALLTHROUGH */                               \
-    case __LINE__:
-
 
 /**
  * Await a condition before proceeding.

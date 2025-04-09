@@ -33,12 +33,10 @@
 static void am_async_reentrant(struct am_async *me, int *reent, int *state) {
     ++(*reent);
     AM_ASYNC_BEGIN(me);
-    AM_ASYNC_LABEL();
     if (*state == 0) {
         *state = 1;
         AM_ASYNC_EXIT();
     }
-    AM_ASYNC_LABEL();
     if (*state == 1) {
         *state = 2;
         AM_ASYNC_EXIT();
