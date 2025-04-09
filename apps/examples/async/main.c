@@ -117,7 +117,7 @@ static enum am_hsm_rc async_top(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_async_rc async_regular_(struct async *me) {
+static void async_regular_(struct async *me) {
     AM_ASYNC_BEGIN(&me->async);
 
     for (;;) {
@@ -150,8 +150,6 @@ static enum am_async_rc async_regular_(struct async *me) {
     }
 
     AM_ASYNC_END();
-
-    return AM_ASYNC_RC(&me->async);
 }
 
 static enum am_hsm_rc async_regular(
@@ -178,7 +176,7 @@ static enum am_hsm_rc async_regular(
     return AM_HSM_SUPER(async_top);
 }
 
-static enum am_async_rc async_off_(struct async *me) {
+static void async_off_(struct async *me) {
     AM_ASYNC_BEGIN(&me->async);
 
     am_timer_arm_ms(&me->timer, /*ms=*/1000, /*interval=*/0);
@@ -192,8 +190,6 @@ static enum am_async_rc async_off_(struct async *me) {
     am_ao_post_fifo(&me->ao, &am_evt_start);
 
     AM_ASYNC_END();
-
-    return AM_ASYNC_RC(&me->async);
 }
 
 static enum am_hsm_rc async_off(

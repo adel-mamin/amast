@@ -26,7 +26,4 @@
 
 #include "async.h"
 
-void am_async_ctor(struct am_async *me) {
-    me->state = AM_ASYNC_STATE_INIT;
-    me->rc = AM_ASYNC_RC_BUSY;
-}
+void am_async_ctor(struct am_async *me) { me->state = AM_ASYNC_STATE_INIT; }

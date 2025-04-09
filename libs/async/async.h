@@ -43,16 +43,9 @@
 /** Init state of async function. */
 #define AM_ASYNC_STATE_INIT 0
 
-/** Async function return codes. */
-enum am_async_rc {
-    AM_ASYNC_RC_DONE = -2, /**< async function is done */
-    AM_ASYNC_RC_BUSY = -1  /**< async function is busy */
-};
-
 /** Async state. */
 struct am_async {
-    int state;           /**< a line number or #AM_ASYNC_STATE_INIT constant */
-    enum am_async_rc rc; /**< return code */
+    int state; /**< a line number or #AM_ASYNC_STATE_INIT constant */
 };
 
 /* clang-format off */
@@ -75,15 +68,14 @@ struct am_async {
 /**
  * Mark the end of async function and return completion.
  *
- * Resets the async state to the initial state and sets return value to
- * #AM_ASYNC_RC_DONE, indicating that the async operation has completed.
+ * Resets the async state to the initial state
+ * indicating that the async operation has completed.
  */
-#define AM_ASYNC_EXIT()                                \
+#define AM_ASYNC_EXIT()                                 \
         /* to suppress cppcheck warnings */             \
         (void)am_async_->state;                         \
         am_async_->state = AM_ASYNC_STATE_INIT;         \
-        am_async_->rc = AM_ASYNC_RC_DONE;               \
-        return AM_ASYNC_RC_DONE;
+        return;
 
 /**
  * Mark the end of async function block and handle any unexpected states.
@@ -116,7 +108,7 @@ struct am_async {
  * Await a condition before proceeding.
  *
  * Checks the provided condition `cond`.
- * If the condition is not met (false) - returns #AM_ASYNC_RC_BUSY
+ * Returns if the condition is not met (false).
  * and on next invocation of the function the condition is evaluated again.
  *
  * Continues the function execution once the `cond` evaluates to `true`.
@@ -130,15 +122,13 @@ struct am_async {
         /* FALLTHROUGH */                               \
     case __LINE__:                                      \
         if (!(cond)) {                                  \
-            am_async_->rc = AM_ASYNC_RC_BUSY;           \
-            return AM_ASYNC_RC_BUSY;                    \
+            return;                                     \
         }
 
 /**
  * Yield control back to caller.
  *
- * Allows the async function to yield, returning
- * #AM_ASYNC_RC_BUSY to signal that the operation is not yet complete.
+ * Allows the async function to yield.
  *
  * Control resumes after this point, when the function is called again.
  */
@@ -146,20 +136,18 @@ struct am_async {
         /* to suppress cppcheck warnings */             \
         (void)am_async_->state;                         \
         am_async_->state = __LINE__;                    \
-        am_async_->rc = AM_ASYNC_RC_BUSY;               \
-        return AM_ASYNC_RC_BUSY;                        \
+        return;                                         \
     case __LINE__:
 
 /**
- * Return code of async operation.
- *
- * Used as a return values from async function.
+ * Check if async operation is in progress.
  *
  * @param me  the async instance pointer
  *
- * @return one of `am_async_rc` values
+ * @return true   the async operation is in progress
+ * @return false  the async operation is not in progress
  */
-#define AM_ASYNC_RC(me) ((struct am_async*)(me))->rc
+#define AM_ASYNC_IS_BUSY(me) (((struct am_async*)(me))->state != AM_ASYNC_STATE_INIT)
 
 /* clang-format on */
 
