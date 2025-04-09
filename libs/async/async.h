@@ -84,7 +84,6 @@ struct am_async {
  * the initial state.
  */
 #define AM_ASYNC_END()                                  \
-        /* FALLTHROUGH */                               \
         AM_ASYNC_EXIT();                                \
     default:                                            \
         AM_ASSERT(0);                                   \
@@ -108,8 +107,8 @@ struct am_async {
  * Await a condition before proceeding.
  *
  * Checks the provided condition `cond`.
- * Returns if the condition is not met (false).
- * and on next invocation of the function the condition is evaluated again.
+ * Returns if the condition is not met (false) and
+ * on next invocation of the function the condition is evaluated again.
  *
  * Continues the function execution once the `cond` evaluates to `true`.
  *
