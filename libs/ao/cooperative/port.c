@@ -60,7 +60,7 @@ bool am_ao_run_all(void) {
         me->hsm_init_pend = false;
     }
 
-    if (!me->startup_complete) {
+    if (AM_UNLIKELY(!me->startup_complete)) {
         am_pal_mutex_unlock(me->startup_mutex);
         me->startup_complete = true;
     }
