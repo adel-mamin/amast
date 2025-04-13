@@ -25,7 +25,7 @@
  */
 
 /**
- * Event API implementation.
+ * Event library API implementation.
  */
 
 #include <stdbool.h>
@@ -37,12 +37,12 @@
 #include "onesize/onesize.h"
 #include "event.h"
 
-/** Event internal state. */
+/** Event library internal state. */
 struct am_event_state {
     /** user defined event memory pools  */
-    struct am_onesize pool[AM_EVENT_POOLS_NUM_MAX];
+    struct am_onesize pools[AM_EVENT_POOLS_NUM_MAX];
     /** the number of user defined event memory pools */
-    int npool;
+    int npools;
     /** enter critical section */
     void (*crit_enter)(void);
     /** exit critical section */
@@ -77,9 +77,9 @@ void am_event_state_ctor(const struct am_event_state_cfg *cfg) {
 
 void am_event_add_pool(void *pool, int size, int block_size, int alignment) {
     struct am_event_state *me = &am_event_state_;
-    AM_ASSERT(me->npool < AM_EVENT_POOLS_NUM_MAX);
-    if (me->npool > 0) {
-        int prev_size = am_onesize_get_block_size(&me->pool[me->npool - 1]);
+    AM_ASSERT(me->npools < AM_EVENT_POOLS_NUM_MAX);
+    if (me->npools > 0) {
+        int prev_size = am_onesize_get_block_size(&me->pools[me->npools - 1]);
         AM_ASSERT(block_size > prev_size);
     }
 
@@ -88,21 +88,21 @@ void am_event_add_pool(void *pool, int size, int block_size, int alignment) {
         .block_size = block_size,
         .alignment = alignment
     };
-    am_onesize_ctor(&me->pool[me->npool], &cfg);
+    am_onesize_ctor(&me->pools[me->npools], &cfg);
 
-    ++me->npool;
+    ++me->npools;
 }
 
 struct am_event *am_event_allocate_x(int id, int size, int margin) {
     struct am_event_state *me = &am_event_state_;
     AM_ASSERT(size > 0);
-    AM_ASSERT(me->npool);
-    AM_ASSERT(size <= am_onesize_get_block_size(&me->pool[me->npool - 1]));
+    AM_ASSERT(me->npools);
+    AM_ASSERT(size <= am_onesize_get_block_size(&me->pools[me->npools - 1]));
     AM_ASSERT(id >= AM_EVT_USER);
     AM_ASSERT(margin >= 0);
 
-    for (int i = 0; i < me->npool; ++i) {
-        struct am_onesize *osz = &me->pool[i];
+    for (int i = 0; i < me->npools; ++i) {
+        struct am_onesize *osz = &me->pools[i];
         if (size > am_onesize_get_block_size(osz)) {
             continue;
         }
@@ -148,7 +148,7 @@ static void am_event_free_unsafe(const struct am_event **event) {
         return;
     }
 
-    am_onesize_free(&am_event_state_.pool[e->pool_index_plus_one - 1], e);
+    am_onesize_free(&am_event_state_.pools[e->pool_index_plus_one - 1], e);
 
     *event = NULL;
 }
@@ -166,10 +166,10 @@ void am_event_free(const struct am_event **event) {
 int am_event_get_pool_nfree_min(int index) {
     struct am_event_state *me = &am_event_state_;
     AM_ASSERT(index >= 0);
-    AM_ASSERT(index < me->npool);
+    AM_ASSERT(index < me->npools);
 
     me->crit_enter();
-    int nfree = am_onesize_get_nfree_min(&me->pool[index]);
+    int nfree = am_onesize_get_nfree_min(&me->pools[index]);
     me->crit_exit();
     return nfree;
 }
@@ -177,10 +177,10 @@ int am_event_get_pool_nfree_min(int index) {
 int am_event_get_pool_nfree(int index) {
     struct am_event_state *me = &am_event_state_;
     AM_ASSERT(index >= 0);
-    AM_ASSERT(index < me->npool);
+    AM_ASSERT(index < me->npools);
 
     me->crit_enter();
-    int nfree = am_onesize_get_nfree(&me->pool[index]);
+    int nfree = am_onesize_get_nfree(&me->pools[index]);
     me->crit_exit();
     return nfree;
 }
@@ -188,12 +188,12 @@ int am_event_get_pool_nfree(int index) {
 int am_event_get_pool_nblocks(int index) {
     struct am_event_state *me = &am_event_state_;
     AM_ASSERT(index >= 0);
-    AM_ASSERT(index < me->npool);
+    AM_ASSERT(index < me->npools);
 
-    return am_onesize_get_nblocks(&me->pool[index]);
+    return am_onesize_get_nblocks(&me->pools[index]);
 }
 
-int am_event_get_npools(void) { return am_event_state_.npool; }
+int am_event_get_npools(void) { return am_event_state_.npools; }
 
 struct am_event *am_event_dup_x(
     const struct am_event *event, int size, int margin
@@ -201,7 +201,7 @@ struct am_event *am_event_dup_x(
     AM_ASSERT(event);
     AM_ASSERT(size >= (int)sizeof(struct am_event));
     const struct am_event_state *me = &am_event_state_;
-    AM_ASSERT(me->npool > 0);
+    AM_ASSERT(me->npools > 0);
     AM_ASSERT(event->id >= AM_EVT_USER);
     AM_ASSERT(margin >= 0);
 
@@ -261,10 +261,10 @@ void am_event_log_pools(int num, am_event_log_fn cb) {
 
     struct am_event_state *me = &am_event_state_;
     struct am_event_log_ctx ctx = {.cb = cb};
-    for (int i = 0; i < me->npool; ++i) {
+    for (int i = 0; i < me->npools; ++i) {
         ctx.pool_ind = i;
         am_onesize_iterate_over_allocated(
-            &me->pool[i], num, am_event_log_cb, &ctx
+            &me->pools[i], num, am_event_log_cb, &ctx
         );
     }
 }
