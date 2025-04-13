@@ -40,57 +40,36 @@ Macros
   Begins an asynchronous function and initializes the async state.
   It takes a pointer `me` to the `struct am_async` managing the async state.
 
-- **AM_ASYNC_BREAK()**
+- **AM_ASYNC_EXIT()**
 
   Marks the end of the async function. This macro resets the async state
-  to the initial value and returns `AM_ASYNC_RC_DONE`, indicating that
-  the function has completed.
+  to the initial value, indicating that the function has completed.
 
 - **AM_ASYNC_END()**
 
   Ends the asynchronous function, ensuring that completed or unexpected
-  states are handled correctly. It internally calls `AM_ASYNC_BREAK()`
+  states are handled correctly. It internally calls `AM_ASYNC_EXIT()`
   to reset the async state.
-
-- **AM_ASYNC_LABEL()**
-
-  Sets a "label" in the async function by storing the current line number
-  in the `state` field. This allows the async function to resume execution
-  from this point when re-entered.
 
 - **AM_ASYNC_AWAIT(cond)**
 
   Awaits a specified condition `cond` before proceeding with execution.
-  If the condition is not met, the function returns `AM_ASYNC_RC_BUSY`
-  and can be re-entered later. This allows the async function to wait
-  for external conditions without blocking.
+  If the condition is not met, the function returns and can be re-entered later.
+  This allows the async function to wait for external conditions without blocking.
 
 - **AM_ASYNC_YIELD()**
 
-  Yields control back to the caller without completing the function,
-  returning `AM_ASYNC_RC_BUSY`. This enables the async function to be
-  resumed later from this point.
+  Yields control back to the caller without completing the function
+  This enables the async function to be resumed later from this point.
 
 Functions
 ---------
 
-- **void am_async_init(struct am_async *me)**
+- **void am_async_ctor(struct am_async *me)**
 
   Initializes an `am_async` structure by setting its `state` field
   to `AM_ASYNC_STATE_INIT`. This prepares the structure to be used in
   an async function.
-
-Enumerations
-------------
-
-- **enum am_async_rc**
-
-  Defines return codes used in async functions:
-
-  - **AM_ASYNC_RC_DONE**: Indicates that the async function has
-    completed successfully.
-  - **AM_ASYNC_RC_BUSY**: Indicates that the async function is still
-    busy and should be re-entered later.
 
 Usage Example
 =============
@@ -116,8 +95,8 @@ The following example demonstrates how to use this async implementation in C.
         AM_ASYNC_YIELD();
 
         if (some_condition) {
-            /* Complete the function with AM_ASYNC_RC_DONE */
-            AM_ASYNC_BREAK();
+            /* Complete the function */
+            AM_ASYNC_EXIT();
         }
 
         /* Await another condition */
@@ -129,10 +108,13 @@ The following example demonstrates how to use this async implementation in C.
 
     int main() {
         struct my_async me;
-        am_async_init(&me);
+        am_async_ctor(&me);
 
-        while (async_function(&me) == AM_ASYNC_RC_BUSY) {
+        async_function(&me);
+
+        while (am_async_is_busy(&me)) {
             /* Perform other work while async function is busy */
+            async_function(&me)
         }
 
         return 0;
