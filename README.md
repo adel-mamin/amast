@@ -36,7 +36,7 @@ onesize | 1.39 | 0.00
 queue | 1.90 | 0.00
 ringbuf | 1.38 | 0.00
 slist | 1.20 | 0.01
-timer | 1.62 | 0.07
+timer | 1.63 | 0.07
 
 ## How To Compile For Amast Development
 <a name="how-to-compile"></a>
