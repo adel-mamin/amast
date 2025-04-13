@@ -40,6 +40,8 @@
 #ifndef AM_ASYNC_H_INCLUDED
 #define AM_ASYNC_H_INCLUDED
 
+#include <stdbool.h>
+
 /** Init state of async function. */
 #define AM_ASYNC_STATE_INIT 0
 
@@ -123,16 +125,6 @@ struct am_async {
         return;                                         \
     case __LINE__:
 
-/**
- * Check if async operation is in progress.
- *
- * @param me  the async instance pointer
- *
- * @return true   the async operation is in progress
- * @return false  the async operation is not in progress
- */
-#define AM_ASYNC_IS_BUSY(me) (((struct am_async*)(me))->state != AM_ASYNC_STATE_INIT)
-
 /* clang-format on */
 
 #ifdef __cplusplus
@@ -148,6 +140,16 @@ extern "C" {
  * @param me  the async state to construct
  */
 void am_async_ctor(struct am_async *me);
+
+/**
+ * Check if async operation is in progress.
+ *
+ * @param me  the async instance pointer
+ *
+ * @return true   the async operation is in progress
+ * @return false  the async operation is not in progress
+ */
+bool am_async_is_busy(const struct am_async *me);
 
 #ifdef __cplusplus
 }

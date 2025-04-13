@@ -27,3 +27,7 @@
 #include "async.h"
 
 void am_async_ctor(struct am_async *me) { me->state = AM_ASYNC_STATE_INIT; }
+
+bool am_async_is_busy(const struct am_async *me) {
+    return me->state != AM_ASYNC_STATE_INIT;
+}

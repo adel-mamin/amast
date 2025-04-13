@@ -52,16 +52,16 @@ static void test_async_local_continuation(void) {
     am_async_ctor(&me);
 
     am_async_reentrant(&me, &reent, &state);
-    AM_ASSERT(!AM_ASYNC_IS_BUSY(&me) && (reent == 1) && (state == 1));
+    AM_ASSERT(!am_async_is_busy(&me) && (reent == 1) && (state == 1));
 
     am_async_reentrant(&me, &reent, &state);
-    AM_ASSERT(!AM_ASYNC_IS_BUSY(&me) && (reent == 2) && (state == 2));
+    AM_ASSERT(!am_async_is_busy(&me) && (reent == 2) && (state == 2));
 
     am_async_reentrant(&me, &reent, &state);
-    AM_ASSERT(!AM_ASYNC_IS_BUSY(&me) && (reent == 3) && (state == 2));
+    AM_ASSERT(!am_async_is_busy(&me) && (reent == 3) && (state == 2));
 
     am_async_reentrant(&me, &reent, &state);
-    AM_ASSERT(!AM_ASYNC_IS_BUSY(&me) && (reent == 4) && (state == 2));
+    AM_ASSERT(!am_async_is_busy(&me) && (reent == 4) && (state == 2));
 }
 
 static void am_async_empty(struct am_async *me, int *reent) {
@@ -123,16 +123,16 @@ static void test_async_yield(void) {
 
     int state = 0;
     am_async_yield(&me1, &state);
-    AM_ASSERT(AM_ASYNC_IS_BUSY(&me1) && (1 == state));
+    AM_ASSERT(am_async_is_busy(&me1) && (1 == state));
 
     am_async_yield(&me2, &state);
-    AM_ASSERT(AM_ASYNC_IS_BUSY(&me2) && (1 == state));
+    AM_ASSERT(am_async_is_busy(&me2) && (1 == state));
 
     am_async_yield(&me1, &state);
-    AM_ASSERT(!AM_ASYNC_IS_BUSY(&me1) && (2 == state));
+    AM_ASSERT(!am_async_is_busy(&me1) && (2 == state));
 
     am_async_yield(&me2, &state);
-    AM_ASSERT(!AM_ASYNC_IS_BUSY(&me2) && (2 == state));
+    AM_ASSERT(!am_async_is_busy(&me2) && (2 == state));
 }
 
 static void am_async_exit(struct am_async *me, int *state) {
@@ -151,10 +151,10 @@ static void test_async_exit(void) {
 
     int state = 0;
     am_async_exit(&me, &state);
-    AM_ASSERT((1 == state) && !AM_ASYNC_IS_BUSY(&me));
+    AM_ASSERT((1 == state) && !am_async_is_busy(&me));
 
     am_async_exit(&me, &state);
-    AM_ASSERT((1 == state) && !AM_ASYNC_IS_BUSY(&me));
+    AM_ASSERT((1 == state) && !am_async_is_busy(&me));
 }
 
 static struct am_async_chain {
@@ -169,7 +169,7 @@ static void am_async_call_2(struct am_async_chain *me);
 static void am_async_call_1(struct am_async_chain *me) {
     AM_ASYNC_BEGIN(me);
     am_async_call_2(&test_async_chain[1]);
-    if (AM_ASYNC_IS_BUSY(&test_async_chain[1])) {
+    if (am_async_is_busy(&test_async_chain[1].async)) {
         return;
     }
     AM_ASYNC_AWAIT(me->ready);
@@ -195,24 +195,24 @@ static void test_async_call_chain(void) {
         am_async_ctor(&me2->async);
 
         am_async_call_1(me1);
-        AM_ASSERT(AM_ASYNC_IS_BUSY(me1));
+        AM_ASSERT(am_async_is_busy(&me1->async));
         AM_ASSERT(0 == me1->foo);
         AM_ASSERT(0 == me2->foo);
 
         am_async_call_1(me1);
-        AM_ASSERT(AM_ASYNC_IS_BUSY(me1));
+        AM_ASSERT(am_async_is_busy(&me1->async));
         AM_ASSERT(0 == me1->foo);
         AM_ASSERT(0 == me2->foo);
 
         me2->ready = 1;
         am_async_call_1(me1);
-        AM_ASSERT(AM_ASYNC_IS_BUSY(me1));
+        AM_ASSERT(am_async_is_busy(&me1->async));
         AM_ASSERT(0 == me1->foo);
         AM_ASSERT(1 == me2->foo);
 
         me1->ready = 1;
         am_async_call_1(me1);
-        AM_ASSERT(!AM_ASYNC_IS_BUSY(me1));
+        AM_ASSERT(!am_async_is_busy(&me1->async));
         AM_ASSERT(1 == me1->foo);
         AM_ASSERT(1 == me2->foo);
     }
