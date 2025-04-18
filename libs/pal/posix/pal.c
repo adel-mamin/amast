@@ -427,7 +427,8 @@ int am_pal_printff(const char *fmt, ...) {
 
 void am_pal_flush(void) { fflush(stdout); }
 
-void am_pal_ctor(void) {
+void *am_pal_ctor(void *arg) {
+    (void)arg;
     struct am_pal_task *task = &task_main_;
 
     memset(task, 0, sizeof(*task));
@@ -438,6 +439,8 @@ void am_pal_ctor(void) {
     int ret = pthread_cond_init(&task->cond, /*attr=*/NULL);
     AM_ASSERT(0 == ret);
     task->valid = true;
+
+    return NULL;
 }
 
 void am_pal_dtor(void) {

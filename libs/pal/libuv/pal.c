@@ -88,9 +88,13 @@ static int am_pal_id_from_index(int index) {
     return index + 1;
 }
 
-void am_pal_ctor(void) {
-    loop_ = malloc(sizeof(uv_loop_t));
-    uv_loop_init(loop_);
+void *am_pal_ctor(void *arg) {
+    if (arg) {
+        loop_ = (uv_loop_t *)arg;
+    } else {
+        loop_ = malloc(sizeof(uv_loop_t));
+        uv_loop_init(loop_);
+    }
     uv_mutex_init(&crit_section_);
 
     struct am_pal_task *task = &task_main_;
@@ -100,6 +104,8 @@ void am_pal_ctor(void) {
     task->valid = true;
     task->thread = uv_thread_self();
     uv_sem_init(&task->semaphore, 0);
+
+    return loop_;
 }
 
 /* callback to close handles */

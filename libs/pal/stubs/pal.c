@@ -33,7 +33,10 @@
 #include "common/compiler.h" /* IWYU pragma: keep */
 #include "pal/pal.h"
 
-void am_pal_ctor(void) {}
+void *am_pal_ctor(void *arg) {
+    (void)arg;
+    return NULL;
+}
 
 void am_pal_dtor(void) {}
 

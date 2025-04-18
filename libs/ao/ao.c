@@ -274,7 +274,7 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     memset(me, 0, sizeof(*me));
     am_ao_state_ctor_();
 
-    am_pal_ctor();
+    am_pal_ctor(/*arg=*/NULL);
 
     me->startup_mutex = am_pal_mutex_create();
     am_pal_mutex_lock(me->startup_mutex);

@@ -70,7 +70,11 @@ struct am_pal_task {
 static struct am_pal_task am_pal_task_main_ = {0};
 static struct am_pal_task am_pal_tasks_[AM_PAL_TASK_NUM_MAX] = {0};
 
-void am_pal_ctor(void) { am_pal_spinlock_ = (struct k_spinlock){}; }
+void *am_pal_ctor(void *arg) {
+    (void)arg;
+    am_pal_spinlock_ = (struct k_spinlock){};
+    return NULL;
+}
 
 void am_pal_dtor(void) {}
 

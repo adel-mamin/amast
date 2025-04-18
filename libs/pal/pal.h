@@ -56,8 +56,14 @@
 extern "C" {
 #endif
 
-/** PAL constructor. */
-void am_pal_ctor(void);
+/**
+ * PAL constructor.
+ *
+ * @param arg  platform specific handler. Can be NULL.
+ *
+ * @return Platform specific handler. Can be NULL.
+ */
+void *am_pal_ctor(void *arg);
 
 /** PAL destructor. */
 void am_pal_dtor(void);
