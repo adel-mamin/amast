@@ -57,6 +57,8 @@ void *am_onesize_allocate_x(struct am_onesize *hnd, int margin) {
      */
     AM_ASSERT((void *)elem >= hnd->pool.ptr);
     AM_ASSERT((void *)elem < (void *)((char *)hnd->pool.ptr + hnd->pool.size));
+    int offset = (int)((char *)elem - (char *)hnd->pool.ptr);
+    AM_ASSERT(((int)offset % hnd->block_size) == 0);
 
     --hnd->nfree;
     hnd->nfree_min = AM_MIN(hnd->nfree_min, hnd->nfree);
@@ -76,9 +78,12 @@ void am_onesize_free(struct am_onesize *hnd, const void *ptr) {
     AM_ASSERT(hnd);
     AM_ASSERT(ptr);
 
+    /* make sure the provided pointer is valid */
     /* NOLINTNEXTLINE(clang-analyzer-core.NullDereference) */
     AM_ASSERT(ptr >= hnd->pool.ptr);
     AM_ASSERT(ptr < (void *)((char *)hnd->pool.ptr + hnd->pool.size));
+    int offset = (int)((const char *)ptr - (char *)hnd->pool.ptr);
+    AM_ASSERT((offset % hnd->block_size) == 0);
 
     struct am_slist_item *p = AM_CAST(struct am_slist_item *, ptr);
 
