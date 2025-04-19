@@ -46,6 +46,8 @@ static void am_ao_task(void *param) {
 
     struct am_ao *ao = (struct am_ao *)param;
 
+    ao->task_id = am_pal_task_get_own_id();
+
     am_hsm_init(&ao->hsm, ao->init_event);
 
     struct am_ao_state *me = &am_ao_state_;
