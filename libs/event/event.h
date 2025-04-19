@@ -483,97 +483,45 @@ enum am_event_rc am_event_push_front(
 );
 
 /**
- * Pop event from the front of event queue.
+ * The type of a callback used to handle popped events.
  *
- * Thread safe.
- *
- * @param queue  the event queue
- *
- * @return the popped event. Cannot be NULL.
- */
-const struct am_event *am_event_pop_front(struct am_queue *queue);
-
-/**
- * Defer event (eXtended version).
- *
- * Checks if there are more free queue slots available than \p margin.
- * If not, then does not defer. Otherwise defers the event by pushing it
- * to the back of the event queue.
- *
- * Tries to free event, if defer fails.
- *
- * Statically allocated events (the events for which am_event_is_static()
- * returns true) are never freed.
- *
- * Thread safe.
- *
- * @param queue   the queue to store the deferred event
- * @param event   the event to defer
- * @param margin  free event queue slots to be available after the event is
- * deferred
- *
- * @retval true   the event was deferred
- * @retval false  the event was not deferred
- */
-bool am_event_defer_x(
-    struct am_queue *queue, const struct am_event *event, int margin
-);
-
-/**
- * Defer event.
- *
- * Defers the event by pushing the event to the back of the event queue.
- *
- * Asserts if the event was not deferred.
- *
- * Thread safe.
- *
- * @param queue  the queue to store the deferred event
- * @param event  the event to defer
- */
-void am_event_defer(struct am_queue *queue, const struct am_event *event);
-
-/**
- * The type of a callback used to handle recalled events.
- *
- * Used as a parameter to am_event_recall() API.
+ * Used as a parameter to am_event_pop_front() API.
  *
  * @param ctx    the callback context
- * @param event  the recalled event
+ * @param event  the popped event
  */
-typedef void (*am_event_recall_fn)(void *ctx, const struct am_event *event);
+typedef void (*am_event_pop_fn)(void *ctx, const struct am_event *event);
 
 /**
- * Recall deferred event.
+ * Pop event from the front of event queue.
  *
- * Event recalling is done by popping event from the front of event queue
- * and calling the provided callback with the event.
+ * Pops event from the front of event queue and calls
+ * the provided callback with the event.
  *
- * Tries to free the recalled event after the callback call.
+ * Tries to free the popped event after the callback call.
  *
  * Statically allocated events (the events for which am_event_is_static()
  * returns true) are never freed.
  *
  * Thread safe.
  *
- * @param queue  queue of deferred events
- * @param cb     the recalled event is provided to this callback.
- *               If set to NULL, then event is recalled and immediately
+ * @param queue  queue of events
+ * @param cb     the popped event is provided to this callback.
+ *               If set to NULL, then event is popped and immediately
  *               recycled. Therefore cb set to NULL can be used, when
- *               the queue of deferred events needs to be fully or
+ *               the queue of events needs to be fully or
  *               partially emptied to make space for newer events.
  * @param ctx    the callback context
  *
- * @retval true   an event was recalled
- * @retval false  no event was recalled
+ * @retval true   an event was popped
+ * @retval false  no event was popped
  */
-bool am_event_recall(struct am_queue *queue, am_event_recall_fn cb, void *ctx);
+bool am_event_pop_front(struct am_queue *queue, am_event_pop_fn cb, void *ctx);
 
 /**
  * Flush all events from event queue.
  *
  * Takes care of recycling the events by calling am_event_free().
- * The provided queue might be deferred events queue.
  *
  * Thread safe.
  *

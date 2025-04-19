@@ -24,6 +24,7 @@
  * SOFTWARE.
  */
 
+#include <stdbool.h>
 #include <stdarg.h>
 #include <string.h>
 
@@ -74,8 +75,11 @@ static enum am_hsm_rc defer_s2(
     struct test_defer *me, const struct am_event *event
 );
 
-static void defer_push_front(void *owner, const struct am_event *event) {
-    struct test_defer *me = (struct test_defer *)owner;
+static void defer_push_front(void *ctx, const struct am_event *event) {
+    AM_ASSERT(ctx);
+    AM_ASSERT(event);
+
+    struct test_defer *me = (struct test_defer *)ctx;
     am_event_push_front(&me->event_queue, event);
 }
 
@@ -84,11 +88,11 @@ static enum am_hsm_rc defer_s1(
 ) {
     switch (event->id) {
     case AM_EVT_HSM_EXIT:
-        (void)am_event_recall(&me->defer_queue, defer_push_front, me);
+        (void)am_event_pop_front(&me->defer_queue, defer_push_front, me);
         return AM_HSM_HANDLED();
     case HSM_EVT_A:
         me->log("s1-A;");
-        am_event_defer(&me->defer_queue, event);
+        am_event_push_back(&me->defer_queue, event);
         return AM_HSM_HANDLED();
     case HSM_EVT_B:
         me->log("s1-B;");
@@ -157,13 +161,19 @@ static void defer_hsm_log(const char *fmt, ...) {
     va_end(ap);
 }
 
+static void defer_dispatch(void *ctx, const struct am_event *event) {
+    AM_ASSERT(ctx);
+    AM_ASSERT(event);
+
+    struct test_defer *me = (struct test_defer *)ctx;
+    am_hsm_dispatch(&me->hsm, event);
+}
+
 static void defer_commit(void) {
     struct test_defer *me = &m_test_defer;
     while (!am_queue_is_empty(&me->event_queue)) {
-        const struct am_event *e = am_event_pop_front(&me->event_queue);
-        AM_ASSERT(e);
-        am_hsm_dispatch(&me->hsm, e);
-        am_event_free(&e);
+        bool popped = am_event_pop_front(&me->event_queue, defer_dispatch, me);
+        AM_ASSERT(popped);
     }
 }
 

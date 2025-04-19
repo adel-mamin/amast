@@ -39,6 +39,20 @@
 
 void am_ao_state_ctor_(void) {}
 
+static void am_ao_pop_fn(void *ctx, const struct am_event *event) {
+    AM_ASSERT(ctx);
+    AM_ASSERT(event);
+
+    struct am_ao *ao = ctx;
+    struct am_ao_state *me = &am_ao_state_;
+
+    me->debug(ao, event);
+
+    AM_ATOMIC_STORE_N(&ao->last_event, event->id);
+    am_hsm_dispatch(&ao->hsm, event);
+    AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
+}
+
 static void am_ao_task(void *param) {
     AM_ASSERT(param);
 
@@ -59,15 +73,8 @@ static void am_ao_task(void *param) {
             me->crit_enter();
         }
         me->crit_exit();
-        const struct am_event *e = am_event_pop_front(&ao->event_queue);
-        AM_ASSERT(e);
-        me->debug(ao, e);
-
-        AM_ATOMIC_STORE_N(&ao->last_event, e->id);
-        am_hsm_dispatch(&ao->hsm, e);
-        AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
-
-        am_event_free(&e);
+        bool popped = am_event_pop_front(&ao->event_queue, am_ao_pop_fn, ao);
+        AM_ASSERT(popped);
     }
 }
 

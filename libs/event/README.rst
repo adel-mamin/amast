@@ -30,7 +30,7 @@ Key Features
 3. **Event Queues**:
 
    - FIFO (First-In-First-Out) and LIFO (Last-In-First-Out) queue operations.
-   - Support for pushing, popping, and deferring events in queues.
+   - Support for pushing and popping events in queues.
    - Graceful handling of full queues with optional margin checks.
 
 4. **Concurrency and Thread Safety**:

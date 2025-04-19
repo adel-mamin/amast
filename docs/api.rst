@@ -270,15 +270,9 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_push_front
 
+.. doxygentypedef:: am_event_pop_fn
+
 .. doxygenfunction:: am_event_pop_front
-
-.. doxygenfunction:: am_event_defer_x
-
-.. doxygenfunction:: am_event_defer
-
-.. doxygentypedef:: am_event_recall_fn
-
-.. doxygenfunction:: am_event_recall
 
 .. doxygenfunction:: am_event_flush_queue
 

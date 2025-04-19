@@ -411,7 +411,7 @@ enum am_event_rc am_event_push_front(
     return rc;
 }
 
-const struct am_event *am_event_pop_front(struct am_queue *queue) {
+bool am_event_pop_front(struct am_queue *queue, am_event_pop_fn cb, void *ctx) {
     AM_ASSERT(queue);
 
     struct am_event_state *me = &am_event_state_;
@@ -424,51 +424,21 @@ const struct am_event *am_event_pop_front(struct am_queue *queue) {
     me->crit_exit();
 
     if (!e) {
-        return NULL;
-    }
-
-    AM_ASSERT(*e);
-
-    return *e;
-}
-
-void am_event_defer(struct am_queue *queue, const struct am_event *event) {
-    am_event_push_back(queue, event);
-}
-
-bool am_event_defer_x(
-    struct am_queue *queue, const struct am_event *event, int margin
-) {
-    return am_event_push_back_x(queue, event, margin);
-}
-
-bool am_event_recall(struct am_queue *queue, am_event_recall_fn cb, void *ctx) {
-    AM_ASSERT(queue);
-
-    struct am_event_state *me = &am_event_state_;
-
-    me->crit_enter();
-
-    const struct am_event **event =
-        (const struct am_event **)am_queue_pop_front(queue);
-
-    me->crit_exit();
-
-    if (NULL == event) {
         return false;
     }
-    const struct am_event *e = *event;
-    AM_ASSERT(e);
+
+    const struct am_event *event = *e;
+    AM_ASSERT(event);
 
     if (cb) {
-        cb(ctx, e);
+        cb(ctx, event);
     }
 
-    if (am_event_is_static(e)) {
+    if (am_event_is_static(event)) {
         return true;
     }
 
-    am_event_free(event);
+    am_event_free(e);
 
     return true;
 }

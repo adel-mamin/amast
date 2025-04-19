@@ -304,7 +304,7 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event) {
      *  const struct am_event *e = am_event_allocate(id, size);
      *  am_event_inc_ref_cnt(e); <-- THIS IS MISSING
      *  am_hsm_dispatch(hsm, e);
-     *      am_event_defer(queue, e) & am_event_recall(queue, ...)
+     *      am_event_push_XXX(queue, e) & am_event_pop_front(queue, ...)
      *      OR
      *      am_event_inc_ref_cnt(e) & am_event_dec_ref_cnt(e)
      *  am_event_free(&e);

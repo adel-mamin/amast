@@ -44,6 +44,22 @@ void am_ao_state_ctor_(void) {
     memset(&am_ready_aos_, 0, sizeof(am_ready_aos_));
 }
 
+static void am_ao_pop_fn(void *ctx, const struct am_event *event) {
+    AM_ASSERT(ctx);
+    AM_ASSERT(event);
+
+    struct am_ao *ao = ctx;
+    struct am_ao_state *me = &am_ao_state_;
+    me->debug(ao, event);
+    AM_ATOMIC_STORE_N(&ao->last_event, event->id);
+    me->running_ao_prio = ao->prio;
+
+    am_hsm_dispatch(&ao->hsm, event);
+
+    me->running_ao_prio = AM_AO_PRIO_INVALID;
+    AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
+}
+
 bool am_ao_run_all(void) {
     struct am_ao_state *me = &am_ao_state_;
 
@@ -88,8 +104,8 @@ bool am_ao_run_all(void) {
         AM_ASSERT(ao);
         AM_ASSERT(ao->prio == msb);
 
-        const struct am_event *e = am_event_pop_front(&ao->event_queue);
-        if (!e) {
+        bool popped = am_event_pop_front(&ao->event_queue, am_ao_pop_fn, ao);
+        if (!popped) {
             me->crit_enter();
             if (am_queue_is_empty(&ao->event_queue)) {
                 am_bit_u64_clear(&am_ready_aos_, ao->prio);
@@ -97,16 +113,6 @@ bool am_ao_run_all(void) {
             me->crit_exit();
             continue;
         }
-        me->debug(ao, e);
-        AM_ATOMIC_STORE_N(&ao->last_event, e->id);
-        me->running_ao_prio = ao->prio;
-
-        am_hsm_dispatch(&ao->hsm, e);
-
-        me->running_ao_prio = AM_AO_PRIO_INVALID;
-        AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
-        am_event_free(&e);
-
         dispatched = true;
     } while (!dispatched);
 
