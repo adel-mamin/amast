@@ -60,6 +60,8 @@ struct am_ao {
     unsigned hsm_init_pend : 1;
     /** safety net to catch missing am_ao_ctor() call */
     unsigned ctor_called : 1;
+    /** am_ao_stop() call was made for the AO */
+    unsigned stopped : 1;
 };
 
 /** Active object library state configuration. */

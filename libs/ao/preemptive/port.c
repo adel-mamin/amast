@@ -49,7 +49,7 @@ static void am_ao_task(void *param) {
     am_hsm_init(&ao->hsm, ao->init_event);
 
     struct am_ao_state *me = &am_ao_state_;
-    while (AM_LIKELY(me->aos[ao->prio])) {
+    while (AM_LIKELY(!ao->stopped)) {
         me->crit_enter();
         while (am_queue_is_empty(&ao->event_queue)) {
             me->crit_exit();
@@ -158,9 +158,11 @@ void am_ao_stop(struct am_ao *ao) {
     --me->aos_cnt;
     bool running_aos = me->aos_cnt;
 
-    me->crit_exit();
-
     ao->ctor_called = false;
+
+    ao->stopped = true;
+
+    me->crit_exit();
 
     if (!running_aos) {
         am_pal_task_notify(/*task=*/AM_PAL_TASK_ID_MAIN);

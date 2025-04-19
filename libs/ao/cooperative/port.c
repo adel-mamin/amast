@@ -182,10 +182,10 @@ void am_ao_stop(struct am_ao *ao) {
 
     me->aos[ao->prio] = NULL;
     --me->aos_cnt;
+    ao->ctor_called = false;
+    ao->stopped = true;
 
     me->crit_exit();
-
-    ao->ctor_called = false;
 }
 
 void am_ao_notify_unsafe(const struct am_ao *ao) {
