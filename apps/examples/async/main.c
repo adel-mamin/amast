@@ -86,7 +86,7 @@ struct async {
     struct am_ao ao;
     struct am_timer timer;
     struct am_async async;
-    int i;
+    unsigned i;
 };
 
 static const struct am_event am_evt_start = {.id = ASYNC_EVT_START};
