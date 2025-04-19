@@ -221,9 +221,12 @@ int am_pal_task_create(
     }
     AM_ASSERT(task && (index >= 0));
 
+    AM_DISABLE_WARNING(AM_W_NULL_DEREFERENCE)
     task->entry = entry;
     task->arg = arg;
     task->id = am_pal_id_from_index(index);
+    AM_ENABLE_WARNING(AM_W_NULL_DEREFERENCE)
+
     int rc = uv_sem_init(&task->semaphore, 0);
     AM_ASSERT(rc == 0);
     rc = uv_thread_create(&task->thread, task_entry_wrapper, task);
