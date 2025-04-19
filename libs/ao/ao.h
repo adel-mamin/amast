@@ -164,7 +164,7 @@ extern "C" {
  * @param event   the event to publish
  * @param ao      do not post the event to this active object even
  *                if it is subscribed to the event.
- *                If set to NULL, the the API behaves same way as
+ *                If set to NULL, the API behaves same way as
  *                am_ao_publish_x()
  * @param margin  the number of free event queue slots to be available in each
  *                subscribed active object after the event is pushed
@@ -188,7 +188,7 @@ bool am_ao_publish_exclude_x(
  * @param event  the event to publish
  * @param ao     do not post the event to this active object even
  *               if it is subscribed to the event.
- *               If set to NULL, the the API behaves same way as
+ *               If set to NULL, the API behaves same way as
  *               am_ao_publish().
  */
 void am_ao_publish_exclude(
@@ -405,7 +405,7 @@ void am_ao_state_dtor(void);
 /**
  * Subscribe active object to \p event ID.
  *
- * The \p event ID must be smaller than the the number of elements
+ * The \p event ID must be smaller than the number of elements
  * in the array of active object subscribe lists provided to
  * am_ao_init_subscribe_list().
  *
@@ -417,7 +417,7 @@ void am_ao_subscribe(const struct am_ao *ao, int event);
 /**
  * Unsubscribe active object from \p event ID.
  *
- * The \p event ID must be smaller than the the number of elements
+ * The \p event ID must be smaller than the number of elements
  * in the array of active object subscribe lists provided to
  * am_ao_init_subscribe_list().
  *

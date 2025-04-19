@@ -88,7 +88,6 @@ int main(void) {
     am_ao_state_ctor(&cfg_ao);
 
     am_ao_ctor(&m_test.ao, AM_HSM_STATE_CTOR(test_init));
-
     start_ao();
 
     while (am_ao_get_cnt() > 0) {
