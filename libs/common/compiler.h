@@ -446,28 +446,45 @@
     AM_ENABLE_WARNING(AM_W_DATE_TIME)                  \
     AM_ENABLE_WARNING(AM_W_NULL_DEREFERENCE)
 
+/** Internal stringification macro helper. */
+#define AM_STRINGIFY_IMPL2(s) #s
+/** Internal stringification macro. */
+#define AM_STRINGIFY_IMPL(s) AM_STRINGIFY_IMPL2(s)
+/** Join x and y together. */
+#define AM_JOINSTR_(x, y) AM_STRINGIFY_IMPL(x##y)
+
 #if (AM_COMPILER_ID == AM_COMPILER_CLANG)
+
 #define AM_DISABLE_WARNING(warning) \
     AM_DIAG_PRAGMA(clang, push)     \
     AM_DIAG_PRAGMA(clang, ignored AM_JOINSTR_(-W, warning))
 #define AM_ENABLE_WARNING(warning) AM_DIAG_PRAGMA(clang, pop)
+
 #elif defined(_MSC_VER)
+
 #define AM_DISABLE_WARNING(warning) \
     AM_DIAG_PRAGMA(msvc, push)      \
     AM_DIAG_DO_PRAGMA(warning(disable :##warning))
 #define AM_ENABLE_WARNING(warning) AM_DIAG_PRAGMA(msvc, pop)
+
 #elif (AM_COMPILER_ID == AM_COMPILER_GCC)
+
 #if ((__GNUC__ * 100) + __GNUC_MINOR__) >= 406
+
 #define AM_DISABLE_WARNING(warning) \
     AM_DIAG_PRAGMA(GCC, push)       \
     AM_DIAG_PRAGMA(GCC, ignored AM_JOINSTR_(-W, warning))
 #define AM_ENABLE_WARNING(warning) AM_DIAG_PRAGMA(GCC, pop)
+
 #else
+
 #define AM_DISABLE_WARNING(warning) \
     AM_DIAG_PRAGMA(GCC, ignored AM_JOINSTR_(-W, warning))
 #define AM_ENABLE_WARNING(warning) \
     AM_DIAG_PRAGMA(GCC, warning AM_JOINSTR_(-W, warning))
+
 #endif /* __GNUC__ */
+
 #endif /* AM_COMPILER_ID */
 
 /* taken from https://github.com/sustrik/libdill */

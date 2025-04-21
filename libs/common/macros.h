@@ -132,7 +132,7 @@ AM_NORETURN void am_assert_failure(
 #define AM_STRINGIFY_(s) #s
 #define AM_STRINGIFY(s) AM_STRINGIFY_(s)
 /** Join x and y together. */
-#define AM_JOINSTR_(x, y) AM_STRINGIFY(x##y)
+#define AM_JOINSTR(x, y) AM_STRINGIFY(x##y)
 
 /** Counts the number of trailing zeros in a word. */
 #define AM_COUNT_TRAILING_ZEROS(word)           \

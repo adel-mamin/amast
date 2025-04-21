@@ -26,6 +26,7 @@
 
 #include <string.h>
 
+#include "common/compiler.h"
 #include "common/macros.h"
 
 #include "async/async.h"

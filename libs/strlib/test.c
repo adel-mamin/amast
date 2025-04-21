@@ -37,6 +37,7 @@
 #include <string.h>
 
 #include "common/macros.h"
+#include "common/compiler.h"
 #include "strlib/strlib.h"
 
 static void string_is_true(const char *str) {
