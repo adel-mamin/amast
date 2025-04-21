@@ -231,7 +231,7 @@ struct am_event *am_event_allocate_x(int id, int size, int margin);
  * The event is allocated from one of the memory pools provided
  * with am_event_add_pool() function.
  *
- * The function asserts if there is no memory left to accommodate the event.
+ * The function asserts, if there is no memory left to accommodate the event.
  *
  * Thread safe.
  *
@@ -243,7 +243,10 @@ struct am_event *am_event_allocate_x(int id, int size, int margin);
 struct am_event *am_event_allocate(int id, int size);
 
 /**
- * Try to free the event allocated earlier with am_event_allocate().
+ * Try to free the event.
+ *
+ * The event is either static or allocated earlier with
+ * am_event_allocate(), am_event_dup() or am_event_dup_x() API calls.
  *
  * Decrements event reference counter by one and frees the event,
  * if the reference counter drops to zero.
