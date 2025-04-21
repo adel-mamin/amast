@@ -366,7 +366,7 @@
 #endif /* AM_COMPILER_ID */
 
 /** Disable all warnings */
-#define AM_AM_DISABLE_WARNINGS()                        \
+#define AM_DISABLE_WARNINGS()                           \
     AM_DISABLE_WARNING(AM_W_PEDANTIC)                   \
     AM_DISABLE_WARNING(AM_W_SHADOW)                     \
     AM_DISABLE_WARNING(AM_W_FORMAT)                     \
