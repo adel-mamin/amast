@@ -28,8 +28,8 @@
  * Assert implementation
  */
 
-#include "common/compiler.h"
 #include "common/macros.h"
+#include "common/compiler.h"
 
 #ifdef AM_ASSERT_FAILURE
 
