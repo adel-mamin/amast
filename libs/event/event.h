@@ -35,6 +35,7 @@
 
 #include <stdbool.h>
 
+#include "common/compiler.h"
 #include "queue/queue.h"
 
 /** No event ID should have this value. */
@@ -115,6 +116,8 @@ struct am_event {
     /** PUB/SUB time event */
     unsigned pubsub_time : 1;
 };
+
+AM_ASSERT_STATIC(sizeof(struct am_event) == (2 * sizeof(int)));
 
 /** Event library state configuration. */
 struct am_event_state_cfg {
