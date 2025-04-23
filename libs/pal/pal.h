@@ -134,7 +134,7 @@ void am_pal_mutex_destroy(int mutex);
  *
  * @param name        human readable task name. Not copied.
  *                    Must remain valid after the call.
- * @param priority    task priority [0, AM_PAL_TASK_NUM_MAX[
+ * @param priority    task priority [0, #AM_PAL_TASK_NUM_MAX[
  * @param stack       task stack
  * @param stack_size  task stack size [bytes]
  * @param entry       task entry function
