@@ -35,7 +35,7 @@
 #include <stdbool.h>
 
 /**
- * Singly linked item.
+ * Singly linked list item.
  *
  * There are at least two ways to make an arbitrary structure `struct foo`
  * a singly linked list item:
@@ -128,7 +128,7 @@ bool am_slist_item_is_linked(const struct am_slist_item *item);
 /**
  * Construct list item.
  *
- * @param item  list item to construct.
+ * @param item  the list item to construct.
  */
 void am_slist_item_ctor(struct am_slist_item *item);
 
@@ -166,10 +166,10 @@ struct am_slist_item *am_slist_pop_after(
  * Used by am_slist_find() API.
  *
  * @param context  the predicate context
- * @param item     item to analyze
+ * @param item     the item to analyze
  *
- * @retval true    item was found
- * @retval false   item was not found
+ * @retval true    the item was found
+ * @retval false   the item was not found
  */
 typedef bool (*am_slist_item_found_fn)(
     void *context, struct am_slist_item *item
@@ -259,7 +259,7 @@ bool am_slist_owns(
  * @param list  the list
  * @param item  the item to be checked
  *
- * @return next list item or NULL
+ * @return the next list item or NULL
  */
 struct am_slist_item *am_slist_next_item(
     const struct am_slist *list, const struct am_slist_item *item
