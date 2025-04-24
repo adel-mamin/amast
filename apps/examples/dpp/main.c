@@ -88,11 +88,11 @@ static void log_queue(
 AM_NORETURN void am_assert_failure(
     const char *assertion, const char *file, int line
 ) {
-    static int nassert = 0;
+    static int nasserts = 0;
     if (nassert) {
         __builtin_trap();
     }
-    ++nassert;
+    ++nasserts;
     am_pal_printf_unsafe(
         AM_COLOR_RED "ASSERT: %s (%s:%d)(task %d)\n" AM_COLOR_RESET,
         assertion,
