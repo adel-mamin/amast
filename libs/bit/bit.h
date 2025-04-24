@@ -51,8 +51,8 @@ extern "C" {
  *
  * @param u64  the bit array
  *
- * @retval true   bit array is empty
- * @retval false  bit array is not empty
+ * @retval true   the bit array is empty
+ * @retval false  the bit array is not empty
  */
 bool am_bit_u64_is_empty(const struct am_bit_u64 *u64);
 
