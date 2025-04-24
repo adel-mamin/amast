@@ -94,15 +94,15 @@ The following example demonstrates how to use this async implementation in C.
         /* Yield control back to the caller */
         AM_ASYNC_YIELD();
 
-        if (some_condition) {
+        if (some_other_condition) {
             /* Complete the function */
             AM_ASYNC_EXIT();
         }
 
-        /* Await another condition */
-        AM_ASYNC_AWAIT(another_condition());
+        /* Await yet another condition */
+        AM_ASYNC_AWAIT(yet_another_condition());
 
-        /* Complete the function with AM_ASYNC_RC_DONE */
+        /* Complete the function */
         AM_ASYNC_END();
     }
 
@@ -123,7 +123,7 @@ The following example demonstrates how to use this async implementation in C.
 Notes
 =====
 
-- Avoid using switch-case constructs withing asynchronous function
+- Avoid using switch-case constructs within asynchronous function
   using the macros
 - Keep the variables that should preserve their values across async
   function calls in a state stored outside of the async function.

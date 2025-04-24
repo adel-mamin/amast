@@ -144,7 +144,7 @@ void am_async_ctor(struct am_async *me);
 /**
  * Check if async operation is in progress.
  *
- * @param me  the async instance pointer
+ * @param me  the async state
  *
  * @return true   the async operation is in progress
  * @return false  the async operation is not in progress
