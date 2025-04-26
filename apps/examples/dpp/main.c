@@ -89,7 +89,7 @@ AM_NORETURN void am_assert_failure(
     const char *assertion, const char *file, int line
 ) {
     static int nasserts = 0;
-    if (nassert) {
+    if (nasserts) {
         __builtin_trap();
     }
     ++nasserts;
