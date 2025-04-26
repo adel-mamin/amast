@@ -34,6 +34,7 @@
 #define AM_EVENT_H_INCLUDED
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "common/compiler.h"
 #include "queue/queue.h"
@@ -83,6 +84,9 @@
 #define AM_EVENT_POOL_INDEX_BITS 5
 #define AM_EVENT_POOL_INDEX_MASK ((1U << AM_EVENT_POOL_INDEX_BITS) - 1U)
 
+#define AM_EVENT_ID_LSW_BITS 16
+#define AM_EVENT_ID_LSW_MASK ((1U << AM_EVENT_ID_LSW_BITS) - 1U)
+
 extern const int am_alignof_event;
 extern const int am_alignof_event_ptr;
 
@@ -105,19 +109,24 @@ enum am_event_rc {
 /** Event descriptor. */
 struct am_event {
     /** event ID */
-    int id;
+    int32_t id;
 
     /** reference counter */
-    unsigned ref_counter : AM_EVENT_REF_COUNTER_BITS;
+    uint32_t ref_counter : AM_EVENT_REF_COUNTER_BITS;
     /** if set to zero, then event is statically allocated */
-    unsigned pool_index_plus_one : AM_EVENT_POOL_INDEX_BITS;
+    uint32_t pool_index_plus_one : AM_EVENT_POOL_INDEX_BITS;
     /** tick domain for time events */
-    unsigned tick_domain : AM_EVENT_TICK_DOMAIN_BITS;
+    uint32_t tick_domain : AM_EVENT_TICK_DOMAIN_BITS;
     /** PUB/SUB time event */
-    unsigned pubsub_time : 1;
+    uint32_t pubsub_time : 1;
+    /**
+     * Least significant word of id for allocated events.
+     * Used for sanity checks.
+     */
+    uint32_t id_lsw : AM_EVENT_ID_LSW_BITS;
 };
 
-AM_ASSERT_STATIC(sizeof(struct am_event) == (2 * sizeof(int)));
+AM_ASSERT_STATIC(sizeof(struct am_event) == (2 * sizeof(int32_t)));
 
 /** Event library state configuration. */
 struct am_event_state_cfg {

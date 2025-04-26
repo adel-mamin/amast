@@ -119,6 +119,7 @@ struct am_event *am_event_allocate_x(int id, int size, int margin) {
 
         memset(event, 0, sizeof(*event));
         event->id = id;
+        event->id_lsw = (uint32_t)id & AM_EVENT_ID_LSW_MASK;
         event->pool_index_plus_one =
             (unsigned)(i + 1) & AM_EVENT_POOL_INDEX_MASK;
 
@@ -142,6 +143,12 @@ static void am_event_free_unsafe(const struct am_event **event) {
 
     struct am_event *e = AM_CAST(struct am_event *, *event);
     AM_ASSERT(e->pool_index_plus_one <= AM_EVENT_POOLS_NUM_MAX);
+    /*
+     * Check if event is valid.
+     * If the below assert hits, then the reason is likely
+     * a use after free condition.
+     */
+    AM_ASSERT(((uint32_t)e->id & AM_EVENT_ID_LSW_MASK) == e->id_lsw);
 
     if (e->ref_counter > 1) {
         --e->ref_counter;
@@ -203,6 +210,16 @@ struct am_event *am_event_dup_x(
     const struct am_event_state *me = &am_event_state_;
     AM_ASSERT(me->npools > 0);
     AM_ASSERT(event->id >= AM_EVT_USER);
+    if (!am_event_is_static(event)) {
+        /*
+         * Check if event is valid.
+         * If the below assert hits, then the reason is likely
+         * a use after free condition.
+         */
+        AM_ASSERT(
+            ((uint32_t)event->id & AM_EVENT_ID_LSW_MASK) == event->id_lsw
+        );
+    }
     AM_ASSERT(margin >= 0);
 
     struct am_event *dup = am_event_allocate_x(event->id, size, margin);
@@ -283,6 +300,12 @@ void am_event_inc_ref_cnt(const struct am_event *event) {
     }
 
     AM_ASSERT(event->ref_counter < AM_EVENT_REF_COUNTER_MASK);
+    /*
+     * Check if event is valid.
+     * If the below assert hits, then the reason is likely
+     * a use after free condition.
+     */
+    AM_ASSERT(((uint32_t)event->id & AM_EVENT_ID_LSW_MASK) == event->id_lsw);
 
     struct am_event *e = AM_CAST(struct am_event *, event);
     struct am_event_state *me = &am_event_state_;
@@ -331,6 +354,16 @@ static enum am_event_rc am_event_push_x(
     const int capacity = am_queue_get_capacity(queue);
     AM_ASSERT(margin < capacity);
     AM_ASSERT(push);
+    if (!am_event_is_static(event)) {
+        /*
+         * Check if event is valid.
+         * If the below assert hits, then the reason is likely
+         * a use after free condition.
+         */
+        AM_ASSERT(
+            ((uint32_t)event->id & AM_EVENT_ID_LSW_MASK) == event->id_lsw
+        );
+    }
 
     struct am_event *e = AM_CAST(struct am_event *, event);
     struct am_event_state *me = &am_event_state_;

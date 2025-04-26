@@ -38,6 +38,8 @@ EXCLUDE_SYMBOLS        = AM_ASSERT_STATIC \
                          AM_EVENT_TICK_DOMAIN_MASK \
                          AM_EVENT_POOL_INDEX_BITS \
                          AM_EVENT_POOL_INDEX_MASK \
+                         AM_EVENT_ID_LSW_BITS \
+                         AM_EVENT_ID_LSW_MASK \
                          am_alignof_slist \
                          am_alignof_slist_item \
                          AM_ALIGNOF_SLIST \
