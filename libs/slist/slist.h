@@ -154,14 +154,14 @@ void am_slist_push_after(
  * @param list  the list
  * @param item  the item after this item is popped
  *
- * @return the popped item or NULL if nothing to pop
+ * @return the popped item or NULL, if nothing to pop
  */
 struct am_slist_item *am_slist_pop_after(
     struct am_slist *list, struct am_slist_item *item
 );
 
 /**
- * Predicate callback type that tells if item is found.
+ * Predicate callback type that tells, if item is found.
  *
  * Used by am_slist_find() API.
  *

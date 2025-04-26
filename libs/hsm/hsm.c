@@ -67,7 +67,8 @@ static void hsm_set_state(struct am_hsm *hsm, struct am_hsm_state s) {
  * @param path   the path is placed here
  * @param from   placed to path[0]
  * @param until  the substate of it is placed at the end of path[].
- * @param till   the state if found is placed at the end of path[]. Can be NULL.
+ * @param till   the state, if found, is placed at the end of path[].
+ *               Can be NULL.
  */
 static void hsm_build(
     struct am_hsm *hsm,

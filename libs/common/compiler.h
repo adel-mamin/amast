@@ -579,7 +579,7 @@ AM_ASSERT_STATIC(LONG_MAX == ((1ULL << (unsigned)(LONG_BITS - 1)) - 1));
     })
 #endif /*AM_COMPILER_ID*/
 
-/** Add integers and assert if it overflows */
+/** Add integers and assert, if it overflows */
 #define AM_ADD_INT(a, b)                             \
     AM_EXTENSION({                                   \
         int add_res_;                                \
@@ -589,7 +589,7 @@ AM_ASSERT_STATIC(LONG_MAX == ((1ULL << (unsigned)(LONG_BITS - 1)) - 1));
         add_res_;                                    \
     })
 
-/** Multiply integers and assert if it overflows */
+/** Multiply integers and assert, if it overflows */
 #define AM_MUL_INT(a, b)                             \
     AM_EXTENSION({                                   \
         int mul_res_;                                \

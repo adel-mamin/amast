@@ -298,7 +298,7 @@ struct am_event *am_event_dup_x(
  *
  * Allocates it from memory pools provided by am_event_add_pool() function.
  *
- * The function asserts if there is no memory left to allocated the event.
+ * The function asserts, if there is no memory left to allocated the event.
  *
  * Thread safe.
  *
@@ -419,7 +419,7 @@ enum am_event_rc am_event_push_back_x(
 /**
  * Push event to the back of event queue.
  *
- * Asserts if the event was not pushed.
+ * Asserts, if the event was not pushed.
  *
  * Thread safe.
  *
@@ -438,7 +438,7 @@ enum am_event_rc am_event_push_back(
  * Push event to the back of event queue without using critical section
  * (unsafe).
  *
- * Asserts if the event was not pushed.
+ * Asserts, if the event was not pushed.
  *
  * Thread unsafe.
  *
@@ -487,7 +487,7 @@ enum am_event_rc am_event_push_front_x(
 /**
  * Push event to the front of event queue.
  *
- * Asserts if the event was not pushed.
+ * Asserts, if the event was not pushed.
  *
  * Thread safe.
  *

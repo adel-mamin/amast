@@ -48,7 +48,7 @@
  * async_top handles user input. Press ENTER to switch between
  * async_regular and async_off substates.
  *
- * Generally the use of async is warranted if the sequence of
+ * Generally the use of async is warranted, if the sequence of
  * steps can be represented as a flowchart like in this case.
  *
  * async_regular calls async_regular_() to do the printing

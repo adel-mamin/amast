@@ -452,7 +452,7 @@ void am_hsm_dtor(struct am_hsm *hsm);
  *
  * Calls the initial state event handler set by am_hsm_ctor() with the provided
  * optional initial event and performs the initial transition including
- * all recursive initial transitions if any.
+ * all recursive initial transitions, if any.
  *
  * @param hsm         the HSM to init
  * @param init_event  the initial event. Can be NULL.
@@ -462,7 +462,7 @@ void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event);
 /**
  * Set spy user callback as a one place to catch all events for the given HSM.
  *
- * Is only available if the HSM library is compiled with `AM_HSM_SPY` defined.
+ * Is only available, if the HSM library is compiled with `AM_HSM_SPY` defined.
  *
  * Should only be used for debugging purposes.
  *

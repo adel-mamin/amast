@@ -137,7 +137,7 @@ int am_queue_item_size(const struct am_queue *queue);
  *
  * @param queue  the queue
  *
- * @return The popped item or NULL if queue was empty.
+ * @return The popped item or NULL, if queue was empty.
  *         The memory is owned by the queue. Do not free it!
  */
 void *am_queue_pop_front(struct am_queue *queue);
@@ -151,7 +151,7 @@ void *am_queue_pop_front(struct am_queue *queue);
  * @param buf    the popped item is copied here
  * @param size   the byte size of buf
  *
- * @return The popped item or NULL if queue was empty.
+ * @return The popped item or NULL, if queue was empty.
  *         The memory is owned by the queue. Do not free it!.
  */
 void *am_queue_pop_front_and_copy(struct am_queue *queue, void *buf, int size);
@@ -163,7 +163,7 @@ void *am_queue_pop_front_and_copy(struct am_queue *queue, void *buf, int size);
  *
  * @param queue  the queue
  *
- * @return The peeked item or NULL if queue is empty.
+ * @return The peeked item or NULL, if queue is empty.
  *         The memory is owned by the queue. Do not free it!
  */
 void *am_queue_peek_front(struct am_queue *queue);
@@ -175,7 +175,7 @@ void *am_queue_peek_front(struct am_queue *queue);
  *
  * @param queue  the queue
  *
- * @return The peeked item or NULL if queue is empty.
+ * @return The peeked item or NULL, if queue is empty.
  *         The memory is owned by the queue. Do not free it!
  */
 void *am_queue_peek_back(struct am_queue *queue);

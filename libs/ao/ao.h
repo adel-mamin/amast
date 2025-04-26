@@ -184,7 +184,7 @@ bool am_ao_publish_exclude_x(
  * Publish \p event to all subscribed active objects except the given one.
  *
  * Same as am_ao_publish_exclude_x() except this function
- * crashes with assert if it fails delivering the \p event to at
+ * crashes with assert, if it fails delivering the \p event to at
  * least one subscribed active object.
  *
  * @param event  the event to publish
@@ -248,7 +248,7 @@ bool am_ao_publish_x(const struct am_event *event, int margin);
  * Publish \p event to all subscribed active objects.
  *
  * Same as am_ao_publish_x() except this function
- * crashes with assert if it fails delivering the \p event to at
+ * crashes with assert, if it fails delivering the \p event to at
  * least one subscribed active object.
  *
  * @param event  the event to publish
@@ -291,7 +291,8 @@ bool am_ao_post_fifo_x(
  * Post \p event to the back of active object's event queue.
  *
  * Same as am_ao_post_fifo_x() except this function
- * crashes with assert if it fails delivering the \p event to the active object.
+ * crashes with assert, if it fails delivering the \p event to the active
+ * object.
  *
  * @param ao     the event is posted to this active object
  * @param event  the event to post
@@ -331,7 +332,8 @@ bool am_ao_post_lifo_x(
  * Post \p event to the front of active object's event queue.
  *
  * Same as am_ao_post_lifo_x() except this function
- * crashes with assert if it fails delivering the \p event to the active object.
+ * crashes with assert, if it fails delivering the \p event to the active
+ * object.
  *
  * @param ao     the event is posted to this active object
  * @param event  the event to post
@@ -438,7 +440,7 @@ void am_ao_unsubscribe_all(const struct am_ao *ao);
 /**
  * Initialize active object global subscribe list.
  *
- * Optional. Only needed if active object pub/sub functionality is used.
+ * Optional. Only needed, if active object pub/sub functionality is used.
  * The pub/sub functionality is provided by
  * am_ao_publish(), am_ao_publish_x(),
  * am_ao_publish_exclude(), am_ao_publish_exclude_x(),

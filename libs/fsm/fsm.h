@@ -260,7 +260,7 @@ void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event);
 /**
  * Set spy user callback as a one place to catch all events for the given FSM.
  *
- * Is only available if the FSM library is compiled with `AM_FSM_SPY` defined.
+ * Is only available, if the FSM library is compiled with `AM_FSM_SPY` defined.
  *
  * Should only be used for debugging purposes.
  *

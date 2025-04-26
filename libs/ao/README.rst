@@ -116,5 +116,5 @@ Limitations
 
 - The maximum number of active objects (``AM_AO_NUM_MAX``) is constrained to 64
   by design for simplicity and resource efficiency.
-- Pub/sub functionality requires explicit initialization if used.
+- Pub/sub functionality requires explicit initialization, if used.
 

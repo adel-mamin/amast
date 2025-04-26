@@ -132,7 +132,7 @@ void am_dlist_item_ctor(struct am_dlist_item *item);
  * @param list  the list
  * @param item  the item next to this one is returned
  *
- * @return the next item or NULL if \a item is the last one in the list
+ * @return the next item or NULL, if \a item is the last one in the list
  */
 struct am_dlist_item *am_dlist_next(
     const struct am_dlist *list, const struct am_dlist_item *item
@@ -147,7 +147,7 @@ struct am_dlist_item *am_dlist_next(
  * @param list  the list
  * @param item  the item previous to this one is returned
  *
- * @return the previous item or NULL if \a item is the first one in the list
+ * @return the previous item or NULL, if \a item is the first one in the list
  */
 struct am_dlist_item *am_dlist_prev(
     const struct am_dlist *list, const struct am_dlist_item *item
@@ -204,7 +204,7 @@ void am_dlist_pop(struct am_dlist_item *item);
  *
  * @param list  the list
  *
- * @return the popped item or NULL if the list was empty
+ * @return the popped item or NULL, if the list was empty
  */
 struct am_dlist_item *am_dlist_pop_front(struct am_dlist *list);
 
@@ -213,7 +213,7 @@ struct am_dlist_item *am_dlist_pop_front(struct am_dlist *list);
  *
  * @param list  the list
  *
- * @return the popped item or NULL if the list was empty
+ * @return the popped item or NULL, if the list was empty
  */
 struct am_dlist_item *am_dlist_pop_back(struct am_dlist *list);
 
@@ -224,7 +224,7 @@ struct am_dlist_item *am_dlist_pop_back(struct am_dlist *list);
  *
  * @param list  the list
  *
- * @return The pointer to the front (head) item or NULL if the list is empty
+ * @return The pointer to the front (head) item or NULL, if the list is empty
  */
 struct am_dlist_item *am_dlist_peek_front(struct am_dlist *list);
 
@@ -235,7 +235,7 @@ struct am_dlist_item *am_dlist_peek_front(struct am_dlist *list);
  *
  * @param list  the list
  *
- * @return the pointer to the back (tail) item or NULL if the list is empty
+ * @return the pointer to the back (tail) item or NULL, if the list is empty
  */
 struct am_dlist_item *am_dlist_peek_back(struct am_dlist *list);
 
@@ -300,7 +300,7 @@ void am_dlist_iterator_ctor(
  *
  * @param it  the iterator constructed by am_dlist_iterator_ctor()
  *
- * @return the visited item or NULL if the iteration is over
+ * @return the visited item or NULL, if the iteration is over
  *         The item is not popped from the list.
  */
 struct am_dlist_item *am_dlist_iterator_next(struct am_dlist_iterator *it);

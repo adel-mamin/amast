@@ -46,7 +46,7 @@
  *    with an item that overloads operator[]().
  *    The compiler will complain instead of giving a bad result.
  * 2. if a pointer is mistakenly passed as the argument, the compiler will
- *    complain in some cases - specifically if the pointer's size isn't evenly
+ *    complain in some cases - specifically, if the pointer's size isn't evenly
  *    divisible by the size of the object the pointer points to.
  *    In that situation a divide-by-zero will cause the compiler to error out.
  */

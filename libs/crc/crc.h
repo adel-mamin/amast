@@ -54,7 +54,7 @@ extern "C" {
  * for details.
  *
  * @param data  data for which the checksum is to be calculated
- *              NULL is a valid value if size is zero.
+ *              NULL is a valid value, if size is zero.
  * @param size  data size [bytes]
  * @param crc   initial CRC value
  *              Must be 0xFFFF at start or the result of previous crc16() call,
@@ -82,7 +82,7 @@ unsigned int crc16(const unsigned char *data, int size, unsigned int crc);
  * for details.
  *
  * @param data  data for which the checksum is to be calculated
- *              NULL is a valid value if size is zero.
+ *              NULL is a valid value, if size is zero.
  * @param size  data array size [bytes]
  * @param crc   initial CRC value
  *              Must be 0x000000 at start or the result of previous crc24()
@@ -110,8 +110,8 @@ unsigned long crc24(const unsigned char *data, int size, unsigned long crc);
  * http://reveng.sourceforge.net/crc-catalogue/17plus.htm (CRC-32/MPEG-2)
  * for details.
  *
- * @param data  data for which the checksum is to be calculated
- *              NULL is a valid value if size is zero
+ * @param data  data for which the checksum is to be calculated.
+ *              NULL is a valid value, if size is zero.
  * @param size  data array size [bytes]
  * @param crc   initial CRC value
  *              Must be 0xFFFFFFFF at start or the result of previous crc32()

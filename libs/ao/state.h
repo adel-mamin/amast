@@ -49,7 +49,7 @@ struct am_ao_state {
     struct am_ao_subscribe_list *sub;
     /** User defined pubsub list length. */
     int nsub;
-    /** User defined active objects, or NULL if not defined. */
+    /** User defined active objects, or NULL, if not defined. */
     struct am_ao *aos[AM_AO_NUM_MAX];
     /** Number of runnings AOs */
     int aos_cnt;

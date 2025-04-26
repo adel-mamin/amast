@@ -68,7 +68,7 @@ bool am_ao_publish_exclude_x(
 
     if (!am_event_is_static(event)) {
         /*
-         * To avoid a potential race condition if higher priority
+         * To avoid a potential race condition, if higher priority
          * active object preempts the event publishing and frees the event
          * as processed.
          */

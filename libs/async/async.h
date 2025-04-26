@@ -94,7 +94,7 @@ struct am_async {
  * Await a condition before proceeding.
  *
  * Checks the provided condition `cond`.
- * Returns if the condition is not met (false) and
+ * Returns, if the condition is not met (false) and
  * on next invocation of the function the condition is evaluated again.
  *
  * Continues the function execution once the `cond` evaluates to `true`.

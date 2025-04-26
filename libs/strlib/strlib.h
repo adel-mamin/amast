@@ -308,7 +308,7 @@ AM_PRINTF(3, 4) int str_lcatf(char *dst, int lim, const char *fmt, ...);
 /**
  * String tokenizer.
  * Return the pointer to the first token in *sp separated by any character in
- * delim. Skip any leading delimeters if any.
+ * delim. Skip any leading delimeters, if any.
  *
  * A similar code was posted here:
  * https://groups.google.com/forum/message/raw?msg=comp.lang.c/ZhXAlw6VZsA/_Y5evTIkf6kJ
@@ -318,7 +318,7 @@ AM_PRINTF(3, 4) int str_lcatf(char *dst, int lim, const char *fmt, ...);
  * @param sp     the input string
  * @param delim  the list of one character delimeters
  *
- * @return The first '\0' terminated token in sp or NULL if none.
+ * @return The first '\0' terminated token in sp or NULL, if none.
  */
 char *str_sep(char **sp, const char *delim);
 

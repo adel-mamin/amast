@@ -132,7 +132,7 @@ struct am_ihsm_state {
      */
     uint8_t store_to_history : 1;
     /**
-     * valid if struct am_ihsm_state::store_to_history is set
+     * valid, if struct am_ihsm_state::store_to_history is set
      * 1 - deep history, 0 - shallow history
      */
     uint8_t deep_history : 1;
@@ -192,7 +192,8 @@ struct am_ihsm;
  * @param rc      the error
  *
  * @retval true   IHSM terminates HSM (calls am_ihsm_term()) after the call.
- *                This is also default IHSM behavior if the callback is not set.
+ *                This is also default IHSM behavior, if the callback
+ *                is not set.
  * @retval false  IHSM continues HSM execution in case of #AM_IHSM_RC_ERR_ACTION
  *                error
  */

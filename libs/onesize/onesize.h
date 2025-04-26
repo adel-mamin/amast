@@ -106,7 +106,7 @@ void *am_onesize_allocate_x(struct am_onesize *hnd, int margin);
 /**
  * Allocate one memory block of configured block size.
  *
- * Asserts if no free memory block is available.
+ * Asserts, if no free memory block is available.
  *
  * @param hnd  the allocator
  *
