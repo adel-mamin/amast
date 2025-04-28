@@ -28,6 +28,6 @@
 #define DPP_TABLE_H_INCLUDED
 
 extern struct am_ao *g_ao_table;
-void table_ctor(int nsession);
+void table_ctor(int nsessions);
 
 #endif /* DPP_TABLE_H_INCLUDED */

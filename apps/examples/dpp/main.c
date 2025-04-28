@@ -139,7 +139,7 @@ int main(void) {
     for (int i = 0; i < PHILO_NUM; ++i) {
         philo_ctor(i);
     }
-    table_ctor(/*nsession=*/100);
+    table_ctor(/*nsessions=*/100);
 
     am_ao_start(
         g_ao_table,

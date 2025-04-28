@@ -43,7 +43,7 @@ enum { PHILO_DONE, PHILO_HUNGRY, PHILO_EATING };
 static struct table {
     struct am_ao ao;
     int philo[PHILO_NUM];
-    int nsession;
+    int nsessions;
     int nshutdown;
 } m_table;
 
@@ -102,9 +102,9 @@ static void table_serve(int philo) {
     am_ao_publish(AM_CAST(const struct am_event *, eat));
     philo_mark_eating(philo);
 
-    if (m_table.nsession) {
-        --m_table.nsession;
-        am_pal_printf("table session %d\n", m_table.nsession);
+    if (m_table.nsessions) {
+        --m_table.nsessions;
+        am_pal_printf("table session %d\n", m_table.nsessions);
     }
 }
 
@@ -124,7 +124,7 @@ static int table_shutting_down(struct table *me, const struct am_event *event) {
 }
 
 static bool table_is_shutdown(const struct table *me) {
-    return me->nsession == 0;
+    return me->nsessions == 0;
 }
 
 static int table_serving(struct table *me, const struct am_event *event) {
@@ -178,12 +178,12 @@ static int table_init(struct table *me, const struct am_event *event) {
     return AM_HSM_TRAN(table_serving);
 }
 
-void table_ctor(int nsession) {
+void table_ctor(int nsessions) {
     struct table *me = &m_table;
     memset(me, 0, sizeof(*me));
     for (int i = 0; i < AM_COUNTOF(me->philo); ++i) {
         me->philo[i] = PHILO_DONE;
     }
     am_ao_ctor(&m_table.ao, AM_HSM_STATE_CTOR(table_init));
-    me->nsession = nsession;
+    me->nsessions = nsessions;
 }
