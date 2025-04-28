@@ -147,7 +147,7 @@ void am_ao_start(
         &ao->event_queue, sizeof(struct am_event *), AM_ALIGNOF_EVENT_PTR, &blk
     );
 
-    ao->prio = prio;
+    ao->prio = (unsigned)(prio & AM_AO_PRIO_MASK);
     ao->name = name;
     ao->task_id = am_pal_task_get_own_id();
     ao->init_event = init_event;

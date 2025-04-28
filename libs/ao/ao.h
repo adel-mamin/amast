@@ -54,6 +54,14 @@
 #define AM_AO_PRIO_MIN 0
 /** The maximum AO priority level. */
 #define AM_AO_PRIO_MAX (AM_AO_NUM_MAX - 1)
+/** Number of bits to represent AO priority */
+#define AM_AO_PRIO_BITS 6
+/** AO priority mask */
+#define AM_AO_PRIO_MASK ((1 << AM_AO_PRIO_BITS) - 1)
+
+AM_ASSERT_STATIC((1U << AM_AO_PRIO_BITS) == AM_AO_NUM_MAX);
+
+struct am_ao;
 
 /**
  * Check if active object priority is valid.
@@ -63,15 +71,13 @@
  * @retval true   the priority is valid
  * @retval false  the priority is invalid.
  */
-#define AM_AO_PRIO_IS_VALID(ao) \
-    ((AM_AO_PRIO_MIN <= (ao)->prio) && ((ao)->prio <= AM_AO_PRIO_MAX))
+#define AM_AO_PRIO_IS_VALID(ao) ((ao)->prio <= AM_AO_PRIO_MAX)
 
 AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_PAL_TASK_NUM_MAX);
 
 /** The active object. */
 struct am_ao {
     struct am_hsm hsm;           /**< top level AO state machine */
-    int prio;                    /**< priority of active object */
     const char *name;            /**< human readable name of AO */
     struct am_queue event_queue; /**< event queue */
     int last_event;              /**< last processed event */
@@ -87,6 +93,8 @@ struct am_ao {
     unsigned ctor_called : 1;
     /** am_ao_stop() call was made for the AO */
     unsigned stopped : 1;
+    /** priority of active object */
+    unsigned prio : AM_AO_PRIO_BITS;
 };
 
 /** Active object library state configuration. */
