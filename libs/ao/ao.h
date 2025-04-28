@@ -43,6 +43,31 @@
 #include "hsm/hsm.h"
 #include "pal/pal.h"
 
+#ifndef AM_AO_NUM_MAX
+/** The maximum number of active objects. */
+#define AM_AO_NUM_MAX 64
+#endif
+
+/** Invalid AO priority. */
+#define AM_AO_PRIO_INVALID -1
+/** The minimum AO priority level. */
+#define AM_AO_PRIO_MIN 0
+/** The maximum AO priority level. */
+#define AM_AO_PRIO_MAX (AM_AO_NUM_MAX - 1)
+
+/**
+ * Check if active object priority is valid.
+ *
+ * @param ao  the active object
+ *
+ * @retval true   the priority is valid
+ * @retval false  the priority is invalid.
+ */
+#define AM_AO_PRIO_IS_VALID(ao) \
+    ((AM_AO_PRIO_MIN <= (ao)->prio) && ((ao)->prio <= AM_AO_PRIO_MAX))
+
+AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_PAL_TASK_NUM_MAX);
+
 /** The active object. */
 struct am_ao {
     struct am_hsm hsm;           /**< top level AO state machine */
@@ -88,31 +113,6 @@ struct am_ao_state_cfg {
     /** Callback to exit critical section. */
     void (*crit_exit)(void);
 };
-
-#ifndef AM_AO_NUM_MAX
-/** The maximum number of active objects. */
-#define AM_AO_NUM_MAX 64
-#endif
-
-/** Invalid AO priority. */
-#define AM_AO_PRIO_INVALID -1
-/** The minimum AO priority level. */
-#define AM_AO_PRIO_MIN 0
-/** The maximum AO priority level. */
-#define AM_AO_PRIO_MAX (AM_AO_NUM_MAX - 1)
-
-/**
- * Check if active object priority is valid.
- *
- * @param ao  the active object
- *
- * @retval true   the priority is valid
- * @retval false  the priority is invalid.
- */
-#define AM_AO_PRIO_IS_VALID(ao) \
-    ((AM_AO_PRIO_MIN <= (ao)->prio) && ((ao)->prio <= AM_AO_PRIO_MAX))
-
-AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_PAL_TASK_NUM_MAX);
 
 /** The subscribe list for one event. */
 struct am_ao_subscribe_list {
