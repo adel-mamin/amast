@@ -1,3 +1,5 @@
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=adel-mamin.amast)
+
 # Amast
 
 ## Introduction
