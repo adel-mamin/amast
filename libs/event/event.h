@@ -226,6 +226,11 @@ int am_event_get_npools(void);
  *
  * Thread safe.
  *
+ * There are limitations to what application code can do with the event returned
+ * by this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
+ *
  * @param id      the event identifier
  * @param size    the event size [bytes]
  * @param margin  free memory blocks to remain available after the allocation
@@ -243,6 +248,11 @@ struct am_event *am_event_allocate_x(int id, int size, int margin);
  * The function asserts, if there is no memory left to accommodate the event.
  *
  * Thread safe.
+ *
+ * There are limitations to what application code can do with the event returned
+ * by this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
  *
  * @param id    the event identifier
  * @param size  the event size [bytes]
@@ -283,6 +293,11 @@ void am_event_free(const struct am_event **event);
  *
  * Thread safe.
  *
+ * There are limitations to what application code can do with the event returned
+ * by this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
+ *
  * @param event   the event to duplicate
  * @param size    the event size [bytes]
  * @param margin  free memory blocks to be available after the allocation
@@ -301,6 +316,11 @@ struct am_event *am_event_dup_x(
  * The function asserts, if there is no memory left to allocated the event.
  *
  * Thread safe.
+ *
+ * There are limitations to what application code can do with the event returned
+ * by this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
  *
  * @param event  the event to duplicate
  * @param size   the event size [bytes]
@@ -357,6 +377,11 @@ bool am_event_is_static(const struct am_event *event);
  *
  * Thread safe.
  *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
+ *
  * @param event  the event
  */
 void am_event_inc_ref_cnt(const struct am_event *event);
@@ -370,6 +395,11 @@ void am_event_inc_ref_cnt(const struct am_event *event);
  * the events for which am_event_is_static() returns true.
  *
  * Thread safe.
+ *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
  *
  * @param event  the event
  */
@@ -402,6 +432,11 @@ int am_event_get_ref_cnt(const struct am_event *event);
  *
  * Thread safe.
  *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
+ *
  * @param queue   the event queue
  * @param event   the event to push
  * @param margin  free event queue slots to be available after
@@ -422,6 +457,11 @@ enum am_event_rc am_event_push_back_x(
  * Asserts, if the event was not pushed.
  *
  * Thread safe.
+ *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
  *
  * @param queue  the event queue
  * @param event  the event to push
@@ -444,6 +484,11 @@ enum am_event_rc am_event_push_back(
  *
  * So far the only use of this function was as a part of the implementation
  * of `am_timer_publish_fn` callback in timer library.
+ *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
  *
  * @param queue  the event queue
  * @param event  the event to push
@@ -470,6 +515,11 @@ enum am_event_rc am_event_push_back_unsafe(
  *
  * Thread safe.
  *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
+ *
  * @param queue   the event queue
  * @param event   the event to push
  * @param margin  free event queue slots to be available after
@@ -490,6 +540,11 @@ enum am_event_rc am_event_push_front_x(
  * Asserts, if the event was not pushed.
  *
  * Thread safe.
+ *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
  *
  * @param queue  the event queue
  * @param event  the event to push
@@ -524,6 +579,11 @@ typedef void (*am_event_pop_fn)(void *ctx, const struct am_event *event);
  * returns true) are never freed.
  *
  * Thread safe.
+ *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
  *
  * @param queue  queue of events
  * @param cb     the popped event is provided to this callback.

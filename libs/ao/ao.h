@@ -171,6 +171,11 @@ extern "C" {
  * The function is fast, thread safe and usable from
  * interrupt service routines (ISR).
  *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
+ *
  * @param event   the event to publish
  * @param ao      do not post the event to this active object even
  *                if it is subscribed to the event.
@@ -194,6 +199,11 @@ bool am_ao_publish_exclude_x(
  * Same as am_ao_publish_exclude_x() except this function
  * crashes with assert, if it fails delivering the \p event to at
  * least one subscribed active object.
+ *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
  *
  * @param event  the event to publish
  * @param ao     do not post the event to this active object even
@@ -242,6 +252,11 @@ void am_ao_publish_exclude(
  * The function is fast, thread safe and usable from
  * interrupt service routines (ISR).
  *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
+ *
  * @param event   the event to publish
  * @param margin  the number of free event queue slots to be available in each
  *                subscribed active object after the event is pushed
@@ -258,6 +273,11 @@ bool am_ao_publish_x(const struct am_event *event, int margin);
  * Same as am_ao_publish_x() except this function
  * crashes with assert, if it fails delivering the \p event to at
  * least one subscribed active object.
+ *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
  *
  * @param event  the event to publish
  */
@@ -283,6 +303,11 @@ void am_ao_publish(const struct am_event *event);
  * The function is fast, thread safe and usable from
  * interrupt service routines (ISR).
  *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
+ *
  * @param ao      the event is posted to this active object
  * @param event   the event to post
  * @param margin  the number of free event queue slots to be available
@@ -301,6 +326,11 @@ bool am_ao_post_fifo_x(
  * Same as am_ao_post_fifo_x() except this function
  * crashes with assert, if it fails delivering the \p event to the active
  * object.
+ *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
  *
  * @param ao     the event is posted to this active object
  * @param event  the event to post
@@ -324,6 +354,11 @@ void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
  * Statically allocated events, i.e. events for which am_event_is_static()
  * returns true, are never freed.
  *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
+ *
  * @param ao      the event is posted to this active object
  * @param event   the event to post
  * @param margin  the number of free event queue slots to be available
@@ -342,6 +377,11 @@ bool am_ao_post_lifo_x(
  * Same as am_ao_post_lifo_x() except this function
  * crashes with assert, if it fails delivering the \p event to the active
  * object.
+ *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
  *
  * @param ao     the event is posted to this active object
  * @param event  the event to post

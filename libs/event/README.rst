@@ -111,3 +111,85 @@ integration points include:
 - **Debugging**: Utilize logging utilities to inspect event pools and track
   event usage.
 
+Event Ownership Diagram
+=======================
+
+::
+
+  +--------------+  event = am_event_allocate_x() +---------------------+
+  |              |  event = am_event_allocate()   |                     |
+  |              |  event = am_event_dup()        |                     |
+  |              |  event = am_event_dup_x()      |                     |
+  |              |------------------------------->|   event owned by    |
+  |              |                                |   application       |
+  |              |  am_event_free(event)          |   with read and     |
+  |              |  am_event_push_...(event)      |   write permissions |
+  |              |  am_ao_publish_...(event)      |                     |
+  |              |  am_ao_post_...(event)         |                     |
+  |              |<-------------------------------|                     |
+  |              |                                +---------------------+
+  |              |                                           |
+  |              |                                           |
+  |              |                            am_event_inc_ref_cnt(event) and
+  |              |                            am_event_push_...(event) and/or
+  |              |                            am_ao_publish_...(event) and/or
+  | event owned  |                            am_ao_post_...(event)
+  | by event lib |                                           |
+  |              |                                           v
+  |              |  am_hsm_dispatch(event)        +---------------------+
+  |              |  am_fsm_dispatch(event)        |                     |
+  |              |  am_event_pop_front()          |                     |
+  |              |------------------------------->|                     |
+  |              |                                |   event owned by    |
+  |              |  return from                   |   application       |
+  |              |  am_hsm_dispatch(event) or     |   with read only    |
+  |              |  am_fsm_dispatch(event)        |   permission        |
+  |              |<-------------------------------|                     |
+  |              |                                |                     |
+  |              |  am_event_dec_ref_cnt(event)   |                     |
+  |              |<-------------------------------|                     |
+  |              |                                +---------------------+
+  |              |                                    |              ^
+  |              |                                    |              |
+  |              |                                    +--------------+
+  |              |                                 am_event_push_...(event)
+  |              |                                 am_ao_publish_...(event)
+  +--------------+                                 am_ao_post_...(event)
+
+
+Please note that the following pseudocode is incorrect:
+
+.. code-block:: C
+
+    struct my_event *event = am_event_allocate(MY_EVENT, sizeof(*event));
+
+    am_ao_post_fifo(ao1, event);
+    am_ao_post_fifo(ao2, event);
+
+This is because event could become invalid after posting it to `ao`.
+Consider the case when `ao1` preempts the execution thread executing the code above
+(let's call it `ao0`) once the event is posted to `ao1`.
+Then `ao1` consumes the event, decrements the event's reference counter and frees the event.
+After that `ao0` resumes the execution and tries to post the already freed event
+which leads to undefined behavior.
+
+The proper way of doing it is as follows:
+
+.. code-block:: C
+
+    struct my_event *event = am_event_allocate(MY_EVENT, sizeof(*event));
+
+    am_event_inc_ref_cnt(event);
+
+    am_ao_post_fifo(ao1, event);
+    am_ao_post_fifo(ao2, event);
+
+    am_event_dec_ref_cnt(event);
+
+Note how incrementing the event reference counter by calling `am_event_inc_ref_cnt(event)`
+the event is guaranteed to be owned by application (`ao0`) and it becomes safe
+to post/publish event multiple times.
+
+Also please note that it is also crucial to call `am_event_dec_ref_cnt(event)`
+at the end to return the ownership of the event to event library and
+avoid event memory leak.
