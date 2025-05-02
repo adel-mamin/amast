@@ -134,7 +134,7 @@ enum am_hsm_rc {
     AM_HSM_RC_SUPER
 };
 
-/** forward declaration */
+/** forward declaration of HSM descriptor */
 struct am_hsm;
 
 /**
@@ -235,7 +235,13 @@ struct am_hsm_state {
 
 AM_ASSERT_STATIC(AM_HSM_HIERARCHY_DEPTH_MAX <= AM_HSM_HIERARCHY_LEVEL_MASK);
 
-/** HSM state. */
+/**
+ * HSM descriptor.
+ *
+ * None of the fields of the descriptor are to be accessed directly
+ * by user code. The only purpose of exposing it is to allow user
+ * code to reserve memory for it.
+ */
 struct am_hsm {
     /** Active state. */
     struct am_hsm_state state;

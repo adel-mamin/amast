@@ -42,7 +42,12 @@
 
 #include <stdbool.h>
 
-/** Init state of async function. */
+/**
+ * Init value of async function state.
+ *
+ * Only used by implementation.
+ * Not to be used directly by user code.
+ */
 #define AM_ASYNC_STATE_INIT 0
 
 /** Async state. */
@@ -81,6 +86,8 @@ struct am_async {
 
 /**
  * Mark the end of async function block.
+ *
+ * Should be called at the end of async function.
  *
  * Resets the async state.
  */

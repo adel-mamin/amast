@@ -141,7 +141,13 @@ typedef void (*am_fsm_spy_fn)(struct am_fsm *fsm, const struct am_event *event);
  */
 #define AM_FSM_STATE_CTOR(s) ((am_fsm_state_fn)(s))
 
-/** FSM state. */
+/**
+ * FSM descriptor.
+ *
+ * None of the fields of the descriptor are to be accessed directly
+ * by user code. The only purpose of exposing it is to allow user
+ * code to reserve memory for it.
+ */
 struct am_fsm {
     /** Active state. */
     am_fsm_state_fn state;
