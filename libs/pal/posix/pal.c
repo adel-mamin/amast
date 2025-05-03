@@ -477,3 +477,8 @@ void am_pal_on_idle(void) {
     am_pal_task_wait(task);
     am_pal_crit_enter();
 }
+
+int am_pal_get_cpu_count(void) {
+    long nprocs = sysconf(_SC_NPROCESSORS_ONLN);
+    return (nprocs < 1) ? 1 : (int)nprocs;
+}

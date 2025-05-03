@@ -375,3 +375,14 @@ void am_pal_on_idle(void) {
     am_pal_task_wait(am_pal_task_get_own_id());
     am_pal_crit_enter();
 }
+
+int am_pal_get_cpu_count(void) {
+    int count;
+    uv_cpu_info_t *info;
+
+    if (uv_cpu_info(&info, &count) == 0) {
+        uv_free_cpu_info(info, count);
+        return count;
+    }
+    return 1;
+}

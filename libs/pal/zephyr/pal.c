@@ -321,3 +321,11 @@ void am_pal_on_idle(void) {
     am_pal_task_wait(task);
     am_pal_crit_enter();
 }
+
+int am_pal_get_cpu_count(void) {
+#if defined(CONFIG_SMP)
+    return CONFIG_MP_NUM_CPUS;
+#else
+    return 1;
+#endif
+}

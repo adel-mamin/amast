@@ -309,6 +309,9 @@ void am_pal_flush(void);
  */
 void am_pal_on_idle(void);
 
+/** Return the number of CPU cores. */
+int am_pal_get_cpu_count(void);
+
 #ifdef __cplusplus
 }
 #endif

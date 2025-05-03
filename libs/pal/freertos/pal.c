@@ -164,3 +164,11 @@ void am_pal_sleep_ms(int ms) {
         am_pal_time_get_tick_from_ms(AM_PAL_TICK_DOMAIN_DEFAULT, ms);
     vTaskDelay(ticks);
 }
+
+int am_pal_get_cpu_count(void) {
+#ifdef configNUMBER_OF_CORES
+    return configNUMBER_OF_CORES;
+#else
+    return 1;
+#endif
+}
