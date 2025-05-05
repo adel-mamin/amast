@@ -74,7 +74,7 @@
 #define AM_EVENT_HAS_USER_ID(event) \
     (((const struct am_event *)(event))->id >= AM_EVT_USER)
 
-/* _BIS and _MASK defines are used for internal purposes */
+/* XXX_BITS and XXX_MASK defines are used for internal purposes */
 #define AM_EVENT_REF_COUNTER_BITS 6
 #define AM_EVENT_REF_COUNTER_MASK ((1U << AM_EVENT_REF_COUNTER_BITS) - 1U)
 
