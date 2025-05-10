@@ -42,6 +42,22 @@
 #endif
 
 /**
+ * Type alignment.
+ *
+ * @param type  return the alignment of this type [bytes]
+ *
+ * @return the type alignment [bytes]
+ */
+#define AM_ALIGNOF(type) \
+    offsetof(            \
+        struct {         \
+            char c;      \
+            type member; \
+        },               \
+        member           \
+    )
+
+/**
  * Pointer alignment.
  *
  * @param ptr  return the alignment of this pointer [bytes]
