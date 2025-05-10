@@ -281,7 +281,7 @@ The source code of the corresponding header file is in `event.h <https://github.
 Timer
 -----
 
-Async API documentation.
+Timer API documentation.
 
 The source code of the corresponding header file is in `timer.h <https://github.com/adel-mamin/amast/blob/main/libs/timer/timer.h>`_.
 

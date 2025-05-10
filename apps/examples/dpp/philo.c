@@ -53,7 +53,7 @@ struct am_ao *g_ao_philo[PHILO_NUM] = {
     &m_philo[4].ao,
 };
 
-static struct am_event event_shutdown_done_ = {.id = EVT_SHUTDOWN_DONE};
+static struct am_event event_stopped_ = {.id = EVT_STOPPED};
 
 static int philo_top(struct philo *me, const struct am_event *event);
 static int philo_thinking(struct philo *me, const struct am_event *event);
@@ -62,9 +62,9 @@ static int philo_eating(struct philo *me, const struct am_event *event);
 
 static int philo_top(struct philo *me, const struct am_event *event) {
     switch (event->id) {
-    case EVT_SHUTDOWN:
+    case EVT_STOP:
         am_timer_disarm(me->timer);
-        am_ao_post_fifo(g_ao_table, &event_shutdown_done_);
+        am_ao_post_fifo(g_ao_table, &event_stopped_);
         am_ao_stop(&me->ao);
         return AM_HSM_HANDLED();
     default:
@@ -138,7 +138,7 @@ static int philo_eating(struct philo *me, const struct am_event *event) {
 static int philo_init(struct philo *me, const struct am_event *event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_EAT);
-    am_ao_subscribe(&me->ao, EVT_SHUTDOWN);
+    am_ao_subscribe(&me->ao, EVT_STOP);
     return AM_HSM_TRAN(philo_thinking);
 }
 

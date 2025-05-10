@@ -121,9 +121,9 @@ extern "C" {
 #endif
 
 /**
- * Timer state constructor.
+ * Timer library state constructor.
  *
- * @param cfg  timer state configuration.
+ * @param cfg  timer library state configuration.
  *             The timer library makes an internal copy of the configuration.
  */
 void am_timer_state_ctor(const struct am_timer_state_cfg *cfg);
@@ -190,7 +190,7 @@ void am_timer_tick(int domain);
  *
  * Sends timer event to owner in specified number of ticks.
  *
- * It is fine to arm an already armed timer.
+ * It is fine to arm an already armed timer. The timer is re-armed in this case.
  *
  * The owner is set in am_timer_ctor() or am_timer_allocate() calls.
  *
@@ -207,7 +207,7 @@ void am_timer_arm_ticks(struct am_timer *timer, int ticks, int interval);
  *
  * Sends timer event to owner in specified number of milliseconds.
  *
- * It is fine to arm an already armed timer.
+ * It is fine to arm an already armed timer. The timer is re-armed in this case.
  *
  * The owner is set in am_timer_ctor() or am_timer_allocate() calls.
  *

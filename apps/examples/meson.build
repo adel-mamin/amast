@@ -149,3 +149,15 @@ fork = executable(
         libbit_dep
     ]
 )
+
+load_balancer = executable(
+    'load_balancer',
+    ['load_balancer' / 'main.c'],
+    dependencies: [
+        libhsm_dep,
+        libao_preemptive_dep,
+        libpal_dep,
+        libassert_dep,
+        libbit_dep
+    ]
+)

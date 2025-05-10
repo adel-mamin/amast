@@ -44,12 +44,12 @@ static struct table {
     struct am_ao ao;
     int philo[PHILO_NUM];
     int nsessions;
-    int nshutdown;
+    int nstops;
 } m_table;
 
 struct am_ao *g_ao_table = &m_table.ao;
 
-static struct am_event event_shutdown_ = {.id = EVT_SHUTDOWN};
+static struct am_event event_stop_ = {.id = EVT_STOP};
 
 static int philo_is_eating(int philo) {
     AM_ASSERT(philo >= 0);
@@ -108,12 +108,12 @@ static void table_serve(int philo) {
     }
 }
 
-static int table_shutting_down(struct table *me, const struct am_event *event) {
+static int table_stopping(struct table *me, const struct am_event *event) {
     switch (event->id) {
-    case EVT_SHUTDOWN_DONE: {
-        ++me->nshutdown;
-        if (me->nshutdown == PHILO_NUM) {
-            am_ao_stop(&m_table.ao);
+    case EVT_STOPPED: {
+        ++me->nstops;
+        if (me->nstops == PHILO_NUM) {
+            am_ao_stop(&me->ao);
         }
         return AM_HSM_HANDLED();
     }
@@ -123,7 +123,7 @@ static int table_shutting_down(struct table *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static bool table_is_shutdown(const struct table *me) {
+static bool table_sessions_are_over(const struct table *me) {
     return me->nsessions == 0;
 }
 
@@ -134,9 +134,9 @@ static int table_serving(struct table *me, const struct am_event *event) {
         AM_ASSERT(!philo_is_hungry(hungry->philo));
         if (table_can_serve(hungry->philo)) {
             table_serve(hungry->philo);
-            if (table_is_shutdown(me)) {
-                am_ao_publish(&event_shutdown_);
-                return AM_HSM_TRAN(table_shutting_down);
+            if (table_sessions_are_over(me)) {
+                am_ao_publish(&event_stop_);
+                return AM_HSM_TRAN(table_stopping);
             }
             return AM_HSM_HANDLED();
         }
@@ -160,9 +160,9 @@ static int table_serving(struct table *me, const struct am_event *event) {
                 table_serve(right);
             }
         }
-        if (table_is_shutdown(me)) {
-            am_ao_publish(&event_shutdown_);
-            return AM_HSM_TRAN(table_shutting_down);
+        if (table_sessions_are_over(me)) {
+            am_ao_publish(&event_stop_);
+            return AM_HSM_TRAN(table_stopping);
         }
         return AM_HSM_HANDLED();
     }

@@ -33,8 +33,8 @@ enum events {
     EVT_DONE = AM_EVT_USER,
     EVT_EAT,
     EVT_TIMEOUT,
-    EVT_SHUTDOWN,
-    EVT_SHUTDOWN_DONE,
+    EVT_STOP,
+    EVT_STOPPED,
     AM_AO_EVT_PUB_MAX,
 
     EVT_HUNGRY,
