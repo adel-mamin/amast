@@ -143,3 +143,5 @@ int am_pal_vprintff(const char *fmt, va_list args) {
 }
 
 void am_pal_flush(void) {}
+
+int am_pal_get_cpu_count(void) { return 1; }
