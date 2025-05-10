@@ -33,29 +33,38 @@
 #ifndef AM_ALIGNMENT_H_INCLUDED
 #define AM_ALIGNMENT_H_INCLUDED
 
+#include <stddef.h>
+
 /** The maximum compiler alignment [bytes]. */
 #if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L))
-#include <stddef.h>
 #define AM_ALIGN_MAX AM_ALIGNOF(max_align_t)
 #else
 #define AM_ALIGN_MAX 16
 #endif
 
 /**
+ * Use this macro before using AM_ALIGN() for the same type.
+ *
+ * @param type  the type to define. Must be one word.
+ *              For example, "struct foo" will not work,
+ *              but foo_t will, where "typedef struct foo foo_t".
+ */
+#define AM_ALIGNOF_DEFINE(type)    \
+    struct alignof_helper_##type { \
+        char c;                    \
+        type member;               \
+    }
+
+/**
  * Type alignment.
+ *
+ * Must be preceded by AM_ALIGNOF_DEFINE() for the same type.
  *
  * @param type  return the alignment of this type [bytes]
  *
  * @return the type alignment [bytes]
  */
-#define AM_ALIGNOF(type) \
-    offsetof(            \
-        struct {         \
-            char c;      \
-            type member; \
-        },               \
-        member           \
-    )
+#define AM_ALIGNOF(type) offsetof(struct alignof_helper_##type, member)
 
 /**
  * Pointer alignment.
