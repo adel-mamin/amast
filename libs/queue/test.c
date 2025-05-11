@@ -86,6 +86,7 @@ static void test_am_queue(const int capacity, const int rdwr_num) {
 
 int main(void) {
     test_am_queue(/*capacity=*/1, /*rdwr_num=*/0);
+    test_am_queue(/*capacity=*/1, /*rdwr_num=*/1);
     test_am_queue(/*capacity=*/2, /*rdwr_num=*/1);
     test_am_queue(/*capacity=*/3, /*rdwr_num=*/3);
     return 0;
