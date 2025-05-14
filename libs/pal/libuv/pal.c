@@ -52,6 +52,8 @@ struct am_pal_task {
     void *arg;
     /** libuv thread ID */
     int id;
+    /** priority */
+    int prio;
     /** mak task as valid */
     bool valid;
 };
@@ -194,6 +196,19 @@ void am_pal_mutex_destroy(int mutex) {
 
 static void task_entry_wrapper(void *arg) {
     struct am_pal_task *task = (struct am_pal_task *)arg;
+
+    int policy = SCHED_OTHER;
+    int min_prio = sched_get_priority_min(policy);
+    int max_prio = sched_get_priority_max(policy);
+
+    int prio_scaled = task->prio * (max_prio - min_prio) / (AM_PAL_TASK_NUM_MAX - 1);
+    int prio = min_prio + prio_scaled;
+
+    struct sched_param param = {.sched_priority = prio};
+    pthread_t thread = pthread_self();
+    int ret = pthread_setschedparam(thread, policy, &param);
+    AM_ASSERT(0 == ret);
+
     task->entry(task->arg);
 }
 
@@ -227,6 +242,9 @@ int am_pal_task_create(
     task->entry = entry;
     task->arg = arg;
     task->id = am_pal_id_from_index(index);
+    if (am_pal_prio_map_fn_) {
+        task->prio = am_pal_prio_map_fn_(prio);
+    }
     AM_ENABLE_WARNING(AM_W_NULL_DEREFERENCE)
 
     int rc = uv_sem_init(&task->semaphore, 0);
