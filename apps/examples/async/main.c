@@ -175,15 +175,15 @@ static enum am_hsm_rc async_regular(
 static void async_off_(struct async *me) {
     AM_ASYNC_BEGIN(&me->async);
 
-    am_timer_arm_ms(&me->timer, /*ms=*/1000, /*interval=*/0);
-    am_pal_printff("\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
-    AM_ASYNC_YIELD();
+    for (;;) {
+        am_timer_arm_ms(&me->timer, /*ms=*/1000, /*interval=*/0);
+        am_pal_printff("\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
+        AM_ASYNC_YIELD();
 
-    am_timer_arm_ms(&me->timer, /*ms=*/700, /*interval=*/0);
-    am_pal_printff("\b");
-    AM_ASYNC_YIELD();
-
-    am_ao_post_fifo(&me->ao, &am_evt_start);
+        am_timer_arm_ms(&me->timer, /*ms=*/700, /*interval=*/0);
+        am_pal_printff("\b");
+        AM_ASYNC_YIELD();
+    }
 
     AM_ASYNC_END();
 }
