@@ -157,7 +157,7 @@ static void am_pal_mutex_init(pthread_mutex_t *me);
 
 int am_pal_task_create(
     const char *name,
-    const int priority,
+    int prio,
     void *stack,
     const int stack_size,
     void (*entry)(void *arg),
@@ -165,7 +165,7 @@ int am_pal_task_create(
 ) {
     (void)stack;
     AM_ASSERT(entry);
-    AM_ASSERT(priority >= 0);
+    AM_ASSERT(prio >= 0);
 
     int index = -1;
     struct am_pal_task *me = NULL;
@@ -193,13 +193,23 @@ int am_pal_task_create(
     );
     AM_ASSERT(0 == ret);
 
-    ret = pthread_attr_setschedpolicy(&attr, SCHED_OTHER);
+    int policy = SCHED_OTHER;
+    ret = pthread_attr_setschedpolicy(&attr, policy);
     AM_ASSERT(0 == ret);
 
-    /* int prio = priority + sched_get_priority_min(SCHED_OTHER); */
-    /* struct sched_param param = {.sched_priority = prio}; */
-    /* ret = pthread_attr_setschedparam(&attr, &param); */
-    /* AM_ASSERT(0 == ret); */
+    if (am_pal_prio_map_fn_) {
+        prio = am_pal_prio_map_fn_(prio);
+    }
+
+    int min_prio = sched_get_priority_min(policy);
+    int max_prio = sched_get_priority_max(policy);
+
+    int prio_scaled = prio * (max_prio - min_prio) / (AM_PAL_TASK_NUM_MAX - 1);
+    prio = min_prio + prio_scaled;
+
+    struct sched_param param = {.sched_priority = prio};
+    ret = pthread_attr_setschedparam(&attr, &param);
+    AM_ASSERT(0 == ret);
     ret = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
     AM_ASSERT(0 == ret);
 

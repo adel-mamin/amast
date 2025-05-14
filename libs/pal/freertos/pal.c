@@ -76,7 +76,7 @@ int am_pal_task_get_own_id(void) {
 
 void *am_pal_task_create(
     const char *name,
-    int priority,
+    int prio,
     void *stack,
     int stack_size,
     void (*entry)(void *arg),
@@ -85,7 +85,7 @@ void *am_pal_task_create(
     AM_ASSERT(AM_ALIGNOF_PTR(stack) >= AM_ALIGNOF(StackType_t));
     AM_ASSERT(stack_size > 0);
     AM_ASSERT(entry);
-    AM_ASSERT(priority >= 0);
+    AM_ASSERT(prio >= 0);
 
     int index = -1;
     struct am_pal_task *task = NULL;
@@ -100,7 +100,7 @@ void *am_pal_task_create(
     AM_ASSERT(task && (index >= 0));
 
     if (am_pal_prio_map_fn_) {
-        priority = am_pal_prio_map_fn_(priority);
+        prio = am_pal_prio_map_fn_(prio);
     }
 
     TaskHandle_t h = xTaskCreateStatic(
@@ -108,7 +108,7 @@ void *am_pal_task_create(
         name,
         (uint32_t)((unsigned)stack_size / sizeof(StackType_t)),
         (void *)&tcb[ntcb],
-        (unsigned)priority + tskIDLE_PRIORITY,
+        (unsigned)prio + tskIDLE_PRIORITY,
         (StackType_t *)stack,
         &tcb[ntcb]
     );

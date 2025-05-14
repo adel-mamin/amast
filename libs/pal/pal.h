@@ -134,7 +134,7 @@ void am_pal_mutex_destroy(int mutex);
  *
  * @param name        human readable task name. Not copied.
  *                    Must remain valid after the call.
- * @param priority    task priority [0, #AM_PAL_TASK_NUM_MAX[.
+ * @param prio        task priority [0, #AM_PAL_TASK_NUM_MAX[.
  *                    Can be optionally mapped to a different priority,
  *                    if the priority map function is provided by
  *                    am_pal_register_prio_map_cb() API.
@@ -148,7 +148,7 @@ void am_pal_mutex_destroy(int mutex);
  */
 int am_pal_task_create(
     const char *name,
-    int priority,
+    int prio,
     void *stack,
     int stack_size,
     void (*entry)(void *arg),

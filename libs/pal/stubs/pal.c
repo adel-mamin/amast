@@ -48,14 +48,14 @@ void am_pal_crit_exit(void) {}
 
 int am_pal_task_create(
     const char *name,
-    int priority,
+    int prio,
     void *stack,
     int stack_size,
     void (*entry)(void *arg),
     void *arg
 ) {
     (void)name;
-    (void)priority;
+    (void)prio;
     (void)stack;
     (void)stack_size;
     (void)entry;

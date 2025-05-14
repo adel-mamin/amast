@@ -156,15 +156,15 @@ static void am_pal_thread_entry(void *p1, void *p2, void *p3) {
 
 int am_pal_task_create(
     const char *name,
-    int priority,
+    int prio,
     void *stack,
     int stack_size,
     void (*entry)(void *arg),
     void *arg
 ) {
     AM_ASSERT(entry);
-    AM_ASSERT(priority >= 0);
-    AM_ASSERT(priority < AM_PAL_TASK_NUM_MAX);
+    AM_ASSERT(prio >= 0);
+    AM_ASSERT(prio < AM_PAL_TASK_NUM_MAX);
     AM_ASSERT(stack);
     AM_ASSERT(stack_size > K_THREAD_STACK_RESERVED);
 
@@ -181,9 +181,9 @@ int am_pal_task_create(
     AM_ASSERT(index >= 0);
 
     if (am_pal_prio_map_fn_) {
-        priority = am_pal_prio_map_fn_(priority);
+        prio = am_pal_prio_map_fn_(prio);
     }
-    int zephyr_prio = AM_PAL_TASK_NUM_MAX - priority;
+    int zephyr_prio = AM_PAL_TASK_NUM_MAX - prio;
 
     me->entry = entry;
     me->arg = arg;

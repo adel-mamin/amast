@@ -199,14 +199,14 @@ static void task_entry_wrapper(void *arg) {
 
 int am_pal_task_create(
     const char *name,
-    int priority,
+    int prio,
     void *stack,
     int stack_size,
     void (*entry)(void *),
     void *arg
 ) {
     (void)name;
-    (void)priority;
+    (void)prio;
     (void)stack;
     (void)stack_size;
     AM_ASSERT(ntasks_ < AM_PAL_TASK_NUM_MAX);
