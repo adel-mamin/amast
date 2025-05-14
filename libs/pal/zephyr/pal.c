@@ -180,6 +180,9 @@ int am_pal_task_create(
     }
     AM_ASSERT(index >= 0);
 
+    if (am_pal_prio_map_fn_) {
+        priority = am_pal_prio_map_fn_(priority);
+    }
     int zephyr_prio = AM_PAL_TASK_NUM_MAX - priority;
 
     me->entry = entry;
