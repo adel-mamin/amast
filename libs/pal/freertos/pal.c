@@ -99,6 +99,10 @@ void *am_pal_task_create(
     }
     AM_ASSERT(task && (index >= 0));
 
+    if (am_pal_prio_map_fn_) {
+        priority = am_pal_prio_map_fn_(priority);
+    }
+
     TaskHandle_t h = xTaskCreateStatic(
         entry,
         name,
