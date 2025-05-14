@@ -53,10 +53,6 @@
  *
  * async_regular calls async_regular_() to do the printing
  * async_off calls async_off_() to do the printing.
- *
- * The example is built in two flavours:
- * async_preemptive and async_cooperative.
- * Both builds do the same.
  */
 
 #include <stdio.h>

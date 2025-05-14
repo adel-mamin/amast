@@ -112,8 +112,8 @@ if unit_test and pal != 'stubs'
     test('threaded_cooperative', ringbuf_cooperative, suite: 'ringbuf')
 endif
 
-async_preemptive = executable(
-    'async_preemptive',
+async = executable(
+    'async',
     ['async' / 'main.c'],
     dependencies: [
         libhsm_dep,
@@ -121,19 +121,6 @@ async_preemptive = executable(
         libao_preemptive_dep,
         libpal_dep,
         libassert_dep,
-    ]
-)
-
-async_cooperative = executable(
-    'async_cooperative',
-    ['async' / 'main.c'],
-    dependencies: [
-        libhsm_dep,
-        libasync_dep,
-        libao_cooperative_dep,
-        libpal_dep,
-        libassert_dep,
-        libbit_dep,
     ]
 )
 
