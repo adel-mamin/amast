@@ -52,6 +52,8 @@ struct am_pal_task {
 static struct am_pal_task task_main_ = {0};
 static struct am_pal_task task_arr_[AM_PAL_TASK_NUM_MAX] = {0};
 
+static am_pal_prio_map_fn am_pal_prio_map_fn_;
+
 void am_pal_crit_enter(void) {
     if (xPortIsInsideInterrupt()) {
         taskENTER_CRITICAL_FROM_ISR();
@@ -171,4 +173,20 @@ int am_pal_get_cpu_count(void) {
 #else
     return 1;
 #endif
+}
+
+void am_pal_register_prio_map_cb(am_pal_prio_map_fn map) {
+    am_pal_prio_map_fn_ = map;
+    if (!map) {
+        return;
+    }
+    int prio_prev = 0;
+    /* validate the correctness of the provided map callback */
+    for (int i = 0; i < AM_PAL_TASK_NUM_MAX; ++i) {
+        int prio = map(i);
+        AM_ASSERT(prio >= prio_prev);
+        AM_ASSERT(prio >= 0);
+        AM_ASSERT(prio < AM_PAL_TASK_NUM_MAX);
+        prio_prev = prio;
+    }
 }

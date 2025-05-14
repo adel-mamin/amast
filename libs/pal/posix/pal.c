@@ -81,6 +81,8 @@ struct am_pal_task {
 static struct am_pal_task task_main_ = {0};
 static struct am_pal_task am_pal_tasks_[AM_PAL_TASK_NUM_MAX] = {0};
 
+static am_pal_prio_map_fn am_pal_prio_map_fn_;
+
 /** PAL mutex descriptor */
 struct am_pal_mutex {
     /** pthread mutex */
@@ -481,4 +483,20 @@ void am_pal_on_idle(void) {
 int am_pal_get_cpu_count(void) {
     long nprocs = sysconf(_SC_NPROCESSORS_ONLN);
     return (nprocs < 1) ? 1 : (int)nprocs;
+}
+
+void am_pal_register_prio_map_cb(am_pal_prio_map_fn map) {
+    am_pal_prio_map_fn_ = map;
+    if (!map) {
+        return;
+    }
+    int prio_prev = 0;
+    /* validate the correctness of the provided map callback */
+    for (int i = 0; i < AM_PAL_TASK_NUM_MAX; ++i) {
+        int prio = map(i);
+        AM_ASSERT(prio >= prio_prev);
+        AM_ASSERT(prio >= 0);
+        AM_ASSERT(prio < AM_PAL_TASK_NUM_MAX);
+        prio_prev = prio;
+    }
 }
