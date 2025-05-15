@@ -388,7 +388,7 @@ static enum am_event_rc am_event_push_x(
         ++e->ref_counter;
     }
 
-    bool rc = push(queue, &event, sizeof(struct am_event));
+    bool rc = push(queue, &event, sizeof(struct am_event *));
 
     if (safe) {
         me->crit_exit();
