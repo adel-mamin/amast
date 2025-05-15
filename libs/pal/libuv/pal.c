@@ -201,7 +201,8 @@ static void task_entry_wrapper(void *arg) {
     int min_prio = sched_get_priority_min(policy);
     int max_prio = sched_get_priority_max(policy);
 
-    int prio_scaled = task->prio * (max_prio - min_prio) / (AM_PAL_TASK_NUM_MAX - 1);
+    int prio_scaled =
+        task->prio * (max_prio - min_prio) / (AM_PAL_TASK_NUM_MAX - 1);
     int prio = min_prio + prio_scaled;
 
     struct sched_param param = {.sched_priority = prio};
@@ -221,7 +222,6 @@ int am_pal_task_create(
     void *arg
 ) {
     (void)name;
-    (void)prio;
     (void)stack;
     (void)stack_size;
     AM_ASSERT(ntasks_ < AM_PAL_TASK_NUM_MAX);
