@@ -145,3 +145,5 @@ int am_pal_vprintff(const char *fmt, va_list args) {
 void am_pal_flush(void) {}
 
 int am_pal_get_cpu_count(void) { return 1; }
+
+void am_pal_register_prio_map_cb(am_pal_prio_map_fn map) { (void)map; }
