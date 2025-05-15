@@ -166,6 +166,7 @@ int am_pal_task_create(
     (void)stack;
     AM_ASSERT(entry);
     AM_ASSERT(prio >= 0);
+    AM_ASSERT(prio < AM_PAL_TASK_NUM_MAX);
 
     int index = -1;
     struct am_pal_task *me = NULL;
