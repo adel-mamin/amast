@@ -53,7 +53,7 @@
  * The event IDs smaller than this value are reserved
  * and should not be used for user events.
  */
-#define AM_EVT_USER (AM_EVT_INTERNAL_MAX + 1) /* 7 */
+#define AM_EVT_USER (AM_EVT_INTERNAL_MAX + 1) /* 4 */
 
 #ifndef AM_EVENT_POOLS_NUM_MAX
 /**
