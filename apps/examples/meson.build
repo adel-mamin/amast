@@ -137,9 +137,9 @@ fork = executable(
     ]
 )
 
-load_balancer = executable(
-    'load_balancer',
-    ['load_balancer' / 'main.c'],
+workers = executable(
+    'workers',
+    ['workers' / 'main.c'],
     dependencies: [
         libhsm_dep,
         libao_preemptive_dep,
