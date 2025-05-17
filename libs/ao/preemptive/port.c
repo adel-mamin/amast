@@ -83,7 +83,7 @@ bool am_ao_run_all(void) {
 
     if (!me->startup_complete) {
         /* start all AOs */
-        am_pal_mutex_unlock(me->startup_mutex);
+        am_pal_mutex_unlock(me->startup_complete_mutex);
         me->startup_complete = true;
     }
     /* wait all AOs to complete */
@@ -190,8 +190,8 @@ void am_ao_notify_unsafe(const struct am_ao *ao) { am_ao_notify(ao); }
 
 void am_ao_wait_start_all(void) {
     const struct am_ao_state *me = &am_ao_state_;
-    am_pal_mutex_lock(me->startup_mutex);
-    am_pal_mutex_unlock(me->startup_mutex);
+    am_pal_mutex_lock(me->startup_complete_mutex);
+    am_pal_mutex_unlock(me->startup_complete_mutex);
 }
 
 int am_ao_get_own_prio(void) {
