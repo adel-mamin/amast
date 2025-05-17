@@ -33,7 +33,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "common/compiler.h"
 #include "common/alignment.h"
 #include "common/macros.h"
 #include "event/event.h"
@@ -43,8 +42,8 @@
 #include "hsm/hsm.h"
 
 #define AM_WORKERS_NUM_MAX 64
-#define AM_WORKER_LOAD_CYCLES 100000
-#define AM_TIMEOUT_MS (60 * 1000)
+#define AM_WORKER_LOAD_CYCLES 10000
+#define AM_TIMEOUT_MS (10 * 1000)
 
 enum fork_evt {
     EVT_JOB_DONE = AM_EVT_USER,
@@ -72,11 +71,11 @@ struct stopped {
     int worker;
 };
 
-union events {
-    struct job_req req;
-    struct job_done done;
-    struct stopped stopped;
-};
+typedef union events {
+    struct job_req req;     /* cppcheck-suppress unusedStructMember */
+    struct job_done done;   /* cppcheck-suppress unusedStructMember */
+    struct stopped stopped; /* cppcheck-suppress unusedStructMember */
+} events_t;
 
 static struct am_ao_subscribe_list m_pubsub_list[EVT_PUB_MAX];
 static union events m_event_pool[AM_WORKERS_NUM_MAX];
@@ -90,26 +89,30 @@ struct worker {
     int id;
 };
 
-static struct worker m_worker[AM_WORKERS_NUM_MAX];
+static struct worker m_workers[AM_WORKERS_NUM_MAX];
 
-static const struct am_event m_evt_job_done = {.id = EVT_JOB_DONE};
 static const struct am_event m_evt_stop = {.id = EVT_STOP};
 
 static int worker_proc(struct worker *me, const struct am_event *event) {
     switch (event->id) {
-    case EVT_JOB: {
-        struct job_req *req = (struct job_req*)event;
+    case EVT_JOB_REQ: {
+        const struct job_req *req = (const struct job_req *)event;
         for (volatile int i = 0; i < req->cycles; ++i) {
             ;
         }
-        struct job_done *done = am_event_allocate(EVT_JOB_DONE, sizeof(struct job_done));
-        am_ao_publish(done);
+        struct job_done *done = (struct job_done *)am_event_allocate(
+            EVT_JOB_DONE, sizeof(struct job_done)
+        );
+        done->worker = me->id;
+        am_ao_publish(&done->event);
         return AM_HSM_HANDLED();
     }
     case EVT_STOP: {
-        struct stopped *done = am_event_allocate(EVT_JOB_DONE, sizeof(struct job_done));
-        done->worker = me->id;
-        am_ao_publish(done);
+        struct stopped *stopped = (struct stopped *)am_event_allocate(
+            EVT_STOPPED, sizeof(struct stopped)
+        );
+        stopped->worker = me->id;
+        am_ao_publish(&stopped->event);
         am_ao_stop(&me->ao);
         return AM_HSM_HANDLED();
     }
@@ -126,41 +129,38 @@ static int worker_init(struct worker *me, const struct am_event *event) {
     return AM_HSM_TRAN(worker_proc);
 }
 
-static void worker_ctor(int index) {
-    struct worker *me = &m_worker[index];
+static void worker_ctor(struct worker *me, int id) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(worker_init));
-    me->index = index;
+    me->id = id;
 }
 
 struct balancer {
     struct am_ao ao;
     struct am_timer timeout;
-    int workers;
+    int nworkers;
     int nstops;
+    int stats[AM_WORKERS_NUM_MAX];
 };
 
 static struct balancer m_balancer;
 
-static int balancer_proc(struct balancer *me, const struct am_event *event) {
+static int balancer_stopping(
+    struct balancer *me, const struct am_event *event
+) {
     switch (event->id) {
-    case AM_EVT_ENTRY:
-        am_timer_arm_ms(me->timeout, AM_TIMEOUT_MS, /*interval=*/0);
-        struct job_req *req = am_event_allocate(EVT_JOB_REQ, sizeof(struct job_req));
-        req->cycles = AM_WORKER_LOAD_CYCLES;
-        am_ao_publish(req);
+    case AM_EVT_HSM_ENTRY:
+        am_ao_publish_exclude(&m_evt_stop, &me->ao);
         return AM_HSM_HANDLED();
 
-    case EVT_TIMEOUT:
-        return AM_HSM_TRAN(balancer_stopping);
-
-    case EVT_JOB_DONE: {
-        struct job_done *done = (struct job_done*)event;
-        AM_ASSERT(done->worker >= 0);
-        AM_ASSERT(done->worker < AM_COUNTOF(m_workers));
-        struct job_req *req = am_event_allocate(EVT_JOB_REQ, sizeof(struct job_req));
-        req->cycles = AM_WORKER_LOAD_CYCLES;
-        am_ao_post_fifo(&m_workers[done->worker].ao, req);
+    case EVT_STOPPED: {
+        ++me->nstops;
+        if (me->nstops == me->nworkers) {
+            for (int i = 0; i < me->nworkers; ++i) {
+                am_pal_printf("worker: %d jobs done: %d\n", i, me->stats[i]);
+            }
+            am_ao_stop(&me->ao);
+        }
         return AM_HSM_HANDLED();
     }
     default:
@@ -169,17 +169,30 @@ static int balancer_proc(struct balancer *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static int balancer_stopping(struct balancer *me, const struct am_event *event) {
+static int balancer_proc(struct balancer *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_ENTRY:
-        am_ao_publish(&m_evt_stop);
-        return AM_HSM_DONE();
+    case AM_EVT_HSM_ENTRY: {
+        am_timer_arm_ms(&me->timeout, AM_TIMEOUT_MS, /*interval=*/0);
+        struct job_req *req = (struct job_req *)am_event_allocate(
+            EVT_JOB_REQ, sizeof(struct job_req)
+        );
+        req->cycles = AM_WORKER_LOAD_CYCLES;
+        am_ao_publish_exclude(&req->event, &me->ao);
+        return AM_HSM_HANDLED();
+    }
+    case EVT_TIMEOUT:
+        return AM_HSM_TRAN(balancer_stopping);
 
-    case EVT_STOPPED: {
-        ++me->nstops;
-        if (me->nstops == me->workers) {
-            am_ao_stop(&me->ao);
-        }
+    case EVT_JOB_DONE: {
+        const struct job_done *done = (const struct job_done *)event;
+        AM_ASSERT(done->worker >= 0);
+        AM_ASSERT(done->worker < AM_COUNTOF(m_workers));
+        struct job_req *req = (struct job_req *)am_event_allocate(
+            EVT_JOB_REQ, sizeof(struct job_req)
+        );
+        req->cycles = AM_WORKER_LOAD_CYCLES;
+        am_ao_post_fifo(&m_workers[done->worker].ao, &req->event);
+        ++me->stats[done->worker];
         return AM_HSM_HANDLED();
     }
     default:
@@ -203,17 +216,28 @@ static void balancer_ctor(int nworkers) {
     am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(balancer_init));
 }
 
-AM_NORETURN static void ticker_task(void *param) {
+static void ticker_task(void *param) {
     (void)param;
 
     am_ao_wait_start_all();
 
     uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
-    for (;;) {
+    while (am_ao_get_cnt() > 0) {
         am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
         am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     }
+}
+
+AM_ALIGNOF_DEFINE(events_t);
+
+static int prio_map_fn(int prio) {
+    AM_ASSERT(prio >= 0);
+    AM_ASSERT(prio <= AM_AO_PRIO_MAX);
+    if (prio == AM_AO_PRIO_MAX) {
+        return prio;
+    }
+    return 0;
 }
 
 int main(void) {
@@ -224,11 +248,13 @@ int main(void) {
     };
     am_ao_state_ctor(&cfg);
 
+    am_pal_register_prio_map_cb(prio_map_fn);
+
     am_event_add_pool(
         m_event_pool,
         sizeof(m_event_pool),
         sizeof(m_event_pool[0]),
-        AM_ALIGNOF(union events)
+        AM_ALIGNOF(events_t)
     );
 
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
@@ -240,7 +266,7 @@ int main(void) {
 
     balancer_ctor(/*nworkers=*/ncpus);
     for (int i = 0; i < ncpus; ++i) {
-        worker_ctor(&m_worker[i], /*worker=*/i);
+        worker_ctor(&m_workers[i], /*id=*/i);
     }
 
     am_ao_start(
@@ -257,7 +283,7 @@ int main(void) {
     int prio_min = AM_AO_PRIO_MIN;
     for (int i = 0; i < ncpus; ++i) {
         am_ao_start(
-            &m_worker[i].ao,
+            &m_workers[i].ao,
             prio_min + i,
             /*queue=*/m_queue_worker[i],
             /*nqueue=*/AM_COUNTOF(m_queue_worker[i]),
