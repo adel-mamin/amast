@@ -69,7 +69,7 @@ static int test_init(struct test *me, const struct am_event *event) {
 static void start_ao(void) {
     am_ao_start(
         &m_test.ao,
-        /*prio=*/AM_AO_PRIO_MAX,
+        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
         /*queue=*/m_queue_test,
         /*nqueue=*/AM_COUNTOF(m_queue_test),
         /*stack=*/NULL,

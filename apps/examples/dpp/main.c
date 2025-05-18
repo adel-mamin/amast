@@ -143,7 +143,7 @@ int main(void) {
 
     am_ao_start(
         g_ao_table,
-        /*prio=*/AM_AO_PRIO_MAX,
+        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
         /*queue=*/m_queue_table,
         /*nqueue=*/AM_COUNTOF(m_queue_table), /* NOLINT */
         /*stack=*/NULL,
@@ -157,9 +157,10 @@ int main(void) {
     };
 
     for (int i = 0; i < AM_COUNTOF(names); ++i) {
+        unsigned char prio = (unsigned char)(AM_AO_PRIO_MIN + i);
         am_ao_start(
             g_ao_philo[i],
-            /*prio=*/AM_AO_PRIO_MIN + i,
+            (struct am_ao_prio){.ao = prio, .task = prio},
             /*queue=*/m_queue_philo[i],
             /*nqueue=*/AM_COUNTOF(m_queue_philo[i]),
             /*stack=*/NULL,

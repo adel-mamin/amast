@@ -69,7 +69,7 @@ struct am_ao_state {
      * The priority of the currently running AO.
      * Only valid for cooperative AO builds.
      */
-    int running_ao_prio;
+    struct am_ao_prio running_ao_prio;
 
     /**
      * there are pending am_hsm_init() calls to be done from

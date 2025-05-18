@@ -276,7 +276,7 @@ int main(void) {
     /* traffic lights controlling active object */
     am_ao_start(
         &m.ao,
-        /*prio=*/AM_AO_PRIO_MAX,
+        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
         /*queue=*/m_queue,
         /*nqueue=*/AM_COUNTOF(m_queue),
         /*stack=*/NULL,

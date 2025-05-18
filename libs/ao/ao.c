@@ -188,40 +188,40 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event) {
 
 void am_ao_subscribe(const struct am_ao *ao, int event) {
     AM_ASSERT(ao);
-    AM_ASSERT(AM_AO_PRIO_IS_VALID(ao));
+    AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
     AM_ASSERT(event >= AM_EVT_USER);
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(me->subscribe_list_set);
     AM_ASSERT(event < me->nsub);
-    AM_ASSERT(me->aos[ao->prio] == ao);
+    AM_ASSERT(me->aos[ao->prio.ao] == ao);
     AM_ASSERT(me->sub);
 
-    int i = ao->prio / 8;
+    int i = ao->prio.ao / 8;
 
     me->crit_enter();
 
-    me->sub[event].list[i] |= (uint8_t)(1U << (unsigned)(ao->prio % 8));
+    me->sub[event].list[i] |= (uint8_t)(1U << (unsigned)(ao->prio.ao % 8));
 
     me->crit_exit();
 }
 
 void am_ao_unsubscribe(const struct am_ao *ao, int event) {
     AM_ASSERT(ao);
-    AM_ASSERT(AM_AO_PRIO_IS_VALID(ao));
+    AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
     AM_ASSERT(event >= AM_EVT_USER);
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(me->subscribe_list_set);
     AM_ASSERT(event < me->nsub);
-    AM_ASSERT(me->aos[ao->prio] == ao);
+    AM_ASSERT(me->aos[ao->prio.ao] == ao);
     AM_ASSERT(me->sub);
 
     int ind = event - AM_EVT_USER;
-    int i = ao->prio / 8;
+    int i = ao->prio.ao / 8;
 
     me->crit_enter();
 
     unsigned list = me->sub[ind].list[i];
-    list &= ~(1U << (unsigned)(ao->prio % 8));
+    list &= ~(1U << (unsigned)(ao->prio.ao % 8));
     me->sub[ind].list[i] = (uint8_t)list;
 
     me->crit_exit();
@@ -229,7 +229,7 @@ void am_ao_unsubscribe(const struct am_ao *ao, int event) {
 
 void am_ao_unsubscribe_all(const struct am_ao *ao) {
     AM_ASSERT(ao);
-    AM_ASSERT(AM_AO_PRIO_IS_VALID(ao));
+    AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
 
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(me->subscribe_list_set);
@@ -237,15 +237,15 @@ void am_ao_unsubscribe_all(const struct am_ao *ao) {
         return;
     }
 
-    AM_ASSERT(me->aos[ao->prio] == ao);
+    AM_ASSERT(me->aos[ao->prio.ao] == ao);
 
-    int j = ao->prio / 8;
+    int j = ao->prio.ao / 8;
 
     for (int i = 0; i < me->nsub; ++i) {
         me->crit_enter();
 
         unsigned list = me->sub[i].list[j];
-        list &= ~(1U << (unsigned)(ao->prio % 8));
+        list &= ~(1U << (unsigned)(ao->prio.ao % 8));
         me->sub[i].list[j] = (uint8_t)list;
 
         me->crit_exit();

@@ -93,7 +93,7 @@ bool am_ao_run_all(void) {
 
 void am_ao_start(
     struct am_ao *ao,
-    int prio,
+    struct am_ao_prio prio,
     const struct am_event *queue[],
     int queue_size,
     void *stack,
@@ -103,8 +103,7 @@ void am_ao_start(
 ) {
     AM_ASSERT(ao);
     AM_ASSERT(ao->ctor_called);
-    AM_ASSERT(prio >= AM_AO_PRIO_MIN);
-    AM_ASSERT(prio <= AM_AO_PRIO_MAX);
+    AM_ASSERT(AM_AO_PRIO_IS_VALID(prio));
     AM_ASSERT(queue);
     AM_ASSERT(queue_size > 0);
 
@@ -116,13 +115,13 @@ void am_ao_start(
         &ao->event_queue, sizeof(struct am_event *), AM_ALIGNOF_EVENT_PTR, &blk
     );
 
-    ao->prio = (unsigned)(prio & AM_AO_PRIO_MASK);
+    ao->prio = prio;
     ao->name = name;
     ao->init_event = init_event;
 
     struct am_ao_state *me = &am_ao_state_;
-    AM_ASSERT(NULL == me->aos[prio]);
-    me->aos[prio] = ao;
+    AM_ASSERT(NULL == me->aos[prio.ao]);
+    me->aos[prio.ao] = ao;
 
     me->crit_enter();
     ++me->aos_cnt;
@@ -130,7 +129,7 @@ void am_ao_start(
 
     ao->task_id = am_pal_task_create(
         name,
-        prio,
+        prio.task,
         stack,
         stack_size,
         /*entry=*/am_ao_task,
@@ -140,7 +139,7 @@ void am_ao_start(
 
 void am_ao_stop(struct am_ao *ao) {
     AM_ASSERT(ao);
-    AM_ASSERT(ao->prio < AM_AO_NUM_MAX);
+    AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
     int task_id = am_pal_task_get_own_id();
     AM_ASSERT(task_id == ao->task_id); /* check API description */
     struct am_ao_state *me = &am_ao_state_;
@@ -163,7 +162,7 @@ void am_ao_stop(struct am_ao *ao) {
     }
     am_queue_dtor(&ao->event_queue);
 
-    me->aos[ao->prio] = NULL;
+    me->aos[ao->prio.ao] = NULL;
     --me->aos_cnt;
     bool running_aos = me->aos_cnt;
 
@@ -201,7 +200,7 @@ int am_ao_get_own_prio(void) {
     for (int i = 0; i < AM_COUNTOF(me->aos); ++i) {
         struct am_ao *ao = me->aos[i];
         if (ao && ao->task_id == task_id) {
-            return ao->prio;
+            return ao->prio.ao;
         }
     }
     AM_ASSERT(0);

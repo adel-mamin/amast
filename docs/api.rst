@@ -451,6 +451,9 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 .. doxygenstruct:: am_ao_state_cfg
    :members:
 
+.. doxygenstruct:: am_ao_prio
+   :members:
+
 .. doxygendefine:: AM_AO_NUM_MAX
 
 .. doxygendefine:: AM_AO_PRIO_INVALID

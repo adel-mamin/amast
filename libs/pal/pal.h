@@ -315,26 +315,6 @@ void am_pal_on_idle(void);
 /** Return the number of CPU cores. */
 int am_pal_get_cpu_count(void);
 
-/**
- * Maps task priority to a different priority.
- *
- * Must map [0, #AM_PAL_TASK_NUM_MAX[ to a monotonic range.
- * Examples:
- * Correct: [0, 1, 2, 3] -> [10, 10, 16, 17]
- * Incorrect: [0, 1, 2, 3] -> [10, 10, 9, 11] - not monotonic output.
- *
- * @param prio  the priority to map
- * @return the mapped priority. The valid range is [0, #AM_PAL_TASK_NUM_MAX[.
- */
-typedef int (*am_pal_prio_map_fn)(int prio);
-
-/**
- * Register task priority map function.
- *
- * @param map  the user provided task priority map function
- */
-void am_pal_register_prio_map_cb(am_pal_prio_map_fn map);
-
 #ifdef __cplusplus
 }
 #endif

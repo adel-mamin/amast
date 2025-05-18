@@ -231,15 +231,6 @@ static void ticker_task(void *param) {
 
 AM_ALIGNOF_DEFINE(events_t);
 
-static int prio_map_fn(int prio) {
-    AM_ASSERT(prio >= 0);
-    AM_ASSERT(prio <= AM_AO_PRIO_MAX);
-    if (prio == AM_AO_PRIO_MAX) {
-        return prio;
-    }
-    return 0;
-}
-
 int main(void) {
     struct am_ao_state_cfg cfg = {
         .on_idle = am_pal_on_idle,
@@ -247,8 +238,6 @@ int main(void) {
         .crit_exit = am_pal_crit_exit
     };
     am_ao_state_ctor(&cfg);
-
-    am_pal_register_prio_map_cb(prio_map_fn);
 
     am_event_add_pool(
         m_event_pool,
@@ -271,7 +260,7 @@ int main(void) {
 
     am_ao_start(
         &m_balancer.ao,
-        /*prio=*/AM_AO_PRIO_MAX,
+        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
         /*queue=*/m_queue_balancer,
         /*nqueue=*/AM_COUNTOF(m_queue_balancer),
         /*stack=*/NULL,
@@ -280,11 +269,11 @@ int main(void) {
         /*init_event=*/NULL
     );
 
-    int prio_min = AM_AO_PRIO_MIN;
     for (int i = 0; i < ncpus; ++i) {
+        unsigned char prio = (unsigned char)(AM_AO_PRIO_MIN + i);
         am_ao_start(
             &m_workers[i].ao,
-            prio_min + i,
+            (struct am_ao_prio){.ao = prio, .task = AM_AO_PRIO_LOW},
             /*queue=*/m_queue_worker[i],
             /*nqueue=*/AM_COUNTOF(m_queue_worker[i]),
             /*stack=*/NULL,
@@ -296,7 +285,7 @@ int main(void) {
 
     am_pal_task_create(
         "ticker",
-        AM_AO_PRIO_MIN,
+        /*prio=*/AM_AO_PRIO_MIN,
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*entry=*/ticker_task,

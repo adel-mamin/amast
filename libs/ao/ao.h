@@ -48,32 +48,49 @@
 #define AM_AO_NUM_MAX 64
 #endif
 
+struct am_ao_prio;
+
 /** Invalid AO priority. */
-#define AM_AO_PRIO_INVALID -1
+#define AM_AO_PRIO_INVALID \
+    (struct am_ao_prio){.ao = (unsigned char)-1, .task = (unsigned char)-1}
 /** The minimum AO priority level. */
 #define AM_AO_PRIO_MIN 0
 /** The maximum AO priority level. */
 #define AM_AO_PRIO_MAX (AM_AO_NUM_MAX - 1)
-/** Number of bits to represent AO priority */
-#define AM_AO_PRIO_BITS 6
-/** AO priority mask */
-#define AM_AO_PRIO_MASK ((1 << AM_AO_PRIO_BITS) - 1)
 
-AM_ASSERT_STATIC((1U << AM_AO_PRIO_BITS) == AM_AO_NUM_MAX);
-
-struct am_ao;
+/** The low AO priority level. */
+#define AM_AO_PRIO_LOW (AM_AO_PRIO_MAX / 4)
+/** The medium AO priority level. */
+#define AM_AO_PRIO_MID (AM_AO_PRIO_MAX / 2)
+/** The high AO priority level. */
+#define AM_AO_PRIO_HIGH (3 * AM_AO_PRIO_MAX) / 4
 
 /**
  * Check if active object priority is valid.
  *
- * @param ao  the active object
+ * @param prio  the active object priority
  *
  * @retval true   the priority is valid
  * @retval false  the priority is invalid.
  */
-#define AM_AO_PRIO_IS_VALID(ao) ((ao)->prio <= AM_AO_PRIO_MAX)
+#define AM_AO_PRIO_IS_VALID(prio) \
+    ((prio.ao <= AM_AO_PRIO_MAX) && (prio.task <= AM_AO_PRIO_MAX))
 
 AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_PAL_TASK_NUM_MAX);
+
+/** AO priorities. */
+struct am_ao_prio {
+    /**
+     * Define the priority of active object.
+     * Used by AO library. Valid range [0, #AM_PAL_TASK_NUM_MAX[.
+     */
+    unsigned ao : 8;
+    /**
+     * Define the priority of the task, which runs active object.
+     * Used by PAL library. Valid range [0, #AM_PAL_TASK_NUM_MAX[.
+     */
+    unsigned task : 8;
+};
 
 /** The active object. */
 struct am_ao {
@@ -84,6 +101,8 @@ struct am_ao {
     int task_id;                 /**< task handle */
     /** initial user event - the parameter of am_ao_start() API */
     const struct am_event *init_event;
+    /** AO priority */
+    struct am_ao_prio prio;
     /**
      * Mark AO as pending am_hsm_init() call.
      * The call is then done either from am_ao_task() or from am_ao_run_all().
@@ -93,8 +112,6 @@ struct am_ao {
     unsigned ctor_called : 1;
     /** am_ao_stop() call was made for the AO */
     unsigned stopped : 1;
-    /** priority of active object */
-    unsigned prio : AM_AO_PRIO_BITS;
 };
 
 /** Active object library state configuration. */
@@ -406,7 +423,7 @@ void am_ao_ctor(struct am_ao *ao, struct am_hsm_state state);
  * to have bigger event queues.
  *
  * @param ao          the active object to start
- * @param prio        priority level [#AM_AO_PRIO_MIN, #AM_AO_PRIO_MAX]
+ * @param prio        priority
  * @param queue       the active object's event queue
  * @param queue_size  the event queue size [sizeof(struct am_event *)]
  * @param stack       active object stack
@@ -420,7 +437,7 @@ void am_ao_ctor(struct am_ao *ao, struct am_hsm_state state);
  */
 void am_ao_start(
     struct am_ao *ao,
-    int prio,
+    struct am_ao_prio prio,
     const struct am_event *queue[],
     int queue_size,
     void *stack,

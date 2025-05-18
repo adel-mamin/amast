@@ -69,8 +69,6 @@ struct am_pal_mutex {
 static uv_loop_t *loop_;
 static uv_mutex_t crit_section_;
 
-static am_pal_prio_map_fn am_pal_prio_map_fn_;
-
 /** Maximum number of mutexes */
 #ifndef AM_PAL_MUTEX_NUM_MAX
 #define AM_PAL_MUTEX_NUM_MAX 2
@@ -242,9 +240,7 @@ int am_pal_task_create(
     task->entry = entry;
     task->arg = arg;
     task->id = am_pal_id_from_index(index);
-    if (am_pal_prio_map_fn_) {
-        task->prio = am_pal_prio_map_fn_(prio);
-    }
+    task->prio = prio;
     AM_ENABLE_WARNING(AM_W_NULL_DEREFERENCE)
 
     int rc = uv_sem_init(&task->semaphore, 0);
@@ -405,20 +401,4 @@ int am_pal_get_cpu_count(void) {
         return count;
     }
     return 1;
-}
-
-void am_pal_register_prio_map_cb(am_pal_prio_map_fn map) {
-    am_pal_prio_map_fn_ = map;
-    if (!map) {
-        return;
-    }
-    int prio_prev = 0;
-    /* validate the correctness of the provided map callback */
-    for (int i = 0; i < AM_PAL_TASK_NUM_MAX; ++i) {
-        int prio = map(i);
-        AM_ASSERT(prio >= prio_prev);
-        AM_ASSERT(prio >= 0);
-        AM_ASSERT(prio < AM_PAL_TASK_NUM_MAX);
-        prio_prev = prio;
-    }
 }

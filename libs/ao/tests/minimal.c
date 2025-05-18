@@ -62,7 +62,7 @@ static struct am_event event_shutdown_ = {.id = AM_EVT_SHUTDOWN};
 static int loopback_proc(struct loopback *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_MIN:
-        AM_ASSERT(am_ao_get_own_prio() == (AM_AO_PRIO_MAX - 1));
+        AM_ASSERT(am_ao_get_own_prio() == AM_AO_PRIO_HIGH);
         am_ao_post_fifo(&m_loopback_test.ao, event);
         return AM_HSM_HANDLED();
 
@@ -78,7 +78,7 @@ static int loopback_proc(struct loopback *me, const struct am_event *event) {
 
 static int loopback_init(struct loopback *me, const struct am_event *event) {
     (void)event;
-    AM_ASSERT(am_ao_get_own_prio() == (AM_AO_PRIO_MAX - 1));
+    AM_ASSERT(am_ao_get_own_prio() == AM_AO_PRIO_HIGH);
     return AM_HSM_TRAN(loopback_proc);
 }
 
@@ -124,7 +124,7 @@ int main(void) {
 
     am_ao_start(
         &m_loopback.ao,
-        /*prio=*/AM_AO_PRIO_MAX - 1,
+        (struct am_ao_prio){.ao = AM_AO_PRIO_HIGH, .task = AM_AO_PRIO_HIGH},
         /*queue=*/m_queue_loopback,
         /*nqueue=*/AM_COUNTOF(m_queue_loopback),
         /*stack=*/NULL,
@@ -135,7 +135,7 @@ int main(void) {
 
     am_ao_start(
         &m_loopback_test.ao,
-        /*prio=*/AM_AO_PRIO_MAX,
+        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
         /*queue=*/m_queue_loopback_test,
         /*nqueue=*/AM_COUNTOF(m_queue_loopback_test),
         /*stack=*/NULL,

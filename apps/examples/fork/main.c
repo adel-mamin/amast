@@ -243,7 +243,7 @@ int main(int argc, const char *argv[]) {
 
     am_ao_start(
         &m.ao,
-        /*prio=*/AM_AO_PRIO_MIN + 1,
+        (struct am_ao_prio){.ao = AM_AO_PRIO_LOW, .task = AM_AO_PRIO_LOW},
         /*queue=*/m_queue,
         /*nqueue=*/AM_COUNTOF(m_queue),
         /*stack=*/NULL,
