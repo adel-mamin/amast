@@ -71,11 +71,6 @@ struct am_ao_state {
      */
     struct am_ao_prio running_ao_prio;
 
-    /**
-     * there are pending am_hsm_init() calls to be done from
-     * am_ao_run_all() function for some top level AO HSMs
-     */
-    unsigned hsm_init_pend : 1;
     /** am_ao_start() calls were completed for all active objects */
     unsigned startup_complete : 1;
     /** safety net to catch missing am_ao_init_subscribe_list() call */

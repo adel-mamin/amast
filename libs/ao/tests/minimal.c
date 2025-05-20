@@ -42,8 +42,10 @@
 
 #define AM_EVT_MIN AM_EVT_USER
 #define AM_EVT_SHUTDOWN (AM_EVT_USER + 1)
+#define AM_EVT_START_TEST (AM_EVT_USER + 2)
 
 static const struct am_event m_min_event = {.id = AM_EVT_MIN};
+static const struct am_event m_start_test_event = {.id = AM_EVT_START_TEST};
 
 static const struct am_event *m_queue_loopback[1];
 static const struct am_event *m_queue_loopback_test[1];
@@ -78,7 +80,6 @@ static int loopback_proc(struct loopback *me, const struct am_event *event) {
 
 static int loopback_init(struct loopback *me, const struct am_event *event) {
     (void)event;
-    AM_ASSERT(am_ao_get_own_prio() == AM_AO_PRIO_HIGH);
     return AM_HSM_TRAN(loopback_proc);
 }
 
@@ -86,6 +87,10 @@ static int loopback_test_proc(
     struct loopback_test *me, const struct am_event *event
 ) {
     switch (event->id) {
+    case AM_EVT_START_TEST:
+        am_ao_post_fifo(&m_loopback.ao, &m_min_event);
+        return AM_HSM_HANDLED();
+
     case AM_EVT_MIN:
         AM_ASSERT(am_ao_get_own_prio() == AM_AO_PRIO_MAX);
         ++me->cnt;
@@ -106,8 +111,7 @@ static int loopback_test_init(
     struct loopback_test *me, const struct am_event *event
 ) {
     (void)event;
-    AM_ASSERT(am_ao_get_own_prio() == AM_AO_PRIO_MAX);
-    am_ao_post_fifo(&m_loopback.ao, &m_min_event);
+    am_ao_post_fifo(&me->ao, &m_start_test_event);
     return AM_HSM_TRAN(loopback_test_proc);
 }
 

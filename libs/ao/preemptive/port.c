@@ -62,8 +62,6 @@ static void am_ao_task(void *param) {
 
     ao->task_id = am_pal_task_get_own_id();
 
-    am_hsm_init(&ao->hsm, ao->init_event);
-
     struct am_ao_state *me = &am_ao_state_;
     while (AM_LIKELY(!ao->stopped)) {
         me->crit_enter();
@@ -126,6 +124,8 @@ void am_ao_start(
     me->crit_enter();
     ++me->aos_cnt;
     me->crit_exit();
+
+    am_hsm_init(&ao->hsm, init_event);
 
     ao->task_id = am_pal_task_create(
         name,

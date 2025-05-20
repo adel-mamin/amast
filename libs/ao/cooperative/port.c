@@ -63,19 +63,6 @@ static void am_ao_pop_fn(void *ctx, const struct am_event *event) {
 bool am_ao_run_all(void) {
     struct am_ao_state *me = &am_ao_state_;
 
-    if (AM_UNLIKELY(me->hsm_init_pend)) {
-        for (int i = 0; i < AM_COUNTOF(me->aos); ++i) {
-            struct am_ao *ao = me->aos[i];
-            if (ao && ao->hsm_init_pend) {
-                me->running_ao_prio = ao->prio;
-                am_hsm_init(&ao->hsm, ao->init_event);
-                me->running_ao_prio = AM_AO_PRIO_INVALID;
-                ao->hsm_init_pend = false;
-            }
-        }
-        me->hsm_init_pend = false;
-    }
-
     if (AM_UNLIKELY(!me->startup_complete)) {
         am_pal_mutex_unlock(me->startup_complete_mutex);
         me->startup_complete = true;
@@ -156,7 +143,9 @@ void am_ao_start(
     me->aos[prio.ao] = ao;
     ++me->aos_cnt;
 
-    ao->hsm_init_pend = me->hsm_init_pend = true;
+    me->running_ao_prio = prio;
+    am_hsm_init(&ao->hsm, ao->init_event);
+    me->running_ao_prio = AM_AO_PRIO_INVALID;
 }
 
 void am_ao_stop(struct am_ao *ao) {

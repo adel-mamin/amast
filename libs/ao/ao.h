@@ -103,11 +103,6 @@ struct am_ao {
     const struct am_event *init_event;
     /** AO priority */
     struct am_ao_prio prio;
-    /**
-     * Mark AO as pending am_hsm_init() call.
-     * The call is then done either from am_ao_task() or from am_ao_run_all().
-     */
-    unsigned hsm_init_pend : 1;
     /** safety net to catch missing am_ao_ctor() call */
     unsigned ctor_called : 1;
     /** am_ao_stop() call was made for the AO */
