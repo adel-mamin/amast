@@ -53,7 +53,8 @@ enum fork_evt {
     EVT_PUB_MAX,
 
     /* non pub/sub events */
-    EVT_TIMEOUT
+    EVT_TIMEOUT,
+    EVT_START
 };
 
 struct job_req {
@@ -92,6 +93,7 @@ struct worker {
 static struct worker m_workers[AM_WORKERS_NUM_MAX];
 
 static const struct am_event m_evt_stop = {.id = EVT_STOP};
+static const struct am_event m_evt_start = {.id = EVT_START};
 
 static int worker_proc(struct worker *me, const struct am_event *event) {
     switch (event->id) {
@@ -173,6 +175,10 @@ static int balancer_proc(struct balancer *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY: {
         am_timer_arm_ms(&me->timeout, AM_TIMEOUT_MS, /*interval=*/0);
+        am_ao_post_fifo(&me->ao, &m_evt_start);
+        return AM_HSM_HANDLED();
+    }
+    case EVT_START: {
         struct job_req *req = (struct job_req *)am_event_allocate(
             EVT_JOB_REQ, sizeof(struct job_req)
         );
