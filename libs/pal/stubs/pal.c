@@ -145,3 +145,11 @@ int am_pal_vprintff(const char *fmt, va_list args) {
 void am_pal_flush(void) {}
 
 int am_pal_get_cpu_count(void) { return 1; }
+
+void am_pal_run_all(void) {}
+
+void am_pal_lock_all(void) {}
+
+void am_pal_unlock_all(void) {}
+
+void am_pal_wait_all(void) {}

@@ -37,7 +37,7 @@
 #include "ao/ao.h"
 #include "state.h"
 
-void am_ao_state_ctor_(void) {}
+void am_ao_state_ctor_(void) { am_pal_lock_all(); }
 
 static void am_ao_pop_fn(void *ctx, const struct am_event *event) {
     AM_ASSERT(ctx);
@@ -56,14 +56,14 @@ static void am_ao_pop_fn(void *ctx, const struct am_event *event) {
 static void am_ao_task(void *param) {
     AM_ASSERT(param);
 
-    am_ao_wait_start_all();
+    am_pal_wait_all();
 
     struct am_ao *ao = (struct am_ao *)param;
 
     ao->task_id = am_pal_task_get_own_id();
 
-    struct am_ao_state *me = &am_ao_state_;
     while (AM_LIKELY(!ao->stopped)) {
+        struct am_ao_state *me = &am_ao_state_;
         me->crit_enter();
         while (am_queue_is_empty(&ao->event_queue)) {
             me->crit_exit();
@@ -81,7 +81,7 @@ bool am_ao_run_all(void) {
 
     if (!me->startup_complete) {
         /* start all AOs */
-        am_pal_mutex_unlock(me->startup_complete_mutex);
+        am_pal_unlock_all();
         me->startup_complete = true;
     }
     /* wait all AOs to complete */
@@ -186,12 +186,6 @@ void am_ao_notify(const struct am_ao *ao) {
 }
 
 void am_ao_notify_unsafe(const struct am_ao *ao) { am_ao_notify(ao); }
-
-void am_ao_wait_start_all(void) {
-    const struct am_ao_state *me = &am_ao_state_;
-    am_pal_mutex_lock(me->startup_complete_mutex);
-    am_pal_mutex_unlock(me->startup_complete_mutex);
-}
 
 int am_ao_get_own_prio(void) {
     int task_id = am_pal_task_get_own_id();

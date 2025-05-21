@@ -37,6 +37,7 @@
 static struct k_spinlock am_pal_spinlock_;
 static k_spinlock_key_t am_pal_spinlock_key_;
 static char am_pal_crit_entered_ = 0;
+static int startup_complete_mutex_;
 
 /** Maximum number of mutexes */
 #ifndef AM_PAL_MUTEX_NUM_MAX
@@ -73,10 +74,19 @@ static struct am_pal_task am_pal_tasks_[AM_PAL_TASK_NUM_MAX] = {0};
 void *am_pal_ctor(void *arg) {
     (void)arg;
     am_pal_spinlock_ = (struct k_spinlock){};
+    startup_complete_mutex_ = am_pal_mutex_create();
     return NULL;
 }
 
-void am_pal_dtor(void) {}
+void am_pal_dtor(void) {
+    for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
+        struct am_pal_mutex *mutex = &mutexes_[i];
+        if (mutex->valid) {
+            uv_mutex_destroy(&mutex->mutex);
+            mutex->valid = false;
+        }
+    }
+}
 
 void am_pal_crit_enter(void) {
     k_spinlock_key_t key = k_spin_lock(&am_pal_spinlock_);
@@ -328,4 +338,15 @@ int am_pal_get_cpu_count(void) {
 #else
     return 1;
 #endif
+}
+
+void am_pal_run_all(void) {}
+
+void am_pal_lock_all(void) { am_pal_mutex_lock(startup_complete_mutex_); }
+
+void am_pal_unlock_all(void) { am_pal_mutex_unlock(startup_complete_mutex_); }
+
+void am_pal_wait_all(void) {
+    am_pal_mutex_lock(startup_complete_mutex_);
+    am_pal_mutex_unlock(startup_complete_mutex_);
 }

@@ -63,11 +63,6 @@ static void am_ao_pop_fn(void *ctx, const struct am_event *event) {
 bool am_ao_run_all(void) {
     struct am_ao_state *me = &am_ao_state_;
 
-    if (AM_UNLIKELY(!me->startup_complete)) {
-        am_pal_mutex_unlock(me->startup_complete_mutex);
-        me->startup_complete = true;
-    }
-
     bool dispatched = false;
     do {
         me->crit_enter();
@@ -198,8 +193,6 @@ void am_ao_notify(const struct am_ao *ao) {
     am_ao_notify_unsafe(ao);
     me->crit_exit();
 }
-
-void am_ao_wait_start_all(void) {}
 
 int am_ao_get_own_prio(void) {
     const struct am_ao_state *me = &am_ao_state_;

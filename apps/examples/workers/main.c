@@ -219,7 +219,7 @@ static void balancer_ctor(int nworkers) {
 static void ticker_task(void *param) {
     (void)param;
 
-    am_ao_wait_start_all();
+    am_pal_wait_all();
 
     uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     while (am_ao_get_cnt() > 0) {

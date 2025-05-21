@@ -172,3 +172,11 @@ int am_pal_get_cpu_count(void) {
     return 1;
 #endif
 }
+
+void am_pal_wait_all(void) {}
+
+void am_pal_lock_all(void) {}
+
+void am_pal_unlock_all(void) {}
+
+void am_pal_run_all(void) { vTaskStartScheduler(); }

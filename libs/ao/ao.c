@@ -272,12 +272,11 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
 
     struct am_ao_state *me = &am_ao_state_;
     memset(me, 0, sizeof(*me));
-    am_ao_state_ctor_();
 
     am_pal_ctor(/*arg=*/NULL);
 
-    me->startup_complete_mutex = am_pal_mutex_create();
-    am_pal_mutex_lock(me->startup_complete_mutex);
+    am_ao_state_ctor_();
+
     me->startup_complete = false;
 
     me->debug = cfg->debug;

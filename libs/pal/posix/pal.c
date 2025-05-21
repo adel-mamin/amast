@@ -80,6 +80,7 @@ struct am_pal_task {
 
 static struct am_pal_task task_main_ = {0};
 static struct am_pal_task am_pal_tasks_[AM_PAL_TASK_NUM_MAX] = {0};
+static int startup_complete_mutex_;
 
 /** PAL mutex descriptor */
 struct am_pal_mutex {
@@ -447,6 +448,8 @@ void *am_pal_ctor(void *arg) {
     AM_ASSERT(0 == ret);
     task->valid = true;
 
+    startup_complete_mutex_ = am_pal_mutex_create();
+
     return NULL;
 }
 
@@ -488,4 +491,15 @@ void am_pal_on_idle(void) {
 int am_pal_get_cpu_count(void) {
     long nprocs = sysconf(_SC_NPROCESSORS_ONLN);
     return (nprocs < 1) ? 1 : (int)nprocs;
+}
+
+void am_pal_run_all(void) {}
+
+void am_pal_lock_all(void) { am_pal_mutex_lock(startup_complete_mutex_); }
+
+void am_pal_unlock_all(void) { am_pal_mutex_unlock(startup_complete_mutex_); }
+
+void am_pal_wait_all(void) {
+    am_pal_mutex_lock(startup_complete_mutex_);
+    am_pal_mutex_unlock(startup_complete_mutex_);
 }
