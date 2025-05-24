@@ -451,29 +451,50 @@ bool am_event_pop_front(
 
     struct am_event_state *me = &am_event_state_;
 
+    const struct am_event *event = NULL;
+
     me->crit_enter();
-
-    const struct am_event **e;
-    e = (const struct am_event **)am_queue_pop_front(queue);
-
+    {
+        const struct am_event **e;
+        e = (const struct am_event **)am_queue_pop_front(queue);
+        if (e) {
+            event = *e;
+        }
+    }
     me->crit_exit();
 
-    if (!e) {
+    if (!event) {
         return false;
     }
 
-    const struct am_event *event = *e;
     AM_ASSERT(event);
+
+    const int id = event->id;
 
     if (cb) {
         cb(ctx, event);
     }
 
+    /*
+     * Event was freed / corrupted ?
+     *
+     * One possible reason could be the following usage scenario:
+     *
+     *  const struct am_event *e = am_event_allocate(id, size);
+     *  am_event_inc_ref_cnt(e); <-- THIS IS MISSING
+     *  am_hsm_dispatch(hsm, e);
+     *      am_event_push_XXX(queue, e) & am_event_pop_front(queue, ...)
+     *      OR
+     *      am_event_inc_ref_cnt(e) & am_event_dec_ref_cnt(e)
+     *  am_event_free(&e);
+     */
+    AM_ASSERT(id == event->id); /* cppcheck-suppress knownArgument */
+
     if (am_event_is_static(event)) {
         return true;
     }
 
-    am_event_free(e);
+    am_event_free(&event);
 
     return true;
 }

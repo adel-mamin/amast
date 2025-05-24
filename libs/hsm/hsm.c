@@ -291,25 +291,15 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event) {
 #endif
     enum am_hsm_rc rc = hsm_dispatch(hsm, event);
     if (AM_HSM_RC_TRAN_REDISPATCH == rc) {
+        /* Event was freed / corrupted ? */
+        AM_ASSERT(id == event->id);
         rc = hsm_dispatch(hsm, event);
         AM_ASSERT(AM_HSM_RC_TRAN_REDISPATCH != rc);
     }
 
     hsm->dispatch_in_progress = false;
 
-    /*
-     * Event was freed / corrupted ?
-     *
-     * One possible reason could be the following usage scenario:
-     *
-     *  const struct am_event *e = am_event_allocate(id, size);
-     *  am_event_inc_ref_cnt(e); <-- THIS IS MISSING
-     *  am_hsm_dispatch(hsm, e);
-     *      am_event_push_XXX(queue, e) & am_event_pop_front(queue, ...)
-     *      OR
-     *      am_event_inc_ref_cnt(e) & am_event_dec_ref_cnt(e)
-     *  am_event_free(&e);
-     */
+    /* Event was freed / corrupted ? */
     AM_ASSERT(id == event->id); /* cppcheck-suppress knownArgument */
 }
 
