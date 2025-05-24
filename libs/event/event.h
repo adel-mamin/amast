@@ -565,7 +565,7 @@ enum am_event_rc am_event_push_front(
  * @param ctx    the callback context
  * @param event  the popped event
  */
-typedef void (*am_event_pop_fn)(void *ctx, const struct am_event *event);
+typedef void (*am_event_handle_fn)(void *ctx, const struct am_event *event);
 
 /**
  * Pop event from the front of event queue.
@@ -596,7 +596,9 @@ typedef void (*am_event_pop_fn)(void *ctx, const struct am_event *event);
  * @retval true   an event was popped
  * @retval false  no event was popped
  */
-bool am_event_pop_front(struct am_queue *queue, am_event_pop_fn cb, void *ctx);
+bool am_event_pop_front(
+    struct am_queue *queue, am_event_handle_fn cb, void *ctx
+);
 
 /**
  * Flush all events from event queue.

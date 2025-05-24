@@ -270,7 +270,7 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_push_front
 
-.. doxygentypedef:: am_event_pop_fn
+.. doxygentypedef:: am_event_handle_fn
 
 .. doxygenfunction:: am_event_pop_front
 

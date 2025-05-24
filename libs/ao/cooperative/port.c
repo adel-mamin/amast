@@ -44,7 +44,7 @@ void am_ao_state_ctor_(void) {
     memset(&am_ready_aos_, 0, sizeof(am_ready_aos_));
 }
 
-static void am_ao_pop_fn(void *ctx, const struct am_event *event) {
+static void am_ao_handle(void *ctx, const struct am_event *event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
@@ -86,7 +86,7 @@ bool am_ao_run_all(void) {
         AM_ASSERT(ao);
         AM_ASSERT(ao->prio.ao == msb);
 
-        bool popped = am_event_pop_front(&ao->event_queue, am_ao_pop_fn, ao);
+        bool popped = am_event_pop_front(&ao->event_queue, am_ao_handle, ao);
         if (!popped) {
             me->crit_enter();
             if (am_queue_is_empty(&ao->event_queue)) {

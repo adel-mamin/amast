@@ -444,7 +444,9 @@ enum am_event_rc am_event_push_front(
     return rc;
 }
 
-bool am_event_pop_front(struct am_queue *queue, am_event_pop_fn cb, void *ctx) {
+bool am_event_pop_front(
+    struct am_queue *queue, am_event_handle_fn cb, void *ctx
+) {
     AM_ASSERT(queue);
 
     struct am_event_state *me = &am_event_state_;

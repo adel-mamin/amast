@@ -89,7 +89,7 @@ static struct am_hsm *am_hsmq = &am_hsmq_.hsm;
 static enum am_hsm_rc hsmq_s1(struct am_hsmq *me, const struct am_event *event);
 static enum am_hsm_rc hsmq_s2(struct am_hsmq *me, const struct am_event *event);
 
-static void hsmq_pop_fn(void *ctx, const struct am_event *event) {
+static void hsmq_dispatch(void *ctx, const struct am_event *event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
@@ -100,7 +100,7 @@ static void hsmq_pop_fn(void *ctx, const struct am_event *event) {
 static void hsmq_commit(void) {
     struct am_hsmq *me = &am_hsmq_;
     while (!am_queue_is_empty(&me->event_queue)) {
-        bool popped = am_event_pop_front(&me->event_queue, hsmq_pop_fn, me);
+        bool popped = am_event_pop_front(&me->event_queue, hsmq_dispatch, me);
         AM_ASSERT(popped);
     }
 }

@@ -73,7 +73,7 @@ static struct am_fsm *am_fsmq = &am_fsmq_.fsm;
 static enum am_fsm_rc fsmq_a(struct am_fsmq *me, const struct am_event *event);
 static enum am_fsm_rc fsmq_b(struct am_fsmq *me, const struct am_event *event);
 
-static void fsmq_pop_fn(void *ctx, const struct am_event *event) {
+static void fsmq_handle(void *ctx, const struct am_event *event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
@@ -85,7 +85,7 @@ static void fsmq_pop_fn(void *ctx, const struct am_event *event) {
 static void fsmq_commit(void) {
     struct am_fsmq *me = &am_fsmq_;
     while (!am_queue_is_empty(&me->event_queue)) {
-        bool popped = am_event_pop_front(&me->event_queue, fsmq_pop_fn, me);
+        bool popped = am_event_pop_front(&me->event_queue, fsmq_handle, me);
         AM_ASSERT(popped);
     }
 }

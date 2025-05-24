@@ -39,7 +39,7 @@
 
 void am_ao_state_ctor_(void) { am_pal_lock_all(); }
 
-static void am_ao_pop_fn(void *ctx, const struct am_event *event) {
+static void am_ao_handle(void *ctx, const struct am_event *event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
@@ -71,7 +71,7 @@ static void am_ao_task(void *param) {
             me->crit_enter();
         }
         me->crit_exit();
-        bool popped = am_event_pop_front(&ao->event_queue, am_ao_pop_fn, ao);
+        bool popped = am_event_pop_front(&ao->event_queue, am_ao_handle, ao);
         AM_ASSERT(popped);
     }
 }
