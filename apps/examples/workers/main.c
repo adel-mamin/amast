@@ -43,7 +43,7 @@
 
 #define AM_WORKERS_NUM_MAX 64
 #define AM_WORKER_LOAD_CYCLES 10000
-#define AM_TIMEOUT_MS (10 * 1000)
+#define AM_TIMEOUT_MS (1 * 1000)
 
 enum fork_evt {
     EVT_JOB_DONE = AM_EVT_USER,
@@ -147,6 +147,16 @@ struct balancer {
 
 static struct balancer m_balancer;
 
+static void balancer_check_stats(const struct balancer *me) {
+    int baseline = me->stats[0];
+    AM_ASSERT(baseline > 0);
+    for (int i = 1; i < me->nworkers; ++i) {
+        int percent =
+            AM_ABS((int)(100LL * (baseline - me->stats[i]) / baseline));
+        AM_ASSERT(percent < 5);
+    }
+}
+
 static int balancer_stopping(
     struct balancer *me, const struct am_event *event
 ) {
@@ -161,6 +171,7 @@ static int balancer_stopping(
             for (int i = 0; i < me->nworkers; ++i) {
                 am_pal_printf("worker: %d jobs done: %d\n", i, me->stats[i]);
             }
+            balancer_check_stats(me);
             am_ao_stop(&me->ao);
         }
         return AM_HSM_HANDLED();
