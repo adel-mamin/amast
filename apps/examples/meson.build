@@ -107,7 +107,7 @@ ringbuf_cooperative = executable(
     link_with: libringbuf_example,
     dependencies: libao_cooperative_dep)
 
-if unit_test and pal != 'stubs'
+if pal != 'stubs'
     test('threaded_preemptive', ringbuf_preemptive, suite: 'ringbuf')
     test('threaded_cooperative', ringbuf_cooperative, suite: 'ringbuf')
 endif
