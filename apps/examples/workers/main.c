@@ -83,7 +83,7 @@ static union events m_event_pool[AM_WORKERS_NUM_MAX];
 
 static const struct am_event *m_queue_balancer[AM_WORKERS_NUM_MAX];
 
-static const struct am_event *m_queue_worker[AM_WORKERS_NUM_MAX][1];
+static const struct am_event *m_queue_worker[AM_WORKERS_NUM_MAX][2];
 
 struct worker {
     struct am_ao ao;
