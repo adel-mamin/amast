@@ -347,7 +347,7 @@ void am_ao_log_event_queues(
             continue;
         }
         for (int j = 0; j < tnum; ++j) {
-            struct am_event **e = (struct am_event **)am_queue_pop_front(q);
+            struct am_event **e = am_queue_pop_front(q);
             AM_ASSERT(e);
             AM_ASSERT(*e);
             log(ao->name, j, nbusy, cap, *e);

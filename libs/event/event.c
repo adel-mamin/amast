@@ -455,8 +455,7 @@ bool am_event_pop_front(
 
     me->crit_enter();
     {
-        const struct am_event **e;
-        e = (const struct am_event **)am_queue_pop_front(queue);
+        struct am_event **e = am_queue_pop_front(queue);
         if (e) {
             event = *e;
         }
@@ -500,18 +499,18 @@ bool am_event_pop_front(
 }
 
 int am_event_flush_queue(struct am_queue *queue) {
-    struct am_event **event = NULL;
     int cnt = 0;
     struct am_event_state *me = &am_event_state_;
 
     me->crit_enter();
 
-    while ((event = (struct am_event **)am_queue_pop_front(queue)) != NULL) {
+    struct am_event **e = NULL;
+    while ((e = am_queue_pop_front(queue)) != NULL) {
+        const struct am_event *event = *e;
         me->crit_exit();
         ++cnt;
-        const struct am_event *e = *event;
-        AM_ASSERT(e);
-        am_event_free(&e);
+        AM_ASSERT(event);
+        am_event_free(&event);
         me->crit_enter();
     }
 

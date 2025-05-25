@@ -157,13 +157,12 @@ void am_ao_stop(struct am_ao *ao) {
 
     me->crit_enter();
 
-    struct am_event **event = NULL;
-    while ((event = (struct am_event **)am_queue_pop_front(&ao->event_queue)) !=
-           NULL) {
+    struct am_event **e = NULL;
+    while ((e = am_queue_pop_front(&ao->event_queue)) != NULL) {
+        const struct am_event *event = *e;
         me->crit_exit();
-        const struct am_event *e = *event;
-        AM_ASSERT(e);
-        am_event_free(&e);
+        AM_ASSERT(event);
+        am_event_free(&event);
         me->crit_enter();
     }
     am_queue_dtor(&ao->event_queue);
