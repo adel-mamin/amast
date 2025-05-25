@@ -148,3 +148,7 @@ workers = executable(
         libbit_dep
     ]
 )
+
+if pal != 'stubs'
+    test('workers', workers, suite: 'workers')
+endif
