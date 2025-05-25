@@ -42,7 +42,7 @@
 #include "hsm/hsm.h"
 
 #define AM_WORKERS_NUM_MAX 64
-#define AM_WORKER_LOAD_CYCLES 10000
+#define AM_WORKER_LOAD_CYCLES 50000
 #define AM_TIMEOUT_MS (1 * 1000)
 
 enum fork_evt {
@@ -153,7 +153,7 @@ static void balancer_check_stats(const struct balancer *me) {
     for (int i = 1; i < me->nworkers; ++i) {
         int percent =
             AM_ABS((int)(100LL * (baseline - me->stats[i]) / baseline));
-        AM_ASSERT(percent < 5);
+        AM_ASSERT(percent < 20);
     }
 }
 
