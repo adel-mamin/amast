@@ -109,7 +109,7 @@ AM_NORETURN void am_assert_failure(
 static void ticker_task(void *param) {
     (void)param;
 
-    am_pal_wait_all();
+    am_pal_wait_all_tasks();
 
     uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     while (am_ao_get_cnt() > 0) {

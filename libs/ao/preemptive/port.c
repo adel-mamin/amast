@@ -37,7 +37,7 @@
 #include "ao/ao.h"
 #include "state.h"
 
-void am_ao_state_ctor_(void) { am_pal_lock_all(); }
+void am_ao_state_ctor_(void) { am_pal_lock_all_tasks(); }
 
 static void am_ao_handle(void *ctx, const struct am_event *event) {
     AM_ASSERT(ctx);
@@ -56,7 +56,7 @@ static void am_ao_handle(void *ctx, const struct am_event *event) {
 static void am_ao_task(void *param) {
     AM_ASSERT(param);
 
-    am_pal_wait_all();
+    am_pal_wait_all_tasks();
 
     struct am_ao *ao = (struct am_ao *)param;
 
@@ -81,7 +81,7 @@ bool am_ao_run_all(void) {
 
     if (!me->startup_complete) {
         /* start all AOs */
-        am_pal_unlock_all();
+        am_pal_unlock_all_tasks();
         me->startup_complete = true;
     }
     /* wait all AOs to complete */

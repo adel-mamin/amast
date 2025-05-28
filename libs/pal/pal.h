@@ -321,24 +321,24 @@ int am_pal_get_cpu_count(void);
  * Prevents using tasks before they are ready to run.
  * To be run once at the start of tasks created with am_pal_task_create() API.
  */
-void am_pal_wait_all(void);
+void am_pal_wait_all_tasks(void);
 
 /**
- * Lock all tasks until am_pal_unlock_all() is called.
+ * Lock all tasks until am_pal_unlock_all_tasks() is called.
  *
  * Only used at boot-up to synchronize tasks execution.
  */
-void am_pal_lock_all(void);
+void am_pal_lock_all_tasks(void);
 
 /**
  * Unlock all tasks.
  *
- * All tasks blocked on am_pal_wait_all() are unblocked.
+ * All tasks blocked on am_pal_wait_all_tasks() are unblocked.
  */
-void am_pal_unlock_all(void);
+void am_pal_unlock_all_tasks(void);
 
 /** Run all PAL tasks */
-void am_pal_run_all(void);
+void am_pal_run_all_tasks(void);
 
 #ifdef __cplusplus
 }
