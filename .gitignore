@@ -4,6 +4,9 @@ pixi.lock
 *.egg-info
 build/
 .cspellcache
+GPATH
+GRTAGS
+GTAGS
 
 subprojects/*
 !subprojects/libuv.wrap
