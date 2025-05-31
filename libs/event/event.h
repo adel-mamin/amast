@@ -117,8 +117,8 @@ struct am_event {
     uint32_t pool_index_plus_one : AM_EVENT_POOL_INDEX_BITS;
     /** tick domain for time events */
     uint32_t tick_domain : AM_EVENT_TICK_DOMAIN_BITS;
-    /** PUB/SUB time event */
-    uint32_t pubsub_time : 1;
+    /** reserved */
+    uint32_t /*reserved*/ : 1;
     /**
      * Least significant word of id for allocated events.
      * Used for sanity checks.

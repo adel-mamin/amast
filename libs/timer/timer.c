@@ -111,7 +111,6 @@ void am_timer_arm_ticks(struct am_timer *timer, int ticks, int interval) {
 
     timer->shot_in_ticks = AM_MAX(ticks, 1);
     timer->interval_ticks = interval;
-    timer->event.pubsub_time = (timer->owner == NULL);
     timer->disarm_pending = 0;
 
     if (!am_slist_item_is_linked(&timer->item)) {
@@ -209,7 +208,7 @@ void am_timer_tick(int domain) {
         } else {
             am_slist_iterator_pop(&it);
         }
-        if (t->event.pubsub_time) {
+        if (NULL == t->owner) {
             AM_ASSERT(me->cfg.publish);
             me->cfg.crit_exit();
             me->cfg.publish(&t->event);
