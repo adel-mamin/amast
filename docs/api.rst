@@ -310,7 +310,7 @@ The source code of the corresponding header file is in `timer.h <https://github.
 
 .. doxygenfunction:: am_timer_is_armed
 
-.. doxygenfunction:: am_timer_domain_is_empty
+.. doxygenfunction:: am_timer_domain_is_empty_unsafe
 
 .. doxygenfunction:: am_timer_get_ticks
 

@@ -102,12 +102,12 @@ static void test_arm(void) {
     AM_ASSERT(am_timer_is_armed(event2));
     am_timer_disarm(event2);
     AM_ASSERT(!am_timer_is_armed(event2));
-    AM_ASSERT(!am_timer_domain_is_empty(AM_PAL_TICK_DOMAIN_DEFAULT));
+    AM_ASSERT(!am_timer_domain_is_empty_unsafe(AM_PAL_TICK_DOMAIN_DEFAULT));
 
     am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     AM_ASSERT(1 == m_owner.npost);
 
-    AM_ASSERT(am_timer_domain_is_empty(AM_PAL_TICK_DOMAIN_DEFAULT));
+    AM_ASSERT(am_timer_domain_is_empty_unsafe(AM_PAL_TICK_DOMAIN_DEFAULT));
 
     am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     AM_ASSERT(1 == m_owner.npost);
@@ -124,7 +124,7 @@ static void test_arm(void) {
     am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     AM_ASSERT(3 == m_owner.npost);
 
-    AM_ASSERT(am_timer_domain_is_empty(AM_PAL_TICK_DOMAIN_DEFAULT));
+    AM_ASSERT(am_timer_domain_is_empty_unsafe(AM_PAL_TICK_DOMAIN_DEFAULT));
 }
 
 int main(void) {

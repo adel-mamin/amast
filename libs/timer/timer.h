@@ -262,7 +262,7 @@ bool am_timer_is_armed(const struct am_timer *timer);
  * @retval true   the timer domain is empty
  * @retval false  the timer domain has armed timers
  */
-bool am_timer_domain_is_empty(int domain);
+bool am_timer_domain_is_empty_unsafe(int domain);
 
 /**
  * Get number of ticks till timer event is sent.

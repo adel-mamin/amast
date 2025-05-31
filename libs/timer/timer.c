@@ -233,7 +233,7 @@ struct am_timer *am_timer_allocate(int id, int size, int domain, void *owner) {
     return te;
 }
 
-bool am_timer_domain_is_empty(int domain) {
+bool am_timer_domain_is_empty_unsafe(int domain) {
     struct am_timer_state *me = &am_timer_;
     AM_ASSERT(domain >= 0);
     AM_ASSERT(domain < AM_COUNTOF(me->domains));
