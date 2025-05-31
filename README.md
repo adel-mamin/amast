@@ -9,7 +9,7 @@ Amast is a minimalist asynchronous toolkit that makes it easier to develop C lan
 
 ## AMAST Architecture Diagram
 
-![AMAST Architecture Diagram](docs/amast-app-diagram.png)
+![AMAST Architecture Diagram](docs/amast-app-diagram.jpg)
 
 ## What Is Inside
 
