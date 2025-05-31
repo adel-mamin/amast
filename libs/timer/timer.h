@@ -145,7 +145,7 @@ void am_timer_state_ctor(const struct am_timer_state_cfg *cfg);
  *                the configuration parameter am_timer_state_cfg::publish
  *                must be not NULL.
  *                If not NULL, then timer event is posted and
- *                the configuration parameter am_timer_state_cfg::post
+ *                the configuration parameter am_timer_state_cfg::post_unsafe
  *                must be not NULL.
  */
 void am_timer_ctor(struct am_timer *timer, int id, int domain, void *owner);
@@ -172,7 +172,7 @@ void am_timer_ctor(struct am_timer *timer, int id, int domain, void *owner);
  *                the configuration parameter am_timer_state_cfg::publish
  *                must be not NULL.
  *                If not NULL, then timer event is posted and
- *                the configuration parameter am_timer_state_cfg::post
+ *                the configuration parameter am_timer_state_cfg::post_unsafe
  *                must be not NULL.
  */
 struct am_timer *am_timer_allocate(int id, int size, int domain, void *owner);
