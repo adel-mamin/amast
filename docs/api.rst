@@ -285,7 +285,7 @@ Timer API documentation.
 
 The source code of the corresponding header file is in `timer.h <https://github.com/adel-mamin/amast/blob/main/libs/timer/timer.h>`_.
 
-.. doxygentypedef:: am_timer_post_fn
+.. doxygentypedef:: am_timer_post_unsafe_fn
 
 .. doxygentypedef:: am_timer_publish_fn
 

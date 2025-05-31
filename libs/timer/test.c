@@ -75,7 +75,7 @@ static void test_arm(void) {
 
     memset(&m_owner, 0, sizeof(m_owner));
     struct am_timer_state_cfg cfg_timer = {
-        .post = post_cb,
+        .post_unsafe = post_cb,
         .publish = NULL,
         .update = NULL,
         .crit_enter = am_pal_crit_enter,

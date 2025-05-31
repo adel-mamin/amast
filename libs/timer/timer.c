@@ -67,7 +67,7 @@ static struct am_timer_state am_timer_;
 
 void am_timer_state_ctor(const struct am_timer_state_cfg *cfg) {
     AM_ASSERT(cfg);
-    AM_ASSERT(cfg->post || cfg->publish);
+    AM_ASSERT(cfg->post_unsafe || cfg->publish);
     AM_ASSERT(cfg->crit_enter);
     AM_ASSERT(cfg->crit_exit);
 
@@ -102,7 +102,7 @@ void am_timer_arm_ticks(struct am_timer *timer, int ticks, int interval) {
     AM_ASSERT(ticks >= 0);
     AM_ASSERT(interval >= 0);
     if (timer->owner) {
-        AM_ASSERT(me->cfg.post);
+        AM_ASSERT(me->cfg.post_unsafe);
     } else {
         AM_ASSERT(me->cfg.publish);
     }
@@ -215,8 +215,8 @@ void am_timer_tick(int domain) {
             me->cfg.publish(&t->event);
             me->cfg.crit_enter();
         } else if (!timer->disarm_pending) {
-            AM_ASSERT(me->cfg.post);
-            me->cfg.post(t->owner, &t->event);
+            AM_ASSERT(me->cfg.post_unsafe);
+            me->cfg.post_unsafe(t->owner, &t->event);
         }
     }
     me->cfg.crit_exit();

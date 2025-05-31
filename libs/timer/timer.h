@@ -44,18 +44,23 @@ AM_ASSERT_STATIC(AM_EVENT_TICK_DOMAIN_MASK >= AM_PAL_TICK_DOMAIN_MAX);
 
 /**
  * Expired timer events are posted using this callback.
+ *
  * Posting is a one-to-one event delivery mechanism.
+ *
+ * Called from critical section. So the callback should not use critical
+ * sections in its implementation.
  */
-typedef void (*am_timer_post_fn)(void *owner, const struct am_event *event);
+typedef void (*am_timer_post_unsafe_fn)(
+    void *owner, const struct am_event *event
+);
 
 /**
  * Expired timer events are published using this callback.
  *
  * Publishing is a one-to-many event delivery mechanism.
  *
- * Called from critical section. So the callback should not use critical
+ * Called outside of critical section. So the callback should use critical
  * sections in its implementation.
- *
  */
 typedef void (*am_timer_publish_fn)(const struct am_event *event);
 
@@ -69,7 +74,7 @@ struct am_timer_state_cfg {
      * Expired timer events are posted using this callback.
      * Posting is a one-to-one event delivery mechanism.
      */
-    am_timer_post_fn post;
+    am_timer_post_unsafe_fn post_unsafe;
 
     /**
      * Expired timer events are published using this callback.
