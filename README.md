@@ -7,9 +7,9 @@
 
 Amast is a minimalist asynchronous toolkit that makes it easier to develop C language based projects. Written in C99.
 
-## AMAST Architecture Diagram
+## Architecture Diagram
 
-![AMAST Architecture Diagram](docs/amast-app-diagram.jpg)
+![Architecture Diagram](docs/amast-app-diagram.jpg)
 
 ## What Is Inside
 
