@@ -34,6 +34,7 @@
 #include <string.h>
 
 #include "common/alignment.h"
+#include "common/compiler.h"
 #include "common/macros.h"
 #include "event/event.h"
 #include "timer/timer.h"
@@ -59,6 +60,7 @@ enum fork_evt {
 
 struct job_req {
     struct am_event event;
+    void (*work)(int cycles);
     int cycles;
 };
 
@@ -95,13 +97,18 @@ static struct worker m_workers[AM_WORKERS_NUM_MAX];
 static const struct am_event m_evt_stop = {.id = EVT_STOP};
 static const struct am_event m_evt_start = {.id = EVT_START};
 
+static void work(int cycles) {
+    for (volatile int i = 0; i < cycles; ++i) {
+        ;
+    }
+}
+
 static int worker_proc(struct worker *me, const struct am_event *event) {
     switch (event->id) {
     case EVT_JOB_REQ: {
-        const struct job_req *req = (const struct job_req *)event;
-        for (volatile int i = 0; i < req->cycles; ++i) {
-            ;
-        }
+        const struct job_req *req = AM_CAST(const struct job_req *, event);
+        AM_ASSERT(req->work);
+        req->work(req->cycles);
         struct job_done *done = (struct job_done *)am_event_allocate(
             EVT_JOB_DONE, sizeof(struct job_done)
         );
@@ -190,9 +197,11 @@ static int balancer_proc(struct balancer *me, const struct am_event *event) {
         return AM_HSM_HANDLED();
     }
     case EVT_START: {
-        struct job_req *req = (struct job_req *)am_event_allocate(
-            EVT_JOB_REQ, sizeof(struct job_req)
+        struct job_req *req = AM_CAST(
+            struct job_req *,
+            am_event_allocate(EVT_JOB_REQ, sizeof(struct job_req))
         );
+        req->work = work;
         req->cycles = AM_WORKER_LOAD_CYCLES;
         am_ao_publish_exclude(&req->event, &me->ao);
         return AM_HSM_HANDLED();
@@ -204,9 +213,11 @@ static int balancer_proc(struct balancer *me, const struct am_event *event) {
         const struct job_done *done = (const struct job_done *)event;
         AM_ASSERT(done->worker >= 0);
         AM_ASSERT(done->worker < AM_COUNTOF(m_workers));
-        struct job_req *req = (struct job_req *)am_event_allocate(
-            EVT_JOB_REQ, sizeof(struct job_req)
+        struct job_req *req = AM_CAST(
+            struct job_req *,
+            am_event_allocate(EVT_JOB_REQ, sizeof(struct job_req))
         );
+        req->work = work;
         req->cycles = AM_WORKER_LOAD_CYCLES;
         am_ao_post_fifo(&m_workers[done->worker].ao, &req->event);
         ++me->stats[done->worker];
