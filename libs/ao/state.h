@@ -37,8 +37,8 @@ extern "C" {
 /**
  * Check if event ID belongs to pubsub range.
  * @param event   event to check
- * @retval true   the event has user event ID
- * @retval false  the event does not have user event ID
+ * @retval true   the event has pubsub event ID
+ * @retval false  the event does not have pubsub event ID
  */
 #define AM_EVENT_HAS_PUBSUB_ID(event) \
     (((const struct am_event *)(event))->id < am_ao_state_.nsub)
