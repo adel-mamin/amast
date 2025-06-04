@@ -558,7 +558,7 @@ bool am_ao_event_queue_is_empty(struct am_ao *ao);
  * @param num  the number of events to log. Use -1 to log all events.
  * @param log  the logging callback
  */
-void am_ao_log_event_queues(
+void am_ao_log_event_queues_unsafe(
     int num,
     void (*log)(
         const char *name, int i, int len, int cap, const struct am_event *event

@@ -272,7 +272,7 @@ static void am_event_log_cb(void *ctx, int index, const char *buf, int size) {
     log->cb(log->pool_ind, index, event, size);
 }
 
-void am_event_log_pools(int num, am_event_log_fn cb) {
+void am_event_log_pools_unsafe(int num, am_event_log_fn cb) {
     AM_ASSERT(num != 0);
     AM_ASSERT(cb);
 
@@ -280,7 +280,7 @@ void am_event_log_pools(int num, am_event_log_fn cb) {
     struct am_event_log_ctx ctx = {.cb = cb};
     for (int i = 0; i < me->npools; ++i) {
         ctx.pool_ind = i;
-        am_onesize_iterate_over_allocated(
+        am_onesize_iterate_over_allocated_unsafe(
             &me->pools[i], num, am_event_log_cb, &ctx
         );
     }

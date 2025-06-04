@@ -194,7 +194,7 @@ The source code of the corresponding header file is in `onesize.h <https://githu
 
 .. doxygentypedef:: am_onesize_iterate_fn
 
-.. doxygenfunction:: am_onesize_iterate_over_allocated
+.. doxygenfunction:: am_onesize_iterate_over_allocated_unsafe
 
 .. doxygenfunction:: am_onesize_get_nfree
 
@@ -250,7 +250,7 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygentypedef:: am_event_log_fn
 
-.. doxygenfunction:: am_event_log_pools
+.. doxygenfunction:: am_event_log_pools_unsafe
 
 .. doxygenfunction:: am_event_is_static
 
@@ -504,7 +504,7 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygenfunction:: am_ao_event_queue_is_empty
 
-.. doxygenfunction:: am_ao_log_event_queues
+.. doxygenfunction:: am_ao_log_event_queues_unsafe
 
 .. doxygenfunction:: am_ao_log_last_events
 

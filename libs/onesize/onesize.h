@@ -153,7 +153,7 @@ typedef void (*am_onesize_iterate_fn)(
  * @param cb   the callback to call for each allocated memory block
  * @param ctx  the caller's specific context to be used with the callback
  */
-void am_onesize_iterate_over_allocated(
+void am_onesize_iterate_over_allocated_unsafe(
     struct am_onesize *hnd, int num, am_onesize_iterate_fn cb, void *ctx
 );
 

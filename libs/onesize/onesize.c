@@ -126,7 +126,7 @@ void am_onesize_free_all(struct am_onesize *hnd) {
     hnd->crit_exit();
 }
 
-void am_onesize_iterate_over_allocated(
+void am_onesize_iterate_over_allocated_unsafe(
     struct am_onesize *hnd, int num, am_onesize_iterate_fn cb, void *ctx
 ) {
     AM_ASSERT(hnd);
