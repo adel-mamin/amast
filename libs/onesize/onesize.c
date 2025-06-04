@@ -51,6 +51,11 @@ void *am_onesize_allocate_x(struct am_onesize *hnd, int margin) {
     struct am_slist_item *elem = am_slist_pop_front(&hnd->fl);
     AM_ASSERT(elem);
 
+    --hnd->nfree;
+    hnd->nfree_min = AM_MIN(hnd->nfree_min, hnd->nfree);
+
+    hnd->crit_exit();
+
     /*
      * make sure that onesize freelist bookkeeping state
      * was not corrupted by someone
@@ -59,11 +64,6 @@ void *am_onesize_allocate_x(struct am_onesize *hnd, int margin) {
     AM_ASSERT((void *)elem < (void *)((char *)hnd->pool.ptr + hnd->pool.size));
     int offset = (int)((char *)elem - (char *)hnd->pool.ptr);
     AM_ASSERT(((int)offset % hnd->block_size) == 0);
-
-    --hnd->nfree;
-    hnd->nfree_min = AM_MIN(hnd->nfree_min, hnd->nfree);
-
-    hnd->crit_exit();
 
     return elem;
 }
