@@ -137,18 +137,20 @@ void am_onesize_iterate_over_allocated_unsafe(
     if (num < 0) {
         num = hnd->ntotal;
     }
+    int iterated = 0;
     num = AM_MIN(num, hnd->ntotal);
 
-    for (int i = 0; i < num; ++i) {
+    for (int i = 0; (i < hnd->ntotal) && (iterated < num); ++i) {
         AM_ASSERT(AM_ALIGNOF_PTR(ptr) >= AM_ALIGNOF_SLIST_ITEM);
         struct am_slist_item *item = AM_CAST(struct am_slist_item *, ptr);
         if (am_slist_owns(&hnd->fl, item)) {
             continue; /* the item is free */
         }
 
-        cb(ctx, i, (char *)item, hnd->block_size);
+        cb(ctx, iterated, (char *)item, hnd->block_size);
 
         ptr += hnd->block_size;
+        ++iterated;
     }
 }
 
