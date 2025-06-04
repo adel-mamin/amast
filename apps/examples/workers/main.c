@@ -277,9 +277,10 @@ int main(void) {
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
 
     int ncpus = am_pal_get_cpu_count();
-    AM_ASSERT(ncpus <= AM_WORKERS_NUM_MAX);
-    AM_ASSERT(ncpus <= AM_AO_NUM_MAX);
     am_pal_printf("Number of CPUs: %d\n", ncpus);
+
+    ncpus = AM_MIN(ncpus, AM_WORKERS_NUM_MAX);
+    ncpus = AM_MIN(ncpus, AM_AO_NUM_MAX);
 
     balancer_ctor(/*nworkers=*/ncpus);
     for (int i = 0; i < ncpus; ++i) {
