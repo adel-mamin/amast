@@ -56,7 +56,7 @@ struct am_timer_state {
      *
      * This is done to limit struct am_timer::domains[] list operations
      * exclusively to am_timer_tick() call to avoid race conditions
-     * between timer owners the ticker thread/ISR.
+     * between timer owners the ticker task/ISR.
      */
     struct am_slist domains_pend[AM_PAL_TICK_DOMAIN_MAX];
     /** timer library configuration */

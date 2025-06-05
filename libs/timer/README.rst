@@ -28,7 +28,7 @@ Key Features
 3. **Thread Safety**:
 
    - Critical sections managed using user-defined enter/exit callbacks.
-   - Safe timer operations across concurrent threads.
+   - Safe timer operations across concurrent tasks.
 
 4. **Dynamic and Static Timer Allocation**:
 

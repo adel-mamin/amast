@@ -580,8 +580,8 @@ void am_ao_log_last_events(void (*log)(const char *name, int event));
  * Prevents using active objects before they are ready to
  * process events.
  *
- * To be run once at the start of regular (non-AO) user threads created with
- * am_pal_task_create() API. These regular user thread are typically
+ * To be run once at the start of regular (non-AO) user tasks created with
+ * am_pal_task_create() API. These regular user tasks are typically
  * used to execute blocking calls and post/publish events to active objects.
  */
 void am_ao_wait_start_all(void);

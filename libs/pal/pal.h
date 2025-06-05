@@ -49,7 +49,7 @@
 #define AM_PAL_TICK_DOMAIN_DEFAULT 0
 
 #ifndef AM_PAL_TICK_DOMAIN_MAX
-#define AM_PAL_TICK_DOMAIN_MAX 1 /**< total number of tick domains */
+#define AM_PAL_TICK_DOMAIN_MAX 1 /**< Total number of tick domains. */
 #endif
 
 #ifdef __cplusplus
@@ -92,10 +92,10 @@ int am_pal_mutex_create(void);
 /**
  * Lock mutex.
  *
- * If the mutex is locked by another thread,
- * the calling thread waits until the mutex becomes available.
+ * If the mutex is locked by another task,
+ * the calling task waits until the mutex becomes available.
  *
- * A thread is not permitted to lock a mutex it has already locked.
+ * A task is not permitted to lock a mutex it has already locked.
  *
  * May not be called from ISRs.
  *
@@ -107,10 +107,10 @@ void am_pal_mutex_lock(int mutex);
  * Unlock mutex.
  *
  * The mutex must already be locked with am_pal_mutex_lock()
- * by the calling thread.
+ * by the calling task.
  *
- * The mutex cannot be claimed by another thread until it has been
- * unlocked by the calling thread.
+ * The mutex cannot be claimed by another task until it has been
+ * unlocked by the calling task.
  *
  * Mutexes may not be unlocked in ISRs.
  *

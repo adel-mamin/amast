@@ -167,7 +167,7 @@ Please note that the following pseudocode is incorrect:
     am_ao_post_fifo(ao2, event);
 
 This is because event could become invalid after posting it to `ao`.
-Consider the case when `ao1` preempts the execution thread executing the code above
+Consider the case when `ao1` preempts the execution task executing the code above
 (let's call it `ao0`) once the event is posted to `ao1`.
 Then `ao1` consumes the event, decrements the event's reference counter and frees the event.
 After that `ao0` resumes the execution and tries to post the already freed event

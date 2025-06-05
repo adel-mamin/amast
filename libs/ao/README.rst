@@ -7,7 +7,7 @@ Overview
 
 The Active Object (AO) module provides a framework for implementing the Active
 Object design pattern in embedded systems and other concurrent environments. It
-facilitates the encapsulation of threads, event-driven state machines, and
+facilitates the encapsulation of tasks, event-driven state machines, and
 message queues to enable asynchronous communication and cooperative
 multitasking.
 

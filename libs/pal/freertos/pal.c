@@ -33,12 +33,8 @@
 #include "pal/pal.h"
 
 struct am_pal_task {
-    /* pthread data */
+    /* task data */
     static StaticTask_t task;
-    /* mutex to protect condition variable */
-    pthread_mutex_t mutex;
-    /* condition variable for signaling */
-    pthread_cond_t cond;
     /* flag to track notification state */
     bool notified;
     /* the task is valid */
