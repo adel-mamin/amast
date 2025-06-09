@@ -80,7 +80,7 @@
  * Align pointer to the bigger value, which has \p align alignment.
  *
  * @param ptr    the pointer to align
- * @param align  the alignment
+ * @param align  the alignment [bytes]. Must be power of 2.
  *
  * @return the aligned pointer
  */
@@ -92,7 +92,7 @@
  * Align pointer to the smaller value, which has \p align alignment.
  *
  * @param ptr    the pointer to align
- * @param align  the alignment
+ * @param align  the alignment [bytes]. Must be power of 2.
  *
  * @return the aligned pointer
  */
