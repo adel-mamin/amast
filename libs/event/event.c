@@ -314,7 +314,6 @@ void am_event_inc_ref_cnt(const struct am_event *event) {
         return;
     }
 
-    AM_ASSERT(event->ref_counter < AM_EVENT_REF_COUNTER_MASK);
     /*
      * Check if event is valid.
      * If the below assert hits, then the reason is likely
@@ -325,6 +324,7 @@ void am_event_inc_ref_cnt(const struct am_event *event) {
     struct am_event *e = AM_CAST(struct am_event *, event);
     struct am_event_state *me = &am_event_state_;
     me->crit_enter();
+    AM_ASSERT(event->ref_counter < AM_EVENT_REF_COUNTER_MAX);
     ++e->ref_counter;
     me->crit_exit();
 }
