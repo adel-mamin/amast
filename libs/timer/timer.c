@@ -59,6 +59,11 @@ struct am_timer_state {
      * between timer owners the ticker task/ISR.
      */
     struct am_slist domains_pend[AM_PAL_TICK_DOMAIN_MAX];
+    /** number of timers in each tick domain */
+    struct {
+        int16_t pend;    /**< pending timers count */
+        int16_t running; /**< running timers count */
+    } ntimers[AM_PAL_TICK_DOMAIN_MAX];
     /** timer library configuration */
     struct am_timer_state_cfg cfg;
 };
@@ -113,10 +118,10 @@ void am_timer_arm_ticks(struct am_timer *timer, int ticks, int interval) {
     timer->interval_ticks = interval;
     timer->disarm_pending = 0;
 
+    int domain = timer->event.tick_domain;
     if (!am_slist_item_is_linked(&timer->item)) {
-        am_slist_push_back(
-            &me->domains_pend[timer->event.tick_domain], &timer->item
-        );
+        am_slist_push_back(&me->domains_pend[domain], &timer->item);
+        ++me->ntimers[domain].pend;
     }
 
     me->cfg.crit_exit();
@@ -175,16 +180,24 @@ void am_timer_tick(int domain) {
     me->cfg.crit_enter();
     if (!am_slist_is_empty(&me->domains_pend[domain])) {
         am_slist_append(&me->domains[domain], &me->domains_pend[domain]);
+        me->ntimers[domain].running += me->ntimers[domain].pend;
+        me->ntimers[domain].pend = 0;
     }
     am_slist_iterator_ctor(&me->domains[domain], &it);
 
+    int ntimers = me->ntimers[domain].running;
     struct am_slist_item *p = NULL;
     while ((p = am_slist_iterator_next(&it)) != NULL) {
         struct am_timer *timer = AM_CONTAINER_OF(p, struct am_timer, item);
 
+        AM_ASSERT(ntimers > 0);
+        --ntimers;
+
         if (timer->disarm_pending) {
             am_slist_iterator_pop(&it);
             timer->disarm_pending = 0;
+            AM_ASSERT(me->ntimers[domain].running > 0);
+            --me->ntimers[domain].running;
             me->cfg.crit_exit();
             me->cfg.crit_enter();
             continue;
@@ -207,6 +220,8 @@ void am_timer_tick(int domain) {
             t->shot_in_ticks = t->interval_ticks;
         } else {
             am_slist_iterator_pop(&it);
+            AM_ASSERT(me->ntimers[domain].running > 0);
+            --me->ntimers[domain].running;
         }
         if (NULL == t->owner) {
             AM_ASSERT(me->cfg.publish);
