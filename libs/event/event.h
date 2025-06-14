@@ -75,8 +75,8 @@
     (((const struct am_event *)(event))->id >= AM_EVT_USER)
 
 /* XXX_BITS and XXX_MASK defines are used for internal purposes */
-#define AM_EVENT_REF_COUNTER_BITS 6
 #define AM_EVENT_REF_COUNTER_MASK ((1U << AM_EVENT_REF_COUNTER_BITS) - 1U)
+#define AM_EVENT_REF_COUNTER_BITS 7
 
 #define AM_EVENT_TICK_DOMAIN_BITS 3
 #define AM_EVENT_TICK_DOMAIN_MASK ((1U << AM_EVENT_TICK_DOMAIN_BITS) - 1U)
@@ -117,8 +117,6 @@ struct am_event {
     uint32_t pool_index_plus_one : AM_EVENT_POOL_INDEX_BITS;
     /** tick domain for time events */
     uint32_t tick_domain : AM_EVENT_TICK_DOMAIN_BITS;
-    /** reserved */
-    uint32_t reserved : 1;
     /**
      * Least significant word of id for allocated events.
      * Used for sanity checks.
