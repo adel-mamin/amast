@@ -163,8 +163,6 @@ static void am_ao_post_fifo_unsafe(
 }
 
 void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event) {
-    AM_ASSERT(ao);
-    AM_ASSERT(event);
     bool posted = am_ao_post_fifo_x(ao, event, /*margin=*/0);
     AM_ASSERT(posted);
 }
