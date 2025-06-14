@@ -400,6 +400,7 @@ static enum am_event_rc am_event_push_x(
     AM_ASSERT(nfree > 0);
 
     if (!am_event_is_static(e)) {
+        AM_ASSERT(e->ref_counter < AM_EVENT_REF_COUNTER_MAX);
         ++e->ref_counter;
     }
 
