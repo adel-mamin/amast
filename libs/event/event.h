@@ -74,18 +74,21 @@
 #define AM_EVENT_HAS_USER_ID(event) \
     (((const struct am_event *)(event))->id >= AM_EVT_USER)
 
-/* XXX_BITS and XXX_MASK defines are used for internal purposes */
-#define AM_EVENT_REF_COUNTER_MASK ((1U << AM_EVENT_REF_COUNTER_BITS) - 1U)
+/** Number of bits reserved for event reference counter. */
 #define AM_EVENT_REF_COUNTER_BITS 7
 
+/** Number of bits reserved for number of time domains. */
 #define AM_EVENT_TICK_DOMAIN_BITS 3
+/** Tick domain bit mask. */
 #define AM_EVENT_TICK_DOMAIN_MASK ((1U << AM_EVENT_TICK_DOMAIN_BITS) - 1U)
+/** Maximum value of tick domain. */
+#define AM_EVENT_TICK_DOMAIN_MAX AM_EVENT_TICK_DOMAIN_MASK
 
+/** Number of bits reserved for number of pools. */
 #define AM_EVENT_POOL_INDEX_BITS 5
-#define AM_EVENT_POOL_INDEX_MASK ((1U << AM_EVENT_POOL_INDEX_BITS) - 1U)
 
+/** Number of bits reserved for least significant bits of event ID. */
 #define AM_EVENT_ID_LSW_BITS 16
-#define AM_EVENT_ID_LSW_MASK ((1U << AM_EVENT_ID_LSW_BITS) - 1U)
 
 extern const int am_alignof_event;
 extern const int am_alignof_event_ptr;

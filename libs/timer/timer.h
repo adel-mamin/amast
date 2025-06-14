@@ -40,7 +40,7 @@
 #include "slist/slist.h"
 #include "pal/pal.h"
 
-AM_ASSERT_STATIC(AM_EVENT_TICK_DOMAIN_MASK >= AM_PAL_TICK_DOMAIN_MAX);
+AM_ASSERT_STATIC(AM_EVENT_TICK_DOMAIN_MAX >= AM_PAL_TICK_DOMAIN_MAX);
 
 /**
  * Expired timer events are posted using this callback.
