@@ -35,6 +35,7 @@
 
 #include <stdbool.h>
 
+#include "common/alignment.h"
 #include "common/compiler.h"
 #include "event/event.h"
 #include "slist/slist.h"
@@ -123,6 +124,9 @@ struct am_timer {
 
 /** To use with AM_ALIGNOF() macro. */
 typedef struct am_timer am_timer_t;
+
+/** To use AM_ALIGNOF(am_timer_t) in application code. */
+AM_ALIGNOF_DEFINE(am_timer_t);
 
 #ifdef __cplusplus
 extern "C" {

@@ -273,8 +273,6 @@ int main(void) {
     };
     am_ao_state_ctor(&cfg);
 
-    AM_ALIGNOF_DEFINE(am_timer_t);
-
     am_event_add_pool(
         m_event_pool,
         sizeof(m_event_pool),
