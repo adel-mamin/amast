@@ -34,18 +34,6 @@
 #include "common/macros.h"
 #include "slist/slist.h"
 
-struct am_alignof_slist {
-    char c;            /* cppcheck-suppress unusedStructMember */
-    struct am_slist d; /* cppcheck-suppress unusedStructMember */
-};
-const int am_alignof_slist = offsetof(struct am_alignof_slist, d);
-
-struct am_alignof_slist_item {
-    char c;                 /* cppcheck-suppress unusedStructMember */
-    struct am_slist_item d; /* cppcheck-suppress unusedStructMember */
-};
-const int am_alignof_slist_item = offsetof(struct am_alignof_slist_item, d);
-
 void am_slist_ctor(struct am_slist *list) {
     AM_ASSERT(list);
     list->sentinel.next = &list->sentinel;

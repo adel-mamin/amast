@@ -34,6 +34,8 @@
 
 #include <stdbool.h>
 
+#include "common/alignment.h"
+
 /**
  * Singly linked list item.
  *
@@ -88,15 +90,21 @@ struct am_slist_iterator {
     struct am_slist_item *prev; /**< previous item of the list */
 };
 
+/** To use with AM_ALIGNOF() macro. */
+typedef struct am_slist am_slist_t;
+
+/** To use with AM_ALIGNOF() macro. */
+typedef struct am_slist_item am_slist_item_t;
+
+/** To use AM_ALIGNOF(am_slist_t) in application code. */
+AM_ALIGNOF_DEFINE(am_slist_t);
+
+/** To use AM_ALIGNOF(am_slist_item_t) in application code. */
+AM_ALIGNOF_DEFINE(am_slist_item_t);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-extern const int am_alignof_slist;
-extern const int am_alignof_slist_item;
-
-#define AM_ALIGNOF_SLIST am_alignof_slist
-#define AM_ALIGNOF_SLIST_ITEM am_alignof_slist_item
 
 /**
  * Construct singly linked list.

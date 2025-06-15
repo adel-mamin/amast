@@ -147,7 +147,7 @@ void am_onesize_iterate_over_allocated_unsafe(
     num = AM_MIN(num, hnd->ntotal);
 
     for (int i = 0; (i < hnd->ntotal) && (iterated < num); ++i) {
-        AM_ASSERT(AM_ALIGNOF_PTR(ptr) >= AM_ALIGNOF_SLIST_ITEM);
+        AM_ASSERT(AM_ALIGNOF_PTR(ptr) >= AM_ALIGNOF(am_slist_item_t));
         struct am_slist_item *item = AM_CAST(struct am_slist_item *, ptr);
         if (am_slist_owns(&hnd->fl, item)) {
             continue; /* the item is free */
@@ -201,7 +201,7 @@ void am_onesize_ctor(struct am_onesize *hnd, const struct am_onesize_cfg *cfg) {
     AM_ASSERT(cfg->block_size > 0);
     AM_ASSERT(cfg->pool.size >= cfg->block_size);
 
-    int alignment = AM_MAX(cfg->alignment, AM_ALIGNOF_SLIST_ITEM);
+    int alignment = AM_MAX(cfg->alignment, AM_ALIGNOF(am_slist_item_t));
     AM_ASSERT(AM_ALIGNOF_PTR(cfg->pool.ptr) >= alignment);
 
     memset(hnd, 0, sizeof(*hnd));

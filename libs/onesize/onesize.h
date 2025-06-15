@@ -32,12 +32,13 @@
 #ifndef AM_ONESIZE_H_INCLUDED
 #define AM_ONESIZE_H_INCLUDED
 
+#include "common/alignment.h"
 #include "common/macros.h"
 #include "common/types.h"
 #include "slist/slist.h"
 
 #define AM_POOL_BLOCK_SIZEOF(t) AM_MAX(sizeof(struct am_slist), sizeof(t))
-#define AM_POOL_BLOCK_ALIGNMENT(a) AM_MAX(AM_ALIGNOF_SLIST, a)
+#define AM_POOL_BLOCK_ALIGNMENT(a) AM_MAX(AM_ALIGNOF(am_slist_t), a)
 
 /** Onesize memory allocator descriptor. */
 struct am_onesize {
