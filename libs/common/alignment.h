@@ -43,7 +43,7 @@
 #endif
 
 /**
- * Use this macro before using AM_ALIGN() for the same type.
+ * Use this macro before using AM_ALIGNOF() for the same type.
  *
  * @param type  the type to define. Must be one word.
  *              For example, "struct foo" will not work,
