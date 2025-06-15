@@ -91,12 +91,6 @@
 /** Number of bits reserved for least significant bits of event ID. */
 #define AM_EVENT_ID_LSW_BITS 16
 
-extern const int am_alignof_event;
-extern const int am_alignof_event_ptr;
-
-#define AM_ALIGNOF_EVENT am_alignof_event
-#define AM_ALIGNOF_EVENT_PTR am_alignof_event_ptr
-
 /** Event API return codes. */
 enum am_event_rc {
     AM_EVENT_RC_ERR = -1, /**< failure */
@@ -133,8 +127,14 @@ AM_ASSERT_STATIC(sizeof(struct am_event) == (2 * sizeof(int32_t)));
 /** To use with AM_ALIGNOF() macro. */
 typedef struct am_event am_event_t;
 
+/** To use with AM_ALIGNOF() macro. */
+typedef struct am_event *am_event_ptr_t;
+
 /** To use AM_ALIGNOF(am_event_t) in application code. */
 AM_ALIGNOF_DEFINE(am_event_t);
+
+/** To use AM_ALIGNOF(am_event_ptr_t) in application code. */
+AM_ALIGNOF_DEFINE(am_event_ptr_t);
 
 /** Event library state configuration. */
 struct am_event_state_cfg {

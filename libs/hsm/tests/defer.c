@@ -34,6 +34,7 @@
 #include "common/types.h"
 #include "event/event.h"
 #include "onesize/onesize.h"
+#include "slist/slist.h"
 #include "strlib/strlib.h"
 #include "hsm/hsm.h"
 #include "common.h"
@@ -135,7 +136,7 @@ static void defer_ctor(void (*log)(const char *fmt, ...)) {
         am_queue_ctor(
             &me->event_queue,
             /*isize=*/sizeof(pool[0]),
-            AM_ALIGNOF_EVENT_PTR,
+            AM_ALIGNOF(am_event_ptr_t),
             &blk
         );
     }
@@ -147,7 +148,7 @@ static void defer_ctor(void (*log)(const char *fmt, ...)) {
         am_queue_ctor(
             &me->defer_queue,
             /*isize=*/sizeof(pool[0]),
-            AM_ALIGNOF_EVENT_PTR,
+            AM_ALIGNOF(am_event_ptr_t),
             &blk
         );
     }
@@ -191,7 +192,7 @@ static void test_defer(void) {
             pool,
             (int)sizeof(pool),
             AM_POOL_BLOCK_SIZEOF(struct am_event),
-            AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF_EVENT)
+            AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF(am_event_t))
         );
         AM_ASSERT(2 == am_event_get_pool_nblocks(/*index=*/0));
         AM_ASSERT(2 == am_event_get_pool_nfree(/*index=*/0));

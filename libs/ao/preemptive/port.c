@@ -27,6 +27,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "common/alignment.h"
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
@@ -110,7 +111,10 @@ void am_ao_start(
     };
 
     am_queue_ctor(
-        &ao->event_queue, sizeof(struct am_event *), AM_ALIGNOF_EVENT_PTR, &blk
+        &ao->event_queue,
+        sizeof(struct am_event *),
+        AM_ALIGNOF(am_event_ptr_t),
+        &blk
     );
 
     ao->prio = prio;

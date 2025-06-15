@@ -66,18 +66,6 @@ struct am_event_state {
 
 static struct am_event_state am_event_state_;
 
-struct am_alignof_event {
-    char c;            /* cppcheck-suppress unusedStructMember */
-    struct am_event d; /* cppcheck-suppress unusedStructMember */
-};
-const int am_alignof_event = offsetof(struct am_alignof_event, d);
-
-struct am_alignof_event_ptr {
-    char c;             /* cppcheck-suppress unusedStructMember */
-    struct am_event *d; /* cppcheck-suppress unusedStructMember */
-};
-const int am_alignof_event_ptr = offsetof(struct am_alignof_event_ptr, d);
-
 void am_event_state_ctor(const struct am_event_state_cfg *cfg) {
     AM_ASSERT(cfg);
     AM_ASSERT(cfg->crit_enter);
@@ -274,7 +262,7 @@ struct am_event_log_ctx {
 static void am_event_log_cb(void *ctx, int index, const char *buf, int size) {
     AM_ASSERT(ctx);
     AM_ASSERT(buf);
-    AM_ASSERT(AM_ALIGNOF_PTR(buf) >= AM_ALIGNOF_EVENT);
+    AM_ASSERT(AM_ALIGNOF_PTR(buf) >= AM_ALIGNOF(am_event_t));
     AM_ASSERT(size >= (int)sizeof(struct am_event));
 
     struct am_event_log_ctx *log = (struct am_event_log_ctx *)ctx;

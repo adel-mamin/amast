@@ -38,6 +38,7 @@
 #include "timer/timer.h"
 #include "onesize/onesize.h"
 #include "pal/pal.h"
+#include "slist/slist.h"
 
 #define EVT_TEST AM_EVT_USER
 #define EVT_TEST2 (AM_EVT_USER + 1)
@@ -69,7 +70,7 @@ static void test_arm(void) {
             pool,
             (int)sizeof(pool),
             AM_POOL_BLOCK_SIZEOF(struct am_timer),
-            AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF_EVENT)
+            AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF(am_event_t))
         );
     }
 
