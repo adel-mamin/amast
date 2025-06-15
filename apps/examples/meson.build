@@ -117,6 +117,7 @@ async = executable(
     ['async' / 'main.c'],
     dependencies: [
         libhsm_dep,
+        libbit_dep,
         libasync_dep,
         libao_preemptive_dep,
         libpal_dep,
