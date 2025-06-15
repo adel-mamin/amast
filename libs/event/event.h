@@ -36,6 +36,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "common/alignment.h"
 #include "common/compiler.h"
 #include "queue/queue.h"
 
@@ -128,6 +129,12 @@ struct am_event {
 };
 
 AM_ASSERT_STATIC(sizeof(struct am_event) == (2 * sizeof(int32_t)));
+
+/** To use with AM_ALIGNOF() macro. */
+typedef struct am_event am_event_t;
+
+/** To use AM_ALIGNOF(am_event_t) in application code. */
+AM_ALIGNOF_DEFINE(am_event_t);
 
 /** Event library state configuration. */
 struct am_event_state_cfg {
