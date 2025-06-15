@@ -121,6 +121,9 @@ struct am_timer {
     unsigned disarm_pending : 1;
 };
 
+/** To use with AM_ALIGNOF() macro. */
+typedef struct am_timer am_timer_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
