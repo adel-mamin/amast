@@ -64,7 +64,7 @@
  *
  * @return the type alignment [bytes]
  */
-#define AM_ALIGNOF(type) offsetof(struct alignof_helper_##type, member)
+#define AM_ALIGNOF(type) (int)offsetof(struct alignof_helper_##type, member)
 
 /**
  * Pointer alignment.
