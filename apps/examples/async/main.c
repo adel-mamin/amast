@@ -74,8 +74,9 @@
 #define CHAR_CURSOR_UP "\033[A"
 
 enum {
-    ASYNC_EVT_USER_INPUT = AM_EVT_USER,
+    ASYNC_EVT_SWITCH_MODE = AM_EVT_USER,
     ASYNC_EVT_TIMER,
+    ASYNC_EVT_EXIT,
     ASYNC_EVT_PUB_MAX,
     ASYNC_EVT_START,
 };
@@ -98,6 +99,9 @@ static enum am_hsm_rc async_regular(
     struct async *me, const struct am_event *event
 );
 static enum am_hsm_rc async_off(struct async *me, const struct am_event *event);
+static enum am_hsm_rc async_exiting(
+    struct async *me, const struct am_event *event
+);
 
 static enum am_hsm_rc async_top(
     struct async *me, const struct am_event *event
@@ -106,12 +110,29 @@ static enum am_hsm_rc async_top(
     case AM_EVT_HSM_INIT:
         return AM_HSM_TRAN(async_regular);
 
-    case ASYNC_EVT_USER_INPUT: {
+    case ASYNC_EVT_SWITCH_MODE: {
         am_pal_printff("\b");
         if (am_hsm_is_in(&me->ao.hsm, AM_HSM_STATE_CTOR(async_regular))) {
             return AM_HSM_TRAN(async_off);
         }
         return AM_HSM_TRAN(async_regular);
+    }
+    case ASYNC_EVT_EXIT: {
+        return AM_HSM_TRAN_REDISPATCH(async_exiting);
+    }
+    default:
+        break;
+    }
+    return AM_HSM_SUPER(am_hsm_top);
+}
+
+static enum am_hsm_rc async_exiting(
+    struct async *me, const struct am_event *event
+) {
+    switch (event->id) {
+    case ASYNC_EVT_EXIT: {
+        am_ao_stop(&me->ao);
+        return AM_HSM_HANDLED();
     }
     default:
         break;
@@ -222,7 +243,8 @@ static enum am_hsm_rc async_init(
     struct async *me, const struct am_event *event
 ) {
     (void)event;
-    am_ao_subscribe(&me->ao, ASYNC_EVT_USER_INPUT);
+    am_ao_subscribe(&me->ao, ASYNC_EVT_SWITCH_MODE);
+    am_ao_subscribe(&me->ao, ASYNC_EVT_EXIT);
     return AM_HSM_TRAN(async_top);
 }
 
@@ -236,13 +258,13 @@ static void async_ctor(struct async *me) {
     );
 }
 
-AM_NORETURN static void ticker_task(void *param) {
+static void ticker_task(void *param) {
     (void)param;
 
     am_pal_wait_all_tasks();
 
     uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
-    for (;;) {
+    while (am_ao_get_cnt() > 0) {
         am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
         am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
@@ -256,12 +278,17 @@ static void input_task(void *param) {
 
     int ch;
     while ((ch = getc(stdin)) != EOF) {
-        if (ch != '\n') {
+        if ('\n' == ch) {
+            am_pal_printff(CHAR_CURSOR_UP);
+            static struct am_event event = {.id = ASYNC_EVT_SWITCH_MODE};
+            am_ao_publish(&event);
             continue;
         }
-        am_pal_printff(CHAR_CURSOR_UP);
-        static struct am_event event = {.id = ASYNC_EVT_USER_INPUT};
-        am_ao_publish(&event);
+        if (27 == ch) { /* ASCII value of ESC is 27 */
+            static struct am_event event = {.id = ASYNC_EVT_EXIT};
+            am_ao_publish(&event);
+            return;
+        }
     }
 }
 
