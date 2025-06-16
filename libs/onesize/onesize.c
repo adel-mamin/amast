@@ -44,7 +44,7 @@ static void am_assert_memptr_validity(struct am_onesize *hnd, const void *ptr) {
     AM_ASSERT(((int)offset % hnd->block_size) == 0);
 }
 
-void *am_onesize_allocate_x(struct am_onesize *hnd, int margin) {
+AM_MAY_ALIAS void *am_onesize_allocate_x(struct am_onesize *hnd, int margin) {
     AM_ASSERT(hnd);
     AM_ASSERT(margin >= 0);
 
@@ -78,13 +78,13 @@ void *am_onesize_allocate_x(struct am_onesize *hnd, int margin) {
     return elem;
 }
 
-void *am_onesize_allocate(struct am_onesize *hnd) {
-    void *ptr = am_onesize_allocate_x(hnd, /*margin=*/0);
+AM_MAY_ALIAS void *am_onesize_allocate(struct am_onesize *hnd) {
+    AM_MAY_ALIAS void *ptr = am_onesize_allocate_x(hnd, /*margin=*/0);
     AM_ASSERT(ptr);
     return ptr;
 }
 
-void am_onesize_free(struct am_onesize *hnd, const void *ptr) {
+void am_onesize_free(struct am_onesize *hnd, AM_MAY_ALIAS const void *ptr) {
     AM_ASSERT(hnd);
     AM_ASSERT(ptr);
 

@@ -11,7 +11,8 @@ GENERATE_XML           = YES
 WARN_AS_ERROR          = YES
 
 MACRO_EXPANSION        = YES
-PREDEFINED             = "AM_PRINTF(a,b)="
+PREDEFINED             = "AM_PRINTF(a,b)=" \
+                         "AM_MAY_ALIAS="
 
 EXCLUDE_PATTERNS       = *test*,\
                          *stubs*,\
@@ -23,10 +24,6 @@ EXCLUDE_SYMBOLS        = AM_ASSERT_STATIC \
                          AM_POOL_BLOCK_ALIGNMENT \
                          _POSIX_C_SOURCE \
                          _GNU_SOURCE \
-                         AM_ALIGNOF_EVENT \
-                         AM_ALIGNOF_EVENT_PTR \
-                         am_alignof_event \
-                         am_alignof_event_ptr \
                          AM_EVT_RANGE_HSM_BEGIN \
                          AM_EVT_RANGE_HSM_END \
                          AM_EVT_RANGE_FSM_BEGIN \
@@ -40,10 +37,6 @@ EXCLUDE_SYMBOLS        = AM_ASSERT_STATIC \
                          AM_EVENT_POOL_INDEX_MASK \
                          AM_EVENT_ID_LSW_BITS \
                          AM_EVENT_ID_LSW_MASK \
-                         am_alignof_slist \
-                         am_alignof_slist_item \
-                         AM_ALIGNOF_SLIST \
-                         AM_ALIGNOF_SLIST_ITEM \
                          AM_GET_MACRO_2_ \
                          AM_FILE_NAME \
                          AM_STRINGIFY
