@@ -71,6 +71,10 @@ Functions
   to `AM_ASYNC_STATE_INIT`. This prepares the structure to be used in
   an async function.
 
+- **bool am_async_is_busy(const struct am_async *me)**
+
+  Checks if async operation is in progress.
+
 Usage Example
 =============
 
