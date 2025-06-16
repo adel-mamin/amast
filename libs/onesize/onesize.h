@@ -114,7 +114,7 @@ AM_MAY_ALIAS void *am_onesize_allocate_x(struct am_onesize *hnd, int margin);
  *
  * @return the allocated memory
  */
-void *am_onesize_allocate(struct am_onesize *hnd);
+AM_MAY_ALIAS void *am_onesize_allocate(struct am_onesize *hnd);
 
 /**
  * Free a memory block.
