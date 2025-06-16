@@ -59,6 +59,7 @@ Design Considerations
 
    Timer events (``am_event_timer``) encapsulate the details of scheduled
    operations. Each timer event includes:
+
    - Owner: The recipient of the timer event.
    - Shot time: Number of ticks after which the event is fired.
    - Interval: Period between successive event firings (0 for one-shot events).
