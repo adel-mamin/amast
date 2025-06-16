@@ -95,6 +95,13 @@ void am_onesize_free(struct am_onesize *hnd, AM_MAY_ALIAS const void *ptr) {
 
     hnd->crit_enter();
 
+    const struct am_slist_item *head = am_slist_peek_front(&hnd->fl);
+    if (hnd->nfree) {
+        am_assert_memptr_validity(hnd, head);
+    } else {
+        AM_ASSERT(NULL == head);
+    }
+
     AM_ASSERT(hnd->nfree < hnd->ntotal);
     ++hnd->nfree;
 
