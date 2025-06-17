@@ -28,12 +28,15 @@
  * Demonstrate integration of async with HSM.
  * HSM topology:
  *
- *  +----------------------------------+
- *  |            async_top             |
- *  | +-------------+  +-------------+ |
- *  | |async_regular|  |  async_off  | |
- *  | +-------------+  +-------------+ |
- *  +----------------------------------+
+ *  +--------------------------------------------------------+
+ *  |                    am_hsm_top                          |
+ *  | +----------------------------------+                   |
+ *  | |            async_top             |                   |
+ *  | | +-------------+  +-------------+ | +---------------+ |
+ *  | | |async_regular|  |  async_off  | | | async_exiting | |
+ *  | | +-------------+  +-------------+ | +---------------+ |
+ *  | +----------------------------------+                   |
+ *  +--------------------------------------------------------+
  *
  * It mimics the behavior of traffic lights.
  *
@@ -45,8 +48,11 @@
  * road intersection.
  * The blink delay is 700 ms.
  *
- * async_top handles user input. Press ENTER to switch between
- * async_regular and async_off substates.
+ * async_exiting substate calls am_ao_stop().
+ *
+ * async_top handles user input:
+ * - press ENTER to switch between async_regular and async_off substates
+ * - press ESC to switch to async_exiting and exit the app
  *
  * Generally the use of async is warranted, if the sequence of
  * steps can be represented as a flowchart like in this case.
