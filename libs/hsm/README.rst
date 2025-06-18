@@ -654,7 +654,7 @@ The test steps:
 All internal and external transitions in HSM are logged and compared against
 expected patterns stored in **struct test::out**.
 
-HSM destructor
+HSM Destructor
 --------------
 
 Tests :cpp:func:`am_hsm_dtor()` API.
@@ -682,7 +682,7 @@ The test steps:
 1. Initialize the HSM. The init state transition activates **s**.
 2. Call :cpp:func:`am_hsm_dtor()` for the HSM and check if it destructs the HSM.
 
-HSM history
+HSM History
 -----------
 
 Demonstrates the HSM history pattern usage modeling the operation of
