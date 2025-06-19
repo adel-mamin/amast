@@ -27,13 +27,13 @@ libs_stubs = "meson compile -C builds/stubs"
 libs_posix = "meson compile -C builds/posix"
 libs_libuv = "meson compile -C builds/libuv"
 
-stubs = { depends-on = ["setup_stubs", "libs_stubs", "cspell", "doxygen", "sphinx", "iwyu", "style", "cppcheck", "test_stubs"] }
+stubs = { depends-on = ["setup_stubs", "libs_stubs", "test_stubs", "cppcheck", "iwyu", "style", "cspell", "tidy"] }
 posix = { depends-on = ["setup_posix", "libs_posix", "test_posix"] }
 libuv = { depends-on = ["setup_libuv", "libs_libuv", "test_libuv"] }
 
 docs = { depends-on = ["setup_stubs", "doxygen", "sphinx"] }
 
-all = { depends-on = ["stubs", "posix", "libuv"] }
+all = { depends-on = ["stubs", "posix", "libuv", "docs"] }
 
 [dependencies]
 meson = ">=1.8.1,<2"

@@ -128,6 +128,7 @@ PYTHON = find_program('python3')
 IWYU = find_program('iwyu_tool.py', required: false, disabler: true)
 CSPELL = find_program('cspell', required: false, disabler: true)
 GENERATE_LIB_SIZES = find_program('tools' / 'generate_lib_sizes.py')
+FILTER_COMPDB = find_program('tools' / 'filter_compdb.py')
 DOXYGEN = find_program('doxygen')
 SPHINX = find_program('sphinx-build')
 
@@ -198,16 +199,32 @@ run_target(
     ]
 )
 
+compdb_tidy = custom_target(
+    'compdb_tidy',
+    output: 'compile_commands.json',
+    command: [
+        FILTER_COMPDB,
+        meson.project_build_root() / 'compile_commands.json',
+        '@OUTPUT@',
+        '-fno-trapv'
+    ]
+)
+
 run_target(
     'tidy',
     command: [
         RUN_CLANG_TIDY,
         '-clang-tidy-binary',
         CLANG_TIDY,
+        '-j', '@0@'.format(run_command('nproc').stdout().strip()),
+        '-use-color',
         '-quiet',
         '-p',
         meson.project_build_root(),
         files_to_check,
+    ],
+    depends: [
+        compdb_tidy,
     ],
 )
 

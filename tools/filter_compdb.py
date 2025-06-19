@@ -31,7 +31,7 @@ import os
 import sys
 
 
-def filter_compile_commands(input_file, output_file, switches_to_remove):
+def filter_compdb(input_file, output_file, switches_to_remove):
     """
     Parses the input compile_commands.json, removes specified switches,
     and writes the result to output_file.
@@ -67,8 +67,8 @@ def filter_compile_commands(input_file, output_file, switches_to_remove):
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
-        print("Usage: python filter_compile_commands.py <input_file> <output_file> <switches_to_remove>")
-        print('Example: python filter_compile_commands.py compile_commands.json filtered_compile_commands.json "-fno-trap"')
+        print("Usage: python filter_compdb.py <input_file> <output_file> <switches_to_remove>")
+        print('Example: python filter_compdb.py compile_commands.json compile_commands_filtered.json "-fno-trap"')
         sys.exit(1)
 
     input_file = sys.argv[1]
@@ -76,4 +76,4 @@ if __name__ == "__main__":
     # Switches are provided as a comma-separated list
     switches_to_remove = sys.argv[3].split(',')
 
-    filter_compile_commands(input_file, output_file, switches_to_remove)
+    filter_compdb(input_file, output_file, switches_to_remove)
