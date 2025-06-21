@@ -42,7 +42,8 @@ struct am_queue {
     int wr;            /**< write index */
     int nfree;         /**< number of free slots */
     int nfree_min;     /**< minimum number of free slots observed so far */
-    struct am_blk blk; /**< queue memory block */
+    int capacity;      /**< queue capacity [number of items of isize] */
+    void *memblk;      /**< queue memory block */
     unsigned full : 1; /**< queue is full */
     /** safety net to catch missing am_queue_ctor() call */
     unsigned ctor_called : 1;

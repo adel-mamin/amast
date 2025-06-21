@@ -54,8 +54,9 @@ void am_queue_ctor(
 
     AM_ASSERT(blk->size >= queue->isize);
 
-    queue->blk = *blk;
-    queue->nfree = queue->nfree_min = queue->blk.size / queue->isize;
+    queue->memblk = blk->ptr;
+    queue->capacity = blk->size / queue->isize;
+    queue->nfree = queue->nfree_min = queue->capacity;
     queue->ctor_called = true;
 }
 
@@ -89,7 +90,7 @@ int am_queue_get_nbusy(const struct am_queue *queue) {
 int am_queue_get_capacity(const struct am_queue *queue) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
-    return queue->blk.size / queue->isize;
+    return queue->capacity;
 }
 
 int am_queue_item_size(const struct am_queue *queue) {
@@ -105,7 +106,7 @@ void *am_queue_peek_front(struct am_queue *queue) {
     if (am_queue_is_empty(queue)) {
         return NULL;
     }
-    return (char *)queue->blk.ptr + queue->rd * queue->isize;
+    return (char *)queue->memblk + queue->rd * queue->isize;
 }
 
 void *am_queue_peek_back(struct am_queue *queue) {
@@ -115,9 +116,8 @@ void *am_queue_peek_back(struct am_queue *queue) {
     if (am_queue_is_empty(queue)) {
         return NULL;
     }
-    int ind =
-        queue->wr ? (queue->wr - 1) : (queue->blk.size / queue->isize - 1);
-    return (char *)queue->blk.ptr + ind * queue->isize;
+    int ind = queue->wr ? (queue->wr - 1) : (queue->capacity - 1);
+    return (char *)queue->memblk + ind * queue->isize;
 }
 
 void *am_queue_pop_front(struct am_queue *queue) {
@@ -127,8 +127,8 @@ void *am_queue_pop_front(struct am_queue *queue) {
     if (am_queue_is_empty(queue)) {
         return NULL;
     }
-    void *ptr = (char *)queue->blk.ptr + queue->rd * queue->isize;
-    queue->rd = (queue->rd + 1) % (queue->blk.size / queue->isize);
+    void *ptr = (char *)queue->memblk + queue->rd * queue->isize;
+    queue->rd = (queue->rd + 1) % queue->capacity;
     queue->full = 0;
     ++queue->nfree;
 
@@ -161,9 +161,9 @@ bool am_queue_push_back(struct am_queue *queue, const void *ptr, int size) {
     if (am_queue_is_full(queue)) {
         return false;
     }
-    void *dst = (char *)queue->blk.ptr + queue->wr * queue->isize;
+    void *dst = (char *)queue->memblk + queue->wr * queue->isize;
     memcpy(dst, ptr, (size_t)size);
-    queue->wr = (queue->wr + 1) % (queue->blk.size / queue->isize);
+    queue->wr = (queue->wr + 1) % queue->capacity;
     if (queue->wr == queue->rd) {
         queue->full = 1;
     }
@@ -183,9 +183,8 @@ bool am_queue_push_front(struct am_queue *queue, const void *ptr, int size) {
     if (am_queue_is_full(queue)) {
         return false;
     }
-    queue->rd =
-        queue->rd ? (queue->rd - 1) : (queue->blk.size / queue->isize - 1);
-    void *dst = (char *)queue->blk.ptr + queue->rd * queue->isize;
+    queue->rd = queue->rd ? (queue->rd - 1) : (queue->capacity - 1);
+    void *dst = (char *)queue->memblk + queue->rd * queue->isize;
     memcpy(dst, ptr, (size_t)queue->isize);
     if (queue->wr == queue->rd) {
         queue->full = 1;
