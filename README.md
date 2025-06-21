@@ -2,6 +2,8 @@
 
 # Amast
 
+[![Version](https://img.shields.io/badge/version-0.10.0-blue)](https://github.com/adel-mamin/amast/releases)
+
 ## Introduction
 <a name="introduction"></a>
 
