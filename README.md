@@ -1,5 +1,6 @@
 ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=adel-mamin.amast)
 [![Version](https://img.shields.io/badge/version-0.10.0-blue)](https://github.com/adel-mamin/amast/releases)
+[![Sphynx](https://img.shields.io/badge/Docs-Sphinx-gainsboro)](https://amast.readthedocs.io/)
 
 # Amast
 
