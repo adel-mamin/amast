@@ -1,8 +1,7 @@
 ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=adel-mamin.amast)
+[![Version](https://img.shields.io/badge/version-0.10.0-blue)](https://github.com/adel-mamin/amast/releases)
 
 # Amast
-
-[![Version](https://img.shields.io/badge/version-0.10.0-blue)](https://github.com/adel-mamin/amast/releases)
 
 ## Introduction
 <a name="introduction"></a>
