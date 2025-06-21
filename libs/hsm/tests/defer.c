@@ -31,7 +31,6 @@
 #include "common/alignment.h"
 #include "common/compiler.h"
 #include "common/macros.h"
-#include "common/types.h"
 #include "event/event.h"
 #include "onesize/onesize.h"
 #include "slist/slist.h"
@@ -132,24 +131,24 @@ static void defer_ctor(void (*log)(const char *fmt, ...)) {
     /* setup HSM event queue */
     {
         static const struct am_event *pool[2];
-        struct am_blk blk = {.ptr = pool, .size = (int)sizeof(pool)};
         am_queue_ctor(
             &me->event_queue,
             /*isize=*/sizeof(pool[0]),
             AM_ALIGNOF(am_event_ptr_t),
-            &blk
+            pool,
+            (int)sizeof(pool)
         );
     }
 
     /* setup HSM defer queue */
     {
         static const struct am_event *pool[2];
-        struct am_blk blk = {.ptr = pool, .size = (int)sizeof(pool)};
         am_queue_ctor(
             &me->defer_queue,
             /*isize=*/sizeof(pool[0]),
             AM_ALIGNOF(am_event_ptr_t),
-            &blk
+            pool,
+            (int)sizeof(pool)
         );
     }
 }

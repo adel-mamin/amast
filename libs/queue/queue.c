@@ -33,29 +33,26 @@
 
 #include "common/macros.h"
 #include "common/alignment.h"
-#include "common/types.h"
 #include "queue/queue.h"
 
 void am_queue_ctor(
-    struct am_queue *queue, int isize, int alignment, struct am_blk *blk
+    struct am_queue *queue, int isize, int alignment, void *blk, int blk_size
 ) {
     AM_ASSERT(queue);
     AM_ASSERT(isize > 0);
     AM_ASSERT(alignment > 0);
     AM_ASSERT(AM_IS_POW2((unsigned)alignment));
     AM_ASSERT(blk);
-    AM_ASSERT(blk->ptr);
-    AM_ASSERT(AM_ALIGNOF_PTR(blk->ptr) >= alignment);
-    AM_ASSERT(blk->size > 0);
+    AM_ASSERT(AM_ALIGNOF_PTR(blk) >= alignment);
 
     memset(queue, 0, sizeof(*queue));
 
     queue->isize = AM_ALIGN_SIZE(isize, alignment);
 
-    AM_ASSERT(blk->size >= queue->isize);
+    AM_ASSERT(blk_size >= queue->isize);
 
-    queue->memblk = blk->ptr;
-    queue->capacity = blk->size / queue->isize;
+    queue->memblk = blk;
+    queue->capacity = blk_size / queue->isize;
     queue->nfree = queue->nfree_min = queue->capacity;
     queue->ctor_called = true;
 }

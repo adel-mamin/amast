@@ -32,19 +32,18 @@
 #include <stdbool.h>
 
 #include "common/macros.h"
-#include "common/types.h"
 #include "queue/queue.h"
 
 static void test_am_queue(const int capacity, const int rdwr_num) {
     int pool[capacity];
-    struct am_blk blk = {.ptr = pool, .size = (int)sizeof(pool)};
 
     struct am_queue q;
     am_queue_ctor(
         &q,
         /*isize=*/sizeof(pool[0]),
         /*alignment=*/sizeof(int),
-        &blk
+        pool,
+        (int)sizeof(pool)
     );
     AM_ASSERT(am_queue_is_empty(&q));
 

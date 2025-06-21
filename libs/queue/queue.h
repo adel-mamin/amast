@@ -33,7 +33,6 @@
 #define AM_QUEUE_H_INCLUDED
 
 #include <stdbool.h>
-#include "common/types.h"
 
 /** Queue handler. */
 struct am_queue {
@@ -62,9 +61,10 @@ extern "C" {
  * @param alignment  the queue alignment [bytes].
  *                   Can be set to #AM_ALIGN_MAX.
  * @param blk        the memory block
+ * @param blk_size   the memory block size [bytes]
  */
 void am_queue_ctor(
-    struct am_queue *queue, int isize, int alignment, struct am_blk *blk
+    struct am_queue *queue, int isize, int alignment, void *blk, int blk_size
 );
 
 /**
