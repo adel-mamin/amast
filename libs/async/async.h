@@ -69,6 +69,8 @@ struct am_async {
     switch (am_async_->state) {                         \
     case AM_ASYNC_STATE_INIT:                           \
         am_async_->state = __LINE__;                    \
+        /* to suppress cppcheck warnings */             \
+        (void)am_async_->state;                         \
         /* FALLTHROUGH */                               \
     case __LINE__:
 
@@ -79,8 +81,6 @@ struct am_async {
  * indicating that the async operation has completed.
  */
 #define AM_ASYNC_EXIT()                                 \
-        /* to suppress cppcheck warnings */             \
-        (void)am_async_->state;                         \
         am_async_->state = AM_ASYNC_STATE_INIT;         \
         return;
 
@@ -109,8 +109,6 @@ struct am_async {
  * @param cond  the condition to check for continuation
  */
 #define AM_ASYNC_AWAIT(cond)                            \
-        /* to suppress cppcheck warnings */             \
-        (void)am_async_->state;                         \
         am_async_->state = __LINE__;                    \
         /* FALLTHROUGH */                               \
     case __LINE__:                                      \
@@ -126,8 +124,6 @@ struct am_async {
  * Control resumes after this point, when the function is called again.
  */
 #define AM_ASYNC_YIELD()                                \
-        /* to suppress cppcheck warnings */             \
-        (void)am_async_->state;                         \
         am_async_->state = __LINE__;                    \
         return;                                         \
     case __LINE__:
