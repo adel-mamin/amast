@@ -92,7 +92,8 @@ struct am_async {
  * Resets the async state.
  */
 #define AM_ASYNC_END()                                  \
-        AM_ASYNC_EXIT();                                \
+        am_async_->state = AM_ASYNC_STATE_INIT;         \
+        return;                                         \
     default:                                            \
         AM_ASSERT(0);                                   \
     }}
