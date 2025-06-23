@@ -157,7 +157,7 @@ Event Ownership Diagram
   +--------------+                                 am_ao_post_...(event)
 
 
-Please note that the following pseudocode is incorrect:
+Please note that the following pseudocode shows an incorrect use of the API:
 
 .. code-block:: C
 
@@ -166,11 +166,11 @@ Please note that the following pseudocode is incorrect:
     am_ao_post_fifo(ao1, event);
     am_ao_post_fifo(ao2, event);
 
-This is because event could become invalid after posting it to ``ao``.
+This is because event could become invalid after posting it to ``ao1``.
 Consider the case when ``ao1`` preempts the execution task executing the code above
 (let's call it ``ao0``) once the event is posted to ``ao1``.
 Then ``ao1`` consumes the event, decrements the event's reference counter and frees the event.
-After that ``ao0`` resumes the execution and tries to post the already freed event
+After that ``ao0`` resumes the execution and tries to post the already freed event to ``ao2``
 which leads to undefined behavior.
 
 The proper way of doing it is as follows:
