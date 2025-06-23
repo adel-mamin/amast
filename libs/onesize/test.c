@@ -29,8 +29,6 @@
  * Onesize memory allocator unit tests.
  */
 
-#include <stddef.h> /* IWYU pragma: keep */
-
 #include "common/macros.h"
 #include "common/alignment.h"
 #include "onesize/onesize.h"

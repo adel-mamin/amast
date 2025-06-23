@@ -29,7 +29,6 @@
  */
 
 #include <stdbool.h>
-#include <stddef.h> /* IWYU pragma: keep */
 #include <string.h>
 #include <stdint.h>
 

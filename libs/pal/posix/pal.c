@@ -26,7 +26,6 @@
 
 /* Platform abstraction layer (PAL) API posix implementation */
 
-#include <stdarg.h> /* IWYU pragma: keep */
 #include <stdbool.h>
 
 /* amast-pragma: verbatim-include-std-on */

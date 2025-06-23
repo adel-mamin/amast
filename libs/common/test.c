@@ -30,7 +30,6 @@
  */
 
 #include <stdint.h>
-#include <stddef.h>/* IWYU pragma: keep */
 
 #include "compiler.h"
 #include "macros.h"
