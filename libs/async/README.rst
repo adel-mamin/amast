@@ -89,7 +89,7 @@ The following example demonstrates how to use this async implementation in C.
         int foo;
     };
 
-    int async_function(struct my_async *me) {
+    void async_function(struct my_async *me) {
         AM_ASYNC_BEGIN(me);
 
         /* Await some condition before continuing */
