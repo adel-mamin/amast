@@ -10,7 +10,7 @@ Overview
 ========
 
 The core of the implementation revolves around managing async state
-in a `struct am_async` object. The object combined with a set of
+in a ``struct am_async`` object. The object combined with a set of
 state-tracking macros allows to mimic async-await behavior.
 
 Useful for the cases when the sequence of states (operations) is strictly
@@ -38,7 +38,7 @@ Macros
 - **AM_ASYNC_BEGIN(me)**
 
   Begins an asynchronous function and initializes the async state.
-  It takes a pointer `me` to the `struct am_async` managing the async state.
+  It takes a pointer ``me`` to the ``struct am_async`` managing the async state.
 
 - **AM_ASYNC_EXIT()**
 
@@ -48,12 +48,12 @@ Macros
 - **AM_ASYNC_END()**
 
   Ends the asynchronous function, ensuring that completed or unexpected
-  states are handled correctly. It internally calls `AM_ASYNC_EXIT()`
+  states are handled correctly. It internally calls ``AM_ASYNC_EXIT()``
   to reset the async state.
 
 - **AM_ASYNC_AWAIT(cond)**
 
-  Awaits a specified condition `cond` before proceeding with execution.
+  Awaits a specified condition ``cond`` before proceeding with execution.
   If the condition is not met, the function returns and can be re-entered later.
   This allows the async function to wait for external conditions without blocking.
 
@@ -67,8 +67,8 @@ Functions
 
 - **void am_async_ctor(struct am_async *me)**
 
-  Initializes an `am_async` structure by setting its `state` field
-  to `AM_ASYNC_STATE_INIT`. This prepares the structure to be used in
+  Initializes an `struct am_async`` structure by setting its ``state`` field
+  to ``AM_ASYNC_STATE_INIT``. This prepares the structure to be used in
   an async function.
 
 - **bool am_async_is_busy(const struct am_async *me)**
@@ -114,12 +114,9 @@ The following example demonstrates how to use this async implementation in C.
         struct my_async me;
         am_async_ctor(&me);
 
-        async_function(&me);
-
-        while (am_async_is_busy(&me)) {
-            /* Perform other work while async function is busy */
+        do {
             async_function(&me)
-        }
+        } while (am_async_is_busy(&me))
 
         return 0;
     }
@@ -131,4 +128,5 @@ Notes
   using the macros
 - Keep the variables that should preserve their values across async
   function calls in a state stored outside of the async function.
-- See `test.c` for usage examples
+- See `test.c <https://github.com/adel-mamin/amast/blob/main/libs/async/test.c>`_
+  for usage examples.
