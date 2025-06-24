@@ -46,7 +46,7 @@
 #define AM_WORKER_LOAD_CYCLES 50000
 #define AM_TIMEOUT_MS (1 * 1000)
 
-enum fork_evt {
+enum evt {
     EVT_JOB_DONE = AM_EVT_USER,
     EVT_JOB_REQ,
     EVT_STOP,
