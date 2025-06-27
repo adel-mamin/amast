@@ -48,7 +48,7 @@ AM_ASSERT_STATIC(AM_EVENT_TICK_DOMAIN_MAX >= AM_PAL_TICK_DOMAIN_MAX);
  *
  * Posting is a one-to-one event delivery mechanism.
  *
- * Called from critical section. So the callback should not use critical
+ * Called from critical section, so the callback should not use critical
  * sections in its implementation.
  */
 typedef void (*am_timer_post_unsafe_fn)(
@@ -60,7 +60,7 @@ typedef void (*am_timer_post_unsafe_fn)(
  *
  * Publishing is a one-to-many event delivery mechanism.
  *
- * Called outside of critical section. So the callback should use critical
+ * Called outside of critical section, so the callback should use critical
  * sections in its implementation.
  */
 typedef void (*am_timer_publish_fn)(const struct am_event *event);
@@ -94,10 +94,10 @@ struct am_timer_state_cfg {
      */
     struct am_timer *(*update)(struct am_timer *timer);
 
-    /** Enter critical section. */
+    /** Enter critical section. Must be not NULL. */
     void (*crit_enter)(void);
 
-    /** Exit critical section. */
+    /** Exit critical section. Must be not NULL. */
     void (*crit_exit)(void);
 };
 
@@ -190,7 +190,7 @@ struct am_timer *am_timer_allocate(int id, int size, int domain, void *owner);
  * Update all armed timers in the given time tick domain
  * and fire expired timers.
  *
- * Must be called every tick.
+ * Must be called every tick in every used domain.
  *
  * @param domain  only tick timers in this tick domain.
  *                The valid range is [0, #AM_PAL_TICK_DOMAIN_MAX[.
