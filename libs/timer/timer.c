@@ -113,7 +113,7 @@ void am_timer_arm_ticks(struct am_timer *timer, int ticks, int interval) {
 
     me->cfg.crit_enter();
 
-    timer->shot_in_ticks = AM_MAX(ticks, 1);
+    timer->oneshot_ticks = AM_MAX(ticks, 1);
     timer->interval_ticks = interval;
     timer->disarm_pending = 0;
 
@@ -146,7 +146,7 @@ bool am_timer_disarm(struct am_timer *timer) {
     me->cfg.crit_enter();
 
     bool was_armed = am_slist_item_is_linked(&timer->item);
-    timer->shot_in_ticks = timer->interval_ticks = 0;
+    timer->oneshot_ticks = timer->interval_ticks = 0;
     timer->disarm_pending = 1;
 
     me->cfg.crit_exit();
@@ -202,9 +202,9 @@ void am_timer_tick(int domain) {
             continue;
         }
 
-        AM_ASSERT(timer->shot_in_ticks);
-        --timer->shot_in_ticks;
-        if (timer->shot_in_ticks) {
+        AM_ASSERT(timer->oneshot_ticks);
+        --timer->oneshot_ticks;
+        if (timer->oneshot_ticks) {
             me->cfg.crit_exit();
             me->cfg.crit_enter();
             continue;
@@ -216,7 +216,7 @@ void am_timer_tick(int domain) {
             me->cfg.crit_enter();
         }
         if (t->interval_ticks) {
-            t->shot_in_ticks = t->interval_ticks;
+            t->oneshot_ticks = t->interval_ticks;
         } else {
             am_slist_iterator_pop(&it);
             AM_ASSERT(me->ntimers[domain].running > 0);
@@ -261,7 +261,7 @@ int am_timer_get_ticks(const struct am_timer *timer) {
     struct am_timer_state *me = &am_timer_;
 
     me->cfg.crit_enter();
-    int ticks = timer->shot_in_ticks;
+    int ticks = timer->oneshot_ticks;
     me->cfg.crit_exit();
 
     return ticks;

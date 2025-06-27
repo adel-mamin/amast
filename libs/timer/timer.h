@@ -113,7 +113,7 @@ struct am_timer {
     void *owner;
 
     /** the timer event is sent after this many ticks */
-    int shot_in_ticks;
+    int oneshot_ticks;
 
     /** the timer event is re-sent after this many ticks */
     int interval_ticks;
