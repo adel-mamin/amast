@@ -122,6 +122,8 @@ struct am_ao_state_cfg {
      * The am_ao_state_cfg::crit_exit() is called by the library after
      * the callback is returned.
      *
+     * Do not post or publish events from this callback.
+     *
      * Please read the article called
      * "Use an MCU's low-power modes in foreground/background systems"
      * by Miro Samek for more information about the reasoning of the approach.
