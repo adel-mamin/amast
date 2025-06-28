@@ -41,14 +41,14 @@ LTO is disabled.
 
 Library name | Code size [kB] | Data size [kB]
 -------------|----------------|---------------
-ao_cooperative | 3.84 | 0.57
+ao_cooperative | 3.83 | 0.57
 ao_preemptive | 3.82 | 0.56
 dlist | 1.29 | 0.00
 event | 3.01 | 0.23
 fsm | 0.91 | 0.02
 hsm | 2.45 | 0.03
 onesize | 1.50 | 0.00
-queue | 1.90 | 0.00
+queue | 1.81 | 0.00
 ringbuf | 1.39 | 0.00
 slist | 1.21 | 0.00
 timer | 1.78 | 0.08
