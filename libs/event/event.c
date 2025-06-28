@@ -48,7 +48,7 @@
 /** Pool index bit mask. */
 #define AM_EVENT_POOL_INDEX_MASK ((1U << AM_EVENT_POOL_INDEX_BITS) - 1U)
 /** Maximum pool index value */
-#define AM_EVENT_POOL_INDEX_MAX AM_EVENT_POOL_INDEX_MASK
+#define AM_EVENT_POOL_INDEX_MAX ((int)AM_EVENT_POOL_INDEX_MASK)
 /** Is AM_EVENT_POOLS_NUM_MAX too large? */
 AM_ASSERT_STATIC(AM_EVENT_POOLS_NUM_MAX <= (AM_EVENT_POOL_INDEX_MAX + 1));
 
@@ -99,37 +99,43 @@ void am_event_add_pool(void *pool, int size, int block_size, int alignment) {
 struct am_event *am_event_allocate_x(int id, int size, int margin) {
     struct am_event_state *me = &am_event_state_;
     AM_ASSERT(size > 0);
-    AM_ASSERT(me->npools);
-    AM_ASSERT(size <= am_onesize_get_block_size(&me->pools[me->npools - 1]));
+    AM_ASSERT(me->npools > 0);
+    AM_ASSERT(me->npools <= AM_EVENT_POOL_INDEX_MAX);
+    int maxind = me->npools - 1;
+    AM_ASSERT(size <= am_onesize_get_block_size(&me->pools[maxind]));
     AM_ASSERT(id >= AM_EVT_USER);
     AM_ASSERT(margin >= 0);
 
-    for (int i = 0; i < me->npools; ++i) {
-        struct am_onesize *osz = &me->pools[i];
-        if (size > am_onesize_get_block_size(osz)) {
-            continue;
+    /* find allocator using binary search */
+    int left = 0;
+    int right = maxind;
+    while (left < right) {
+        int mid = (left + right) / 2;
+        int onesize = am_onesize_get_block_size(&me->pools[mid]);
+        if (size > onesize) {
+            left = mid + 1;
+        } else if (size < onesize) {
+            right = mid;
+        } else {
+            left = mid;
+            break;
         }
+    }
+    me->crit_enter();
+    struct am_event *event = am_onesize_allocate_x(&me->pools[left], margin);
+    me->crit_exit();
 
-        me->crit_enter();
-
-        struct am_event *event = am_onesize_allocate_x(osz, margin);
-
-        me->crit_exit();
-
-        if (!event) {
-            return NULL;
-        }
-
-        memset(event, 0, sizeof(*event));
-        event->id = id;
-        event->id_lsw = (uint32_t)id & AM_EVENT_ID_LSW_MASK;
-        event->pool_index_plus_one =
-            (unsigned)(i + 1) & AM_EVENT_POOL_INDEX_MASK;
-
-        return event;
+    if (!event) {
+        return NULL;
     }
 
-    return NULL;
+    memset(event, 0, sizeof(*event));
+    event->id = id;
+    event->id_lsw = (uint32_t)id & AM_EVENT_ID_LSW_MASK;
+    event->pool_index_plus_one =
+        (unsigned)(left + 1) & AM_EVENT_POOL_INDEX_MASK;
+
+    return event;
 }
 
 struct am_event *am_event_allocate(int id, int size) {
