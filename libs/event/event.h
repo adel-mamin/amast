@@ -138,9 +138,9 @@ AM_ALIGNOF_DEFINE(am_event_ptr_t);
 
 /** Event library state configuration. */
 struct am_event_state_cfg {
-    /** Enter critical section. */
+    /** Enter critical section. Must be not NULL. */
     void (*crit_enter)(void);
-    /** Exit critical section. */
+    /** Exit critical section. Must be not NULL. */
     void (*crit_exit)(void);
 };
 

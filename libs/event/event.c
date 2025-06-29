@@ -155,7 +155,7 @@ static void am_event_free_unsafe(const struct am_event **event) {
     /*
      * Check if event is valid.
      * If the below assert hits, then the reason is likely
-     * a use after free condition.
+     * a double free condition.
      */
     AM_ASSERT(((uint32_t)e->id & AM_EVENT_ID_LSW_MASK) == e->id_lsw);
 
