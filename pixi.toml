@@ -7,7 +7,7 @@ platforms = ["linux-64"]
 version = "0.1.0"
 
 [tasks]
-setup_stubs = "meson setup builds/stubs -Dunit_test=true -Dpal=stubs"
+setup_stubs = "meson setup builds/stubs -Dunit_test=true -Dpal=stubs -Dbuildtype=debug -Db_lto=false"
 setup_posix = "meson setup builds/posix -Dpal=posix"
 setup_libuv = "meson setup builds/libuv -Dpal=libuv"
 
