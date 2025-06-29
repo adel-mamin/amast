@@ -215,7 +215,7 @@ static void test_defer(void) {
             am_event_allocate(in[i].event, (int)sizeof(struct am_event));
         am_event_inc_ref_cnt(e);
         am_hsm_dispatch(&me->hsm, e);
-        am_event_free(&e);
+        am_event_free(e);
         defer_commit();
         AM_ASSERT(0 == strncmp(me->log_buf, in[i].out, strlen(in[i].out)));
         me->log_buf[0] = '\0';

@@ -278,9 +278,6 @@ struct am_event *am_event_allocate(int id, int size);
  * Decrements event reference counter by one and frees the event,
  * if the reference counter drops to zero.
  *
- * If the event is freed, then the pointer to the event is set to NULL
- * to help catching double free cases.
- *
  * The function does nothing for statically allocated events -
  * the events for which am_event_is_static() returns true.
  *
@@ -288,7 +285,7 @@ struct am_event *am_event_allocate(int id, int size);
  *
  * @param event  the event to free
  */
-void am_event_free(const struct am_event **event);
+void am_event_free(const struct am_event *event);
 
 /**
  * Duplicate an event (eXtended version).

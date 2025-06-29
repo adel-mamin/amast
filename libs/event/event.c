@@ -145,12 +145,12 @@ struct am_event *am_event_allocate(int id, int size) {
     return event;
 }
 
-static void am_event_free_unsafe(const struct am_event **event) {
-    if (am_event_is_static(*event)) {
+static void am_event_free_unsafe(const struct am_event *event) {
+    if (am_event_is_static(event)) {
         return; /* the event is statically allocated */
     }
 
-    struct am_event *e = AM_CAST(struct am_event *, *event);
+    struct am_event *e = AM_CAST(struct am_event *, event);
     AM_ASSERT(e->pool_index_plus_one <= AM_EVENT_POOLS_NUM_MAX);
     /*
      * Check if event is valid.
@@ -165,13 +165,10 @@ static void am_event_free_unsafe(const struct am_event **event) {
     }
 
     am_onesize_free(&am_event_state_.pools[e->pool_index_plus_one - 1], e);
-
-    *event = NULL;
 }
 
-void am_event_free(const struct am_event **event) {
+void am_event_free(const struct am_event *event) {
     AM_ASSERT(event);
-    AM_ASSERT(*event); /* double free? */
 
     struct am_event_state *me = &am_event_state_;
     me->crit_enter();
@@ -325,7 +322,7 @@ void am_event_inc_ref_cnt(const struct am_event *event) {
 
 void am_event_dec_ref_cnt(const struct am_event *event) {
     AM_ASSERT(event);
-    am_event_free(&event);
+    am_event_free(event);
 }
 
 int am_event_get_ref_cnt(const struct am_event *event) {
@@ -385,9 +382,9 @@ static enum am_event_rc am_event_push_x(
     if (nfree <= margin) {
         if (safe) {
             me->crit_exit();
-            am_event_free(&event);
+            am_event_free(event);
         } else {
-            am_event_free_unsafe(&event);
+            am_event_free_unsafe(event);
         }
         return AM_EVENT_RC_ERR;
     }
@@ -503,7 +500,7 @@ bool am_event_pop_front(
         return true;
     }
 
-    am_event_free(&event);
+    am_event_free(event);
 
     return true;
 }
@@ -516,11 +513,10 @@ int am_event_flush_queue(struct am_queue *queue) {
 
     struct am_event **e = NULL;
     while ((e = am_queue_pop_front(queue)) != NULL) {
-        const struct am_event *event = *e;
         me->crit_exit();
         ++cnt;
-        AM_ASSERT(event);
-        am_event_free(&event);
+        AM_ASSERT(*e);
+        am_event_free(*e);
         me->crit_enter();
     }
 

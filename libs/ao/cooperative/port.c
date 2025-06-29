@@ -159,10 +159,9 @@ void am_ao_stop(struct am_ao *ao) {
 
     struct am_event **e = NULL;
     while ((e = am_queue_pop_front(&ao->event_queue)) != NULL) {
-        const struct am_event *event = *e;
         me->crit_exit();
-        AM_ASSERT(event);
-        am_event_free(&event);
+        AM_ASSERT(*e);
+        am_event_free(*e);
         me->crit_enter();
     }
     am_queue_dtor(&ao->event_queue);

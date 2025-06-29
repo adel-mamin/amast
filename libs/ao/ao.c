@@ -117,7 +117,7 @@ bool am_ao_publish_exclude_x(
      * the function. Also takes care of the case when no active objects
      * subscribed to this event.
      */
-    am_event_free(&event);
+    am_event_free(event);
 
     return all_published;
 }
