@@ -40,3 +40,13 @@ libevent_dep = declare_dependency(
 )
 
 libraries += libevent
+
+if unit_test
+    e = executable(
+        'event',
+        ['event.c', 'test.c', slist_src],
+        c_args: ['-DAM_EVENT_POOLS_NUM_MAX=32'],
+        dependencies : [libonesize_dep, libqueue_dep, libassert_dep],
+        include_directories: inc)
+    test('event', e)
+endif
