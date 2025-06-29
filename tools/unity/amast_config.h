@@ -43,22 +43,37 @@
  */
 #define AM_FSM_SPY
 
-/** Enable am_assert_failure() implementation */
+/** Enable am_assert_failure() implementation. */
 #define AM_ASSERT_FAILURE
 
-/** The max number of event pools. */
+/**
+ * The max number of event pools.
+ * Valid range: [1,32].
+ */
 #define AM_EVENT_POOLS_NUM_MAX 3
 
-/** The maximum number of active objects. */
+/**
+ * The maximum number of active objects.
+ * Valid range: [1,64].
+ */
 #define AM_AO_NUM_MAX 64
 
-/** HSM hierarchy maximum depth */
+/**
+ * HSM hierarchy maximum depth.
+ * Valid range: [2,32].
+ */
 #define AM_HSM_HIERARCHY_DEPTH_MAX 16
 
-/** total number of tick domains */
+/**
+ * Total number of tick domains.
+ * Valid range: [1,8].
+ */
 #define AM_PAL_TICK_DOMAIN_MAX 1
 
-/** Maximum number of mutexes */
+/**
+ * Maximum number of mutexes.
+ * Valid range: [2,INT_MAX].
+ */
 #define AM_PAL_MUTEX_NUM_MAX 2
 
 #endif /* AMAST_CONFIG_H_INCLUDED */
