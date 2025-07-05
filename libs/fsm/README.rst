@@ -215,7 +215,7 @@ The user code stores the current state in a local variable of type
        ...
    };
    ...
-   static enum am_fsm_rc A(struct foo *me, const struct event *event) {
+   static enum am_rc A(struct foo *me, const struct event *event) {
        switch (event->id) {
        case AM_EVT_FSM_ENTRY:
            me->history = am_fsm_state(&me->fsm);
@@ -231,7 +231,7 @@ in **me->history** it can be done by doing this:
 
 .. code-block:: C
 
-   static enum am_fsm_rc C(struct foo *me, const struct event *event) {
+   static enum am_rc C(struct foo *me, const struct event *event) {
        switch (event->id) {
        case FSM_EVT_E4:
            return AM_FSM_TRAN(me->history);

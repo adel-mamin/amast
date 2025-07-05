@@ -17,6 +17,8 @@ Common Constants
 Common Types
 ------------
 
+.. doxygenenum:: am_rc
+
 .. doxygenstruct:: am_blk
    :members:
 
@@ -354,8 +356,6 @@ The source code of the corresponding header file is in `hsm.h <https://github.co
 
 .. doxygenenum:: am_hsm_evt_id
 
-.. doxygenenum:: am_hsm_rc
-
 .. doxygentypedef:: am_hsm_state_fn
 
 .. doxygentypedef:: am_hsm_spy_fn
@@ -406,8 +406,6 @@ Finite State Machine (FSM) API documentation.
 The source code of the corresponding header file is in `fsm.h <https://github.com/adel-mamin/amast/blob/main/libs/fsm/fsm.h>`_.
 
 .. doxygenenum:: am_fsm_evt_id
-
-.. doxygenenum:: am_fsm_rc
 
 .. doxygentypedef:: am_fsm_state_fn
 

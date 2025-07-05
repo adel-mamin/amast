@@ -28,6 +28,7 @@
 #include <stdarg.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "strlib/strlib.h"
 #include "hsm/hsm.h"
@@ -42,9 +43,7 @@ static struct spy_hsm m_spy_hsm;
 
 /* test HSM spy callback operation */
 
-static enum am_hsm_rc spy_hsm_s(
-    struct spy_hsm *me, const struct am_event *event
-) {
+static enum am_rc spy_hsm_s(struct spy_hsm *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_USER:
         me->log("s-AM_EVT_USER;");
@@ -55,7 +54,7 @@ static enum am_hsm_rc spy_hsm_s(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc spy_hsm_init(
+static enum am_rc spy_hsm_init(
     struct spy_hsm *me, const struct am_event *event
 ) {
     (void)event;

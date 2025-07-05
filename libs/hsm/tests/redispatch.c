@@ -27,6 +27,7 @@
 #include <stddef.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "hsm/hsm.h"
 #include "common.h"
@@ -41,14 +42,14 @@ static struct test_redisp m_test_redisp;
 
 /* test AM_HSM_TRAN_REDISPATCH() */
 
-static enum am_hsm_rc redisp_s1(
+static enum am_rc redisp_s1(
     struct test_redisp *me, const struct am_event *event
 );
-static enum am_hsm_rc redisp_s2(
+static enum am_rc redisp_s2(
     struct test_redisp *me, const struct am_event *event
 );
 
-static enum am_hsm_rc redisp_s1(
+static enum am_rc redisp_s1(
     struct test_redisp *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -63,7 +64,7 @@ static enum am_hsm_rc redisp_s1(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc redisp_s2(
+static enum am_rc redisp_s2(
     struct test_redisp *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -78,7 +79,7 @@ static enum am_hsm_rc redisp_s2(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc redisp_sinit(
+static enum am_rc redisp_sinit(
     struct test_redisp *me, const struct am_event *event
 ) {
     (void)event;

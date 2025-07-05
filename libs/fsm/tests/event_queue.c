@@ -39,6 +39,7 @@
 #include "common/alignment.h"
 #include "common/compiler.h"
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "queue/queue.h"
 #include "onesize/onesize.h"
@@ -70,8 +71,8 @@ static struct am_fsmq am_fsmq_;
 
 static struct am_fsm *am_fsmq = &am_fsmq_.fsm;
 
-static enum am_fsm_rc fsmq_a(struct am_fsmq *me, const struct am_event *event);
-static enum am_fsm_rc fsmq_b(struct am_fsmq *me, const struct am_event *event);
+static enum am_rc fsmq_a(struct am_fsmq *me, const struct am_event *event);
+static enum am_rc fsmq_b(struct am_fsmq *me, const struct am_event *event);
 
 static void fsmq_handle(void *ctx, const struct am_event *event) {
     AM_ASSERT(ctx);
@@ -90,9 +91,7 @@ static void fsmq_commit(void) {
     }
 }
 
-static enum am_fsm_rc fsmq_init(
-    struct am_fsmq *me, const struct am_event *event
-) {
+static enum am_rc fsmq_init(struct am_fsmq *me, const struct am_event *event) {
     (void)event;
     return AM_FSM_TRAN(fsmq_a);
 }
@@ -113,7 +112,7 @@ static void fsmq_ctor(void (*log)(const char *fmt, ...)) {
     );
 }
 
-static enum am_fsm_rc fsmq_a(struct am_fsmq *me, const struct am_event *event) {
+static enum am_rc fsmq_a(struct am_fsmq *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_A: {
         me->log("a-A;");
@@ -128,7 +127,7 @@ static enum am_fsm_rc fsmq_a(struct am_fsmq *me, const struct am_event *event) {
     return AM_FSM_HANDLED();
 }
 
-static enum am_fsm_rc fsmq_b(struct am_fsmq *me, const struct am_event *event) {
+static enum am_rc fsmq_b(struct am_fsmq *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_B: {
         me->log("b-B;");

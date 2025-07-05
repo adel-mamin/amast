@@ -27,6 +27,7 @@
 #include <stddef.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "fsm/fsm.h"
 
@@ -43,14 +44,14 @@ static struct redisp_fsm m_redisp_fsm;
 
 /* test AM_FSM_TRAN_REDISPATCH() */
 
-static enum am_fsm_rc redisp_fsm_s1(
+static enum am_rc redisp_fsm_s1(
     struct redisp_fsm *me, const struct am_event *event
 );
-static enum am_fsm_rc redisp_fsm_s2(
+static enum am_rc redisp_fsm_s2(
     struct redisp_fsm *me, const struct am_event *event
 );
 
-static enum am_fsm_rc redisp_fsm_s1(
+static enum am_rc redisp_fsm_s1(
     struct redisp_fsm *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -65,7 +66,7 @@ static enum am_fsm_rc redisp_fsm_s1(
     return AM_FSM_HANDLED();
 }
 
-static enum am_fsm_rc redisp_fsm_s2(
+static enum am_rc redisp_fsm_s2(
     struct redisp_fsm *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -80,7 +81,7 @@ static enum am_fsm_rc redisp_fsm_s2(
     return AM_FSM_HANDLED();
 }
 
-static enum am_fsm_rc redisp_fsm_sinit(
+static enum am_rc redisp_fsm_sinit(
     struct redisp_fsm *me, const struct am_event *event
 ) {
     (void)event;

@@ -69,6 +69,7 @@
 #include "common/compiler.h"
 #include "common/constants.h"
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "timer/timer.h"
 #include "async/async.h"
@@ -100,18 +101,12 @@ static struct am_timer m_event_pool[1] AM_ALIGNED(AM_ALIGN_MAX);
 static struct am_ao_subscribe_list m_pubsub_list[ASYNC_EVT_PUB_MAX];
 static const struct am_event *m_queue[2];
 
-static enum am_hsm_rc async_top(struct async *me, const struct am_event *event);
-static enum am_hsm_rc async_regular(
-    struct async *me, const struct am_event *event
-);
-static enum am_hsm_rc async_off(struct async *me, const struct am_event *event);
-static enum am_hsm_rc async_exiting(
-    struct async *me, const struct am_event *event
-);
+static enum am_rc async_top(struct async *me, const struct am_event *event);
+static enum am_rc async_regular(struct async *me, const struct am_event *event);
+static enum am_rc async_off(struct async *me, const struct am_event *event);
+static enum am_rc async_exiting(struct async *me, const struct am_event *event);
 
-static enum am_hsm_rc async_top(
-    struct async *me, const struct am_event *event
-) {
+static enum am_rc async_top(struct async *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_HSM_INIT:
         return AM_HSM_TRAN(async_regular);
@@ -132,7 +127,7 @@ static enum am_hsm_rc async_top(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc async_exiting(
+static enum am_rc async_exiting(
     struct async *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -146,7 +141,7 @@ static enum am_hsm_rc async_exiting(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static void async_regular_(struct async *me) {
+static enum am_rc async_regular_(struct async *me) {
     AM_ASYNC_BEGIN(&me->async);
 
     for (;;) {
@@ -181,7 +176,7 @@ static void async_regular_(struct async *me) {
     AM_ASYNC_END();
 }
 
-static enum am_hsm_rc async_regular(
+static enum am_rc async_regular(
     struct async *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -196,8 +191,7 @@ static enum am_hsm_rc async_regular(
 
     case ASYNC_EVT_START:
     case ASYNC_EVT_TIMER: {
-        (void)async_regular_(me);
-        return AM_HSM_HANDLED();
+        return async_regular_(me);
     }
     default:
         break;
@@ -205,25 +199,7 @@ static enum am_hsm_rc async_regular(
     return AM_HSM_SUPER(async_top);
 }
 
-static void async_off_(struct async *me) {
-    AM_ASYNC_BEGIN(&me->async);
-
-    for (;;) {
-        am_pal_printff("\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm_ms(me->timer, /*ms=*/1000, /*interval=*/0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
-
-        am_pal_printff("\b");
-        am_timer_arm_ms(me->timer, /*ms=*/700, /*interval=*/0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
-    }
-
-    AM_ASYNC_END();
-}
-
-static enum am_hsm_rc async_off(
-    struct async *me, const struct am_event *event
-) {
+static enum am_rc async_off(struct async *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
         am_async_ctor(&me->async);
@@ -236,7 +212,22 @@ static enum am_hsm_rc async_off(
 
     case ASYNC_EVT_START:
     case ASYNC_EVT_TIMER: {
-        (void)async_off_(me);
+        AM_ASYNC_BEGIN(&me->async);
+
+        for (;;) {
+            am_pal_printff(
+                "\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET
+            );
+            am_timer_arm_ms(me->timer, /*ms=*/1000, /*interval=*/0);
+            AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
+
+            am_pal_printff("\b");
+            am_timer_arm_ms(me->timer, /*ms=*/700, /*interval=*/0);
+            AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
+        }
+
+        AM_ASYNC_END();
+
         return AM_HSM_HANDLED();
     }
     default:
@@ -245,9 +236,7 @@ static enum am_hsm_rc async_off(
     return AM_HSM_SUPER(async_top);
 }
 
-static enum am_hsm_rc async_init(
-    struct async *me, const struct am_event *event
-) {
+static enum am_rc async_init(struct async *me, const struct am_event *event) {
     (void)event;
     am_ao_subscribe(&me->ao, ASYNC_EVT_SWITCH_MODE);
     am_ao_subscribe(&me->ao, ASYNC_EVT_EXIT);

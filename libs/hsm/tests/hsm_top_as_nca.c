@@ -27,6 +27,7 @@
 #include <stdio.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "hsm/hsm.h"
 #include "common.h"
@@ -39,14 +40,10 @@ static struct test_nca m_test_nca;
 
 /* Test am_hsm_top() as NCA. */
 
-static enum am_hsm_rc nca_s11(
-    struct test_nca *me, const struct am_event *event
-);
-static enum am_hsm_rc nca_s2(struct test_nca *me, const struct am_event *event);
+static enum am_rc nca_s11(struct test_nca *me, const struct am_event *event);
+static enum am_rc nca_s2(struct test_nca *me, const struct am_event *event);
 
-static enum am_hsm_rc nca_s1(
-    struct test_nca *me, const struct am_event *event
-) {
+static enum am_rc nca_s1(struct test_nca *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_HSM_INIT:
         return AM_HSM_TRAN(nca_s11);
@@ -56,9 +53,7 @@ static enum am_hsm_rc nca_s1(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc nca_s11(
-    struct test_nca *me, const struct am_event *event
-) {
+static enum am_rc nca_s11(struct test_nca *me, const struct am_event *event) {
     switch (event->id) {
     case HSM_EVT_A:
         return AM_HSM_TRAN(nca_s2);
@@ -68,16 +63,12 @@ static enum am_hsm_rc nca_s11(
     return AM_HSM_SUPER(nca_s1);
 }
 
-static enum am_hsm_rc nca_s2(
-    struct test_nca *me, const struct am_event *event
-) {
+static enum am_rc nca_s2(struct test_nca *me, const struct am_event *event) {
     (void)event;
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc nca_init(
-    struct test_nca *me, const struct am_event *event
-) {
+static enum am_rc nca_init(struct test_nca *me, const struct am_event *event) {
     (void)event;
     return AM_HSM_TRAN(nca_s1);
 }

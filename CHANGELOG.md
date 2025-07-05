@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [0-based versioning](https://0ver.org/).
 
+## [Unreleased]
+
+## Added
+
+- Common return type `enum am_rc`
+- `lib/async`, `lib/hsm` and `lib/fsm` APIs are all now return `enum_rc`
+  This allows for seamsless integration of async/await code with HSM and FSM code.
+  See `apps/examples/async` for example usage.
+
 ## v0.10.1 - July 4, 2025
 
 ## Added

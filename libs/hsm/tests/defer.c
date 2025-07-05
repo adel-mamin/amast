@@ -31,6 +31,7 @@
 #include "common/alignment.h"
 #include "common/compiler.h"
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "onesize/onesize.h"
 #include "slist/slist.h"
@@ -68,12 +69,8 @@ struct test_defer {
 
 static struct test_defer m_test_defer;
 
-static enum am_hsm_rc defer_s1(
-    struct test_defer *me, const struct am_event *event
-);
-static enum am_hsm_rc defer_s2(
-    struct test_defer *me, const struct am_event *event
-);
+static enum am_rc defer_s1(struct test_defer *me, const struct am_event *event);
+static enum am_rc defer_s2(struct test_defer *me, const struct am_event *event);
 
 static void defer_push_front(void *ctx, const struct am_event *event) {
     AM_ASSERT(ctx);
@@ -83,7 +80,7 @@ static void defer_push_front(void *ctx, const struct am_event *event) {
     am_event_push_front(&me->event_queue, event);
 }
 
-static enum am_hsm_rc defer_s1(
+static enum am_rc defer_s1(
     struct test_defer *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -103,7 +100,7 @@ static enum am_hsm_rc defer_s1(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc defer_s2(
+static enum am_rc defer_s2(
     struct test_defer *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -116,7 +113,7 @@ static enum am_hsm_rc defer_s2(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc defer_sinit(
+static enum am_rc defer_sinit(
     struct test_defer *me, const struct am_event *event
 ) {
     (void)event;

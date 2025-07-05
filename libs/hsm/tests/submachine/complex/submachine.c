@@ -25,6 +25,7 @@
  */
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "hsm/hsm.h"
 #include "common.h"
 #include "event/event.h"
@@ -100,26 +101,14 @@ struct am_hsm *g_complex_sm = &m_complex_sm.hsm;
 #define SM_1 1
 #define SM_2 2
 
-static enum am_hsm_rc cs_s(struct complex_sm *me, const struct am_event *event);
-static enum am_hsm_rc cs_s1(
-    struct complex_sm *me, const struct am_event *event
-);
-static enum am_hsm_rc cs_s11(
-    struct complex_sm *me, const struct am_event *event
-);
-static enum am_hsm_rc cs_s111(
-    struct complex_sm *me, const struct am_event *event
-);
-static enum am_hsm_rc cs_s12(
-    struct complex_sm *me, const struct am_event *event
-);
-static enum am_hsm_rc cs_s121(
-    struct complex_sm *me, const struct am_event *event
-);
+static enum am_rc cs_s(struct complex_sm *me, const struct am_event *event);
+static enum am_rc cs_s1(struct complex_sm *me, const struct am_event *event);
+static enum am_rc cs_s11(struct complex_sm *me, const struct am_event *event);
+static enum am_rc cs_s111(struct complex_sm *me, const struct am_event *event);
+static enum am_rc cs_s12(struct complex_sm *me, const struct am_event *event);
+static enum am_rc cs_s121(struct complex_sm *me, const struct am_event *event);
 
-static enum am_hsm_rc cs_s(
-    struct complex_sm *me, const struct am_event *event
-) {
+static enum am_rc cs_s(struct complex_sm *me, const struct am_event *event) {
     const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
@@ -143,9 +132,7 @@ static enum am_hsm_rc cs_s(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc cs_s1(
-    struct complex_sm *me, const struct am_event *event
-) {
+static enum am_rc cs_s1(struct complex_sm *me, const struct am_event *event) {
     const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
@@ -192,9 +179,7 @@ static enum am_hsm_rc cs_s1(
     return AM_HSM_SUPER(super->fn, super->smi);
 }
 
-static enum am_hsm_rc cs_s11(
-    struct complex_sm *me, const struct am_event *event
-) {
+static enum am_rc cs_s11(struct complex_sm *me, const struct am_event *event) {
     const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
@@ -230,9 +215,7 @@ static enum am_hsm_rc cs_s11(
     return AM_HSM_SUPER(cs_s1, instance);
 }
 
-static enum am_hsm_rc cs_s111(
-    struct complex_sm *me, const struct am_event *event
-) {
+static enum am_rc cs_s111(struct complex_sm *me, const struct am_event *event) {
     const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
@@ -260,9 +243,7 @@ static enum am_hsm_rc cs_s111(
     return AM_HSM_SUPER(cs_s11, instance);
 }
 
-static enum am_hsm_rc cs_s12(
-    struct complex_sm *me, const struct am_event *event
-) {
+static enum am_rc cs_s12(struct complex_sm *me, const struct am_event *event) {
     const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
@@ -298,9 +279,7 @@ static enum am_hsm_rc cs_s12(
     return AM_HSM_SUPER(cs_s1, instance);
 }
 
-static enum am_hsm_rc cs_s121(
-    struct complex_sm *me, const struct am_event *event
-) {
+static enum am_rc cs_s121(struct complex_sm *me, const struct am_event *event) {
     const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
@@ -328,7 +307,7 @@ static enum am_hsm_rc cs_s121(
     return AM_HSM_SUPER(cs_s12, instance);
 }
 
-static enum am_hsm_rc complex_sm_init(
+static enum am_rc complex_sm_init(
     struct complex_sm *me, const struct am_event *event
 ) {
     (void)event;

@@ -39,6 +39,7 @@
 #include <stdint.h>
 
 #include "common/compiler.h"
+#include "common/types.h"
 #include "event/event.h"
 
 #ifdef __cplusplus
@@ -68,39 +69,6 @@ enum am_fsm_evt_id {
 
 AM_ASSERT_STATIC(AM_EVT_FSM_EXIT <= AM_EVT_RANGE_SM_END);
 
-/**
- * FSM state handler return codes.
- *
- * These return codes are not used directly in user code.
- * Instead user code is expected to use as return values the macros
- * listed in descriptions of each of the constants.
- */
-enum am_fsm_rc {
-    /**
-     * Event was handled.
-     *
-     * Returned by AM_FSM_HANDLED().
-     */
-    AM_FSM_RC_HANDLED = 1,
-    /**
-     * Event caused state transition.
-     *
-     * The library does the requested state transition.
-     *
-     * Returned by AM_FSM_TRAN().
-     */
-    AM_FSM_RC_TRAN,
-    /**
-     * Event caused state transition and redispatch.
-     *
-     * The library does the requested state transition
-     * and redispatches the same event to the new state.
-     *
-     * Returned by AM_FSM_TRAN_REDISPATCH().
-     */
-    AM_FSM_RC_TRAN_REDISPATCH,
-};
-
 /** Forward declaration. */
 struct am_fsm;
 
@@ -111,7 +79,7 @@ struct am_fsm;
  * @param event  the event to handle
  * @return return code
  */
-typedef enum am_fsm_rc (*am_fsm_state_fn)(
+typedef enum am_rc (*am_fsm_state_fn)(
     struct am_fsm *fsm, const struct am_event *event
 );
 
@@ -168,7 +136,7 @@ struct am_fsm {
  *
  * Used as a default return value from FSM event handlers.
  */
-#define AM_FSM_HANDLED() AM_FSM_RC_HANDLED
+#define AM_FSM_HANDLED() AM_RC_HANDLED
 
 /**
  * Helper macro.
@@ -185,7 +153,7 @@ struct am_fsm {
  *
  * @param s  the new state of type #am_fsm_state_fn
  */
-#define AM_FSM_TRAN(s) (AM_FSM_SET_(s), AM_FSM_RC_TRAN)
+#define AM_FSM_TRAN(s) (AM_FSM_SET_(s), AM_RC_TRAN)
 
 /**
  * Same event redispatch is requested. Transition is taken.
@@ -197,7 +165,7 @@ struct am_fsm {
  *
  * @param s  the new state of type #am_fsm_state_fn
  */
-#define AM_FSM_TRAN_REDISPATCH(s) (AM_FSM_SET_(s), AM_FSM_RC_TRAN_REDISPATCH)
+#define AM_FSM_TRAN_REDISPATCH(s) (AM_FSM_SET_(s), AM_RC_TRAN_REDISPATCH)
 
 /**
  * Synchronous dispatch of event to a given FSM.

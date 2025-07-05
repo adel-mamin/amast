@@ -27,6 +27,7 @@
 #include <stddef.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 
 #include "event/event.h"
 #include "fsm/fsm.h"
@@ -39,7 +40,7 @@ static struct dtor_fsm m_dtor_fsm;
 
 /* test am_fsm_dtor() */
 
-static enum am_fsm_rc dtor_fsm_s(
+static enum am_rc dtor_fsm_s(
     struct dtor_fsm *me, const struct am_event *event
 ) {
     (void)me;
@@ -47,7 +48,7 @@ static enum am_fsm_rc dtor_fsm_s(
     return AM_FSM_HANDLED();
 }
 
-static enum am_fsm_rc dtor_fsm_sinit(
+static enum am_rc dtor_fsm_sinit(
     struct dtor_fsm *me, const struct am_event *event
 ) {
     (void)event;

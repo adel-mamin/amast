@@ -51,6 +51,7 @@
 #include "common/compiler.h"
 #include "common/alignment.h"
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "timer/timer.h"
 #include "ao/ao.h"
@@ -85,7 +86,7 @@ struct progress {
     int rc;
 };
 
-static enum am_hsm_rc progress_done(
+static enum am_rc progress_done(
     struct progress *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -98,7 +99,7 @@ static enum am_hsm_rc progress_done(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc progress_top(
+static enum am_rc progress_top(
     struct progress *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -132,7 +133,7 @@ static enum am_hsm_rc progress_top(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc progress_init(
+static enum am_rc progress_init(
     struct progress *me, const struct am_event *event
 ) {
     (void)event;

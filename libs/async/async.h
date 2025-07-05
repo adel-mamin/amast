@@ -42,6 +42,8 @@
 
 #include <stdbool.h>
 
+#include "common/types.h" /* IWYU pragma: keep */
+
 /**
  * Init value of async function state.
  *
@@ -82,7 +84,7 @@ struct am_async {
  */
 #define AM_ASYNC_EXIT()                                 \
         am_async_->state = AM_ASYNC_STATE_INIT;         \
-        return;
+        return AM_RC_DONE;
 
 /**
  * Mark the end of async function block.
@@ -93,7 +95,7 @@ struct am_async {
  */
 #define AM_ASYNC_END()                                  \
         am_async_->state = AM_ASYNC_STATE_INIT;         \
-        return;                                         \
+        return AM_RC_DONE;                              \
     default:                                            \
         AM_ASSERT(0);                                   \
     }}
@@ -114,7 +116,7 @@ struct am_async {
         /* FALLTHROUGH */                               \
     case __LINE__:                                      \
         if (!(cond)) {                                  \
-            return;                                     \
+            return AM_RC_BUSY;                          \
         }
 
 /**
@@ -126,7 +128,7 @@ struct am_async {
  */
 #define AM_ASYNC_YIELD()                                \
         am_async_->state = __LINE__;                    \
-        return;                                         \
+        return AM_RC_BUSY;                              \
     case __LINE__:
 
 /* clang-format on */

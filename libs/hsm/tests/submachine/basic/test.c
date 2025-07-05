@@ -27,6 +27,7 @@
 #include <stdio.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "hsm/hsm.h"
 
@@ -70,12 +71,12 @@ struct basic_sm {
 
 static struct basic_sm m_basic_sm;
 
-static enum am_hsm_rc bs_s(struct basic_sm *me, const struct am_event *event);
-static enum am_hsm_rc bs_s1(struct basic_sm *me, const struct am_event *event);
-static enum am_hsm_rc bs_s2(struct basic_sm *me, const struct am_event *event);
-static enum am_hsm_rc bs_s3(struct basic_sm *me, const struct am_event *event);
+static enum am_rc bs_s(struct basic_sm *me, const struct am_event *event);
+static enum am_rc bs_s1(struct basic_sm *me, const struct am_event *event);
+static enum am_rc bs_s2(struct basic_sm *me, const struct am_event *event);
+static enum am_rc bs_s3(struct basic_sm *me, const struct am_event *event);
 
-static enum am_hsm_rc bs_s(struct basic_sm *me, const struct am_event *event) {
+static enum am_rc bs_s(struct basic_sm *me, const struct am_event *event) {
     AM_ASSERT(0 == am_hsm_get_instance(&me->hsm));
     switch (event->id) {
     case FOO:
@@ -90,7 +91,7 @@ static enum am_hsm_rc bs_s(struct basic_sm *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc bs_s1(struct basic_sm *me, const struct am_event *event) {
+static enum am_rc bs_s1(struct basic_sm *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_HSM_INIT: {
         static const struct am_hsm_state tt[] = {
@@ -107,19 +108,19 @@ static enum am_hsm_rc bs_s1(struct basic_sm *me, const struct am_event *event) {
     return AM_HSM_SUPER(bs_s);
 }
 
-static enum am_hsm_rc bs_s2(struct basic_sm *me, const struct am_event *event) {
+static enum am_rc bs_s2(struct basic_sm *me, const struct am_event *event) {
     (void)event;
     AM_ASSERT(0 == am_hsm_get_instance(&me->hsm));
     return AM_HSM_SUPER(bs_s1, S1_0);
 }
 
-static enum am_hsm_rc bs_s3(struct basic_sm *me, const struct am_event *event) {
+static enum am_rc bs_s3(struct basic_sm *me, const struct am_event *event) {
     (void)event;
     AM_ASSERT(0 == am_hsm_get_instance(&me->hsm));
     return AM_HSM_SUPER(bs_s1, S1_1);
 }
 
-static enum am_hsm_rc bs_init(struct basic_sm *me, const struct am_event *evt) {
+static enum am_rc bs_init(struct basic_sm *me, const struct am_event *evt) {
     (void)evt;
     return AM_HSM_TRAN(bs_s);
 }

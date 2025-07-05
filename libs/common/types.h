@@ -32,6 +32,24 @@
 #ifndef AM_TYPES_H_INCLUDED
 #define AM_TYPES_H_INCLUDED
 
+/**
+ * Return codes.
+ */
+enum am_rc {
+    /** Operation is ongoing. */
+    AM_RC_BUSY = 0,
+    /** Operation is complete. */
+    AM_RC_DONE,
+    /** Event was handled. */
+    AM_RC_HANDLED = AM_RC_DONE,
+    /** Event caused state transition. */
+    AM_RC_TRAN,
+    /** Event caused state transition and redispatch. */
+    AM_RC_TRAN_REDISPATCH,
+    /** Event propagation to superstate(s) was requested. */
+    AM_RC_SUPER
+};
+
 /** Memory block descriptor. */
 struct am_blk {
     void *ptr; /**< memory pointer */

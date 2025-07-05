@@ -54,7 +54,7 @@ static const struct am_event *m_queue_publish[1];
 
 static char m_event_pool[1][16] AM_ALIGNED(AM_ALIGN_MAX);
 
-static enum am_hsm_rc publish_s(
+static enum am_rc publish_s(
     struct test_publish *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -67,7 +67,7 @@ static enum am_hsm_rc publish_s(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc publish_sinit(
+static enum am_rc publish_sinit(
     struct test_publish *me, const struct am_event *event
 ) {
     (void)event;

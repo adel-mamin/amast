@@ -28,6 +28,7 @@
 #include <stdarg.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "strlib/strlib.h"
 #include "fsm/fsm.h"
@@ -42,9 +43,7 @@ static struct spy_fsm m_spy_fsm;
 
 /* test FSM spy callback operation */
 
-static enum am_fsm_rc spy_fsm_s(
-    struct spy_fsm *me, const struct am_event *event
-) {
+static enum am_rc spy_fsm_s(struct spy_fsm *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_USER:
         me->log("s-AM_EVT_USER;");
@@ -55,7 +54,7 @@ static enum am_fsm_rc spy_fsm_s(
     return AM_FSM_HANDLED();
 }
 
-static enum am_fsm_rc spy_fsm_init(
+static enum am_rc spy_fsm_init(
     struct spy_fsm *me, const struct am_event *event
 ) {
     (void)event;

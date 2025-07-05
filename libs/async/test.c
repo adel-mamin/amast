@@ -31,7 +31,7 @@
 
 #include "async/async.h"
 
-static void am_async_reentrant(struct am_async *me, int *reent, int *state) {
+static int am_async_reentrant(struct am_async *me, int *reent, int *state) {
     ++(*reent);
     AM_ASYNC_BEGIN(me);
     if (*state == 0) {
@@ -65,7 +65,7 @@ static void test_async_local_continuation(void) {
     AM_ASSERT(!am_async_is_busy(&me) && (reent == 4) && (state == 2));
 }
 
-static void am_async_empty(struct am_async *me, int *reent) {
+static int am_async_empty(struct am_async *me, int *reent) {
     AM_ASYNC_BEGIN(me);
     ++(*reent);
     AM_ASYNC_END();
@@ -82,7 +82,7 @@ static void test_async_empty(void) {
     AM_ASSERT(reent == 2);
 }
 
-static void am_async_wait_ready(struct am_async *me, int *reent, int ready) {
+static int am_async_wait_ready(struct am_async *me, int *reent, int ready) {
     AM_ASYNC_BEGIN(me);
     ++(*reent);
     AM_ASYNC_AWAIT(ready);
@@ -107,7 +107,7 @@ static void test_async_wait_ready(void) {
     AM_ASSERT(reent == 2);
 }
 
-static void am_async_yield(struct am_async *me, int *state) {
+static int am_async_yield(struct am_async *me, int *state) {
     AM_ASYNC_BEGIN(me);
     (*state) = 1;
     AM_ASYNC_YIELD();
@@ -136,7 +136,7 @@ static void test_async_yield(void) {
     AM_ASSERT(!am_async_is_busy(&me2) && (2 == state));
 }
 
-static void am_async_exit(struct am_async *me, int *state) {
+static int am_async_exit(struct am_async *me, int *state) {
     AM_ASYNC_BEGIN(me);
     (*state) = 1;
     AM_ASYNC_EXIT();
@@ -164,21 +164,18 @@ static struct am_async_chain {
     int foo;
 } test_async_chain[3];
 
-static void am_async_call_1(struct am_async_chain *me);
-static void am_async_call_2(struct am_async_chain *me);
+static int am_async_call_1(struct am_async_chain *me);
+static int am_async_call_2(struct am_async_chain *me);
 
-static void am_async_call_1(struct am_async_chain *me) {
+static int am_async_call_1(struct am_async_chain *me) {
     AM_ASYNC_BEGIN(me);
-    am_async_call_2(&test_async_chain[1]);
-    if (am_async_is_busy(&test_async_chain[1].async)) {
-        return;
-    }
+    AM_ASYNC_AWAIT(am_async_call_2(&test_async_chain[1]));
     AM_ASYNC_AWAIT(me->ready);
     me->foo = 1;
     AM_ASYNC_END();
 }
 
-static void am_async_call_2(struct am_async_chain *me) {
+static int am_async_call_2(struct am_async_chain *me) {
     AM_ASYNC_BEGIN(me);
     AM_ASYNC_AWAIT(me->ready);
     me->foo = 1;

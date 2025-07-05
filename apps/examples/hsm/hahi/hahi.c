@@ -57,6 +57,7 @@
 
 #include <stdio.h>
 
+#include "common/types.h"
 #include "event/event.h"
 #include "hsm/hsm.h"
 
@@ -71,13 +72,13 @@ struct hahi_event {
     int ch;
 };
 
-static enum am_hsm_rc hahi_top(struct hahi *me, const struct am_event *event);
-static enum am_hsm_rc hahi_h(struct hahi *me, const struct am_event *event);
-static enum am_hsm_rc hahi_a(struct hahi *me, const struct am_event *event);
-static enum am_hsm_rc hahi_i(struct hahi *me, const struct am_event *event);
-static enum am_hsm_rc hahi_idle(struct hahi *me, const struct am_event *event);
+static enum am_rc hahi_top(struct hahi *me, const struct am_event *event);
+static enum am_rc hahi_h(struct hahi *me, const struct am_event *event);
+static enum am_rc hahi_a(struct hahi *me, const struct am_event *event);
+static enum am_rc hahi_i(struct hahi *me, const struct am_event *event);
+static enum am_rc hahi_idle(struct hahi *me, const struct am_event *event);
 
-static enum am_hsm_rc hahi_top(struct hahi *me, const struct am_event *event) {
+static enum am_rc hahi_top(struct hahi *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_HSM_INIT:
         return AM_HSM_TRAN(hahi_idle);
@@ -97,7 +98,7 @@ static enum am_hsm_rc hahi_top(struct hahi *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc hahi_idle(struct hahi *me, const struct am_event *event) {
+static enum am_rc hahi_idle(struct hahi *me, const struct am_event *event) {
     switch (event->id) {
     case HAHI_EVT_USER_INPUT: {
         const struct hahi_event *evt = (const struct hahi_event *)event;
@@ -112,7 +113,7 @@ static enum am_hsm_rc hahi_idle(struct hahi *me, const struct am_event *event) {
     return AM_HSM_SUPER(hahi_top);
 }
 
-static enum am_hsm_rc hahi_h(struct hahi *me, const struct am_event *event) {
+static enum am_rc hahi_h(struct hahi *me, const struct am_event *event) {
     switch (event->id) {
     case HAHI_EVT_USER_INPUT: {
         const struct hahi_event *evt = (const struct hahi_event *)event;
@@ -130,7 +131,7 @@ static enum am_hsm_rc hahi_h(struct hahi *me, const struct am_event *event) {
     return AM_HSM_SUPER(hahi_top);
 }
 
-static enum am_hsm_rc hahi_a(struct hahi *me, const struct am_event *event) {
+static enum am_rc hahi_a(struct hahi *me, const struct am_event *event) {
     switch (event->id) {
     case HAHI_EVT_USER_INPUT: {
         const struct hahi_event *evt = (const struct hahi_event *)event;
@@ -146,7 +147,7 @@ static enum am_hsm_rc hahi_a(struct hahi *me, const struct am_event *event) {
     return AM_HSM_SUPER(hahi_top);
 }
 
-static enum am_hsm_rc hahi_i(struct hahi *me, const struct am_event *event) {
+static enum am_rc hahi_i(struct hahi *me, const struct am_event *event) {
     switch (event->id) {
     case HAHI_EVT_USER_INPUT: {
         const struct hahi_event *evt = (const struct hahi_event *)event;
@@ -162,7 +163,7 @@ static enum am_hsm_rc hahi_i(struct hahi *me, const struct am_event *event) {
     return AM_HSM_SUPER(hahi_top);
 }
 
-static enum am_hsm_rc hahi_init(struct hahi *me, const struct am_event *event) {
+static enum am_rc hahi_init(struct hahi *me, const struct am_event *event) {
     (void)event;
     return AM_HSM_TRAN(hahi_idle);
 }

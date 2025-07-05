@@ -28,6 +28,7 @@
 #include <stdarg.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "strlib/strlib.h"
 #include "fsm/fsm.h"
@@ -42,7 +43,7 @@ static struct reenter_fsm m_reenter_fsm;
 
 /* test FSM state re-enter operation */
 
-static enum am_fsm_rc reenter_fsm_s(
+static enum am_rc reenter_fsm_s(
     struct reenter_fsm *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -61,7 +62,7 @@ static enum am_fsm_rc reenter_fsm_s(
     return AM_FSM_HANDLED();
 }
 
-static enum am_fsm_rc reenter_fsm_init(
+static enum am_rc reenter_fsm_init(
     struct reenter_fsm *me, const struct am_event *event
 ) {
     (void)event;

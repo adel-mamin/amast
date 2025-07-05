@@ -28,6 +28,7 @@
 #include <stdbool.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "hsm/hsm.h"
 
@@ -45,22 +46,22 @@ static struct oven_hsm m_oven_hsm;
 
 /* test transition to HSM history */
 
-static enum am_hsm_rc oven_hsm_open(
+static enum am_rc oven_hsm_open(
     struct oven_hsm *me, const struct am_event *event
 );
-static enum am_hsm_rc oven_hsm_closed(
+static enum am_rc oven_hsm_closed(
     struct oven_hsm *me, const struct am_event *event
 );
-static enum am_hsm_rc oven_hsm_on(
+static enum am_rc oven_hsm_on(
     struct oven_hsm *me, const struct am_event *event
 );
-static enum am_hsm_rc oven_hsm_off(
+static enum am_rc oven_hsm_off(
     struct oven_hsm *me, const struct am_event *event
 );
 
 static bool oven_hsm_is_open(void) { return false; }
 
-static enum am_hsm_rc oven_hsm_open(
+static enum am_rc oven_hsm_open(
     struct oven_hsm *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -77,7 +78,7 @@ static enum am_hsm_rc oven_hsm_open(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc oven_hsm_closed(
+static enum am_rc oven_hsm_closed(
     struct oven_hsm *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -93,7 +94,7 @@ static enum am_hsm_rc oven_hsm_closed(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc oven_hsm_on(
+static enum am_rc oven_hsm_on(
     struct oven_hsm *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -110,7 +111,7 @@ static enum am_hsm_rc oven_hsm_on(
     return AM_HSM_SUPER(oven_hsm_closed);
 }
 
-static enum am_hsm_rc oven_hsm_off(
+static enum am_rc oven_hsm_off(
     struct oven_hsm *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -127,7 +128,7 @@ static enum am_hsm_rc oven_hsm_off(
     return AM_HSM_SUPER(oven_hsm_closed);
 }
 
-static enum am_hsm_rc oven_hsm_init(
+static enum am_rc oven_hsm_init(
     struct oven_hsm *me, const struct am_event *event
 ) {
     (void)event;

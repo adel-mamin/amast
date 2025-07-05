@@ -186,7 +186,7 @@ parent. At this point the parent must make the same decision. Event handling
 ends when the state or one of its ancestors consumes the event or the event
 reaches the default superstate :cpp:func:`am_hsm_top()`. The default top level
 superstate :cpp:func:`am_hsm_top()` always returns
-:cpp:enumerator:`AM_HSM_RC_HANDLED <am_hsm_rc::AM_HSM_RC_HANDLED>` for
+:cpp:enumerator:`AM_RC_HANDLED <am_rc::AM_RC_HANDLED>` for
 all events meaning that it is consumed.
 
 Assume that the state *s111* shown in the state diagram in :ref:`example-hsm` above
@@ -344,7 +344,7 @@ HSM Coding Rules
 
    .. code-block:: C
 
-      enum am_hsm_rc foo_handler(struct foo *me, const struct am_event *event);
+      enum am_rc foo_handler(struct foo *me, const struct am_event *event);
 
 4. Each user event handler should be implemented as a switch-case of handled
    events.
@@ -385,7 +385,7 @@ of type **struct** :cpp:struct:`am_hsm_state`. This is done with:
        ...
    };
    ...
-   static enum am_hsm_rc s11(struct foo *me, const struct event *event) {
+   static enum am_rc s11(struct foo *me, const struct event *event) {
        switch (event->id) {
        case AM_EVT_HSM_ENTRY:
            me->history  = am_hsm_get_state(&me->hsm);
@@ -401,7 +401,7 @@ in **me->history** the transition can be achieved by doing this:
 
 .. code-block:: C
 
-   static enum am_hsm_rc s2(struct foo *me, const struct event *event) {
+   static enum am_rc s2(struct foo *me, const struct event *event) {
        switch (event->id) {
        case HSM_EVT_FOO:
            return AM_HSM_TRAN(me->history.fn, me->history.instance);
@@ -464,7 +464,7 @@ Here is how it is coded in pseudocode:
        ...
    };
 
-   static enum am_hsm_rc s(struct sm *me, const struct event *event) {
+   static enum am_rc s(struct sm *me, const struct event *event) {
        switch (event->id) {
        case FOO:
            return AM_HSM_TRAN(s1, /*instance=*/S1_0);
@@ -477,7 +477,7 @@ Here is how it is coded in pseudocode:
        return AM_HSM_SUPER(am_hsm_top);
    }
 
-   static enum am_hsm_rc s1(struct sm *me, const struct event *event) {
+   static enum am_rc s1(struct sm *me, const struct event *event) {
        switch (event->id) {
        case AM_EVT_HSM_INIT: {
            static const struct am_hsm_state tt[] = {
@@ -493,12 +493,12 @@ Here is how it is coded in pseudocode:
        return AM_HSM_SUPER(s);
    }
 
-   static enum am_hsm_rc s2(struct sm *me, const struct event *event) {
+   static enum am_rc s2(struct sm *me, const struct event *event) {
        ...
        return AM_HSM_SUPER(s1, S1_0);
    }
 
-   static enum am_hsm_rc s3(struct sm *me, const struct event *event) {
+   static enum am_rc s3(struct sm *me, const struct event *event) {
        ...
        return AM_HSM_SUPER(s1, S1_1);
    }

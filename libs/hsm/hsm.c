@@ -33,6 +33,7 @@
 #include <string.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "hsm/hsm.h"
 
 /** Hierarchy path */
@@ -84,8 +85,8 @@ static void hsm_build(
     }
     struct am_hsm hsm_ = *hsm;
     hsm_set_state(hsm, *from);
-    enum am_hsm_rc rc = hsm->state.fn(hsm, &m_hsm_evt_empty);
-    AM_ASSERT(AM_HSM_RC_SUPER == rc);
+    enum am_rc rc = hsm->state.fn(hsm, &m_hsm_evt_empty);
+    AM_ASSERT(AM_RC_SUPER == rc);
     while (!am_hsm_state_is_eq(hsm, *until)) {
         AM_ASSERT(path->len < AM_COUNTOF(path->state));
         path->state[path->len] = hsm->state;
@@ -94,7 +95,7 @@ static void hsm_build(
             break;
         }
         rc = hsm->state.fn(hsm, &m_hsm_evt_empty);
-        AM_ASSERT(AM_HSM_RC_SUPER == rc);
+        AM_ASSERT(AM_RC_SUPER == rc);
     }
     *hsm = hsm_;
 }
@@ -108,8 +109,8 @@ static void hsm_build(
 static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
     for (int i = path->len; i > 0; --i) {
         hsm_set_state(hsm, path->state[i - 1]);
-        enum am_hsm_rc rc = hsm->state.fn(hsm, &m_hsm_evt_entry);
-        AM_ASSERT((AM_HSM_RC_SUPER == rc) || (AM_HSM_RC_HANDLED == rc));
+        enum am_rc rc = hsm->state.fn(hsm, &m_hsm_evt_entry);
+        AM_ASSERT((AM_RC_SUPER == rc) || (AM_RC_HANDLED == rc));
         hsm_set_state(hsm, path->state[i - 1]);
     }
     hsm->hierarchy_level = (unsigned)(hsm->hierarchy_level + path->len) &
@@ -123,12 +124,11 @@ static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
  * @param hsm    exit the state of this HSM
  */
 static void hsm_exit_state(struct am_hsm *hsm) {
-    enum am_hsm_rc rc = hsm->state.fn(hsm, &m_hsm_evt_exit);
-    AM_ASSERT(rc != AM_HSM_RC_TRAN);
-    if (AM_HSM_RC_HANDLED == rc) {
+    enum am_rc rc = hsm->state.fn(hsm, &m_hsm_evt_exit);
+    if (AM_RC_HANDLED == rc) {
         rc = hsm->state.fn(hsm, &m_hsm_evt_empty);
     }
-    AM_ASSERT(AM_HSM_RC_SUPER == rc);
+    AM_ASSERT(AM_RC_SUPER == rc);
     AM_ASSERT(hsm->hierarchy_level > 0);
     --hsm->hierarchy_level;
 }
@@ -163,14 +163,14 @@ static void hsm_exit(struct am_hsm *hsm, struct am_hsm_state until) {
 static void hsm_enter_and_init(struct am_hsm *hsm, struct am_hsm_path *path) {
     hsm_enter(hsm, path);
     hsm_set_state(hsm, path->state[0]);
-    enum am_hsm_rc rc;
-    while ((rc = hsm->state.fn(hsm, &m_hsm_evt_init)) == AM_HSM_RC_TRAN) {
+    enum am_rc rc;
+    while ((rc = hsm->state.fn(hsm, &m_hsm_evt_init)) == AM_RC_TRAN) {
         struct am_hsm_state until = path->state[0];
         hsm_build(hsm, path, /*from=*/&hsm->state, &until, /*till=*/NULL);
         hsm_enter(hsm, path);
         hsm_set_state(hsm, path->state[0]);
     }
-    AM_ASSERT(rc != AM_HSM_RC_TRAN_REDISPATCH);
+    AM_ASSERT((AM_RC_HANDLED == rc) || (AM_RC_SUPER == rc));
     hsm_set_state(hsm, path->state[0]);
 }
 
@@ -235,12 +235,12 @@ static void hsm_transition(
     hsm_enter_and_init(hsm, &path);
 }
 
-static enum am_hsm_rc hsm_dispatch(
+static enum am_rc hsm_dispatch(
     struct am_hsm *hsm, const struct am_event *event
 ) {
     struct am_hsm_state src = {.fn = NULL, .smi = 0};
     struct am_hsm_state state = hsm->state;
-    enum am_hsm_rc rc = AM_HSM_RC_HANDLED;
+    enum am_rc rc = AM_RC_HANDLED;
     /*
      * propagate event up the ancestor chain till it is either
      * handled or ignored or triggers transition
@@ -254,10 +254,11 @@ static enum am_hsm_rc hsm_dispatch(
         --cnt;
         /* check if HSM hierarchy depth exceeds #AM_HSM_HIERARCHY_DEPTH_MAX */
         AM_ASSERT(cnt);
-    } while (AM_HSM_RC_SUPER == rc);
+    } while (AM_RC_SUPER == rc);
 
-    bool tran = (AM_HSM_RC_TRAN == rc) || (AM_HSM_RC_TRAN_REDISPATCH == rc);
-    if (!tran) { /* event was handled or ignored */
+    bool tran = (AM_RC_TRAN == rc) || (AM_RC_TRAN_REDISPATCH == rc);
+    if (!tran) {
+        AM_ASSERT((AM_RC_HANDLED == rc) || (AM_RC_SUPER == rc));
         hsm_set_state(hsm, state);
         return rc;
     }
@@ -289,12 +290,12 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event) {
         hsm->spy(hsm, event);
     }
 #endif
-    enum am_hsm_rc rc = hsm_dispatch(hsm, event);
-    if (AM_HSM_RC_TRAN_REDISPATCH == rc) {
+    enum am_rc rc = hsm_dispatch(hsm, event);
+    if (AM_RC_TRAN_REDISPATCH == rc) {
         /* Event was freed / corrupted ? */
         AM_ASSERT(id == event->id);
         rc = hsm_dispatch(hsm, event);
-        AM_ASSERT(AM_HSM_RC_TRAN_REDISPATCH != rc);
+        AM_ASSERT(AM_RC_TRAN_REDISPATCH != rc);
     }
 
     hsm->dispatch_in_progress = false;
@@ -315,8 +316,8 @@ bool am_hsm_is_in(struct am_hsm *hsm, struct am_hsm_state state) {
     while (!am_hsm_state_is_eq(hsm, state) && (hsm->state.fn != am_hsm_top)) {
         struct am_hsm_state s = hsm->state;
         *hsm = hsm_;
-        enum am_hsm_rc rc = s.fn(hsm, &m_hsm_evt_empty);
-        AM_ASSERT(AM_HSM_RC_SUPER == rc);
+        enum am_rc rc = s.fn(hsm, &m_hsm_evt_empty);
+        AM_ASSERT(AM_RC_SUPER == rc);
     }
     bool in = am_hsm_state_is_eq(hsm, state);
 
@@ -366,8 +367,8 @@ void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event) {
     AM_ASSERT(hsm->ctor_called); /* was am_hsm_ctor() called? */
 
     struct am_hsm_state state = hsm->state;
-    enum am_hsm_rc rc = hsm->state.fn(hsm, init_event);
-    AM_ASSERT(AM_HSM_RC_TRAN == rc);
+    enum am_rc rc = hsm->state.fn(hsm, init_event);
+    AM_ASSERT(AM_RC_TRAN == rc);
 
     struct am_hsm_state dst = hsm->state;
     struct am_hsm_path path;
@@ -386,8 +387,8 @@ void am_hsm_set_spy(struct am_hsm *hsm, am_hsm_spy_fn spy) {
 }
 #endif
 
-enum am_hsm_rc am_hsm_top(struct am_hsm *hsm, const struct am_event *event) {
+enum am_rc am_hsm_top(struct am_hsm *hsm, const struct am_event *event) {
     (void)hsm;
     (void)event;
-    return AM_HSM_RC_HANDLED;
+    return AM_RC_HANDLED;
 }

@@ -28,6 +28,7 @@
 #include <stdarg.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "strlib/strlib.h"
 #include "hsm/hsm.h"
@@ -43,11 +44,11 @@ static struct reenter_hsm m_reenter_hsm;
 
 /* test HSM state re-enter operation */
 
-static enum am_hsm_rc reenter_hsm_s1(
+static enum am_rc reenter_hsm_s1(
     struct reenter_hsm *me, const struct am_event *event
 );
 
-static enum am_hsm_rc reenter_hsm_s(
+static enum am_rc reenter_hsm_s(
     struct reenter_hsm *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -68,7 +69,7 @@ static enum am_hsm_rc reenter_hsm_s(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_hsm_rc reenter_hsm_s1(
+static enum am_rc reenter_hsm_s1(
     struct reenter_hsm *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -91,7 +92,7 @@ static enum am_hsm_rc reenter_hsm_s1(
     return AM_HSM_SUPER(reenter_hsm_s);
 }
 
-static enum am_hsm_rc reenter_hsm_init(
+static enum am_rc reenter_hsm_init(
     struct reenter_hsm *me, const struct am_event *event
 ) {
     (void)event;

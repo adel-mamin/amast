@@ -32,6 +32,7 @@
 #include <string.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "fsm/fsm.h"
 
 /** canned events */
@@ -51,8 +52,8 @@ am_fsm_state_fn am_fsm_get_state(const struct am_fsm *fsm) {
  */
 static void fsm_enter(struct am_fsm *fsm, const am_fsm_state_fn state) {
     fsm->state = state;
-    enum am_fsm_rc rc = fsm->state(fsm, &m_fsm_evt_entry);
-    AM_ASSERT(AM_FSM_RC_HANDLED == rc);
+    enum am_rc rc = fsm->state(fsm, &m_fsm_evt_entry);
+    AM_ASSERT(AM_RC_HANDLED == rc);
 }
 
 /**
@@ -61,11 +62,11 @@ static void fsm_enter(struct am_fsm *fsm, const am_fsm_state_fn state) {
  * @param fsm  exit the active state of this FSM
  */
 static void fsm_exit(struct am_fsm *fsm) {
-    enum am_fsm_rc rc = fsm->state(fsm, &m_fsm_evt_exit);
-    AM_ASSERT(AM_FSM_RC_HANDLED == rc);
+    enum am_rc rc = fsm->state(fsm, &m_fsm_evt_exit);
+    AM_ASSERT(AM_RC_HANDLED == rc);
 }
 
-static enum am_fsm_rc fsm_dispatch(
+static enum am_rc fsm_dispatch(
     struct am_fsm *fsm, const struct am_event *event
 ) {
     AM_ASSERT(fsm);
@@ -74,8 +75,8 @@ static enum am_fsm_rc fsm_dispatch(
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
 
     am_fsm_state_fn src = fsm->state;
-    enum am_fsm_rc rc = fsm->state(fsm, event);
-    if (AM_FSM_RC_HANDLED == rc) {
+    enum am_rc rc = fsm->state(fsm, event);
+    if (AM_RC_HANDLED == rc) {
         AM_ASSERT(fsm->state == src);
         return rc;
     }
@@ -104,10 +105,10 @@ void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event) {
         fsm->spy(fsm, event);
     }
 #endif
-    enum am_fsm_rc rc = fsm_dispatch(fsm, event);
-    if (AM_FSM_RC_TRAN_REDISPATCH == rc) {
+    enum am_rc rc = fsm_dispatch(fsm, event);
+    if (AM_RC_TRAN_REDISPATCH == rc) {
         rc = fsm_dispatch(fsm, event);
-        AM_ASSERT(AM_FSM_RC_TRAN_REDISPATCH != rc);
+        AM_ASSERT(AM_RC_TRAN_REDISPATCH != rc);
     }
 
     fsm->dispatch_in_progress = false;
@@ -152,8 +153,8 @@ void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event) {
     AM_ASSERT(fsm);
     AM_ASSERT(fsm->state); /* was am_fsm_ctor() called? */
 
-    enum am_fsm_rc rc = fsm->state(fsm, init_event);
-    AM_ASSERT(AM_FSM_RC_TRAN == rc);
+    enum am_rc rc = fsm->state(fsm, init_event);
+    AM_ASSERT(AM_RC_TRAN == rc);
     fsm_enter(fsm, fsm->state);
     fsm->init_called = true;
 }

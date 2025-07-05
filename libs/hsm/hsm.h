@@ -41,6 +41,7 @@
 #include <stdint.h>
 
 #include "common/compiler.h"
+#include "common/types.h"
 #include "event/event.h"
 
 #ifdef __cplusplus
@@ -92,48 +93,6 @@ enum am_hsm_evt_id {
 
 AM_ASSERT_STATIC(AM_EVT_HSM_EXIT <= AM_EVT_RANGE_SM_END);
 
-/**
- * HSM state handler return codes.
- *
- * These return codes are not supposed to be used directly in user code.
- * Instead user code is expected to use as return values the macros
- * listed in descriptions of each of the constants.
- */
-enum am_hsm_rc {
-    /**
-     * Event was handled.
-     *
-     * Returned by AM_HSM_HANDLED().
-     */
-    AM_HSM_RC_HANDLED = 1,
-    /**
-     * Event caused state transition.
-     *
-     * The library does the requested state transition.
-     *
-     * Returned by AM_HSM_TRAN().
-     */
-    AM_HSM_RC_TRAN,
-    /**
-     * Event caused state transition and redispatch.
-     *
-     * The library does the requested state transition
-     * and redispatches the same event to the new state.
-     *
-     * Returned by AM_HSM_TRAN_REDISPATCH().
-     */
-    AM_HSM_RC_TRAN_REDISPATCH,
-
-    /**
-     * Event propagation to superstate(s) was requested.
-     *
-     * The library does the event propagation to the superstate(s).
-     *
-     * Returned by AM_HSM_SUPER().
-     */
-    AM_HSM_RC_SUPER
-};
-
 /** forward declaration of HSM descriptor */
 struct am_hsm;
 
@@ -152,7 +111,7 @@ struct am_hsm;
  *
  * @return return code
  */
-typedef enum am_hsm_rc (*am_hsm_state_fn)(
+typedef enum am_rc (*am_hsm_state_fn)(
     struct am_hsm *hsm, const struct am_event *event
 );
 
@@ -278,7 +237,7 @@ struct am_hsm {
  * an event and wants to prevent the event propagation to
  * superstate(s).
  */
-#define AM_HSM_HANDLED() AM_HSM_RC_HANDLED
+#define AM_HSM_HANDLED() AM_RC_HANDLED
 
 /** Helper macro. Not to be used directly. */
 #define AM_HSM_SET_(s, i)                                    \
@@ -286,9 +245,9 @@ struct am_hsm {
      ((struct am_hsm *)me)->smi = (uint8_t)i)
 
 /** Helper macro. Not to be used directly. */
-#define AM_TRAN1_(s) (AM_HSM_SET_(s, 0), AM_HSM_RC_TRAN)
+#define AM_TRAN1_(s) (AM_HSM_SET_(s, 0), AM_RC_TRAN)
 /** Helper macro. Not to be used directly. */
-#define AM_TRAN2_(s, i) (AM_HSM_SET_(s, i), AM_HSM_RC_TRAN)
+#define AM_TRAN2_(s, i) (AM_HSM_SET_(s, i), AM_RC_TRAN)
 
 /**
  * Event processing is over. Transition is triggered.
@@ -313,9 +272,9 @@ struct am_hsm {
     AM_GET_MACRO_2_(__VA_ARGS__, AM_TRAN2_, AM_TRAN1_, _)(__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
-#define AM_TRAN_REDISP1_(s) (AM_HSM_SET_(s, 0), AM_HSM_RC_TRAN_REDISPATCH)
+#define AM_TRAN_REDISP1_(s) (AM_HSM_SET_(s, 0), AM_RC_TRAN_REDISPATCH)
 /** Helper macro. Not to be used directly. */
-#define AM_TRAN_REDISP2_(s, i) (AM_HSM_SET_(s, i), AM_HSM_RC_TRAN_REDISPATCH)
+#define AM_TRAN_REDISP2_(s, i) (AM_HSM_SET_(s, i), AM_RC_TRAN_REDISPATCH)
 
 /**
  * Same event redispatch is requested. Transition is triggered.
@@ -338,9 +297,9 @@ struct am_hsm {
     (__VA_ARGS__)
 
 /** Helper macro. Not to be used directly. */
-#define AM_SUPER1_(s) (AM_HSM_SET_(s, 0), AM_HSM_RC_SUPER)
+#define AM_SUPER1_(s) (AM_HSM_SET_(s, 0), AM_RC_SUPER)
 /** Helper macro. Not to be used directly. */
-#define AM_SUPER2_(s, i) (AM_HSM_SET_(s, i), AM_HSM_RC_SUPER)
+#define AM_SUPER2_(s, i) (AM_HSM_SET_(s, i), AM_RC_SUPER)
 
 /**
  * Event processing is passed to superstate. No transition was triggered.
@@ -489,7 +448,7 @@ void am_hsm_set_spy(struct am_hsm *hsm, am_hsm_spy_fn spy);
  *
  * Has the same signature as #am_hsm_state_fn.
  */
-enum am_hsm_rc am_hsm_top(struct am_hsm *hsm, const struct am_event *event);
+enum am_rc am_hsm_top(struct am_hsm *hsm, const struct am_event *event);
 
 #ifdef __cplusplus
 }

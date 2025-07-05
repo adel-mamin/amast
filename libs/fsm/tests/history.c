@@ -28,6 +28,7 @@
 #include <stdbool.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "fsm/fsm.h"
 
@@ -45,19 +46,19 @@ static struct oven_fsm m_oven_fsm;
 
 /* test transition to FSM history */
 
-static enum am_fsm_rc oven_fsm_open(
+static enum am_rc oven_fsm_open(
     struct oven_fsm *me, const struct am_event *event
 );
-static enum am_fsm_rc oven_fsm_on(
+static enum am_rc oven_fsm_on(
     struct oven_fsm *me, const struct am_event *event
 );
-static enum am_fsm_rc oven_fsm_off(
+static enum am_rc oven_fsm_off(
     struct oven_fsm *me, const struct am_event *event
 );
 
 static bool oven_fsm_is_open(void) { return false; }
 
-static enum am_fsm_rc oven_fsm_open(
+static enum am_rc oven_fsm_open(
     struct oven_fsm *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -78,7 +79,7 @@ static enum am_fsm_rc oven_fsm_open(
     return AM_FSM_HANDLED();
 }
 
-static enum am_fsm_rc oven_fsm_on(
+static enum am_rc oven_fsm_on(
     struct oven_fsm *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -98,7 +99,7 @@ static enum am_fsm_rc oven_fsm_on(
     return AM_FSM_HANDLED();
 }
 
-static enum am_fsm_rc oven_fsm_off(
+static enum am_rc oven_fsm_off(
     struct oven_fsm *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -118,7 +119,7 @@ static enum am_fsm_rc oven_fsm_off(
     return AM_FSM_HANDLED();
 }
 
-static enum am_fsm_rc oven_fsm_init(
+static enum am_rc oven_fsm_init(
     struct oven_fsm *me, const struct am_event *event
 ) {
     (void)event;
