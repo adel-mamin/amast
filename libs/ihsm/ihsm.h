@@ -43,6 +43,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "common/types.h"
 #include "event/event.h"
 #include "hsm/hsm.h"
 
@@ -64,20 +65,6 @@ enum am_ihsm_json { AM_IHSM_JSON_SMCAT = 0 };
 #ifndef AM_IHSM_ACTION_NAME_SIZE_MAX
 #define AM_IHSM_ACTION_NAME_SIZE_MAX 16 /**< Action names max size [bytes]. */
 #endif
-
-/** IHSM processing return codes. */
-enum am_ihsm_rc {
-    /* success */
-    AM_IHSM_RC_OK = 0,
-    /* not enough memory to process HSM JSON model */
-    AM_IHSM_RC_ERR_NOMEM = -1,
-    /* model type is not listed in enum am_ihsm_json */
-    AM_IHSM_RC_ERR_UNKNOWN_MODEL = -2,
-    /* invalid HSM JSON description */
-    AM_IHSM_RC_ERR_MALFORMED_MODEL = -3,
-    /* user action failure */
-    AM_IHSM_RC_ERR_ACTION = -4,
-};
 
 /** IHSM transition descriptor. */
 struct am_ihsm_tran {
@@ -194,10 +181,10 @@ struct am_ihsm;
  * @retval true   IHSM terminates HSM (calls am_ihsm_term()) after the call.
  *                This is also default IHSM behavior, if the callback
  *                is not set.
- * @retval false  IHSM continues HSM execution in case of #AM_IHSM_RC_ERR_ACTION
+ * @retval false  IHSM continues HSM execution in case of #AM_RC_ERR_ACTION
  *                error
  */
-typedef bool (*am_ihsm_error_fn)(struct am_ihsm *ihsm, enum am_ihsm_rc rc);
+typedef bool (*am_ihsm_error_fn)(struct am_ihsm *ihsm, enum am_rc rc);
 
 /**
  * All HSM actions are expected to be handled by this user callback.
@@ -221,12 +208,12 @@ typedef bool (*am_ihsm_error_fn)(struct am_ihsm *ihsm, enum am_ihsm_rc rc);
  * @param event   the event, which triggers action
  * @param action  action name as specified in HSM JSON model description
  *
- * @retval AM_IHSM_RC_OK          success
- * @retval AM_IHSM_RC_ERR_ACTION  failure.
- *                                IHSM calls am_ihsm_error_fn() callback if set
- *                                and optionally calls am_ihsm_term() for HSM.
+ * @retval 0                 success
+ * @retval AM_RC_ERR_ACTION  failure.
+ *                           IHSM calls am_ihsm_error_fn() callback if set
+ *                           and optionally calls am_ihsm_term() for HSM.
  */
-typedef enum am_ihsm_rc (*am_ihsm_action_fn)(
+typedef int (*am_ihsm_action_fn)(
     struct am_ihsm *ihsm, const struct am_ihsm_event *event, const char *action
 );
 
@@ -429,7 +416,7 @@ void am_ihsm_set_choice_fn(struct am_ihsm *ihsm, am_ihsm_choice_fn choice);
  * internal buffers and so caller can recycle the memory pointed to by \p json.
  *
  * Can be called without calling am_ihsm_set_pool() API first.
- * Called this way the API returns the number of memory blocks
+ * Called this way the API returns the number of memory blocks of type
  * union am_ihsm_mem_block required to accommodate the HSM model.
  *
  * @param ihsm  the IHSM
@@ -437,12 +424,11 @@ void am_ihsm_set_choice_fn(struct am_ihsm *ihsm, am_ihsm_choice_fn choice);
  * @param json  HSM JSON description. Not used after the call.
  *
  * @retval 0   success
- * @retval >0  no memory failure.
- *             Number of required memory blocks of
+ * @retval >0  Required number of memory blocks of
  *             size sizeof(union am_ihsm_mem_block).
- *             Call am_ihsm_set_pool() to provide memory pool of
- *             the required size.
- * @retval <0  enum am_ihsm_rc type of error
+ *             Call am_ihsm_set_pool() to provide memory pool with
+ *             the required number of memory blocks.
+ * @retval <0  enum am_rc type of error
  */
 int am_ihsm_load(
     struct am_ihsm *ihsm, enum am_ihsm_json type, const char *json

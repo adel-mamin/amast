@@ -36,8 +36,18 @@
  * Return codes.
  */
 enum am_rc {
+    /** Not enough memory. */
+    AM_RC_ERR_NOMEM = -4,
+    /** Unknown model. */
+    AM_RC_ERR_UNKNOWN_MODEL = -3,
+    /** Malformed model. */
+    AM_RC_ERR_MALFORMED_MODEL = -2,
+    /** Action failure. */
+    AM_RC_ERR_ACTION = -1,
+    /** Success. */
+    AM_RC_OK = 0,
     /** Operation is ongoing. */
-    AM_RC_BUSY = 0,
+    AM_RC_BUSY,
     /** Operation is complete. */
     AM_RC_DONE,
     /** Event was handled. */

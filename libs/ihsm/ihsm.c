@@ -33,7 +33,7 @@
 #include "common/macros.h"
 #include "ihsm/ihsm.h"
 
-enum am_ihsm_rc am_ihsm_state(struct am_ihsm *me, const struct am_event *event);
+enum am_rc am_ihsm_state(struct am_ihsm *me, const struct am_event *event);
 
 /**
  * HSM state (event handler) function type.
@@ -43,13 +43,11 @@ enum am_ihsm_rc am_ihsm_state(struct am_ihsm *me, const struct am_event *event);
  *
  * @return return code
  */
-enum am_ihsm_rc am_ihsm_state(
-    struct am_ihsm *me, const struct am_event *event
-) {
+enum am_rc am_ihsm_state(struct am_ihsm *me, const struct am_event *event) {
     (void)me;
     (void)event;
 
-    return AM_IHSM_RC_OK;
+    return AM_RC_OK;
 }
 
 /** FNV-1a seed */
