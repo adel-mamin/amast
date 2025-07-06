@@ -9,6 +9,7 @@ version = "0.1.0"
 [tasks]
 setup_stubs = "meson setup builds/stubs -Dunit_test=true -Dpal=stubs -Dbuildtype=debug -Db_lto=false"
 setup_posix = "meson setup builds/posix -Dpal=posix"
+setup_posix_debug = "meson setup builds/posix_debug -Dpal=posix -Dbuildtype=debug -Db_lto=false"
 setup_libuv = "meson setup builds/libuv -Dpal=libuv"
 
 style = "meson compile -C builds/stubs style"
@@ -21,14 +22,17 @@ sphinx = "meson compile -C builds/stubs sphinx"
 
 test_stubs = "meson test -C builds/stubs"
 test_posix = "meson test -C builds/posix"
+test_posix_debug = "meson test -C builds/posix_debug"
 test_libuv = "meson test -C builds/libuv"
 
 libs_stubs = "meson compile -C builds/stubs"
 libs_posix = "meson compile -C builds/posix"
+libs_posix_debug = "meson compile -C builds/posix_debug"
 libs_libuv = "meson compile -C builds/libuv"
 
 stubs = { depends-on = ["setup_stubs", "libs_stubs", "test_stubs", "cppcheck", "iwyu", "style", "cspell", "tidy"] }
 posix = { depends-on = ["setup_posix", "libs_posix", "test_posix"] }
+posix_debug = { depends-on = ["setup_posix_debug", "libs_posix_debug", "test_posix_debug"] }
 libuv = { depends-on = ["setup_libuv", "libs_libuv", "test_libuv"] }
 
 docs = { depends-on = ["setup_stubs", "doxygen", "sphinx"] }
