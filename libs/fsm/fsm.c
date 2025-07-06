@@ -76,7 +76,7 @@ static enum am_rc fsm_dispatch(
 
     am_fsm_state_fn src = fsm->state;
     enum am_rc rc = fsm->state(fsm, event);
-    if (AM_RC_HANDLED == rc) {
+    if ((AM_RC_HANDLED == rc) || (AM_RC_HANDLED_ALIAS == rc)) {
         AM_ASSERT(fsm->state == src);
         return rc;
     }

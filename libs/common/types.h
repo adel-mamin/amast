@@ -41,7 +41,9 @@ enum am_rc {
     /** Operation is complete. */
     AM_RC_DONE,
     /** Event was handled. */
-    AM_RC_HANDLED = AM_RC_DONE,
+    AM_RC_HANDLED = AM_RC_BUSY,
+    /** Event was handled. */
+    AM_RC_HANDLED_ALIAS = AM_RC_DONE,
     /** Event caused state transition. */
     AM_RC_TRAN,
     /** Event caused state transition and redispatch. */
