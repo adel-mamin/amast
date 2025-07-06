@@ -28,6 +28,7 @@
 
 #include "common/compiler.h"
 #include "common/macros.h"
+#include "common/types.h"
 
 #include "async/async.h"
 
@@ -164,18 +165,18 @@ static struct am_async_chain {
     int foo;
 } test_async_chain[3];
 
-static int am_async_call_1(struct am_async_chain *me);
-static int am_async_call_2(struct am_async_chain *me);
+static enum am_rc am_async_call_1(struct am_async_chain *me);
+static enum am_rc am_async_call_2(struct am_async_chain *me);
 
-static int am_async_call_1(struct am_async_chain *me) {
+static enum am_rc am_async_call_1(struct am_async_chain *me) {
     AM_ASYNC_BEGIN(me);
-    AM_ASYNC_AWAIT(am_async_call_2(&test_async_chain[1]));
+    AM_ASYNC_CHAIN(am_async_call_2(&test_async_chain[1]));
     AM_ASYNC_AWAIT(me->ready);
     me->foo = 1;
     AM_ASYNC_END();
 }
 
-static int am_async_call_2(struct am_async_chain *me) {
+static enum am_rc am_async_call_2(struct am_async_chain *me) {
     AM_ASYNC_BEGIN(me);
     AM_ASYNC_AWAIT(me->ready);
     me->foo = 1;
