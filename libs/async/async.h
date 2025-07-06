@@ -66,7 +66,7 @@ struct am_async {
  *
  * @param me  pointer to the `struct am_async` managing the async state
  */
-#define AM_ASYNC_BEGIN(me) {                            \
+#define AM_ASYNC_BEGIN(me) do {                         \
     struct am_async *am_async_ = (struct am_async *)me; \
     switch (am_async_->state) {                         \
     case AM_ASYNC_STATE_INIT:                           \
@@ -74,7 +74,7 @@ struct am_async {
         /* to suppress cppcheck warnings */             \
         (void)am_async_->state;                         \
         /* FALLTHROUGH */                               \
-    case __LINE__:
+    case __LINE__: do {} while (0)
 
 /**
  * Mark the end of async function.
@@ -84,7 +84,7 @@ struct am_async {
  */
 #define AM_ASYNC_EXIT()                                 \
         am_async_->state = AM_ASYNC_STATE_INIT;         \
-        return AM_RC_DONE;
+        return AM_RC_DONE
 
 /**
  * Mark the end of async function block.
@@ -98,7 +98,7 @@ struct am_async {
         return AM_RC_DONE;                              \
     default:                                            \
         AM_ASSERT(0);                                   \
-    }}
+    }} while (0)
 
 /**
  * Await a condition before proceeding.
@@ -115,9 +115,11 @@ struct am_async {
         am_async_->state = __LINE__;                    \
         /* FALLTHROUGH */                               \
     case __LINE__:                                      \
-        if (!(cond)) {                                  \
-            return AM_RC_BUSY;                          \
-        }
+        do {                                            \
+            if (!(cond)) {                              \
+                return AM_RC_BUSY;                      \
+            }                                           \
+        } while (0)
 
 /**
  * Yield control back to caller.
@@ -129,7 +131,7 @@ struct am_async {
 #define AM_ASYNC_YIELD()                                \
         am_async_->state = __LINE__;                    \
         return AM_RC_BUSY;                              \
-    case __LINE__:
+    case __LINE__: do {} while (0)
 
 /* clang-format on */
 
