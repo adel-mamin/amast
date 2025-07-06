@@ -13,6 +13,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - `lib/async`, `lib/hsm` and `lib/fsm` APIs are all now return `enum_rc`
   This allows for seamsless integration of async/await code with HSM and FSM code.
   See `apps/examples/async` for example usage.
+- New API `AM_ASYNC_CHAIN()` to chain multiple async functions together
 
 ## v0.10.1 - July 4, 2025
 
