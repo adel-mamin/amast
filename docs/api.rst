@@ -339,6 +339,8 @@ The source code of the corresponding header file is in `async.h <https://github.
 
 .. doxygendefine:: AM_ASYNC_AWAIT
 
+.. doxygendefine:: AM_ASYNC_CHAIN
+
 .. doxygendefine:: AM_ASYNC_YIELD
 
 .. doxygenfunction:: am_async_is_busy

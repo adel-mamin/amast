@@ -122,6 +122,31 @@ struct am_async {
         } while (0)
 
 /**
+ * Chain an async function call and evaluate its return value.
+ *
+ * Returns, if the async function call return value is not AM_RC_DONE,
+ * in which case the function call is evaluated again on next invocation.
+ *
+ * @param call  the function call to check the return value of
+ */
+#define AM_ASYNC_CHAIN(call)                            \
+        am_async_->state = __LINE__;                    \
+        /* FALLTHROUGH */                               \
+    case __LINE__:                                      \
+        do {                                            \
+            enum am_rc rc_ = (call);                    \
+            if (AM_RC_BUSY == rc_) {                    \
+                return rc_;                             \
+            }                                           \
+            if ((AM_RC_TRAN == rc_) ||                  \
+               (AM_RC_TRAN_REDISPATCH == rc_)) {        \
+                am_async_->state = AM_ASYNC_STATE_INIT; \
+                return rc_;                             \
+            }                                           \
+            AM_ASSERT(rc_ == AM_RC_DONE);               \
+        } while (0)
+
+/**
  * Yield control back to caller.
  *
  * Allows the async function to yield.
