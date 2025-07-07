@@ -56,7 +56,7 @@ enum am_rc am_ihsm_state(struct am_ihsm *me, const struct am_event *event) {
 /** FNV-1a prime */
 #define AM_FNV_PRIME 16777619UL
 
-unsigned am_fnv1a_16bit(const char *s);
+unsigned am_fnv1a_16bit(const char *s, int maxlen);
 
 /**
  * FNV-1a hash function.
@@ -69,12 +69,13 @@ unsigned am_fnv1a_16bit(const char *s);
  *
  * @return 16 bits hash value
  */
-unsigned am_fnv1a_16bit(const char *s) {
+unsigned am_fnv1a_16bit(const char *s, int maxlen) {
     AM_ASSERT(s);
 
     unsigned long hash = AM_FNV_OFFSET_BASIS;
 
-    while (*s) {
+    int i = 0;
+    while (*s && (i++ < maxlen)) {
         hash ^= (unsigned char)(*s++);
         hash *= AM_FNV_PRIME;
     }
