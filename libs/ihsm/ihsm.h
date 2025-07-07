@@ -208,12 +208,12 @@ typedef bool (*am_ihsm_error_fn)(struct am_ihsm *ihsm, enum am_rc rc);
  * @param event   the event, which triggers action
  * @param action  action name as specified in HSM JSON model description
  *
- * @retval 0                 success
+ * @retval AM_RC_OK          success
  * @retval AM_RC_ERR_ACTION  failure.
  *                           IHSM calls am_ihsm_error_fn() callback if set
  *                           and optionally calls am_ihsm_term() for HSM.
  */
-typedef int (*am_ihsm_action_fn)(
+typedef enum am_rc (*am_ihsm_action_fn)(
     struct am_ihsm *ihsm, const struct am_ihsm_event *event, const char *action
 );
 
@@ -423,12 +423,12 @@ void am_ihsm_set_choice_fn(struct am_ihsm *ihsm, am_ihsm_choice_fn choice);
  * @param type  IHSM JSON type
  * @param json  HSM JSON description. Not used after the call.
  *
- * @retval 0   success
- * @retval >0  Required number of memory blocks of
- *             size sizeof(union am_ihsm_mem_block).
- *             Call am_ihsm_set_pool() to provide memory pool with
- *             the required number of memory blocks.
- * @retval <0  enum am_rc type of error
+ * @retval AM_RC_OK  success
+ * @retval >0        Required number of memory blocks of
+ *                   size sizeof(union am_ihsm_mem_block).
+ *                   Call am_ihsm_set_pool() to provide memory pool with
+ *                   the required number of memory blocks.
+ * @retval <0        enum am_rc type of error
  */
 int am_ihsm_load(
     struct am_ihsm *ihsm, enum am_ihsm_json type, const char *json
