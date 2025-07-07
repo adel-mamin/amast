@@ -30,6 +30,8 @@
  * Interpreted Hierarchical State Machine (IHSM) libary API implementation.
  */
 
+#include <stddef.h>
+
 #include "common/macros.h"
 #include "ihsm/ihsm.h"
 
@@ -65,7 +67,8 @@ unsigned am_fnv1a_16bit(const char *s, int maxlen);
  * https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
  * for details
  *
- * @param s  \0 terminated string
+ * @param s       \0 terminated string
+ * @param maxlen  maximum string length [bytes]
  *
  * @return 16 bits hash value
  */
@@ -81,4 +84,79 @@ unsigned am_fnv1a_16bit(const char *s, int maxlen) {
     }
 
     return (unsigned)((hash >> 16) ^ (hash & 0xFFFF));
+}
+
+void am_ihsm_dispatch(struct am_ihsm *ihsm, const struct am_ihsm_event *event) {
+    (void)ihsm;
+    (void)event;
+}
+
+bool am_ihsm_is_in(struct am_ihsm *ihsm, const char *state) {
+    (void)ihsm;
+    (void)state;
+    return true;
+}
+
+bool am_ihsm_state_is_eq(const struct am_ihsm *ihsm, const char *state) {
+    (void)ihsm;
+    (void)state;
+    return true;
+}
+
+const char *am_ihsm_get_state(const struct am_ihsm *ihsm) {
+    (void)ihsm;
+    return NULL;
+}
+
+const struct am_ihsm_event *am_ihsm_get_event(const struct am_ihsm *ihsm) {
+    (void)ihsm;
+    return NULL;
+}
+
+const char *am_ihsm_get_action(const struct am_ihsm *ihsm) {
+    (void)ihsm;
+    return NULL;
+}
+
+void am_ihsm_ctor(struct am_ihsm *ihsm) { (void)ihsm; }
+
+void am_ihsm_set_pool(struct am_ihsm *ihsm, void *pool, int size) {
+    (void)ihsm;
+    (void)pool;
+    (void)size;
+}
+
+void am_ihsm_dtor(struct am_ihsm *ihsm) { (void)ihsm; }
+
+void am_ihsm_set_action_fn(struct am_ihsm *ihsm, am_ihsm_action_fn action) {
+    (void)ihsm;
+    (void)action;
+}
+
+void am_ihsm_set_error_fn(struct am_ihsm *ihsm, am_ihsm_error_fn error) {
+    (void)ihsm;
+    (void)error;
+}
+
+void am_ihsm_set_choice_fn(struct am_ihsm *ihsm, am_ihsm_choice_fn choice) {
+    (void)ihsm;
+    (void)choice;
+}
+
+int am_ihsm_load(
+    struct am_ihsm *ihsm, enum am_ihsm_json type, const char *json
+) {
+    (void)ihsm;
+    (void)type;
+    (void)json;
+    return AM_RC_OK;
+}
+
+void am_ihsm_init(struct am_ihsm *ihsm) { (void)ihsm; }
+
+void am_ihsm_term(struct am_ihsm *ihsm) { (void)ihsm; }
+
+void am_ihsm_set_spy(struct am_ihsm *ihsm, am_ihsm_spy_fn spy) {
+    (void)ihsm;
+    (void)spy;
 }
