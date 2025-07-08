@@ -57,4 +57,7 @@
 
 #define AM_COLOR_RESET "\x1b[0m"
 
+#define AM_SOLID_BLOCK "\xE2\x96\x88"
+#define AM_CURSOR_UP "\033[A"
+
 #endif /* AM_CONSTANTS_H_INCLUDED */

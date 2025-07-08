@@ -77,9 +77,6 @@
 #include "pal/pal.h"
 #include "hsm/hsm.h"
 
-#define CHAR_SOLID_BLOCK "\xE2\x96\x88"
-#define CHAR_CURSOR_UP "\033[A"
-
 enum {
     ASYNC_EVT_SWITCH_MODE = AM_EVT_USER,
     ASYNC_EVT_TIMER,
@@ -151,7 +148,7 @@ static enum am_rc async_blinking_green(struct async *me) {
         am_timer_arm_ms(me->timer, /*ms=*/700, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
 
-        am_pal_printff(AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
+        am_pal_printff(AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm_ms(me->timer, /*ms=*/700, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
     }
@@ -164,17 +161,17 @@ static enum am_rc async_regular_(struct async *me) {
 
     for (;;) {
         /* red */
-        am_pal_printff(AM_COLOR_RED CHAR_SOLID_BLOCK AM_COLOR_RESET);
+        am_pal_printff(AM_COLOR_RED AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm_ms(me->timer, /*ms=*/2000, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
 
         /* yellow */
-        am_pal_printff("\b" AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
+        am_pal_printff("\b" AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm_ms(me->timer, /*ms=*/1000, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
 
         /* green */
-        am_pal_printff("\b" AM_COLOR_GREEN CHAR_SOLID_BLOCK AM_COLOR_RESET);
+        am_pal_printff("\b" AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm_ms(me->timer, /*ms=*/2000, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
 
@@ -227,7 +224,7 @@ static enum am_rc async_off(struct async *me, const struct am_event *event) {
 
         for (;;) {
             am_pal_printff("\b");
-            am_pal_printff(AM_COLOR_YELLOW CHAR_SOLID_BLOCK AM_COLOR_RESET);
+            am_pal_printff(AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
             am_timer_arm_ms(me->timer, /*ms=*/1000, /*interval=*/0);
             AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
 
@@ -284,7 +281,7 @@ static void input_task(void *param) {
     int ch;
     while ((ch = getc(stdin)) != EOF) {
         if ('\n' == ch) {
-            am_pal_printff(CHAR_CURSOR_UP);
+            am_pal_printff(AM_CURSOR_UP);
             static struct am_event event = {.id = ASYNC_EVT_SWITCH_MODE};
             am_ao_publish(&event);
             continue;
