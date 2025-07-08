@@ -284,6 +284,10 @@ struct am_ihsm {
     am_ihsm_error_fn error;
     /** IHSM choice callback */
     am_ihsm_choice_fn choice;
+    /** HSM model pool */
+    void *pool;
+    /** HSM model pool size [bytes] */
+    int size;
 };
 
 /**
@@ -362,7 +366,7 @@ const char *am_ihsm_get_action(const struct am_ihsm *ihsm);
  *
  * @param ihsm  the IHSM to construct
  */
-void am_ihsm_ctor(struct am_ihsm *ihsm);
+void am_ihsm_ctor(const struct am_ihsm *ihsm);
 
 /**
  * Set IHSM memory pool.

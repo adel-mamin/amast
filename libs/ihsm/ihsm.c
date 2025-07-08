@@ -118,15 +118,21 @@ const char *am_ihsm_get_action(const struct am_ihsm *ihsm) {
     return NULL;
 }
 
-void am_ihsm_ctor(struct am_ihsm *ihsm) { (void)ihsm; }
-
-void am_ihsm_set_pool(struct am_ihsm *ihsm, void *pool, int size) {
-    (void)ihsm;
-    (void)pool;
-    (void)size;
+void am_ihsm_ctor(const struct am_ihsm *ihsm) {
+    AM_ASSERT(ihsm);
+    /* am_hsm_ctor(&ihsm->hsm, /\*state=*\/NULL); */
 }
 
-void am_ihsm_dtor(struct am_ihsm *ihsm) { (void)ihsm; }
+void am_ihsm_set_pool(struct am_ihsm *ihsm, void *pool, int size) {
+    AM_ASSERT(ihsm);
+    AM_ASSERT(pool);
+    AM_ASSERT(size > 0);
+
+    ihsm->pool = pool;
+    ihsm->size = size;
+}
+
+void am_ihsm_dtor(struct am_ihsm *ihsm) { am_hsm_dtor(&ihsm->hsm); }
 
 void am_ihsm_set_action_fn(struct am_ihsm *ihsm, am_ihsm_action_fn action) {
     (void)ihsm;
