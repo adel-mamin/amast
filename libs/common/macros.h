@@ -134,6 +134,15 @@ AM_NORETURN void am_assert_failure(
 /** Join x and y together. */
 #define AM_JOINSTR(x, y) AM_STRINGIFY(x##y)
 
+/** AM_CONCAT() helper. */
+#define AM_CONCAT_(a, b) a##b
+
+/** Concatenate two tokens. */
+#define AM_CONCAT(a, b) AM_CONCAT_(a, b)
+
+/** Make a unique name. */
+#define AM_UNIQUE(name) AM_CONCAT(name, __LINE__)
+
 /** Counts the number of trailing zeros in a word. */
 #define AM_COUNT_TRAILING_ZEROS(word)           \
     EXTENSION({                                 \
