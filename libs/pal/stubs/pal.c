@@ -76,7 +76,13 @@ void am_pal_mutex_unlock(int mutex) { (void)mutex; }
 
 void am_pal_mutex_destroy(int mutex) { (void)mutex; }
 
-uint32_t am_pal_time_get_ms(void) { return 0; }
+static uint32_t am_pal_ms = 0;
+
+void am_pal_time_set_ms(uint32_t ms);
+
+void am_pal_time_set_ms(uint32_t ms) { am_pal_ms = ms; }
+
+uint32_t am_pal_time_get_ms(void) { return am_pal_ms; }
 
 uint32_t am_pal_time_get_tick(int domain) {
     (void)domain;
