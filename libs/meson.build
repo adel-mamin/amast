@@ -47,6 +47,10 @@ subdir('hsm')
 subdir('ihsm')
 subdir('ao')
 
+if unit_test
+    subdir('tests')
+endif
+
 library_paths = []
 
 foreach library : libraries

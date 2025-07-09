@@ -189,30 +189,21 @@ AM_NORETURN void am_assert_failure(
         }                      \
     } while (0)
 
-/** Run \p cmd immediately and then repeat every \p ms milliseconds. */
-#define AM_DO_EACH_MS(ms, cmd)                       \
-    do {                                             \
-        if ((ms) < 0) {                              \
-            break;                                   \
-        }                                            \
-        uint32_t now_ms__ = am_pal_time_get_ms();    \
-        static uint32_t prev_ms__ = 0;               \
-        static char armed__ = 0;                     \
-        static int elapsed_ms__ = 0;                 \
-        if (!armed__) {                              \
-            prev_ms__ = now_ms__;                    \
-            armed__ = 1;                             \
-            /* run cmd the first time around */      \
-            elapsed_ms__ = ms;                       \
-        }                                            \
-        elapsed_ms__ += (int)(now_ms__ - prev_ms__); \
-        prev_ms__ = now_ms__;                        \
-        if (elapsed_ms__ < (ms)) {                   \
-            break;                                   \
-        }                                            \
-        elapsed_ms__ = 0;                            \
-        cmd                                          \
-    } while (0)
+/**
+ * Execute code in the attached scope immediately and
+ * then repeatedly every \p ms milliseconds.
+ */
+#define AM_DO_EACH_MS(ms)                                                    \
+    uint32_t AM_UNIQUE(now_ms) = am_pal_time_get_ms();                       \
+    static uint32_t AM_UNIQUE(prev_ms) = 0;                                  \
+    static char AM_UNIQUE(armed) = 0;                                        \
+    if (!AM_UNIQUE(armed)) {                                                 \
+        AM_UNIQUE(armed) = 1;                                                \
+        /* make sure to do the first time around */                          \
+        AM_UNIQUE(prev_ms) = AM_UNIQUE(now_ms) - (ms);                       \
+    }                                                                        \
+    if (((ms) >= 0) && ((AM_UNIQUE(now_ms) - AM_UNIQUE(prev_ms)) >= (ms)) && \
+        (AM_UNIQUE(prev_ms) += (ms), 1))
 
 /** Test \p d1 and \p d2 for equality within \p tolerance. */
 #define AM_DOUBLE_EQ(d1, d2, tolerance) (fabs((d1) - (d2)) <= (tolerance))
