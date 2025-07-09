@@ -49,7 +49,7 @@ struct test_align {
 AM_ASSERT_STATIC(16 == AM_ALIGN_SIZE(1u, 16u));
 AM_ASSERT_STATIC(16 == AM_ALIGN_SIZE(16u, 16u));
 
-int main(void) {
+static void test_align(void) {
     unsigned long data = 0;
     AM_ASSERT(AM_ALIGNOF_PTR(&data) >= 4);
 
@@ -81,6 +81,10 @@ int main(void) {
         AM_ASSERT(AM_ALIGN_SIZE(4, 4) == 4);
         AM_ASSERT(AM_ALIGN_SIZE(5, 4) == 8);
     }
+}
+
+int main(void) {
+    test_align();
 
     return 0;
 }
