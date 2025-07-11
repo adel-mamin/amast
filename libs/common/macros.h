@@ -178,22 +178,25 @@ AM_NORETURN void am_assert_failure(
     AM_UNIQUE(call_cnt) = (AM_UNIQUE(call_cnt) + 1) % (unsigned)(cnt); \
     if (AM_UNIQUE(do_now))
 
-/** Example: int i = 0; AM_DO_ONCE(2, ++i;);
-    call N | i
-    -------+--
-    0      | 1
-    1      | 1
-    2      | 1
-    3      | 1
-*/
-#define AM_DO_ONCE(cmd)        \
-    do {                       \
-        static int done__ = 0; \
-        if (!done__) {         \
-            done__ = 1;        \
-            cmd;               \
-        }                      \
-    } while (0)
+/**
+ * Example:
+ *
+ * int i = 0;
+ * for (int j = 0; j < 3; ++j) {
+ *     AM_DO_ONCE() {
+ *         ++i;
+ *     }
+ * }
+ *
+ * afer iteration number | i
+ * ----------------------+--
+ *   1                   | 1
+ *   2                   | 1
+ *   3                   | 1
+ */
+#define AM_DO_ONCE()                               \
+    static char AM_UNIQUE(done) = 0;               \
+    if (!AM_UNIQUE(done) && (AM_UNIQUE(done) = 1))
 
 /**
  * Execute code in the attached scope immediately and
