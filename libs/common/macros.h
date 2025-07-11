@@ -163,7 +163,7 @@ AM_NORETURN void am_assert_failure(
  *         ++i;
  *     }
  * }
- * afer iteration number | i
+ * after iteration number| i
  * ----------------------+--
  *   1                   | 1
  *   2                   | 1
@@ -188,14 +188,14 @@ AM_NORETURN void am_assert_failure(
  *     }
  * }
  *
- * afer iteration number | i
+ * after iteration number| i
  * ----------------------+--
  *   1                   | 1
  *   2                   | 1
  *   3                   | 1
  */
-#define AM_DO_ONCE()                               \
-    static char AM_UNIQUE(done) = 0;               \
+#define AM_DO_ONCE()                 \
+    static char AM_UNIQUE(done) = 0; \
     if (!AM_UNIQUE(done) && (AM_UNIQUE(done) = 1))
 
 /**
