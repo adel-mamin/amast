@@ -10,10 +10,16 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ## Added
 
 - Common return type `enum am_rc`
-- `lib/async`, `lib/hsm` and `lib/fsm` APIs are all now return `enum_rc`
+- `lib/async`, `lib/hsm` and `lib/fsm` APIs are all now return `enum am_rc`
   This allows for seamsless integration of async/await code with HSM and FSM code.
   See `apps/examples/async` for example usage.
 - New API `AM_ASYNC_CHAIN()` to chain multiple async functions together
+- `AM_UNIQUE(name)` macro
+- Unit tests for `AM_DO_ONCE()`, `AM_DO_EVERY()`, `AM_DO_EACH_MS()` macros
+
+## Changed
+
+- Rework `AM_DO_ONCE()`, `AM_DO_EVERY()`, `AM_DO_EACH_MS()` macros
 
 ## v0.10.1 - July 4, 2025
 
