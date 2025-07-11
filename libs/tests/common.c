@@ -59,12 +59,33 @@ static void test_do_each_ms(void) {
     do_each_ms(&i);
     AM_ASSERT(2 == i);
 }
+static void do_every(int *i) {
+    AM_DO_EVERY(2) {
+        ++(*i);
     }
+}
+
+static void test_do_every(void) {
+    int i = 0;
+    do_every(&i);
+    AM_ASSERT(1 == i);
+
+    do_every(&i);
+    AM_ASSERT(1 == i);
+
+    do_every(&i);
     AM_ASSERT(2 == i);
+
+    do_every(&i);
+    AM_ASSERT(2 == i);
+
+    do_every(&i);
+    AM_ASSERT(3 == i);
 }
 
 int main(void) {
     test_do_each_ms();
+    test_do_every();
 
     return 0;
 }

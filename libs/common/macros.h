@@ -154,23 +154,29 @@ AM_NORETURN void am_assert_failure(
         ret__;                                  \
     })
 
-/** Example: int i = 0; AM_DO_EVERY(2, ++i;);
-    call N | i
-    -------+--
-    0      | 0
-    1      | 1
-    2      | 1
-    3      | 2
-*/
-#define AM_DO_EVERY(cnt, cmd)      \
-    do {                           \
-        static unsigned cnt__ = 0; \
-        ++cnt__;                   \
-        cnt__ %= (unsigned)(cnt);  \
-        if (0 == cnt__) {          \
-            cmd;                   \
-        }                          \
-    } while (0)
+/**
+ * Example:
+ *
+ * int i = 0;
+ * for (int j = 0; j < 3; ++j) {
+ *     AM_DO_EVERY(2) {
+ *         ++i;
+ *     }
+ * }
+ * afer iteration number | i
+ * ----------------------+--
+ *   1                   | 1
+ *   2                   | 1
+ *   3                   | 2
+ *   4                   | 2
+ *   5                   | 3
+ *   6                   | 3
+ */
+#define AM_DO_EVERY(cnt)                                               \
+    static unsigned AM_UNIQUE(call_cnt) = 0;                           \
+    int AM_UNIQUE(do_now) = (0 == AM_UNIQUE(call_cnt));                \
+    AM_UNIQUE(call_cnt) = (AM_UNIQUE(call_cnt) + 1) % (unsigned)(cnt); \
+    if (AM_UNIQUE(do_now))
 
 /** Example: int i = 0; AM_DO_ONCE(2, ++i;);
     call N | i
