@@ -192,13 +192,18 @@ AM_NORETURN void am_assert_failure(
 /**
  * Execute code in the attached scope immediately and
  * then repeatedly every \p ms milliseconds.
+ *
+ * Example:
+ * AM_DO_EACH_MS(100) {
+ *     am_pal_printf("Hello, world!\n");
+ * }
  */
 #define AM_DO_EACH_MS(ms)                                                    \
-    uint32_t AM_UNIQUE(now_ms) = am_pal_time_get_ms();                       \
     static uint32_t AM_UNIQUE(prev_ms) = 0;                                  \
-    static char AM_UNIQUE(armed) = 0;                                        \
-    if (!AM_UNIQUE(armed)) {                                                 \
-        AM_UNIQUE(armed) = 1;                                                \
+    static char AM_UNIQUE(init_done) = 0;                                    \
+    uint32_t AM_UNIQUE(now_ms) = am_pal_time_get_ms();                       \
+    if (!AM_UNIQUE(init_done)) {                                             \
+        AM_UNIQUE(init_done) = 1;                                            \
         /* make sure to do the first time around */                          \
         AM_UNIQUE(prev_ms) = AM_UNIQUE(now_ms) - (ms);                       \
     }                                                                        \

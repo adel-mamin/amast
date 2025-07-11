@@ -37,27 +37,28 @@
 
 void am_pal_time_set_ms(uint32_t ms);
 
+static void do_each_ms(int *i) {
+    AM_DO_EACH_MS(1) {
+        ++(*i);
+    }
+}
+
 static void test_do_each_ms(void) {
     int i = 0;
-    AM_DO_EACH_MS(1) {
-        i = 1;
-    }
+    do_each_ms(&i);
     AM_ASSERT(1 == i);
 
-    AM_DO_EACH_MS(1) {
-        i = 1;
-    }
+    do_each_ms(&i);
     AM_ASSERT(1 == i);
 
     am_pal_time_set_ms(1);
 
-    AM_DO_EACH_MS(1) {
-        i = 2;
-    }
+    do_each_ms(&i);
     AM_ASSERT(2 == i);
 
-    AM_DO_EACH_MS(1) {
-        i = 2;
+    do_each_ms(&i);
+    AM_ASSERT(2 == i);
+}
     }
     AM_ASSERT(2 == i);
 }
