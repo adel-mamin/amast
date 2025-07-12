@@ -103,7 +103,7 @@ static void hsm_build(
 /**
  * Enter all states in the path starting from last and finishing with path[0].
  *
- * @param hsm   the path belongs to this HSM
+ * @param hsm   HSM handler
  * @param path  the path to enter
  */
 static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
@@ -121,7 +121,7 @@ static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
 /**
  * Exit current state.
  *
- * @param hsm    exit the state of this HSM
+ * @param hsm    HSM handler
  */
 static void hsm_exit_state(struct am_hsm *hsm) {
     enum am_rc rc = hsm->state.fn(hsm, &m_hsm_evt_exit);
@@ -138,7 +138,7 @@ static void hsm_exit_state(struct am_hsm *hsm) {
  *
  * Start with current and end with immediate substate of \p until.
  *
- * @param hsm    exit the states of this HSM
+ * @param hsm    HSM handler
  * @param until  stop the exit when reaching this state without exiting it
  */
 static void hsm_exit(struct am_hsm *hsm, struct am_hsm_state until) {
@@ -155,7 +155,7 @@ static void hsm_exit(struct am_hsm *hsm, struct am_hsm_state until) {
  * 3. if destination state requested an initial transition, then build
  *    new \p path and go to step 1
  *
- * @param hsm   enter and init the states of this HSM
+ * @param hsm   HSM handler
  * @param path  the path to enter
  *              Initially it is path from least common ancestor (LCA) substate
  *              to destination state (both inclusive), then reused.
@@ -177,7 +177,7 @@ static void hsm_enter_and_init(struct am_hsm *hsm, struct am_hsm_path *path) {
 /**
  * Transition from source to destination state.
  *
- * @param hsm  transition the state of this HSM
+ * @param hsm  HSM handler
  * @param src  the source state
  * @param dst  the destination state
  */

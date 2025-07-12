@@ -47,7 +47,7 @@ am_fsm_state_fn am_fsm_get_state(const struct am_fsm *fsm) {
 /**
  * Enter state.
  *
- * @param fsm    the FSM state
+ * @param fsm    FSM handler
  * @param state  the state to enter
  */
 static void fsm_enter(struct am_fsm *fsm, const am_fsm_state_fn state) {
@@ -59,7 +59,7 @@ static void fsm_enter(struct am_fsm *fsm, const am_fsm_state_fn state) {
 /**
  * Exit active state.
  *
- * @param fsm  exit the active state of this FSM
+ * @param fsm  FSM handler
  */
 static void fsm_exit(struct am_fsm *fsm) {
     enum am_rc rc = fsm->state(fsm, &m_fsm_evt_exit);
