@@ -65,6 +65,7 @@ bool am_ao_publish_exclude_x(
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(me->subscribe_list_set);
     AM_ASSERT(me->sub);
+    AM_ASSERT(event->id < me->nsub);
 
     if (!am_event_is_static(event)) {
         /*
