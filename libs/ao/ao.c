@@ -217,14 +217,13 @@ void am_ao_unsubscribe(const struct am_ao *ao, int event) {
     AM_ASSERT(me->aos[ao->prio.ao] == ao);
     AM_ASSERT(me->sub);
 
-    int ind = event - AM_EVT_USER;
     int i = ao->prio.ao / 8;
 
     me->crit_enter();
 
-    unsigned list = me->sub[ind].list[i];
+    unsigned list = me->sub[event].list[i];
     list &= ~(1U << (unsigned)(ao->prio.ao % 8));
-    me->sub[ind].list[i] = (uint8_t)list;
+    me->sub[event].list[i] = (uint8_t)list;
 
     me->crit_exit();
 }
