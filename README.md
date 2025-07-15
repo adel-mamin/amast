@@ -1,5 +1,5 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.10.1-blue)](https://github.com/adel-mamin/amast/releases)
+[![Version](https://img.shields.io/badge/version-0.11.0-blue)](https://github.com/adel-mamin/amast/releases)
 [![Sphynx](https://img.shields.io/badge/Docs-Sphinx-gainsboro)](https://amast.readthedocs.io/)
 ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=adel-mamin.amast)
 
