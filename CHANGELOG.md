@@ -7,7 +7,9 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
-## Added
+## v0.11.0 - July 15, 2025
+
+### Added
 
 - Common return type `enum am_rc`
 - `lib/async`, `lib/hsm` and `lib/fsm` APIs are all now return `enum am_rc`
@@ -18,28 +20,28 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Unit tests for `AM_DO_ONCE()`, `AM_DO_EVERY()`, `AM_DO_EACH_MS()` macros
 - Extra event value invariant assert to `am_ao_publish_exclude_x()`
 
-## Fixed
+### Fixed
 
 - Event value usage as a subscript to event subscription array in `am_ao_unsubscribe()`
   This bug led to incorrect unsubsciption from a given event.
 
-## Changed
+### Changed
 
 - Rework `AM_DO_ONCE()`, `AM_DO_EVERY()`, `AM_DO_EACH_MS()` macros
 
 ## v0.10.1 - July 4, 2025
 
-## Added
+### Added
 
 - `libs/event/test.c`
 - Valid ranges of configuration parameters in `tools/unity/amast_config.h`
 
-## Fixed
+### Fixed
 
 - Event enum name in `apps/examples/workers/main.c`
 - Markup in `libs/event/README.rst`
 
-## Changed
+### Changed
 
 - Rework `am_event_free()` to take pointer to event - not double pointer
 - Use binary search of memory allocator in `am_event_allocate_x()`
