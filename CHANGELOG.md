@@ -16,6 +16,12 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - New API `AM_ASYNC_CHAIN()` to chain multiple async functions together
 - `AM_UNIQUE(name)` macro
 - Unit tests for `AM_DO_ONCE()`, `AM_DO_EVERY()`, `AM_DO_EACH_MS()` macros
+- Extra event value invariant assert to `am_ao_publish_exclude_x()`
+
+## Fixed
+
+- Event value usage as a subscript to event subscription array in `am_ao_unsubscribe()`
+  This bug led to incorrect unsubsciption from a given event.
 
 ## Changed
 
