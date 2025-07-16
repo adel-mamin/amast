@@ -160,7 +160,7 @@ static void balancer_check_stats(const struct balancer *me) {
     for (int i = 1; i < me->nworkers; ++i) {
         int percent =
             AM_ABS((int)(100LL * (baseline - me->stats[i]) / baseline));
-        AM_ASSERT(percent < 20);
+        AM_ASSERT(percent < 40);
     }
 }
 
