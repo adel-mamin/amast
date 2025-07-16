@@ -232,10 +232,7 @@ void am_ao_unsubscribe_all(const struct am_ao *ao) {
 
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(me->subscribe_list_set);
-    if (!me->sub) {
-        return;
-    }
-
+    AM_ASSERT(me->sub);
     AM_ASSERT(me->aos[ao->prio.ao] == ao);
 
     int j = ao->prio.ao / 8;
