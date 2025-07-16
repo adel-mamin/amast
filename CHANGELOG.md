@@ -10,6 +10,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Changed
 
 - Optimize `am_ao_unsubscribe_all()` optimization
+- Merge `enum am_event_rc` into `enum am_rc`
 
 ## v0.11.0 - July 15, 2025
 
