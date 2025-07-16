@@ -7,6 +7,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Optimize `am_ao_unsubscribe_all()` optimization
+
 ## v0.11.0 - July 15, 2025
 
 ### Added
