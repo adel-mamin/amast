@@ -37,13 +37,15 @@
  */
 enum am_rc {
     /** Not enough memory. */
-    AM_RC_ERR_NOMEM = -4,
+    AM_RC_ERR_NOMEM = -5,
     /** Unknown model. */
-    AM_RC_ERR_UNKNOWN_MODEL = -3,
+    AM_RC_ERR_UNKNOWN_MODEL = -4,
     /** Malformed model. */
-    AM_RC_ERR_MALFORMED_MODEL = -2,
+    AM_RC_ERR_MALFORMED_MODEL = -3,
     /** Action failure. */
-    AM_RC_ERR_ACTION = -1,
+    AM_RC_ERR_ACTION = -2,
+    /** Common error */
+    AM_RC_ERR = -1,
     /** Success. */
     AM_RC_OK = 0,
     /** Operation is ongoing. */
@@ -59,7 +61,13 @@ enum am_rc {
     /** Event caused state transition and redispatch. */
     AM_RC_TRAN_REDISPATCH,
     /** Event propagation to superstate(s) was requested. */
-    AM_RC_SUPER
+    AM_RC_SUPER,
+    /**
+     * Tells that event queue was empty before the corresponding call.
+     * This allows to signal the event queue owner about
+     * new event available for processing.
+     */
+    AM_RC_QUEUE_WAS_EMPTY,
 };
 
 /** Memory block descriptor. */

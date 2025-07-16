@@ -34,6 +34,7 @@
 #include <string.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "hsm/hsm.h"
 #include "event/event.h"
 #include "queue/queue.h"
@@ -97,14 +98,14 @@ bool am_ao_publish_exclude_x(
             if (ao_ == ao) {
                 continue;
             }
-            enum am_event_rc rc =
+            enum am_rc rc =
                 am_event_push_back_x(&ao_->event_queue, event, margin);
-            if (AM_EVENT_RC_ERR == rc) {
+            if (AM_RC_ERR == rc) {
                 AM_ASSERT(margin != 0);
                 all_published = false;
                 continue;
             }
-            if (AM_EVENT_RC_OK_QUEUE_WAS_EMPTY == rc) {
+            if (AM_RC_QUEUE_WAS_EMPTY == rc) {
                 am_ao_notify(ao_);
             }
         }
@@ -142,11 +143,11 @@ bool am_ao_post_fifo_x(
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
 
-    enum am_event_rc rc = am_event_push_back_x(&ao->event_queue, event, margin);
-    if (AM_EVENT_RC_OK_QUEUE_WAS_EMPTY == rc) {
+    enum am_rc rc = am_event_push_back_x(&ao->event_queue, event, margin);
+    if (AM_RC_QUEUE_WAS_EMPTY == rc) {
         am_ao_notify(ao);
     }
-    return (AM_EVENT_RC_OK == rc) || (AM_EVENT_RC_OK_QUEUE_WAS_EMPTY == rc);
+    return (AM_RC_OK == rc) || (AM_RC_QUEUE_WAS_EMPTY == rc);
 }
 
 static void am_ao_post_fifo_unsafe(
@@ -155,8 +156,8 @@ static void am_ao_post_fifo_unsafe(
     AM_ASSERT(ao);
     AM_ASSERT(event);
 
-    enum am_event_rc rc = am_event_push_back_unsafe(&ao->event_queue, event);
-    if (AM_EVENT_RC_OK_QUEUE_WAS_EMPTY == rc) {
+    enum am_rc rc = am_event_push_back_unsafe(&ao->event_queue, event);
+    if (AM_RC_QUEUE_WAS_EMPTY == rc) {
         am_ao_notify_unsafe(ao);
     }
 }
@@ -173,12 +174,11 @@ bool am_ao_post_lifo_x(
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
 
-    enum am_event_rc rc =
-        am_event_push_front_x(&ao->event_queue, event, margin);
-    if (AM_EVENT_RC_OK_QUEUE_WAS_EMPTY == rc) {
+    enum am_rc rc = am_event_push_front_x(&ao->event_queue, event, margin);
+    if (AM_RC_QUEUE_WAS_EMPTY == rc) {
         am_ao_notify(ao);
     }
-    return (AM_EVENT_RC_OK == rc) || (AM_EVENT_RC_OK_QUEUE_WAS_EMPTY == rc);
+    return (AM_RC_OK == rc) || (AM_RC_QUEUE_WAS_EMPTY == rc);
 }
 
 void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event) {

@@ -347,7 +347,7 @@ int am_event_get_ref_cnt(const struct am_event *event) {
  */
 typedef bool (*am_push_fn)(struct am_queue *queue, const void *ptr, int size);
 
-static enum am_event_rc am_event_push_x(
+static enum am_rc am_event_push_x(
     struct am_queue *queue,
     const struct am_event *event,
     int margin,
@@ -386,7 +386,7 @@ static enum am_event_rc am_event_push_x(
         } else {
             am_event_free_unsafe(event);
         }
-        return AM_EVENT_RC_ERR;
+        return AM_RC_ERR;
     }
     AM_ASSERT(nfree > 0);
 
@@ -404,12 +404,12 @@ static enum am_event_rc am_event_push_x(
     AM_ASSERT(true == rc);
 
     if (capacity == nfree) {
-        return AM_EVENT_RC_OK_QUEUE_WAS_EMPTY;
+        return AM_RC_QUEUE_WAS_EMPTY;
     }
-    return AM_EVENT_RC_OK;
+    return AM_RC_OK;
 }
 
-enum am_event_rc am_event_push_back_x(
+enum am_rc am_event_push_back_x(
     struct am_queue *queue, const struct am_event *event, int margin
 ) {
     return am_event_push_x(
@@ -417,25 +417,25 @@ enum am_event_rc am_event_push_back_x(
     );
 }
 
-enum am_event_rc am_event_push_back(
+enum am_rc am_event_push_back(
     struct am_queue *queue, const struct am_event *event
 ) {
-    enum am_event_rc rc = am_event_push_back_x(queue, event, /*margin=*/0);
-    AM_ASSERT(AM_EVENT_RC_ERR != rc);
+    enum am_rc rc = am_event_push_back_x(queue, event, /*margin=*/0);
+    AM_ASSERT(AM_RC_ERR != rc);
     return rc;
 }
 
-enum am_event_rc am_event_push_back_unsafe(
+enum am_rc am_event_push_back_unsafe(
     struct am_queue *queue, const struct am_event *event
 ) {
-    enum am_event_rc rc = am_event_push_x(
+    enum am_rc rc = am_event_push_x(
         queue, event, /*margin=*/0, /*safe=*/false, am_queue_push_back
     );
-    AM_ASSERT(AM_EVENT_RC_ERR != rc);
+    AM_ASSERT(AM_RC_ERR != rc);
     return rc;
 }
 
-enum am_event_rc am_event_push_front_x(
+enum am_rc am_event_push_front_x(
     struct am_queue *queue, const struct am_event *event, int margin
 ) {
     return am_event_push_x(
@@ -443,11 +443,11 @@ enum am_event_rc am_event_push_front_x(
     );
 }
 
-enum am_event_rc am_event_push_front(
+enum am_rc am_event_push_front(
     struct am_queue *queue, const struct am_event *event
 ) {
-    enum am_event_rc rc = am_event_push_front_x(queue, event, /*margin=*/0);
-    AM_ASSERT(AM_EVENT_RC_ERR != rc);
+    enum am_rc rc = am_event_push_front_x(queue, event, /*margin=*/0);
+    AM_ASSERT(AM_RC_ERR != rc);
     return rc;
 }
 
