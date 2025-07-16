@@ -239,14 +239,11 @@ void am_ao_unsubscribe_all(const struct am_ao *ao) {
     AM_ASSERT(me->aos[ao->prio.ao] == ao);
 
     int j = ao->prio.ao / 8;
+    unsigned clear_mask = ~(1U << (unsigned)(ao->prio.ao % 8));
 
     for (int i = 0; i < me->nsub; ++i) {
         me->crit_enter();
-
-        unsigned list = me->sub[i].list[j];
-        list &= ~(1U << (unsigned)(ao->prio.ao % 8));
-        me->sub[i].list[j] = (uint8_t)list;
-
+        me->sub[i].list[j] &= (uint8_t)clear_mask;
         me->crit_exit();
     }
 }
