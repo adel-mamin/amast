@@ -100,9 +100,7 @@ bool am_ao_publish_exclude_x(
             enum am_event_rc rc =
                 am_event_push_back_x(&ao_->event_queue, event, margin);
             if (AM_EVENT_RC_ERR == rc) {
-                if (0 == margin) {
-                    AM_ASSERT(0);
-                }
+                AM_ASSERT(margin != 0);
                 all_published = false;
                 continue;
             }
