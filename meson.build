@@ -142,6 +142,7 @@ endif
 libm_dep = compiler.find_library('m', required: true)
 
 libs_inc = include_directories(['libs', '.'])
+
 subdir('libs')
 subdir('tools' / 'unity')
 subdir('apps' / 'examples')
@@ -216,7 +217,7 @@ run_target(
         RUN_CLANG_TIDY,
         '-clang-tidy-binary',
         CLANG_TIDY,
-        '-j', '@0@'.format(run_command('nproc').stdout().strip()),
+        '-j', '@0@'.format(run_command('nproc', check: true).stdout().strip()),
         '-use-color',
         '-quiet',
         '-p',
