@@ -44,7 +44,9 @@
 #define AM_FSM_SPY
 
 /** Enable am_assert_failure() implementation. */
-#define AM_ASSERT_FAILURE
+#ifndef AM_ASSERT_FAILURE_ENABLED
+#define AM_ASSERT_FAILURE_ENABLED 1
+#endif
 
 /**
  * The max number of event pools.
