@@ -27,8 +27,11 @@
 pal_src = [files('pal.c')]
 
 libpal = library('pal', [pal_src], include_directories: inc)
+
+libpal_ext_dep += [dependency('threads')]
+
 libpal_dep = declare_dependency(
     link_with : libpal,
     include_directories : inc,
-    dependencies: dependency('threads')
+    dependencies: libpal_ext_dep
 )

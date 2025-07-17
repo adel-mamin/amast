@@ -33,7 +33,11 @@ libuv_proj = subproject('libuv',
         'build_tests=false',
     ]
 )
-libuv_dep = libuv_proj.get_variable('libuv_dep')
+
+libpal_ext_dep += [
+    libuv_proj.get_variable('libuv_dep'),
+    dependency('threads', required: true)
+]
 
 libpal = library(
     'pal',
@@ -42,13 +46,11 @@ libpal = library(
         '-std=gnu11', # https://github.com/libuv/libuv/issues/1160
     ],
     include_directories: inc,
-    dependencies: [
-        libuv_dep,
-        dependency('threads', required: true)
-    ]
+    dependencies: [libpal_ext_dep],
 )
+
 libpal_dep = declare_dependency(
     link_with : libpal,
     include_directories : inc,
-    dependencies: libuv_dep
+    dependencies: [libpal_ext_dep],
 )

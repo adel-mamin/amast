@@ -24,6 +24,8 @@
 # SOFTWARE.
 #
 
+libpal_ext_dep = []
+
 if pal == 'stubs'
     subdir('stubs')
 elif pal == 'posix'
