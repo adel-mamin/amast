@@ -26,31 +26,23 @@
 
 e = executable(
     'hahi-example',
-    [
-        'hsm' / 'hahi' / 'hahi.c'
-    ],
     dependencies: [libhsm_dep, libstr_dep, libassert_dep])
+    ['hsm' / 'hahi' / 'hahi.c'],
 
 e = executable(
     'regular-example',
-    [
-        'hsm' / 'regular' / 'example.c'
-    ],
     dependencies: [libhsm_dep, libstr_dep, libassert_dep])
+    ['hsm' / 'regular' / 'example.c'],
 
 e = executable(
     'submachine-example',
-    [
-        'hsm' / 'submachine' / 'complex' / 'example.c'
-    ],
     dependencies: [libhsm_dep, libstr_dep, libassert_dep])
+    ['hsm' / 'submachine' / 'complex' / 'example.c'],
 
 e = executable(
     'calc-example',
-    [
-        'hsm' / 'submachine' / 'calc' / 'example.c'
-    ],
     dependencies: [libhsm_dep, libstr_dep, libassert_dep])
+    ['hsm' / 'submachine' / 'calc' / 'example.c'],
 
 libdpp = library(
     'dpp',
