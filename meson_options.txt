@@ -1,3 +1,2 @@
 option('unit_test', type: 'boolean', value: false)
 option('pal', type: 'combo', choices: ['stubs', 'posix', 'win', 'freertos', 'libuv'], value: 'posix')
-
