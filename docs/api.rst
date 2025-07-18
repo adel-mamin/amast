@@ -221,8 +221,6 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygendefine:: AM_EVENT_HAS_USER_ID
 
-.. doxygenenum:: am_event_rc
-
 .. doxygenstruct:: am_event
 
 .. doxygenstruct:: am_event_state_cfg
