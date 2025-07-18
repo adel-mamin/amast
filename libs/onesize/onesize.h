@@ -33,7 +33,6 @@
 #define AM_ONESIZE_H_INCLUDED
 
 #include "common/alignment.h"
-#include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
 #include "slist/slist.h"
@@ -103,7 +102,7 @@ void am_onesize_ctor(struct am_onesize *hnd, const struct am_onesize_cfg *cfg);
  *
  * @return the allocated memory or NULL, if allocation failed
  */
-AM_MAY_ALIAS void *am_onesize_allocate_x(struct am_onesize *hnd, int margin);
+void *am_onesize_allocate_x(struct am_onesize *hnd, int margin);
 
 /**
  * Allocate one memory block of configured block size.
@@ -114,7 +113,7 @@ AM_MAY_ALIAS void *am_onesize_allocate_x(struct am_onesize *hnd, int margin);
  *
  * @return the allocated memory
  */
-AM_MAY_ALIAS void *am_onesize_allocate(struct am_onesize *hnd);
+void *am_onesize_allocate(struct am_onesize *hnd);
 
 /**
  * Free a memory block.
@@ -122,7 +121,7 @@ AM_MAY_ALIAS void *am_onesize_allocate(struct am_onesize *hnd);
  * @param hnd  the allocator
  * @param ptr  memory block to free
  */
-void am_onesize_free(struct am_onesize *hnd, AM_MAY_ALIAS const void *ptr);
+void am_onesize_free(struct am_onesize *hnd, const void *ptr);
 
 /**
  * Free all memory allocated so far.

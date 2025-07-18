@@ -101,13 +101,6 @@
 #define AM_NORETURN __attribute__((noreturn))
 /** alignment compiler instruction */
 #define AM_ALIGNED(x) __attribute__((aligned(x)))
-/**
- * Workaround C strict aliasing rules.
- *
- * Use -fno-strict-aliasing, if this macro cannot be defined
- * for a given compiler.
- */
-#define AM_MAY_ALIAS __attribute__((may_alias))
 
 /**
  * The parameter `si` specifies which argument is the format string argument
