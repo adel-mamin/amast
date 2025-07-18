@@ -11,6 +11,11 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - Optimize `am_ao_unsubscribe_all()` optimization
 - Merge `enum am_event_rc` into `enum am_rc`
+- Remove AM_MAY_ALIAS as redundant
+
+### Fixed
+
+- Documentation build
 
 ## v0.11.0 - July 15, 2025
 
