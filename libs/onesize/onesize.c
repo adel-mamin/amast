@@ -133,12 +133,12 @@ void am_onesize_iterate_over_allocated_unsafe(
 
     char *ptr = (char *)hnd->pool.ptr;
     if (num < 0) {
-        num = hnd->ntotal;
+        num = hnd->nbump;
     }
     int iterated = 0;
-    num = AM_MIN(num, hnd->ntotal);
+    num = AM_MIN(num, hnd->nbump);
 
-    for (int i = 0; (i < hnd->ntotal) && (iterated < num); ++i) {
+    for (int i = 0; (i < hnd->nbump) && (iterated < num); ++i) {
         AM_ASSERT(AM_ALIGNOF_PTR(ptr) >= AM_ALIGNOF(am_slist_item_t));
         struct am_slist_item *item = AM_CAST(struct am_slist_item *, ptr);
         if (am_slist_owns(&hnd->fl, item)) {
