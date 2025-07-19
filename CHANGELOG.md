@@ -12,6 +12,9 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Optimize `am_ao_unsubscribe_all()` optimization
 - Merge `enum am_event_rc` into `enum am_rc`
 - Remove AM_MAY_ALIAS as redundant
+- Reduce onesize allocator initialization time.
+  This is done by replacing freelist full initialization at initialization time with
+  gradual initialization during the normal operation time.
 
 ### Fixed
 

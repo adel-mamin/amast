@@ -48,6 +48,7 @@ struct am_onesize {
     int nfree;          /**< current number of blocks in free list */
     int ntotal;         /**< total number of blocks */
     int nfree_min;      /**< minimum number of blocks in free list */
+    int nbump;          /**< bump index */
     /** Enter critical section */
     void (*crit_enter)(void);
     /** Exit critical section */

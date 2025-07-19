@@ -125,7 +125,7 @@ struct am_event *am_event_allocate_x(int id, int size, int margin) {
     struct am_event *event = am_onesize_allocate_x(&me->pools[left], margin);
     me->crit_exit();
 
-    if (!event) {
+    if (!event) { /* cppcheck-suppress knownConditionTrueFalse */
         return NULL;
     }
 
