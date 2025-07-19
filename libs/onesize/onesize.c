@@ -97,6 +97,8 @@ void am_onesize_free(struct am_onesize *hnd, const void *ptr) {
 
     const struct am_slist_item *head = am_slist_peek_front(&hnd->fl);
     if (hnd->nfree) {
+        AM_ASSERT(head);
+        AM_ASSERT(head != ptr); /* double free? */
         am_assert_memptr_validity(hnd, head);
     } else {
         AM_ASSERT(NULL == head);
