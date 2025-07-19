@@ -9,7 +9,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ### Changed
 
-- Optimize `am_ao_unsubscribe_all()` optimization
+- Optimize `am_ao_unsubscribe_all()` implemenation
 - Merge `enum am_event_rc` into `enum am_rc`
 - Remove AM_MAY_ALIAS as redundant
 - Reduce onesize allocator initialization time.
