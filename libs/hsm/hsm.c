@@ -142,8 +142,12 @@ static void hsm_exit_state(struct am_hsm *hsm) {
  * @param until  stop the exit when reaching this state without exiting it
  */
 static void hsm_exit(struct am_hsm *hsm, struct am_hsm_state until) {
+    int cnt = AM_HSM_HIERARCHY_DEPTH_MAX;
     while (!am_hsm_state_is_eq(hsm, until)) {
         hsm_exit_state(hsm);
+        --cnt;
+        /* check if HSM hierarchy depth exceeds #AM_HSM_HIERARCHY_DEPTH_MAX */
+        AM_ASSERT(cnt);
     }
 }
 
@@ -215,7 +219,11 @@ static void hsm_transition(
      * Once LCA is found, do not exit it. Enter all LCA substates down to dst.
      * If dst requests initial transition - enter and init the dst substates.
      */
+    int cnt = AM_HSM_HIERARCHY_DEPTH_MAX;
     while (hsm->state.fn != am_hsm_top) {
+        --cnt;
+        /* check if HSM hierarchy depth exceeds #AM_HSM_HIERARCHY_DEPTH_MAX */
+        AM_ASSERT(cnt);
         if (hsm->hierarchy_level <= path.len) {
             /*
              * path has higher hierarchy level states
@@ -316,11 +324,15 @@ bool am_hsm_is_in(struct am_hsm *hsm, struct am_hsm_state state) {
 
     struct am_hsm hsm_ = *hsm;
 
+    int cnt = AM_HSM_HIERARCHY_DEPTH_MAX;
     while (!am_hsm_state_is_eq(hsm, state) && (hsm->state.fn != am_hsm_top)) {
         struct am_hsm_state s = hsm->state;
         *hsm = hsm_;
         enum am_rc rc = s.fn(hsm, &m_hsm_evt_empty);
         AM_ASSERT(AM_RC_SUPER == rc);
+        --cnt;
+        /* check if HSM hierarchy depth exceeds #AM_HSM_HIERARCHY_DEPTH_MAX */
+        AM_ASSERT(cnt);
     }
     bool in = am_hsm_state_is_eq(hsm, state);
 

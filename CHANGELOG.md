@@ -7,6 +7,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Assert that AM_HSM_HIERARCHY_DEPTH_MAX limit is not exceeded in HSM implementation
+
 ### Changed
 
 - Optimize `am_ao_unsubscribe_all()` implemenation
