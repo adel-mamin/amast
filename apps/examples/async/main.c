@@ -52,7 +52,8 @@
  *
  * async_top handles user input:
  * - press ENTER to switch between async_regular and async_off substates
- * - press ESC to switch to async_exiting and exit the app
+ * - press ENTER two times in a row within 500ms to switch to async_exiting
+ *   and exit the app
  *
  * Generally the use of async is warranted, if the sequence of
  * steps can be represented as a flowchart like in this case.
@@ -185,6 +186,8 @@ static enum am_rc async_regular_(struct async *me) {
     }
 
     AM_ASYNC_END();
+
+    return AM_RC_DONE;
 }
 
 static enum am_rc async_regular(
