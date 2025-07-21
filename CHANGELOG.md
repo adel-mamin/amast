@@ -9,11 +9,11 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ### Added
 
-- Assert that AM_HSM_HIERARCHY_DEPTH_MAX limit is not exceeded in HSM implementation
+- Assert that AM_HSM_HIERARCHY_DEPTH_MAX limit is not exceeded in HSM run time.
 
 ### Changed
 
-- Optimize `am_ao_unsubscribe_all()` implemenation
+- Optimize `am_ao_unsubscribe_all()` implementation
 - Merge `enum am_event_rc` into `enum am_rc`
 - Remove AM_MAY_ALIAS as redundant
 - Reduce onesize allocator initialization time.
@@ -21,7 +21,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
   gradual initialization during the normal operation time.
 - Remove `AM_ASYNC_EXIT()`.
 - Require explicit return after `AM_ASYNC_END()`.
-- async application example returns on quick (<500ms) double enter key press
+- async application example returns on quick (<500ms) double enter key press.
+- Simplify `AM_ASYNC_BEGIN()` implementation.
 
 ### Fixed
 
@@ -33,7 +34,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - Common return type `enum am_rc`
 - `lib/async`, `lib/hsm` and `lib/fsm` APIs are all now return `enum am_rc`
-  This allows for seamsless integration of async/await code with HSM and FSM code.
+  This allows for seamless integration of async/await code with HSM and FSM code.
   See `apps/examples/async` for example usage.
 - New API `AM_ASYNC_CHAIN()` to chain multiple async functions together
 - `AM_UNIQUE(name)` macro
@@ -43,7 +44,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Fixed
 
 - Event value usage as a subscript to event subscription array in `am_ao_unsubscribe()`
-  This bug led to incorrect unsubsciption from a given event.
+  This bug led to incorrect un-subscription from a given event.
 
 ### Changed
 

@@ -73,11 +73,7 @@ struct am_async {
         AM_ASSERT(0);                                   \
         break;                                          \
     case AM_ASYNC_STATE_INIT:                           \
-        am_async_->state = __LINE__;                    \
         /* to suppress cppcheck warnings */             \
-        (void)am_async_->state;                         \
-        /* FALLTHROUGH */                               \
-    case __LINE__:                                      \
         am_async_->state = AM_ASYNC_STATE_INIT
 
 /**
