@@ -21,6 +21,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
   gradual initialization during the normal operation time.
 - Remove `AM_ASYNC_EXIT()`.
 - Require explicit return after `AM_ASYNC_END()`.
+- async application example returns on quick (<500ms) double enter key press
 
 ### Fixed
 

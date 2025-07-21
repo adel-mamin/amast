@@ -77,6 +77,8 @@
 #include "pal/pal.h"
 #include "hsm/hsm.h"
 
+#define ASYNC_TWO_NEWLINES_TIMEOUT_MS 500
+
 enum {
     ASYNC_EVT_SWITCH_MODE = AM_EVT_USER,
     ASYNC_EVT_TIMER,
@@ -281,18 +283,23 @@ static void input_task(void *param) {
     am_pal_wait_all_tasks();
 
     int ch;
+    uint32_t prev_ms = am_pal_time_get_ms() - 2 * ASYNC_TWO_NEWLINES_TIMEOUT_MS;
     while ((ch = getc(stdin)) != EOF) {
-        if ('\n' == ch) {
-            am_pal_printff(AM_CURSOR_UP);
+        if ('\n' != ch) {
+            continue;
+        }
+        am_pal_printff(AM_CURSOR_UP);
+        uint32_t now_ms = am_pal_time_get_ms();
+        uint32_t diff_ms = now_ms - prev_ms;
+        prev_ms = now_ms;
+        if (diff_ms > ASYNC_TWO_NEWLINES_TIMEOUT_MS) {
             static struct am_event event = {.id = ASYNC_EVT_SWITCH_MODE};
             am_ao_publish(&event);
             continue;
         }
-        if (27 == ch) { /* ASCII value of ESC is 27 */
-            static struct am_event event = {.id = ASYNC_EVT_EXIT};
-            am_ao_publish(&event);
-            return;
-        }
+        static struct am_event event = {.id = ASYNC_EVT_EXIT};
+        am_ao_publish(&event);
+        break;
     }
 }
 
