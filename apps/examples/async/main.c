@@ -154,6 +154,8 @@ static enum am_rc async_blinking_green(struct async *me) {
     }
 
     AM_ASYNC_END();
+
+    return AM_RC_DONE;
 }
 
 static enum am_rc async_regular_(struct async *me) {

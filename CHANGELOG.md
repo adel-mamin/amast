@@ -19,6 +19,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Reduce onesize allocator initialization time.
   This is done by replacing freelist full initialization at initialization time with
   gradual initialization during the normal operation time.
+- Remove `AM_ASYNC_EXIT()`.
+- Require explicit return after `AM_ASYNC_END()`.
 
 ### Fixed
 

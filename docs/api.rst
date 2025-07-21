@@ -331,8 +331,6 @@ The source code of the corresponding header file is in `async.h <https://github.
 
 .. doxygendefine:: AM_ASYNC_BEGIN
 
-.. doxygendefine:: AM_ASYNC_EXIT
-
 .. doxygendefine:: AM_ASYNC_END
 
 .. doxygendefine:: AM_ASYNC_AWAIT
