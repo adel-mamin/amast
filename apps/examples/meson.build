@@ -32,17 +32,17 @@ e = executable(
 e = executable(
     'regular-example',
     ['hsm' / 'regular' / 'example.c'],
-    dependencies: [libhsm_dep, libstr_dep, libassert_dep])
+    dependencies: [libhsm_dep, libhsm_test_dep, libstr_dep, libassert_dep])
 
 e = executable(
     'submachine-example',
     ['hsm' / 'submachine' / 'complex' / 'example.c'],
-    dependencies: [libhsm_dep, libstr_dep, libassert_dep])
+    dependencies: [libhsm_dep, libhsm_test_dep, libstr_dep, libassert_dep])
 
 e = executable(
     'calc-example',
     ['hsm' / 'submachine' / 'calc' / 'example.c'],
-    dependencies: [libhsm_dep, libstr_dep, libassert_dep])
+    dependencies: [libhsm_dep, libhsm_test_dep, libstr_dep, libassert_dep])
 
 libdpp = library(
     'dpp',
