@@ -51,6 +51,7 @@ libdpp = library(
         'dpp' / 'philo.c',
         'dpp' / 'table.c'
     ],
+    c_args : ['-DAM_ASSERT_FAILURE_ENABLED=0'],
     dependencies: [
         libhsm_dep,
         libstr_dep,
@@ -80,6 +81,7 @@ libringbuf_example = library(
         'ringbuf' / 'reader.c',
         'ringbuf' / 'writer.c'
     ],
+    c_args : ['-DAM_ASSERT_FAILURE_ENABLED=0'],
     dependencies: [
         libpal_dep,
         libringbuf_dep,
@@ -133,6 +135,7 @@ fork = executable(
 workers = executable(
     'workers',
     ['workers' / 'main.c'],
+    c_args : ['-DAM_ASSERT_FAILURE_ENABLED=0'],
     dependencies: [
         libhsm_dep,
         libao_preemptive_dep,
