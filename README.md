@@ -1,5 +1,5 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.11.0-blue)](https://github.com/adel-mamin/amast/releases)
+[![Version](https://img.shields.io/badge/version-0.12.0-blue)](https://github.com/adel-mamin/amast/releases)
 [![Sphynx](https://img.shields.io/badge/Docs-Sphinx-gainsboro)](https://amast.readthedocs.io/)
 ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=adel-mamin.amast)
 
@@ -46,7 +46,7 @@ ao_preemptive | 3.82 | 0.56
 dlist | 1.29 | 0.00
 event | 3.01 | 0.23
 fsm | 0.91 | 0.02
-hsm | 2.46 | 0.03
+hsm | 2.58 | 0.03
 onesize | 1.42 | 0.00
 queue | 1.81 | 0.00
 ringbuf | 1.39 | 0.00
