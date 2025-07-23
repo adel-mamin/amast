@@ -88,5 +88,3 @@ Notes
   using the macros
 - Keep the variables that should preserve their values across async
   function calls in a state stored outside of the async function.
-- See `test.c <https://github.com/adel-mamin/amast/blob/main/libs/async/test.c>`_
-  for usage examples.
