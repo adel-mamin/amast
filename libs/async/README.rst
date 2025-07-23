@@ -29,7 +29,7 @@ Inspired by:
 Async Macros and Functions
 ==========================
 
-The async macros and functions below help create asynchronous functions,
+The async macros and functions below help create asynchronous functions/blocks,
 manage state, and handle control flow.
 
 Macros
@@ -37,25 +37,18 @@ Macros
 
 - **AM_ASYNC_BEGIN(me)**
 
-  Begins an asynchronous function and initializes the async state.
+  Begins an asynchronous function/block and initializes the async state.
   It takes a pointer ``me`` to the ``struct am_async`` managing the async state.
-
-- **AM_ASYNC_EXIT()**
-
-  Marks the end of the async function. This macro resets the async state
-  to the initial value, indicating that the function has completed.
 
 - **AM_ASYNC_END()**
 
-  Ends the asynchronous function, ensuring that completed or unexpected
-  states are handled correctly. It internally calls ``AM_ASYNC_EXIT()``
-  to reset the async state.
+  Ends the asynchronous function/block.
 
 - **AM_ASYNC_AWAIT(cond)**
 
   Awaits a specified condition ``cond`` before proceeding with execution.
-  If the condition is not met, the function returns and can be re-entered later.
-  This allows the async function to wait for external conditions without blocking.
+  If the condition is not met, the function/block returns and can be re-entered later.
+  This allows the async function/block to wait for external conditions without blocking.
 
 - **AM_ASYNC_CHAIN(call)**
 
@@ -65,15 +58,15 @@ Macros
 
 - **AM_ASYNC_YIELD()**
 
-  Yields control back to the caller without completing the function
-  This enables the async function to be resumed later from this point.
+  Yields control back to the caller without completing the function/block
+  This enables the async function/block to be resumed later from this point.
 
 Functions
 ---------
 
 - **void am_async_ctor(struct am_async *me)**
 
-  Initializes an `struct am_async`` structure by setting its ``state`` field
+  Initializes an ``struct am_async`` structure by setting its ``state`` field
   to ``AM_ASYNC_STATE_INIT``. This prepares the structure to be used in
   an async function.
 
@@ -84,48 +77,9 @@ Functions
 Usage Example
 =============
 
-The following example demonstrates how to use this async implementation in C.
-
-.. code-block:: c
-
-    #include "async.h"
-
-    struct my_async {
-        struct am_async async;
-        int foo;
-    };
-
-    void async_function(struct my_async *me) {
-        AM_ASYNC_BEGIN(me);
-
-        /* Await some condition before continuing */
-        AM_ASYNC_AWAIT(me->foo);
-
-        /* Yield control back to the caller */
-        AM_ASYNC_YIELD();
-
-        if (some_other_condition) {
-            /* Complete the function */
-            AM_ASYNC_EXIT();
-        }
-
-        /* Await yet another condition */
-        AM_ASYNC_AWAIT(yet_another_condition());
-
-        /* Complete the function */
-        AM_ASYNC_END();
-    }
-
-    int main() {
-        struct my_async me;
-        am_async_ctor(&me);
-
-        do {
-            async_function(&me)
-        } while (am_async_is_busy(&me))
-
-        return 0;
-    }
+Check `async unit tests <https://github.com/adel-mamin/amast/blob/main/libs/async/test.c>`_ and
+`async example application <https://github.com/adel-mamin/amast/blob/main/apps/examples/async/main.c>`_
+for usage examples.
 
 Notes
 =====
