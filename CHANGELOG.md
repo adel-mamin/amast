@@ -7,6 +7,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+## v0.12.0 - 23-July-2025
+
 ### Added
 
 - Assert that AM_HSM_HIERARCHY_DEPTH_MAX limit is not exceeded in HSM run time.
