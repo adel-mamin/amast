@@ -509,12 +509,15 @@ int am_event_flush_queue(struct am_queue *queue) {
     int cnt = 0;
     struct am_event_state *me = &am_event_state_;
 
+    int capacity = am_queue_get_capacity(queue);
+
     me->crit_enter();
 
     struct am_event **e = NULL;
     while ((e = am_queue_pop_front(queue)) != NULL) {
         me->crit_exit();
         ++cnt;
+        AM_ASSERT(cnt <= capacity);
         AM_ASSERT(*e);
         am_event_free(*e);
         me->crit_enter();

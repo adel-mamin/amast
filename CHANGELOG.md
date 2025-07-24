@@ -12,6 +12,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Assert that AO start-up is complete before event publishing.
   This is to make sure that all events subscriptions are made before
   event publishing is done.
+- Limit iterations in `am_event_flush_queue()` to the capacity of the given queue
 
 ### Changed
 
