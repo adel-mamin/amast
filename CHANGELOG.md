@@ -7,17 +7,21 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Remove unused macros from `libs/common/macros.h`
+
 ## v0.12.0 - 23-July-2025
 
 ### Added
 
-- Assert that AM_HSM_HIERARCHY_DEPTH_MAX limit is not exceeded in HSM run time.
+- Assert that `AM_HSM_HIERARCHY_DEPTH_MAX` limit is not exceeded in HSM run time.
 
 ### Changed
 
 - Optimize `am_ao_unsubscribe_all()` implementation
 - Merge `enum am_event_rc` into `enum am_rc`
-- Remove AM_MAY_ALIAS as redundant
+- Remove `AM_MAY_ALIAS` as redundant
 - Reduce onesize allocator initialization time.
   This is done by replacing freelist full initialization at initialization time with
   gradual initialization during the normal operation time.

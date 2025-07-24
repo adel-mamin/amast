@@ -83,41 +83,8 @@ AM_NORETURN void am_assert_failure(
 /** Checks if \p x is a power of two */
 #define AM_IS_POW2(x) (0 == (((x) - 1u) & (x)))
 
-/** Check if a floating point number is NaN */
-#define AM_ISNAN(x) ((x) != (x))
-
-/**
- * Determines whether the memory architecture of current processor is
- * little-endian.
- *
- * @retval true   little-endian
- * @retval false  not little-endian
- */
-#define AM_IS_LITTLE_ENDIAN() (((*(char *)"21") & 0xFF) == '2')
-
-/**
- * Determines whether the memory architecture of current processor is
- * big-endian.
- *
- * @retval true   big-endian
- * @retval false  not big-endian
- */
-#define AM_IS_BIG_ENDIAN() (((*(char *)"21") & 0xFF) == '1')
-
-/** Convert degrees to radians. */
-#define AM_DEG2RAD(x) ((x) * (PI / 180.))
-
-/** Convert radians to degrees. */
-#define AM_RAD2DEG(x) ((x) * (180. / PI))
-
 /** Do division and round up the result. */
 #define AM_DIV_CEIL(n, d) ((n) / (d) + ((n) % (d) != 0))
-
-/** Return number of bits in the representation of the given parameter. */
-#define AM_BITS_IN_REPRESENTATION(x) ((int)(sizeof(x) * CHAR_BIT))
-
-/** A value with a magnitude of to and the sign of from. */
-#define AM_COPYSIGN(to, from) (((from) > 0) ? (to) : -(to))
 
 /** Taken from http://nullprogram.com/blog/2015/02/17/ */
 #define AM_CONTAINER_OF(ptr, type, member) \
