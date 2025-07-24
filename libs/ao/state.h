@@ -27,6 +27,8 @@
 #ifndef AM_AO_STATE_H_INCLUDED
 #define AM_AO_STATE_H_INCLUDED
 
+#include <stdbool.h>
+
 #include "ao/ao.h"
 #include "bit/bit.h"
 
@@ -72,9 +74,9 @@ struct am_ao_state {
     struct am_ao_prio running_ao_prio;
 
     /** am_ao_start() calls were completed for all active objects */
-    unsigned startup_complete : 1;
+    bool startup_complete;
     /** safety net to catch missing am_ao_init_subscribe_list() call */
-    unsigned subscribe_list_set : 1;
+    bool subscribe_list_set;
 };
 
 extern struct am_ao_state am_ao_state_;

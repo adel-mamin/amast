@@ -7,6 +7,12 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Assert that AO start-up is complete before event publishing.
+  This is to make sure that all events subscriptions are made before
+  event publishing is done.
+
 ### Changed
 
 - Remove unused macros from `libs/common/macros.h`

@@ -63,6 +63,8 @@ static void am_ao_handle(void *ctx, const struct am_event *event) {
 bool am_ao_run_all(void) {
     struct am_ao_state *me = &am_ao_state_;
 
+    AM_ATOMIC_STORE_N(&me->startup_complete, true);
+
     bool dispatched = false;
     do {
         me->crit_enter();

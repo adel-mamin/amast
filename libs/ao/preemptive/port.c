@@ -79,10 +79,10 @@ static void am_ao_task(void *param) {
 bool am_ao_run_all(void) {
     struct am_ao_state *me = &am_ao_state_;
 
-    if (!me->startup_complete) {
+    if (!AM_ATOMIC_LOAD_N(&me->startup_complete)) {
         /* start all AOs */
         am_pal_unlock_all_tasks();
-        me->startup_complete = true;
+        AM_ATOMIC_STORE_N(&me->startup_complete, true);
     }
     /* wait all AOs to complete */
     am_pal_task_wait(AM_PAL_TASK_ID_MAIN);
