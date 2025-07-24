@@ -424,7 +424,7 @@ The more complex submachines can be multi state interconnected HSMs.
 The main purpose of submachines is code reuse.
 
 Here is an example of submachine with one reusable state *s1*.
-It shows two instances of *s1* called *s1/0* and *s1/1*.
+It shows two instances of *s1* called *s1_0* and *s1_1*.
 
 .. uml::
 
@@ -808,7 +808,7 @@ Same happens with the event **B** in the state **s2**.
 HSM State Reenter
 -----------------
 
-Demonstrates HSW state reenter with corresponding entry and exit actions performed on the state transition.
+Demonstrates HSM state reenter with corresponding entry and exit actions performed on the state transition.
 
 The source code is in `reenter.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/reenter.c>`_.
 
