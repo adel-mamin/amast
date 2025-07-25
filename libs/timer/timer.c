@@ -100,7 +100,6 @@ void am_timer_ctor(struct am_timer *timer, int id, int domain, void *owner) {
 void am_timer_arm_ticks(struct am_timer *timer, int ticks, int interval) {
     AM_ASSERT(timer);
     AM_ASSERT(AM_EVENT_HAS_USER_ID(timer));
-    AM_ASSERT(timer->event.id > 0);
     struct am_timer_state *me = &am_timer_;
     AM_ASSERT(timer->event.tick_domain < AM_COUNTOF(me->domains));
     AM_ASSERT(ticks >= 0);
