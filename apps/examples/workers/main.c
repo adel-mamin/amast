@@ -69,15 +69,9 @@ struct job_done {
     int worker;
 };
 
-struct stopped {
-    struct am_event event;
-    int worker;
-};
-
 typedef union events {
-    struct job_req req;     /* cppcheck-suppress unusedStructMember */
-    struct job_done done;   /* cppcheck-suppress unusedStructMember */
-    struct stopped stopped; /* cppcheck-suppress unusedStructMember */
+    struct job_req req;   /* cppcheck-suppress unusedStructMember */
+    struct job_done done; /* cppcheck-suppress unusedStructMember */
 } events_t;
 
 static struct am_ao_subscribe_list m_pubsub_list[EVT_PUB_MAX];
@@ -95,6 +89,7 @@ struct worker {
 static struct worker m_workers[AM_WORKERS_NUM_MAX];
 
 static const struct am_event m_evt_stop = {.id = EVT_STOP};
+static const struct am_event m_evt_stopped = {.id = EVT_STOPPED};
 static const struct am_event m_evt_start = {.id = EVT_START};
 
 static void work(int cycles) {
@@ -117,11 +112,7 @@ static int worker_proc(struct worker *me, const struct am_event *event) {
         return AM_HSM_HANDLED();
     }
     case EVT_STOP: {
-        struct stopped *stopped = (struct stopped *)am_event_allocate(
-            EVT_STOPPED, sizeof(struct stopped)
-        );
-        stopped->worker = me->id;
-        am_ao_publish(&stopped->event);
+        am_ao_publish(&m_evt_stopped);
         am_ao_stop(&me->ao);
         return AM_HSM_HANDLED();
     }
