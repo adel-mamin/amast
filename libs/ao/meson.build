@@ -45,13 +45,13 @@ libao_preemptive = library(
 
 libao_cooperative_dep = declare_dependency(
     sources: [ao_src, ao_src_cooperative],
-    dependencies: [libevent_dep, libhsm_dep, libtimer_dep],
+    dependencies: [libevent_dep, libhsm_dep, libtimer_dep, libbit_dep],
     include_directories: [inc, '.']
 )
 
 libao_preemptive_dep = declare_dependency(
     sources: [ao_src, ao_src_preemptive],
-    dependencies: [libevent_dep, libhsm_dep, libtimer_dep],
+    dependencies: [libevent_dep, libhsm_dep, libtimer_dep, libbit_dep],
     include_directories: [inc, '.']
 )
 

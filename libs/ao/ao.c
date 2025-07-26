@@ -291,6 +291,7 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
 
     struct am_timer_state_cfg cfg_timer = {
         .post_unsafe = (am_timer_post_unsafe_fn)am_ao_post_fifo_unsafe,
+        .publish = (am_timer_publish_fn)am_ao_publish,
         .crit_enter = cfg->crit_enter,
         .crit_exit = cfg->crit_exit,
     };
