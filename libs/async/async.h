@@ -156,7 +156,9 @@ extern "C" {
  *
  * @param me  the async state to construct
  */
-void am_async_ctor(struct am_async *me);
+static inline void am_async_ctor(struct am_async *me) {
+    me->state = AM_ASYNC_STATE_INIT;
+}
 
 /**
  * Check if async operation is in progress.
@@ -166,7 +168,9 @@ void am_async_ctor(struct am_async *me);
  * @return true   the async operation is in progress
  * @return false  the async operation is not in progress
  */
-bool am_async_is_busy(const struct am_async *me);
+static inline bool am_async_is_busy(const struct am_async *me) {
+    return me->state != AM_ASYNC_STATE_INIT;
+}
 
 #ifdef __cplusplus
 }

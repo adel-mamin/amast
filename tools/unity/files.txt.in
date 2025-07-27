@@ -41,7 +41,6 @@
 @SRC_ROOT@/libs/timer/test.c
 
 @SRC_ROOT@/libs/async/async.h
-@SRC_ROOT@/libs/async/async.c
 @SRC_ROOT@/libs/async/test.c
 
 @SRC_ROOT@/libs/ringbuf/ringbuf.h
