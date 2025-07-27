@@ -66,7 +66,7 @@ struct am_async {
  *
  * @param me  pointer to the `struct am_async` managing the async state
  */
-#define AM_ASYNC_BEGIN(me)                              \
+#define AM_ASYNC_BEGIN(me) {                            \
     struct am_async *am_async_ = (struct am_async *)me; \
     switch (am_async_->state) {                         \
     default:                                            \
@@ -81,7 +81,7 @@ struct am_async {
  *
  * Should be called at the end of async function.
  */
-#define AM_ASYNC_END() } do {} while (0)
+#define AM_ASYNC_END() }} do {} while (0)
 
 /**
  * Await a condition before proceeding.

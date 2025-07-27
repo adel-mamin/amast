@@ -19,6 +19,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - Remove unused macros from `libs/common/macros.h`.
 - Use static event `m_evt_stopped` in `apps/examples/workers`.
+- Force code block within `AM_ASYNC_BEGIN()` and `AM_ASYNC_END()`.
 
 ## v0.12.0 - 23-July-2025
 
