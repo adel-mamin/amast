@@ -45,7 +45,7 @@
 #include "common/types.h" /* IWYU pragma: keep */
 
 /**
- * Init value of async function state.
+ * Init value of async function/block state.
  *
  * Only used by implementation.
  * Not to be used directly by user code.
@@ -60,9 +60,9 @@ struct am_async {
 /* clang-format off */
 
 /**
- * Mark the beginning of async function.
+ * Mark the beginning of async function/block.
  *
- * Should be called at the beginning of async function.
+ * Should be called at the beginning of async function/block.
  *
  * @param me  pointer to the `struct am_async` managing the async state
  */
@@ -77,9 +77,9 @@ struct am_async {
         am_async_->state = AM_ASYNC_STATE_INIT
 
 /**
- * Mark the end of async function block.
+ * Mark the end of async function/block.
  *
- * Should be called at the end of async function.
+ * Should be called at the end of async function/block.
  */
 #define AM_ASYNC_END() }} do {} while (0)
 
@@ -132,7 +132,7 @@ struct am_async {
 /**
  * Yield control back to caller.
  *
- * Allows the async function to yield.
+ * Allows the async function/block to yield.
  *
  * Control resumes after this point, when the function is called again.
  */
