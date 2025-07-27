@@ -81,7 +81,7 @@ static void log_queue(
         i,
         len,
         cap,
-        event_to_str(event->id)
+        event ? event_to_str(event->id) : "NULL"
     );
 }
 
