@@ -25,7 +25,7 @@
  */
 
 /*
- * Cigarette smokers problem implementation.
+ * Cigarette smokers problem solution.
  */
 
 #include <stdio.h>
@@ -34,8 +34,6 @@
 #include <string.h>
 
 #include "common/alignment.h"
-#include "common/compiler.h"
-#include "common/constants.h"
 #include "common/macros.h"
 #include "event/event.h"
 #include "timer/timer.h"
@@ -103,69 +101,11 @@ struct smoker {
 
 static struct smoker m_smokers[AM_SMOKERS_NUM_MAX];
 
-static unsigned long next = 1;
-
 static int myrand(void) {
+    static unsigned long next = 1;
+
     next = next * 1103515245 + 12345;
     return (int)((unsigned)(next / 65536) % 3);
-}
-
-static const char *event_to_str(int id) {
-    if (EVT_RESOURCE == id) return "EVT_RESOURCE";
-    if (EVT_DONE_SMOKING == id) return "EVT_DONE_SMOKING";
-    if (EVT_DONE_SMOKING_TIMER == id) return "EVT_DONE_SMOKING_TIMER";
-    if (EVT_STOP == id) return "EVT_STOP";
-    if (EVT_STOPPED == id) return "EVT_STOPPED";
-    if (EVT_TIMEOUT == id) return "EVT_TIMEOUT";
-    if (EVT_START == id) return "EVT_START";
-    AM_ASSERT(0);
-}
-
-static void log_pool(
-    int pool_index, int event_index, const struct am_event *event, int size
-) {
-    (void)size;
-    am_pal_printf(
-        "pool %d index %d event %s (%p)\n",
-        pool_index,
-        event_index,
-        event_to_str(event->id),
-        (const void *)event
-    );
-}
-
-static void log_queue(
-    const char *name, int i, int len, int cap, const struct am_event *event
-) {
-    am_pal_printf(
-        "name %s, index %d, len %d cap %d event %s\n",
-        name,
-        i,
-        len,
-        cap,
-        event ? event_to_str(event->id) : "NULL"
-    );
-}
-
-AM_NORETURN void am_assert_failure(
-    const char *assertion, const char *file, int line
-) {
-    static int nasserts = 0;
-    if (nasserts) {
-        __builtin_trap();
-    }
-    ++nasserts;
-    am_pal_printf_unsafe(
-        AM_COLOR_RED "ASSERT: %s (%s:%d)(task %d)\n" AM_COLOR_RESET,
-        assertion,
-        file,
-        line,
-        am_pal_task_get_own_id()
-    );
-    am_event_log_pools_unsafe(/*num=*/-1, log_pool);
-    am_ao_log_event_queues_unsafe(/*num=*/-1, log_queue);
-    am_pal_flush();
-    __builtin_trap();
 }
 
 static int smoker_top(struct smoker *me, const struct am_event *event);

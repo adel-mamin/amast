@@ -147,7 +147,6 @@ workers = executable(
 smokers = executable(
     'smokers',
     ['smokers' / 'main.c'],
-    c_args : ['-DAM_ASSERT_FAILURE_ENABLED=0'],
     dependencies: [
         libhsm_dep,
         libao_preemptive_dep,
