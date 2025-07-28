@@ -605,4 +605,8 @@ AM_ASSERT_STATIC(LONG_MAX == ((1ULL << (unsigned)(LONG_BITS - 1)) - 1));
 /** Atomic load operation. */
 #define AM_ATOMIC_LOAD_N(ptr) __atomic_load_n(ptr, __ATOMIC_SEQ_CST)
 
+/** Atomic fetch and add operation. */
+#define AM_ATOMIC_FETCH_ADD(ptr, val) \
+    __atomic_fetch_add(ptr, val, __ATOMIC_SEQ_CST)
+
 #endif /* AM_COMPILER_H_INCLUDED */
