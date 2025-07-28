@@ -89,10 +89,10 @@ AM_NORETURN void am_assert_failure(
     const char *assertion, const char *file, int line
 ) {
     static int nasserts = 0;
-    if (nasserts) {
+    if (AM_ATOMIC_LOAD_N(&nasserts)) {
         __builtin_trap();
     }
-    ++nasserts;
+    AM_ATOMIC_FETCH_ADD(&nasserts, 1);
     am_pal_printf_unsafe(
         AM_COLOR_RED "ASSERT: %s (%s:%d)(task %d)\n" AM_COLOR_RESET,
         assertion,
