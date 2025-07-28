@@ -14,6 +14,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
   event publishing is done.
 - Limit iterations in `am_event_flush_queue()` to the capacity of the given queue.
 - Event publish callback to timer initialization config in `am_ao_state_ctor()`.
+- [Cigarette Smokers Problem](https://en.wikipedia.org/wiki/Cigarette_smokers_problem) solution.
 
 ### Changed
 

@@ -135,7 +135,6 @@ fork = executable(
 workers = executable(
     'workers',
     ['workers' / 'main.c'],
-    c_args : ['-DAM_ASSERT_FAILURE_ENABLED=0'],
     dependencies: [
         libhsm_dep,
         libao_preemptive_dep,
@@ -145,6 +144,19 @@ workers = executable(
     ]
 )
 
+smokers = executable(
+    'smokers',
+    ['smokers' / 'main.c'],
+    c_args : ['-DAM_ASSERT_FAILURE_ENABLED=0'],
+    dependencies: [
+        libhsm_dep,
+        libao_preemptive_dep,
+        libpal_dep,
+        libassert_dep,
+    ]
+)
+
 if pal != 'stubs'
+    test('smokers', smokers, suite: 'smokers')
     test('workers', workers, suite: 'workers')
 endif
