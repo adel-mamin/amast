@@ -151,6 +151,12 @@ struct am_fsm {
  * It should never be returned in response to
  * #AM_EVT_FSM_ENTRY or #AM_EVT_FSM_EXIT events.
  *
+ * AM_FSM_TRAN(s) is converted to
+ *
+ * @code{.c}
+ * (((struct am_fsm *)me)->state = (am_fsm_state_fn)(s), AM_RC_TRAN)
+ * @endcode
+ *
  * @param s  the new state of type #am_fsm_state_fn
  */
 #define AM_FSM_TRAN(s) (AM_FSM_SET_(s), AM_RC_TRAN)
@@ -162,6 +168,12 @@ struct am_fsm {
  *
  * Do not redispatch the same event more than once within same
  * am_fsm_dispatch() call.
+ *
+ * AM_FSM_TRAN_REDISPATCH(s) is converted to
+ *
+ * @code{.c}
+ * (((struct am_fsm *)me)->state = (am_fsm_state_fn)(s), AM_RC_TRAN_REDISPATCH)
+ * @endcode
  *
  * @param s  the new state of type #am_fsm_state_fn
  */

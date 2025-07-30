@@ -157,14 +157,19 @@ struct am_hsm_state {
  * Construct HSM state from HSM event handler and optionally
  * HSM submachine instance.
  *
- * AM_HSM_STATE_CTOR(s)     is converted to
- *                          @code{.c}
- *                          (struct am_hsm_state){.fn = s, .smi = 0}
- *                          @endcode
- * AM_HSM_STATE_CTOR(s, i)  is converted to
- *                          @code{.c}
- *                          (struct am_hsm_state){.fn = s, .smi = i}
- *                          @endcode
+ * Examples:
+ *
+ * AM_HSM_STATE_CTOR(s) is converted to
+ *
+ * @code{.c}
+ * (struct am_hsm_state){.fn = s, .smi = 0}
+ * @endcode
+ *
+ * AM_HSM_STATE_CTOR(s, i) is converted to
+ *
+ * @code{.c}
+ * (struct am_hsm_state){.fn = s, .smi = i}
+ * @endcode
  *
  * @def AM_HSM_STATE_CTOR(s, i)
  *
@@ -260,6 +265,22 @@ struct am_hsm {
  * the provided state. The target state in this case must be
  * a substate of the current state.
  *
+ * Examples:
+ *
+ * AM_HSM_TRAN(s) is converted to
+ *
+ * @code{.c}
+ * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = 0},
+ *  ((struct am_hsm *)me)->smi = (uint8_t)i, AM_RC_TRAN)
+ * @endcode
+ *
+ * AM_HSM_TRAN(s, i) is converted to
+ *
+ * @code{.c}
+ * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = i},
+ *  ((struct am_hsm *)me)->smi = (uint8_t)i, AM_RC_TRAN)
+ * @endcode
+ *
  * Below are the parameters to the macro:
  *
  * @def AM_HSM_TRAN(s, i)
@@ -284,6 +305,22 @@ struct am_hsm {
  * Do not redispatch the same event more than once within same
  * am_hsm_dispatch() call.
  *
+ * Examples:
+ *
+ * AM_HSM_TRAN_REDISPATCH(s) is converted to
+ *
+ * @code{.c}
+ * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = 0},
+ *  ((struct am_hsm *)me)->smi = (uint8_t)i, AM_RC_TRAN_REDISPATCH)
+ * @endcode
+ *
+ * AM_HSM_TRAN_REDISPATCH(s, i) is converted to
+ *
+ * @code{.c}
+ * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = i},
+ *  ((struct am_hsm *)me)->smi = (uint8_t)i, AM_RC_TRAN_REDISPATCH)
+ * @endcode
+ *
  * Below are the parameters to the macro:
  *
  * @def AM_HSM_TRAN_REDISPATCH(s, i)
@@ -306,6 +343,22 @@ struct am_hsm {
  *
  * If no explicit superstate exists, then the top superstate am_hsm_top()
  * must be used.
+ *
+ * Examples:
+ *
+ * AM_HSM_SUPER(s) is converted to
+ *
+ * @code{.c}
+ * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = 0},
+ *  ((struct am_hsm *)me)->smi = (uint8_t)i, AM_RC_SUPER)
+ * @endcode
+ *
+ * AM_HSM_SUPER(s, i) is converted to
+ *
+ * @code{.c}
+ * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = i},
+ *  ((struct am_hsm *)me)->smi = (uint8_t)i, AM_RC_SUPER)
+ * @endcode
  *
  * Below are the parameters to the macro:
  *

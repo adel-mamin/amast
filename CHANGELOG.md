@@ -16,6 +16,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Event publish callback to timer initialization config in `am_ao_state_ctor()`.
 - [Cigarette Smokers Problem](https://en.wikipedia.org/wiki/Cigarette_smokers_problem) solution.
 - New `AM_ATOMIC_FETCH_ADD()` macro for atomic addition.
+- Clarification examples to FSM and HSW return macros.
 
 ### Changed
 
