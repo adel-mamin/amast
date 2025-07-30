@@ -101,7 +101,7 @@ struct smoker {
 
 static struct smoker m_smokers[AM_SMOKERS_NUM_MAX];
 
-static int myrand(void) {
+static int rand_012(void) {
     static unsigned long next = 1;
 
     next = next * 1103515245 + 12345;
@@ -257,7 +257,7 @@ static void publish_resource(const struct agent *me, unsigned resource) {
 }
 
 static void publish_resources(struct agent *me) {
-    int r = myrand();
+    int r = rand_012();
     switch (r) {
     case 0:
         publish_resource(me, PAPER);
