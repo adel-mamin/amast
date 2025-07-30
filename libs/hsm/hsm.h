@@ -44,10 +44,6 @@
 #include "common/types.h"
 #include "event/event.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** HSM events. */
 enum am_hsm_evt_id {
     /**
@@ -370,6 +366,10 @@ struct am_hsm {
  */
 #define AM_HSM_SUPER(...) \
     AM_GET_MACRO_2_(__VA_ARGS__, AM_SUPER2_, AM_SUPER1_, _)(__VA_ARGS__)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Synchronous dispatch of event to a given HSM.

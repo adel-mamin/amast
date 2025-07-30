@@ -24,6 +24,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Use static event `m_evt_stopped` in `apps/examples/workers`.
 - Force code block within `AM_ASYNC_BEGIN()` and `AM_ASYNC_END()`.
 - Inline `am_async_is_busy()` and `am_async_ctor()`.
+- Reduce the scope of extern "C" in `hsm.h` and `fsm.h` files.
 
 ### Fixed
 

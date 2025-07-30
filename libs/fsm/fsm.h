@@ -42,10 +42,6 @@
 #include "common/types.h"
 #include "event/event.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** FSM events. */
 enum am_fsm_evt_id {
     /**
@@ -178,6 +174,10 @@ struct am_fsm {
  * @param s  the new state of type #am_fsm_state_fn
  */
 #define AM_FSM_TRAN_REDISPATCH(s) (AM_FSM_SET_(s), AM_RC_TRAN_REDISPATCH)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Synchronous dispatch of event to a given FSM.
