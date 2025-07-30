@@ -29,6 +29,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Fixed
 
 - Check for NULL event pointer in `log_queue()` in DPP example application.
+- Fix documentation of `prio` parameter of `am_pal_task_create()` API.
 
 ## v0.12.0 - 23-July-2025
 
