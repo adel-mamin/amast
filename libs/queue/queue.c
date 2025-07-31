@@ -47,7 +47,7 @@ void am_queue_ctor(
 
     memset(queue, 0, sizeof(*queue));
 
-    queue->isize = AM_ALIGN_SIZE(isize, alignment);
+    queue->isize = (int)AM_ALIGN_SIZE(isize, alignment);
 
     AM_ASSERT(blk_size >= queue->isize);
 

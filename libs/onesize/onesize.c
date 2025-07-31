@@ -201,7 +201,7 @@ void am_onesize_ctor(struct am_onesize *hnd, const struct am_onesize_cfg *cfg) {
     hnd->pool = cfg->pool;
     hnd->block_size =
         AM_MAX(cfg->block_size, (int)sizeof(struct am_slist_item));
-    hnd->block_size = AM_ALIGN_SIZE(hnd->block_size, alignment);
+    hnd->block_size = (int)AM_ALIGN_SIZE(hnd->block_size, alignment);
     hnd->nbump = 0;
 
     AM_ASSERT(hnd->pool.size >= hnd->block_size);

@@ -74,7 +74,7 @@
  * @return the pointer alignment [bytes]
  */
 #define AM_ALIGNOF_PTR(ptr) \
-    ((int)(1U << (unsigned)__builtin_ctz(AM_CAST(unsigned, ptr))))
+    ((int)(1U << (unsigned)__builtin_ctzl(AM_CAST(uintptr_t, ptr))))
 
 /**
  * Align pointer to the bigger value, which has \p align alignment.
@@ -110,8 +110,7 @@
  *
  * `AM_ALIGN_SIZE(5, 4) == 8`
  */
-#define AM_ALIGN_SIZE(size, align)                       \
-    ((int)(((unsigned)(size) + (unsigned)(align) - 1u) & \
-           (unsigned)~(unsigned)((unsigned)(align) - 1u)))
+#define AM_ALIGN_SIZE(size, align) \
+    (((size_t)(size) + (size_t)(align) - 1) & ~(size_t)((align) - 1))
 
 #endif /* AM_ALIGNMENT_H_INCLUDED */
