@@ -109,6 +109,8 @@ extern "C" {
 /**
  * Construct singly linked list.
  *
+ * Must be called before calling any other singly linked list API functions.
+ *
  * @param list  the list
  */
 void am_slist_ctor(struct am_slist *list);
@@ -135,6 +137,8 @@ bool am_slist_item_is_linked(const struct am_slist_item *item);
 
 /**
  * Construct list item.
+ *
+ * Initializes the list item as not belonging to any list.
  *
  * @param item  the list item to construct.
  */
@@ -191,6 +195,7 @@ typedef bool (*am_slist_item_found_fn)(
  * @param list      the list
  * @param is_found  the predicate callback
  * @param context   the context, which is provided verbatim to predicate
+ *                  callback
  *
  * @return the item, found by the predicate callback function or
  *         NULL, if nothing was found.
@@ -206,7 +211,7 @@ struct am_slist_item *am_slist_find(
  *
  * @param list  the list
  *
- * @return the item at the front of the list or NULL, if list is empty
+ * @return the item at the front of the list or NULL, if the list is empty
  */
 struct am_slist_item *am_slist_peek_front(const struct am_slist *list);
 
@@ -265,7 +270,7 @@ bool am_slist_owns(
  * Get next list item.
  *
  * @param list  the list
- * @param item  the item to be checked
+ * @param item  return next list item after this one
  *
  * @return the next list item or NULL
  */

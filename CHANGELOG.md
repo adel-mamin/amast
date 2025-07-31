@@ -31,6 +31,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Check for NULL event pointer in `log_queue()` in DPP example application.
 - Fix documentation of `prio` parameter of `am_pal_task_create()` API.
 - Use proper type casting in `AM_ALIGNOF_PTR()` and `AM_ALIGN_SIZE()` implementations.
+- Fix `slist` API documentation.
 
 ## v0.12.0 - 23-July-2025
 
