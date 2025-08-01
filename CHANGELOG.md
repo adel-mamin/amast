@@ -17,6 +17,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - [Cigarette Smokers Problem](https://en.wikipedia.org/wiki/Cigarette_smokers_problem) solution.
 - New `AM_ATOMIC_FETCH_ADD()` macro for atomic addition.
 - Clarification examples to FSM and HSW return macros.
+- `AM_CONTAINER_OF()` macro unit test.x
 
 ### Changed
 

@@ -83,8 +83,19 @@ static void test_align(void) {
     }
 }
 
+static void test_container_of(void) {
+    struct foo {
+        int a;
+        int b;
+    };
+    struct foo foo = {.a = 1, .b = 2};
+    int *bp = &foo.b;
+    AM_ASSERT(1 == AM_CONTAINER_OF(bp, struct foo, b)->a);
+}
+
 int main(void) {
     test_align();
+    test_container_of();
 
     return 0;
 }
