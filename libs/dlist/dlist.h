@@ -54,16 +54,35 @@ enum am_dlist_direction {
  * a doubly linked list item:
  *
  * [1]
- * struct foo {int bar; struct am_dlist_item list;}
+ * @code{.c}
+ * struct foo {
+ *     int bar;
+ *     struct am_dlist_item list;
+ * };
+ * @endcode
  *
  * [2]
- * struct foo {int bar; }
- * struct foo_item {struct foo foo; struct am_dlist_item list}
+ * @code{.c}
+ * struct foo {
+ *     int bar;
+ * };
+ *
+ * struct foo_item {
+ *     struct foo foo;
+ *     struct am_dlist_item list;
+ * };
+ * @endcode
  *
  * Also `struct foo` can be part of several independent lists.
  * For example,
  *
- * struct foo {int bar; struct am_dlist_item list1; struct am_dlist_item list2;}
+ * @code{.c}
+ * struct foo {
+ *     int bar;
+ *     struct am_dlist_item list1;
+ *     struct am_dlist_item list2;
+ * };
+ * @endcode
  */
 struct am_dlist_item {
     /** next item in list */
@@ -92,6 +111,8 @@ extern "C" {
 /**
  * List construction.
  *
+ * Must be called before calling any other doubly linked list API functions.
+ *
  * @param list  the list
  */
 void am_dlist_ctor(struct am_dlist *list);
@@ -119,6 +140,8 @@ bool am_dlist_item_is_linked(const struct am_dlist_item *item);
 /**
  * Construct list item.
  *
+ * Initializes the list item as not being part to any list.
+ *
  * @param item  list item to construct
  */
 void am_dlist_item_ctor(struct am_dlist_item *item);
@@ -127,7 +150,7 @@ void am_dlist_item_ctor(struct am_dlist_item *item);
  * Give next item after the given one.
  *
  * Can be used to iterate a list. However if item pop operation is expected
- * during the iteration, then list iterator APIs are to be used instead.
+ * during the iteration, then list iterator APIs must be used instead.
  *
  * @param list  the list
  * @param item  the item next to this one is returned
@@ -142,7 +165,7 @@ struct am_dlist_item *am_dlist_next(
  * Give previous item for the given one.
  *
  * Can be used to iterate a list. However if item pop operation is expected
- * during the iteration, then list iterator APIs are to be used instead.
+ * during the iteration, then list iterator APIs must be used instead.
  *
  * @param list  the list
  * @param item  the item previous to this one is returned
@@ -241,6 +264,8 @@ struct am_dlist_item *am_dlist_peek_back(struct am_dlist *list);
 
 /**
  * Predicate callback type that tells if item is found.
+ *
+ * Used by am_dlist_find() API.
  *
  * @param context  the predicate context
  * @param item     item to analyze

@@ -32,6 +32,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Fix documentation of `prio` parameter of `am_pal_task_create()` API.
 - Use proper type casting in `AM_ALIGNOF_PTR()` and `AM_ALIGN_SIZE()` implementations.
 - Fix `slist` API documentation.
+- Fix `dlist` API documentation.
 
 ## v0.12.0 - 23-July-2025
 

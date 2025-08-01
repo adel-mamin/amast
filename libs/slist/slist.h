@@ -138,7 +138,7 @@ bool am_slist_item_is_linked(const struct am_slist_item *item);
 /**
  * Construct list item.
  *
- * Initializes the list item as not belonging to any list.
+ * Initializes the list item as not being part to any list.
  *
  * @param item  the list item to construct.
  */
