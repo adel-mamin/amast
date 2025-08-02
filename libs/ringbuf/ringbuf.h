@@ -64,6 +64,8 @@ extern "C" {
 /**
  * Construct ring buffer.
  *
+ * Must be called before calling any other ring buffer API.
+ *
  * @param rb        the ring buffer
  * @param buf       the ring buffer's memory
  * @param buf_size  the ring buffer's memory size [bytes]
