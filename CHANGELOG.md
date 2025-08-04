@@ -7,6 +7,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Reworked libuv based implementation of `am_pal_time_get_ms()`.
+
 ## v0.13.0 - 3-August-2025
 
 ### Added
