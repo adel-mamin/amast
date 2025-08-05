@@ -173,7 +173,7 @@ as second parameter.
 The dispatching is the synchronous procedure, which means that by the time
 the function returns the event is processed by the state machine.
 If event triggers a state transition, then the state transition including
-all exit, entry and init actions is also complete.
+all exit, entry and init actions are also complete.
 
 Event Propagation
 =================
