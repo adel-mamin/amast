@@ -42,7 +42,8 @@
 
 /** Onesize memory allocator descriptor. */
 struct am_onesize {
-    struct am_blk pool; /**< the pool */
+    void *pool_beg;     /**< the pool memory begin  */
+    void *pool_end;     /**< the pool memory end */
     int block_size;     /**< maximum size of allocated block [bytes] */
     struct am_slist fl; /**< list of non-allocated memory blocks (free list) */
     int nfree;          /**< current number of blocks in free list */

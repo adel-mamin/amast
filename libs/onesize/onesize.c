@@ -28,6 +28,7 @@
  * onesize memory allocator implementation
  */
 
+#include <stdint.h>
 #include <string.h>
 
 #include "common/compiler.h"
@@ -38,10 +39,10 @@
 #include "onesize/onesize.h"
 
 static void am_assert_memptr_validity(struct am_onesize *hnd, const void *ptr) {
-    AM_ASSERT(ptr >= hnd->pool.ptr);
-    AM_ASSERT(ptr < (void *)((char *)hnd->pool.ptr + hnd->pool.size));
-    int offset = (int)((const char *)ptr - (char *)hnd->pool.ptr);
-    AM_ASSERT(((int)offset % hnd->block_size) == 0);
+    AM_ASSERT(ptr >= hnd->pool_beg);
+    AM_ASSERT(ptr < hnd->pool_end);
+    uintptr_t offset = (uintptr_t)((const char *)ptr - (char *)hnd->pool_beg);
+    AM_ASSERT((offset % (uintptr_t)hnd->block_size) == 0);
 }
 
 void *am_onesize_allocate_x(struct am_onesize *hnd, int margin) {
@@ -72,7 +73,7 @@ void *am_onesize_allocate_x(struct am_onesize *hnd, int margin) {
         }
     } else {
         AM_ASSERT(hnd->nbump < hnd->ntotal);
-        ptr = (char *)hnd->pool.ptr + hnd->block_size * hnd->nbump;
+        ptr = (char *)hnd->pool_beg + hnd->block_size * hnd->nbump;
         ++hnd->nbump;
     }
 
@@ -131,7 +132,7 @@ void am_onesize_iterate_over_allocated_unsafe(
     AM_ASSERT(cb);
     AM_ASSERT(num != 0);
 
-    char *ptr = (char *)hnd->pool.ptr;
+    char *ptr = (char *)hnd->pool_beg;
     if (num < 0) {
         num = hnd->nbump;
     }
@@ -198,13 +199,16 @@ void am_onesize_ctor(struct am_onesize *hnd, const struct am_onesize_cfg *cfg) {
 
     memset(hnd, 0, sizeof(*hnd));
 
-    hnd->pool = cfg->pool;
     hnd->block_size =
         AM_MAX(cfg->block_size, (int)sizeof(struct am_slist_item));
     hnd->block_size = (int)AM_ALIGN_SIZE(hnd->block_size, alignment);
-    hnd->nbump = 0;
 
-    AM_ASSERT(hnd->pool.size >= hnd->block_size);
+    AM_ASSERT(cfg->pool.size >= hnd->block_size);
+    hnd->ntotal = cfg->pool.size / hnd->block_size;
+    hnd->nfree = hnd->nfree_min = hnd->ntotal;
+    hnd->pool_beg = cfg->pool.ptr;
+    hnd->pool_end = (char *)cfg->pool.ptr + hnd->ntotal * hnd->block_size;
+    hnd->nbump = 0;
 
     if (cfg->crit_enter && cfg->crit_exit) {
         hnd->crit_enter = cfg->crit_enter;
@@ -215,6 +219,4 @@ void am_onesize_ctor(struct am_onesize *hnd, const struct am_onesize_cfg *cfg) {
     }
 
     am_slist_ctor(&hnd->fl);
-    hnd->ntotal = hnd->pool.size / hnd->block_size;
-    hnd->nfree = hnd->nfree_min = hnd->ntotal;
 }
