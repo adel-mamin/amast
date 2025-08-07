@@ -27,6 +27,7 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
 #include "event/event.h"
@@ -35,7 +36,7 @@
 
 struct spy_hsm {
     struct am_hsm hsm;
-    void (*log)(const char *fmt, ...);
+    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
     char log_buf[256];
 };
 
@@ -61,7 +62,7 @@ static enum am_rc spy_hsm_init(
     return AM_HSM_TRAN(spy_hsm_s);
 }
 
-static void spy_ctor(void (*log)(const char *fmt, ...)) {
+static void spy_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
     struct spy_hsm *me = &m_spy_hsm;
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(spy_hsm_init));
     me->log = log;
@@ -76,7 +77,7 @@ static void spy_hsm_cb(struct am_hsm *hsm, const struct am_event *event) {
     AM_ASSERT(0);
 }
 
-static void spy_hsm_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void spy_hsm_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(m_spy_hsm.log_buf, (int)sizeof(m_spy_hsm.log_buf), fmt, ap);

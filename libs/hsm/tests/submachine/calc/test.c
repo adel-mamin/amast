@@ -29,6 +29,7 @@
 #include <string.h>
 #include <math.h> /* IWYU pragma: keep */
 
+#include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
 #include "strlib/strlib.h"
@@ -39,7 +40,7 @@
 
 static char m_calc_log_buf[256];
 
-static void test_calc_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void test_calc_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(m_calc_log_buf, (int)sizeof(m_calc_log_buf), fmt, ap);

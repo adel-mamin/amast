@@ -24,6 +24,7 @@
  * SOFTWARE.
  */
 
+#include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
 #include "hsm/hsm.h"
@@ -90,7 +91,7 @@
 
 struct complex_sm {
     struct am_hsm hsm;
-    void (*log)(const char *fmt, ...);
+    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
 };
 
 static struct complex_sm m_complex_sm;
@@ -317,7 +318,7 @@ static enum am_rc complex_sm_init(
     return AM_HSM_TRAN(cs_s1, SM_1);
 }
 
-void complex_sm_ctor(void (*log)(const char *fmt, ...)) {
+void complex_sm_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
     struct complex_sm *me = &m_complex_sm;
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(complex_sm_init));
     me->log = log;

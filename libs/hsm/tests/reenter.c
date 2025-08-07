@@ -27,6 +27,7 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
 #include "event/event.h"
@@ -36,7 +37,7 @@
 
 struct reenter_hsm {
     struct am_hsm hsm;
-    void (*log)(const char *fmt, ...);
+    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
     char log_buf[256];
 };
 
@@ -99,14 +100,16 @@ static enum am_rc reenter_hsm_init(
     return AM_HSM_TRAN(reenter_hsm_s);
 }
 
-static void reenter_hsm_ctor(void (*log)(const char *fmt, ...)) {
+static void reenter_hsm_ctor(
+    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)
+) {
     struct reenter_hsm *me = &m_reenter_hsm;
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(reenter_hsm_init));
     me->log = log;
     me->log_buf[0] = '\0';
 }
 
-static void reenter_hsm_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void reenter_hsm_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(

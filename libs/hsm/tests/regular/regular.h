@@ -27,7 +27,9 @@
 #ifndef REGULAR_H_INCLUDED
 #define REGULAR_H_INCLUDED
 
+#include "common/compiler.h"
+
 extern struct am_hsm *g_regular;
-void regular_ctor(void (*log)(const char *fmt, ...));
+void regular_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...));
 
 #endif /* REGULAR_H_INCLUDED */

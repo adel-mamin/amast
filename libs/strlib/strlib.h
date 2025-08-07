@@ -38,6 +38,8 @@
 
 #include <stdarg.h>
 
+#include "common/compiler.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -109,7 +111,7 @@ int str_lcat(char *dst, const char *src, int lim);
  * @return Returns the total length of the string they tried to create.
  *         It means the initial length of dst plus the length of src.
  */
-int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap);
+AM_PRINTF(3, 0) int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap);
 
 #ifdef __cplusplus
 }

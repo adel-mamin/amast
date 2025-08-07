@@ -87,7 +87,6 @@ int str_lcat(char *dst, const char *src, int lim) {
     return (int)(lim + (s - p - 1));
 }
 
-AM_DISABLE_WARNING_SUGGEST_ATTRIBUTE_FORMAT()
 int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap) {
     AM_ASSERT(dst);
     AM_ASSERT(lim > 0);
@@ -104,4 +103,3 @@ int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap) {
 
     return (int)len;
 }
-AM_ENABLE_WARNING_SUGGEST_ATTRIBUTE_FORMAT()

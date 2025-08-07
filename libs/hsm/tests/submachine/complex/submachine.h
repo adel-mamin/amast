@@ -27,7 +27,9 @@
 #ifndef SUBMACHINE_H_INCLUDED
 #define SUBMACHINE_H_INCLUDED
 
+#include "common/compiler.h"
+
 extern struct am_hsm *g_complex_sm;
-void complex_sm_ctor(void (*log)(const char *fmt, ...));
+void complex_sm_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...));
 
 #endif /* SUBMACHINE_H_INCLUDED */

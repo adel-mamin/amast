@@ -42,7 +42,7 @@
 
 struct test_publish {
     struct am_ao ao;
-    void (*log)(const char *fmt, ...);
+    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
     char log_buf[256];
 };
 
@@ -75,13 +75,13 @@ static enum am_rc publish_sinit(
     return AM_HSM_TRAN(publish_s);
 }
 
-static void publish_ctor(void (*log)(const char *fmt, ...)) {
+static void publish_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
     struct test_publish *me = &m_publish;
     am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(publish_sinit));
     me->log = log;
 }
 
-static void publish_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void publish_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     struct test_publish *me = &m_publish;

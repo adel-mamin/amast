@@ -27,6 +27,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "common/compiler.h"
 #include "common/constants.h"
 #include "common/macros.h"
 #include "event/event.h"
@@ -38,7 +39,7 @@
 
 static char m_regular_log_buf[256];
 
-static void test_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void test_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(m_regular_log_buf, (int)sizeof(m_regular_log_buf), fmt, ap);

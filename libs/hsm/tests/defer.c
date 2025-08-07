@@ -63,7 +63,7 @@ struct test_defer {
     struct am_hsm hsm;
     struct am_queue event_queue;
     struct am_queue defer_queue;
-    void (*log)(const char *fmt, ...);
+    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
     char log_buf[256];
 };
 
@@ -120,7 +120,7 @@ static enum am_rc defer_sinit(
     return AM_HSM_TRAN(defer_s1);
 }
 
-static void defer_ctor(void (*log)(const char *fmt, ...)) {
+static void defer_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
     struct test_defer *me = &m_test_defer;
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(defer_sinit));
     me->log = log;
@@ -150,7 +150,7 @@ static void defer_ctor(void (*log)(const char *fmt, ...)) {
     }
 }
 
-static void defer_hsm_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void defer_hsm_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     struct test_defer *me = &m_test_defer;

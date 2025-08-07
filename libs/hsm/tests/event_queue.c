@@ -70,7 +70,7 @@
 
 static char m_hsmq_log_buf[256];
 
-static void hsmq_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void hsmq_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(m_hsmq_log_buf, (int)sizeof(m_hsmq_log_buf), fmt, ap);
@@ -80,7 +80,7 @@ static void hsmq_log(const char *fmt, ...) {
 struct am_hsmq {
     struct am_hsm hsm;
     struct am_queue event_queue;
-    void (*log)(const char *fmt, ...);
+    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
 };
 
 static struct am_hsmq am_hsmq_;
@@ -111,7 +111,7 @@ static enum am_rc hsmq_sinit(struct am_hsmq *me, const struct am_event *event) {
     return AM_HSM_TRAN(hsmq_s1);
 }
 
-static void hsmq_ctor(void (*log)(const char *fmt, ...)) {
+static void hsmq_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
     struct am_hsmq *me = &am_hsmq_;
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(hsmq_sinit));
     me->log = log;

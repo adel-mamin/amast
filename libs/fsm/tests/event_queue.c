@@ -54,7 +54,7 @@
 
 static char m_fsmq_log_buf[256];
 
-static void fsmq_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void fsmq_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(m_fsmq_log_buf, (int)sizeof(m_fsmq_log_buf), fmt, ap);
@@ -64,7 +64,7 @@ static void fsmq_log(const char *fmt, ...) {
 struct am_fsmq {
     struct am_fsm fsm;
     struct am_queue event_queue;
-    void (*log)(const char *fmt, ...);
+    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
 };
 
 static struct am_fsmq am_fsmq_;
@@ -96,7 +96,7 @@ static enum am_rc fsmq_init(struct am_fsmq *me, const struct am_event *event) {
     return AM_FSM_TRAN(fsmq_a);
 }
 
-static void fsmq_ctor(void (*log)(const char *fmt, ...)) {
+static void fsmq_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
     struct am_fsmq *me = &am_fsmq_;
     am_fsm_ctor(&me->fsm, AM_FSM_STATE_CTOR(fsmq_init));
     me->log = log;

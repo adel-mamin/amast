@@ -27,6 +27,7 @@
 #include <stdarg.h>
 #include <string.h>
 
+#include "common/compiler.h"
 #include "common/macros.h"
 #include "event/event.h"
 #include "strlib/strlib.h"
@@ -36,7 +37,7 @@
 
 static char m_complex_sm_log_buf[256];
 
-static void cpl_test_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void cpl_test_log(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(
