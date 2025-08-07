@@ -38,8 +38,6 @@
 #include "common/macros.h"
 #include "strlib/strlib.h"
 
-#include "common/compiler.h"
-
 int str_lcpy(char *dst, const char *src, int lim) {
     char *d = dst;
     const char *e = &dst[lim];
@@ -95,9 +93,7 @@ int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap) {
     long len = (int)strlen(dst);
     AM_ASSERT(len <= lim);
 
-    AM_DISABLE_WARNING(AM_W_FORMAT_NONLITERAL);
     len += vsnprintf(dst + len, (size_t)(lim - len), fmt, ap); /* NOLINT */
-    AM_ENABLE_WARNING(AM_W_FORMAT_NONLITERAL);
 
     AM_ASSERT(len <= INT_MAX);
 

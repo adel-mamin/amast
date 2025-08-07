@@ -15,6 +15,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Remove redundant `AM_DISABLE_WARNING()` calls from `async/test.c` and `pal/libuv/pal.c`
 - Prune unused code in `compiler.h` and `macros.h`.
 - Prune unused strlib functions.
+- Prune `AM_DISABLE_WARNING()` from `str_vlcatf()`.
 
 ### Added
 
