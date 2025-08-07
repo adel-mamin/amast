@@ -236,13 +236,11 @@ void am_timer_tick(int domain) {
 
 struct am_timer *am_timer_allocate(int id, int size, int domain, void *owner) {
     AM_ASSERT(size >= (int)sizeof(struct am_timer));
-    struct am_event *e = am_event_allocate(id, size);
-    AM_DISABLE_WARNING(AM_W_CAST_ALIGN);
-    struct am_timer *te = (struct am_timer *)e;
-    AM_ENABLE_WARNING(AM_W_CAST_ALIGN);
-    am_timer_ctor(te, id, domain, owner);
+    struct am_timer *e =
+        AM_CAST(struct am_timer *, am_event_allocate(id, size));
+    am_timer_ctor(e, id, domain, owner);
 
-    return te;
+    return e;
 }
 
 bool am_timer_domain_is_empty_unsafe(int domain) {

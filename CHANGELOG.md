@@ -11,6 +11,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - Reworked libuv based implementation of `am_pal_time_get_ms()`.
 - Maintain pool begin and pool end pointers instead of pool begin and size in onesize allocator.
+- Use `AM_CAST()` to cast event pointers instead of disabling -Wcast-align warning
 
 ## v0.13.0 - 3-August-2025
 

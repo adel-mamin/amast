@@ -272,9 +272,7 @@ static void am_event_log_cb(void *ctx, int index, const char *buf, int size) {
     AM_ASSERT(log->cb);
     AM_ASSERT(log->pool_ind >= 0);
 
-    AM_DISABLE_WARNING(AM_W_CAST_ALIGN);
-    const struct am_event *event = (const struct am_event *)buf;
-    AM_ENABLE_WARNING(AM_W_CAST_ALIGN);
+    const struct am_event *event = AM_CAST(const struct am_event *, buf);
     log->cb(log->pool_ind, index, event, size);
 }
 
