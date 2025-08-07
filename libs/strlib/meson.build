@@ -28,8 +28,3 @@ str_src = [files('strlib.c')]
 
 libstr = library('str', [str_src], include_directories: inc)
 libstr_dep = declare_dependency(link_with : libstr, include_directories : inc)
-
-if unit_test
-    e = executable('str', ['test.c'], dependencies : [libstr_dep, libassert_dep])
-    test('strlib', e)
-endif

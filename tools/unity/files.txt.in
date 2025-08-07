@@ -34,7 +34,6 @@
 
 @SRC_ROOT@/libs/strlib/strlib.h
 @SRC_ROOT@/libs/strlib/strlib.c
-@SRC_ROOT@/libs/strlib/test.c
 
 @SRC_ROOT@/libs/timer/timer.h
 @SRC_ROOT@/libs/timer/timer.c
