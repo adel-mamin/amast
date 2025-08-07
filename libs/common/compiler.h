@@ -41,19 +41,6 @@
 #define AM_COMPILER_GCC 1000   /*!< GCC compiler */
 #define AM_COMPILER_CLANG 2000 /*!< Clang compiler */
 
-#ifndef AM_COMPILER_BITS
-#if (defined(__x86_64__) || defined(__64BIT__) || \
-     (defined(__WORDSIZE) && (__WORDSIZE == 64)))
-#define AM_COMPILER_BITS 64 /*!< Compiler native word size */
-#define INT_BITS 32
-#define LONG_BITS 64
-#else
-#define AM_COMPILER_BITS 32 /*!< Compiler native word size */
-#define INT_BITS 32         /*!< integer size in bits */
-#define LONG_BITS 32        /*!< long size in bits */
-#endif
-#endif /* #ifndef AM_COMPILER_BITS */
-
 #ifndef AM_COMPILER_ID
 /* Taken from
  * http://nadeausoftware.com/articles/2012/10/c_c_tip_how_detect_compiler_name_and_version_using_compiler_predefined_macros
@@ -112,16 +99,6 @@
  * In this case the compiler only checks the format string for consistency.
  */
 #define AM_PRINTF(si, ftc) __attribute__((format(printf, (si), (ftc))))
-#define AM_ATTR(...) __attribute__((__VA_ARGS__))
-#define AM_FALLTHROUGH __attribute__((fallthrough))
-/** do not inline instruction */
-#define AM_NOINLINE __attribute__((noinline))
-#define AM_SECTION(name) __attribute__((section(name))) /**< section name */
-#define AM_NOINLINE __attribute__((noinline))
-/** Packed data structure/union attribute */
-#define AM_PACKED __attribute__((packed))
-/** Compiler extension macro */
-#define EXTENSION __extension__
 #else
 #error "Define macros"
 #endif
@@ -487,46 +464,6 @@
 
 #endif /* AM_COMPILER_ID */
 
-/* taken from https://github.com/sustrik/libdill */
-/*! @cond Doxygen_Suppress */
-#if defined(_WIN32) || defined(_WIN64)
-#define PRIuZ "Iu"
-#else
-#define PRIuZ "zu"
-#endif
-/*! @endcond */
-
-/* Taken from https://github.com/sustrik/libdill */
-/* Workaround missing __rdtsc in Clang < 3.5 (or Clang < 6.0 on Xcode) */
-#if defined(__x86_64__) || defined(__i386__)
-#if (AM_COMPILER_ID == AM_COMPILER_CLANG)
-#if (!defined(__apple_build_version__) &&                    \
-     ((__clang_major__ < 3) ||                               \
-      ((__clang_major__ == 3) && (__clang_minor__ < 5)))) || \
-    (defined(__apple_build_version__) && (__clang_major__ < 6))
-static inline unsigned long long __rdtsc() {
-#if defined __i386__
-    unsigned long long x;
-    asm volatile("rdtsc" : "=A"(x));
-    return x;
-#else
-    unsigned long long a, d;
-    asm volatile("rdtsc" : "=a"(a), "=d"(d));
-    return (d << 32) | a;
-#endif /* #if defined __i386__ */
-}
-#endif /* #if (!defined(__apple_build_version__) && ... */
-#endif /* #if defined __clang__ */
-#endif /* #if defined(__x86_64__) || defined(__i386__) */
-
-#if AM_COMPILER_ID == AM_COMPILER_GCC
-/** Disables compiler reordering.
-    See
-    http://stackoverflow.com/questions/13540810/compile-time-barriers-compiler-code-reordering-gcc-and-pthreads#13544831
-    for details */
-#define AM_COMPILER_BARRIER() asm volatile("" : : : "memory")
-#endif /* AM_COMPILER_ID */
-
 /* clang-format off */
 
 /*
@@ -546,58 +483,6 @@ static inline unsigned long long __rdtsc() {
 /** Compile time assert */
 #define AM_ASSERT_STATIC(cond) AM_COMPILE_TIME_ASSERT(cond, __LINE__)
 /* clang-format on */
-
-/*! @cond Doxygen_Suppress */
-AM_ASSERT_STATIC(INT_MAX == ((1ULL << (unsigned)(INT_BITS - 1)) - 1));
-AM_ASSERT_STATIC(LONG_MAX == ((1ULL << (unsigned)(LONG_BITS - 1)) - 1));
-/*! @endcond */
-
-#if (AM_COMPILER_ID == AM_COMPILER_GCC) || (AM_COMPILER_ID == AM_COMPILER_CLANG)
-#define AM_ADD_INT_OVERFLOWED(a, b, res) __builtin_sadd_overflow(a, b, &(res))
-#define AM_MUL_INT_OVERFLOWED(a, b, res) __builtin_smul_overflow(a, b, &(res))
-#else
-/** Check if integer addition overflows */
-#define AM_ADD_INT_OVERFLOWED(a, b, c)                          \
-    AM_EXTENSION({                                              \
-        unsigned res_ = (unsigned)(a) + (unsigned)(b);          \
-        bool ovf_ = (res_ < (unsigned)(a)) || (res_ > INT_MAX); \
-        if (!ovf_) {                                            \
-            (c) = (int)res_;                                    \
-        }                                                       \
-        ovf_;                                                   \
-    })
-
-/** Check if integer multiplication overflows */
-#define AM_MUL_INT_OVERFLOWED(a, b, c)                          \
-    AM_EXTENSION({                                              \
-        unsigned res_ = (unsigned)(a) * (unsigned)(b);          \
-        bool ovf_ = (res_ < (unsigned)(a)) || (res_ > INT_MAX); \
-        if (!ovf_) {                                            \
-            (c) = (int)res_;                                    \
-        }                                                       \
-        ovf_;                                                   \
-    })
-#endif /*AM_COMPILER_ID*/
-
-/** Add integers and assert, if it overflows */
-#define AM_ADD_INT(a, b)                             \
-    AM_EXTENSION({                                   \
-        int add_res_;                                \
-        if (AM_ADD_INT_OVERFLOWED(a, b, add_res_)) { \
-            AM_ASSERT(0); /* NOLINT */               \
-        }                                            \
-        add_res_;                                    \
-    })
-
-/** Multiply integers and assert, if it overflows */
-#define AM_MUL_INT(a, b)                             \
-    AM_EXTENSION({                                   \
-        int mul_res_;                                \
-        if (AM_MUL_INT_OVERFLOWED(a, b, mul_res_)) { \
-            AM_ASSERT(0); /* NOLINT */               \
-        }                                            \
-        mul_res_;                                    \
-    })
 
 /** Atomic store operation. */
 #define AM_ATOMIC_STORE_N(ptr, val) __atomic_store_n(ptr, val, __ATOMIC_SEQ_CST)

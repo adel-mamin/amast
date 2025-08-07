@@ -13,6 +13,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Maintain pool begin and pool end pointers instead of pool begin and size in onesize allocator.
 - Use `AM_CAST()` to cast event pointers instead of disabling -Wcast-align warning
 - Remove redundant `AM_DISABLE_WARNING()` calls from `async/test.c` and `pal/libuv/pal.c`
+- Prune unused code in `compiler.h` and `macros.h`.
 
 ## v0.13.0 - 3-August-2025
 

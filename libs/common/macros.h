@@ -110,17 +110,6 @@ AM_NORETURN void am_assert_failure(
 /** Make a unique name. */
 #define AM_UNIQUE(name) AM_CONCAT(name, __LINE__)
 
-/** Counts the number of trailing zeros in a word. */
-#define AM_COUNT_TRAILING_ZEROS(word)           \
-    EXTENSION({                                 \
-        int ret__;                              \
-        (word) = ((word) ^ ((word) - 1)) >> 1u; \
-        for (ret__ = 0; (word); ++ret__) {      \
-            (word) >>= 1u;                      \
-        }                                       \
-        ret__;                                  \
-    })
-
 /**
  * Example:
  *
