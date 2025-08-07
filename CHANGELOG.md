@@ -16,6 +16,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Prune unused code in `compiler.h` and `macros.h`.
 - Prune unused strlib functions.
 - Prune `AM_DISABLE_WARNING()` from `str_vlcatf()`.
+- Prune `AM_ENABLE_WARNING()` and `AM_DISABLE_WARNING()` macros.
 
 ### Added
 
