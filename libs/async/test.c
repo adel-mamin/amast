@@ -26,7 +26,6 @@
 
 #include <string.h>
 
-#include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
 
@@ -149,9 +148,6 @@ static int am_async_exit(struct am_async *me, int *state) {
     AM_ASYNC_BEGIN(me);
     (*state) = 1;
     return AM_RC_DONE;
-    AM_DISABLE_WARNING(AM_W_UNREACHABLE_CODE);
-    (*state) = 2;
-    AM_ENABLE_WARNING(AM_W_UNREACHABLE_CODE);
     AM_ASYNC_END();
 
     return AM_RC_DONE;

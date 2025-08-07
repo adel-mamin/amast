@@ -238,14 +238,12 @@ int am_pal_task_create(
             break;
         }
     }
-    AM_ASSERT(task && (index >= 0));
+    AM_ASSERT(task);
 
-    AM_DISABLE_WARNING(AM_W_NULL_DEREFERENCE)
     task->entry = entry;
     task->arg = arg;
     task->id = am_pal_id_from_index(index);
     task->prio = prio;
-    AM_ENABLE_WARNING(AM_W_NULL_DEREFERENCE)
 
     int rc = uv_sem_init(&task->semaphore, 0);
     AM_ASSERT(rc == 0);
