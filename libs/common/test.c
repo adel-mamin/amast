@@ -31,7 +31,6 @@
 
 #include <stdint.h>
 
-#include "compiler.h"
 #include "macros.h"
 #include "alignment.h"
 

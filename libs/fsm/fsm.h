@@ -38,7 +38,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "common/compiler.h"
+#include "common/macros.h"
 #include "common/types.h"
 #include "event/event.h"
 

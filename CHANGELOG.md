@@ -9,7 +9,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ### Changed
 
-- Reworked libuv based implementation of `am_pal_time_get_ms()`.
+- Rework libuv based implementation of `am_pal_time_get_ms()`.
 - Maintain pool begin and pool end pointers instead of pool begin and size in onesize allocator.
 - Use `AM_CAST()` to cast event pointers instead of disabling -Wcast-align warning
 - Remove redundant `AM_DISABLE_WARNING()` calls from `async/test.c` and `pal/libuv/pal.c`
@@ -17,7 +17,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Prune unused strlib functions.
 - Prune `AM_DISABLE_WARNING()` from `str_vlcatf()`.
 - Prune `AM_ENABLE_WARNING()` and `AM_DISABLE_WARNING()` macros.
-- Fix AM_GET_MACRO_2_() documenation.
+- Fix AM_GET_MACRO_2_() documentation.
+- Relocate compiler independent macros to `common/macros.h`.
 
 ### Added
 

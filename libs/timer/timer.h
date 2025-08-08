@@ -36,7 +36,7 @@
 #include <stdbool.h>
 
 #include "common/alignment.h"
-#include "common/compiler.h"
+#include "common/macros.h"
 #include "event/event.h"
 #include "slist/slist.h"
 #include "pal/pal.h"

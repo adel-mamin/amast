@@ -181,4 +181,53 @@ AM_NORETURN void am_assert_failure(
 /** Test \p d1 and \p d2 for equality within \p tolerance. */
 #define AM_FLOAT_EQ(d1, d2, tolerance) (fabsf((d1) - (d2)) <= (tolerance))
 
+/*
+ * The compile time assert code is taken from here:
+ * http://stackoverflow.com/questions/3385515/static-assert-in-c
+ */
+
+/** Compile time assert helper */
+#define AM_COMPILE_TIME_ASSERT3(cond, msg) \
+    typedef char static_assertion_##msg[(cond) ? 1 : -1]
+/** Compile time assert helper */
+#define AM_COMPILE_TIME_ASSERT2(cond, line) \
+    AM_COMPILE_TIME_ASSERT3(cond, static_assertion_at_line_##line)
+/** Compile time assert helper */
+#define AM_COMPILE_TIME_ASSERT(cond, line) AM_COMPILE_TIME_ASSERT2(cond, line)
+
+/** Compile time assert */
+#define AM_ASSERT_STATIC(cond) AM_COMPILE_TIME_ASSERT(cond, __LINE__)
+
+/**
+ * Cast pointer to type.
+ *
+ * @param TYPE  the type
+ * @param PTR   the pointer
+ */
+#define AM_CAST(TYPE, PTR) (((TYPE)(uintptr_t)(const void *)(PTR)))
+
+/**
+ * Cast volatile pointer to type.
+ *
+ * @param TYPE  the type
+ * @param PTR   the volatile pointer
+ */
+#define AM_VCAST(TYPE, PTR) (((TYPE)(uintptr_t)(const volatile void *)(PTR)))
+
+/**
+ * Choose one of two macros.
+ *
+ * Given:
+ *
+ * #define BAR1(a) (a)
+ * #define BAR2(a, b) (a, b)
+ * #define BAR(...) AM_GET_MACRO_2_(__VA_ARGS__, BAR2, BAR1)(__VA_ARGS__)
+ *
+ * Produces:
+ *
+ * BAR(a)    expands to BAR1(a)
+ * BAR(a, b) expands to BAR2(a, b)
+ */
+#define AM_GET_MACRO_2_(_1, _2, NAME, ...) NAME
+
 #endif /* AM_MACROS_H_INCLUDED */

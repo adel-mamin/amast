@@ -36,7 +36,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "common/compiler.h"
 #include "common/macros.h"
 #include "event/event.h"
 #include "queue/queue.h"

@@ -26,7 +26,6 @@
 
 #include <string.h>
 
-#include "common/compiler.h"
 #include "common/macros.h"
 #include "hsm/hsm.h"
 #include "event/event.h"

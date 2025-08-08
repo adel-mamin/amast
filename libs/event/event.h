@@ -37,7 +37,7 @@
 #include <stdint.h>
 
 #include "common/alignment.h"
-#include "common/compiler.h"
+#include "common/macros.h"
 #include "common/types.h"
 #include "queue/queue.h"
 
