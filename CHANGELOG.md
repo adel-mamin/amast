@@ -17,6 +17,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Prune unused strlib functions.
 - Prune `AM_DISABLE_WARNING()` from `str_vlcatf()`.
 - Prune `AM_ENABLE_WARNING()` and `AM_DISABLE_WARNING()` macros.
+- Fix AM_GET_MACRO_2_() documenation.
 
 ### Added
 

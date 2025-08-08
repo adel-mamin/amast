@@ -123,10 +123,13 @@
  * Choose one of two macros.
  *
  * Given:
+ *
  * #define BAR1(a) (a)
  * #define BAR2(a, b) (a, b)
- * #define BAR(...) AM_GET_MACRO_2_(__VA_ARGS__, FOO2, FOO1)(__VA_ARGS__)
- * Then:
+ * #define BAR(...) AM_GET_MACRO_2_(__VA_ARGS__, BAR2, BAR1)(__VA_ARGS__)
+ *
+ * Produces:
+ *
  * BAR(a)    expands to BAR1(a)
  * BAR(a, b) expands to BAR2(a, b)
  */
