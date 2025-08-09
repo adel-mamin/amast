@@ -8,7 +8,57 @@
 ## Introduction
 <a name="introduction"></a>
 
-Amast is a minimalist asynchronous toolkit that makes it easier to develop C language based projects. Written in C99.
+Amast is a minimalist asynchronous toolkit to help developing projects with asynchronous intractions and state machines.
+Written in C99.
+
+## What is it useful for?
+
+Here are several usecases in increasing level of complexity.
+
+### Finite state machine (FSM)
+
+Here is the full implementation of FSM with two states:
+
+```C
+struct myfsm {
+    struct am_fsm fsm;
+    /* my data */
+} myfsm;
+
+static enum am_rc state_a(struct myfsm *me, const struct am_event *event) {
+    switch (event->id) {
+    case AM_EVT_FSM_ENTRY: break;
+    case AM_EVT_FSM_EXIT: break;
+    case AM_EVT_A: return AM_FSM_TRAN(state_b);
+    }
+    return AM_FSM_HANDLED();
+}
+
+static enum am_rc state_b(struct myfsm *me, const struct am_event *event) {
+    switch (event->id) {
+    case AM_EVT_FSM_ENTRY: break;
+    case AM_EVT_FSM_EXIT: break;
+    case AM_EVT_B: return AM_FSM_TRAN(state_a);
+    }
+    return AM_FSM_HANDLED();
+}
+
+static enum am_rc init(struct myfsm *me, const struct am_event *event) {
+    return AM_FSM_TRAN(state_a);
+}
+
+int main(void) {
+    am_fsm_ctor(&myfsm, AM_FSM_STATE_CTOR(init));
+    am_fsm_init(&myfsm, /*init_event=*/NULL);
+    am_fsm_dispatch(&myfsm, &(struct am_event){.id = AM_EVT_A});
+    am_fsm_dispatch(&myfsm, &(struct am_event){.id = AM_EVT_B});
+    return 0;
+}
+```
+
+The FSM API can be found [here](https://amast.readthedocs.io/api.html#fsm).
+The FSM documenation is [here](https://amast.readthedocs.io/fsm.html).
+The library requires less than 1kB of memory.
 
 ## Architecture Diagram
 
