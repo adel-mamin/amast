@@ -23,8 +23,8 @@ The FSM has two states:
 stateDiagram-v2
     [*] --> state_a
 
-    state_a --> state_b : A
-    state_b --> state_a : B
+    state_a --> state_b : B
+    state_b --> state_a : A
 ```
 
 Here is the full implementation of the FSM:
