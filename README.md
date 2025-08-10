@@ -78,14 +78,17 @@ The HSM has two sub-states and one superstate:
 stateDiagram-v2
     [*] --> superstate : init
 
+    %% Outer transition to a hidden "proxy" of substate_b
+    superstate --> substate_b_proxy : C
+
     state superstate {
         [*] --> substate_a
-
         substate_a --> substate_b : B
         substate_b --> substate_a : A
     }
 
-    superstate --> substate_b : C
+    %% Define a hidden proxy state with same label
+    state substate_b_proxy as "substate_b" <<hidden>>
 ```
 
 Here is the full implementation of the HSM:
