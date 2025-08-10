@@ -80,14 +80,12 @@ stateDiagram-v2
 
     state superstate {
         [*] --> substate_a
+
         substate_a --> substate_b : B
         substate_b --> substate_a : A
     }
 
-    superstate --> ext_entry_b : C
-    ext_entry_b --> substate_b
-
-    state ext_entry_b <<entry>>
+    superstate --> substate_b : C
 ```
 
 Here is the full implementation of the HSM:
