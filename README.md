@@ -17,7 +17,17 @@ Here are several usecases in increasing level of complexity.
 
 ### Finite state machine (FSM)
 
-Here is the full implementation of FSM with two states:
+The FSM has two states:
+
+```mermaid
+stateDiagram-v2
+    [*] --> state_a
+
+    state_a --> state_b : A
+    state_b --> state_a : B
+```
+
+Here is the full implementation of the FSM:
 
 ```C
 struct myfsm {
@@ -29,7 +39,7 @@ static enum am_rc state_a(struct myfsm *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_FSM_ENTRY: break;
     case AM_EVT_FSM_EXIT: break;
-    case AM_EVT_A: return AM_FSM_TRAN(state_b);
+    case AM_EVT_B: return AM_FSM_TRAN(state_b);
     }
     return AM_FSM_HANDLED();
 }
@@ -38,7 +48,7 @@ static enum am_rc state_b(struct myfsm *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_FSM_ENTRY: break;
     case AM_EVT_FSM_EXIT: break;
-    case AM_EVT_B: return AM_FSM_TRAN(state_a);
+    case AM_EVT_A: return AM_FSM_TRAN(state_a);
     }
     return AM_FSM_HANDLED();
 }
@@ -50,8 +60,8 @@ static enum am_rc init(struct myfsm *me, const struct am_event *event) {
 int main(void) {
     am_fsm_ctor(&myfsm, AM_FSM_STATE_CTOR(init));
     am_fsm_init(&myfsm, /*init_event=*/NULL);
-    am_fsm_dispatch(&myfsm, &(struct am_event){.id = AM_EVT_A});
     am_fsm_dispatch(&myfsm, &(struct am_event){.id = AM_EVT_B});
+    am_fsm_dispatch(&myfsm, &(struct am_event){.id = AM_EVT_A});
     return 0;
 }
 ```
@@ -59,6 +69,78 @@ int main(void) {
 The FSM API can be found [here](https://amast.readthedocs.io/api.html#fsm).
 The FSM documenation is [here](https://amast.readthedocs.io/fsm.html).
 The library requires less than 1kB of memory.
+
+### Hierarchical state machine (HSM)
+
+The HSM has two sub-states and one superstate:
+
+```mermaid
+stateDiagram-v2
+    [*] --> superstate : init
+
+    state superstate {
+        [*] --> substate_a
+
+        substate_a --> substate_b : B
+        substate_b --> substate_a : A
+    }
+
+    superstate --> substate_b : C
+```
+
+Here is the full implementation of the HSM:
+
+```C
+struct myhsm {
+    struct am_hsm hsm;
+    /* my data */
+} myhsm;
+
+static enum am_rc superstate(struct myhsm *me, const struct am_event *event) {
+    switch (event->id) {
+    case AM_EVT_HSM_ENTRY: break;
+    case AM_EVT_HSM_EXIT: break;
+    case AM_EVT_HSM_INIT: return AM_HSM_TRAN(substate_a);
+    case AM_EVT_C: return AM_HSM_TRAN(substate_b);
+    }
+    return AM_HSM_SUPER(am_hsm_top);
+}
+
+static enum am_rc substate_a(struct myhsm *me, const struct am_event *event) {
+    switch (event->id) {
+    case AM_EVT_HSM_ENTRY: break;
+    case AM_EVT_HSM_EXIT: break;
+    case AM_EVT_B: return AM_HSM_TRAN(substate_b);
+    }
+    return AM_HSM_SUPER(superstate);
+}
+
+static enum am_rc substate_b(struct myhsm *me, const struct am_event *event) {
+    switch (event->id) {
+    case AM_EVT_HSM_ENTRY: break;
+    case AM_EVT_HSM_EXIT: break;
+    case AM_EVT_A: return AM_HSM_TRAN(state_a);
+    }
+    return AM_HSM_SUPER(superstate);
+}
+
+static enum am_rc init(struct myhsm *me, const struct am_event *event) {
+    return AM_HSM_TRAN(superstate);
+}
+
+int main(void) {
+    am_hsm_ctor(&myhsm, AM_HSM_STATE_CTOR(init));
+    am_hsm_init(&myhsm, /*init_event=*/NULL);
+    am_hsm_dispatch(&myhsm, &(struct am_event){.id = AM_EVT_B});
+    am_hsm_dispatch(&myhsm, &(struct am_event){.id = AM_EVT_A});
+    am_hsm_dispatch(&myhsm, &(struct am_event){.id = AM_EVT_C});
+    return 0;
+}
+```
+
+The HSM API can be found [here](https://amast.readthedocs.io/api.html#hsm).
+The HSM documenation is [here](https://amast.readthedocs.io/hsm.html).
+The library requires less than 3kB of memory.
 
 ## Architecture Diagram
 

@@ -22,7 +22,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ### Added
 
-- "What is it usuful for?" section to `README.md`
+- "What is it useful for?" section to `README.md`
 
 ### Added
 
