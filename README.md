@@ -21,6 +21,8 @@ The FSM has two states:
 
 ```mermaid
 stateDiagram-v2
+    direction LR
+
     [*] --> state_a
 
     state_a --> state_b : B
@@ -76,6 +78,8 @@ The HSM has two sub-states and one superstate:
 
 ```mermaid
 stateDiagram-v2
+    direction LR
+
     [*] --> superstate : init
 
     state superstate {
