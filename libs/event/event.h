@@ -145,6 +145,7 @@ extern "C" {
  *
  * @param cfg  event library state configuration.
  *             The event library makes an internal copy of the configuration.
+ *             Can be NULL.
  */
 void am_event_state_ctor(const struct am_event_state_cfg *cfg);
 
