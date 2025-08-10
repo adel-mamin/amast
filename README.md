@@ -32,12 +32,12 @@ stateDiagram-v2
 Here is the full implementation of the FSM:
 
 ```C
-struct myfsm {
+struct app {
     struct am_fsm fsm;
     /* my data */
-} myfsm;
+} app;
 
-static enum am_rc state_a(struct myfsm *me, const struct am_event *event) {
+static enum am_rc state_a(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_FSM_ENTRY: break;
     case AM_EVT_FSM_EXIT: break;
@@ -46,7 +46,7 @@ static enum am_rc state_a(struct myfsm *me, const struct am_event *event) {
     return AM_FSM_HANDLED();
 }
 
-static enum am_rc state_b(struct myfsm *me, const struct am_event *event) {
+static enum am_rc state_b(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_FSM_ENTRY: break;
     case AM_EVT_FSM_EXIT: break;
@@ -55,15 +55,15 @@ static enum am_rc state_b(struct myfsm *me, const struct am_event *event) {
     return AM_FSM_HANDLED();
 }
 
-static enum am_rc init(struct myfsm *me, const struct am_event *event) {
+static enum am_rc init(struct app *me, const struct am_event *event) {
     return AM_FSM_TRAN(state_a);
 }
 
 int main(void) {
-    am_fsm_ctor(&myfsm, AM_FSM_STATE_CTOR(init));
-    am_fsm_init(&myfsm, /*init_event=*/NULL);
-    am_fsm_dispatch(&myfsm, &(struct am_event){.id = AM_EVT_B});
-    am_fsm_dispatch(&myfsm, &(struct am_event){.id = AM_EVT_A});
+    am_fsm_ctor(&app.fsm, AM_FSM_STATE_CTOR(init));
+    am_fsm_init(&app.fsm, /*init_event=*/NULL);
+    am_fsm_dispatch(&app.fsm, &(struct am_event){.id = AM_EVT_B});
+    am_fsm_dispatch(&app.fsm, &(struct am_event){.id = AM_EVT_A});
     return 0;
 }
 ```
@@ -95,12 +95,12 @@ stateDiagram-v2
 Here is the full implementation of the HSM:
 
 ```C
-struct myhsm {
+struct app {
     struct am_hsm hsm;
     /* my data */
-} myhsm;
+} app;
 
-static enum am_rc superstate(struct myhsm *me, const struct am_event *event) {
+static enum am_rc superstate(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY: break;
     case AM_EVT_HSM_EXIT: break;
@@ -110,7 +110,7 @@ static enum am_rc superstate(struct myhsm *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_rc substate_a(struct myhsm *me, const struct am_event *event) {
+static enum am_rc substate_a(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY: break;
     case AM_EVT_HSM_EXIT: break;
@@ -119,7 +119,7 @@ static enum am_rc substate_a(struct myhsm *me, const struct am_event *event) {
     return AM_HSM_SUPER(superstate);
 }
 
-static enum am_rc substate_b(struct myhsm *me, const struct am_event *event) {
+static enum am_rc substate_b(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY: break;
     case AM_EVT_HSM_EXIT: break;
@@ -128,16 +128,16 @@ static enum am_rc substate_b(struct myhsm *me, const struct am_event *event) {
     return AM_HSM_SUPER(superstate);
 }
 
-static enum am_rc init(struct myhsm *me, const struct am_event *event) {
+static enum am_rc init(struct app *me, const struct am_event *event) {
     return AM_HSM_TRAN(superstate);
 }
 
 int main(void) {
-    am_hsm_ctor(&myhsm, AM_HSM_STATE_CTOR(init));
-    am_hsm_init(&myhsm, /*init_event=*/NULL);
-    am_hsm_dispatch(&myhsm, &(struct am_event){.id = AM_EVT_B});
-    am_hsm_dispatch(&myhsm, &(struct am_event){.id = AM_EVT_A});
-    am_hsm_dispatch(&myhsm, &(struct am_event){.id = AM_EVT_C});
+    am_hsm_ctor(&app.hsm, AM_HSM_STATE_CTOR(init));
+    am_hsm_init(&app.hsm, /*init_event=*/NULL);
+    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = AM_EVT_B});
+    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = AM_EVT_A});
+    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = AM_EVT_C});
     return 0;
 }
 ```
