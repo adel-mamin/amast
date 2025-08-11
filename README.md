@@ -34,7 +34,7 @@ Here is the full implementation of the FSM:
 ```C
 struct app {
     struct am_fsm fsm;
-    /* my data */
+    /* app data */
 } app;
 
 static enum am_rc state_a(struct app *me, const struct am_event *event) {
@@ -97,7 +97,7 @@ Here is the full implementation of the HSM:
 ```C
 struct app {
     struct am_hsm hsm;
-    /* my data */
+    /* app data */
 } app;
 
 static enum am_rc superstate(struct app *me, const struct am_event *event) {
@@ -145,6 +145,148 @@ int main(void) {
 The HSM API can be found [here](https://amast.readthedocs.io/api.html#hsm).
 The HSM documenation is [here](https://amast.readthedocs.io/hsm.html).
 The library requires less than 3kB of memory.
+
+### Active Object
+
+Here is a full implementation of one active object with two states.
+
+It demonstrate several features:
+
+1. creating the active object
+2. creating and maintaining a timer
+3. event pubplishing
+4. creating a regular tasks, for blocking calls like
+   sleep and waiting for user input
+
+```C
+enum {
+    APP_EVT_SWITCH_MODE = AM_EVT_USER,
+    APP_EVT_PUB_MAX,
+    APP_EVT_TIMER,
+};
+
+struct app {
+    struct am_ao ao;
+    struct am_timer *timer;
+    /* app data */
+};
+
+/* events are allocated from this memory pool */
+static struct am_timer m_event_pool[1] AM_ALIGNED(AM_ALIGN_MAX);
+/* event publish/subscribe memory */
+static struct am_ao_subscribe_list m_pubsub_list[APP_EVT_PUB_MAX];
+/* active object incoming events queue */
+static const struct am_event *m_queue[2];
+
+static enum am_rc app_state_a(struct app *me, const struct am_event *event) {
+    switch (event->id) {
+    case APP_EVT_SWITCH_MODE:
+        return AM_HSM_TRAN(app_state_b);
+    }
+    return AM_HSM_SUPER(am_hsm_top);
+}
+
+static enum am_rc app_state_b(struct app *me, const struct am_event *event) {
+    switch (event->id) {
+    case AM_EVT_HSM_ENTRY:
+        am_timer_arm_ticks(&app->timer, /*ticks=*/10, /*interval=*/0);
+        return AM_HSM_HANDLED();
+    case AM_EVT_HSM_EXIT:
+        am_timer_disarm(me->timer);
+        return AM_HSM_HANDLED();
+    case APP_EVT_SWITCH_MODE:
+        return AM_HSM_TRAN(app_state_a);
+    case APP_EVT_TIMER:
+        /* app specific timer actions are done here */
+        am_timer_arm_ticks(&app->timer, /*ticks=*/10, /*interval=*/0);
+        return AM_HSM_HANDLED();
+    }
+    return AM_HSM_SUPER(am_hsm_top);
+}
+
+static enum am_rc app_init(struct app *me, const struct am_event *event) {
+    am_ao_subscribe(&me->ao, APP_EVT_SWITCH_MODE);
+    return AM_HSM_TRAN(app_state_a);
+}
+
+static void app_ctor(struct app *me) {
+    memset(me, 0, sizeof(*me));
+    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(app_init));
+    me->timer = am_timer_allocate(
+        APP_EVT_TIMER, sizeof(*me->timer), AM_PAL_TICK_DOMAIN_DEFAULT, &me->ao
+    );
+}
+
+static void ticker_task(void *param) {
+    am_pal_wait_all_tasks();
+
+    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    while (am_ao_get_cnt() > 0) {
+        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        now_ticks += 1;
+        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    }
+}
+
+static void input_task(void *param) {
+    am_pal_wait_all_tasks();
+
+    int ch;
+    while ((ch = getc(stdin)) != EOF) {
+        if ('\n' == ch) {
+            static struct am_event event = {.id = APP_EVT_SWITCH_MODE};
+            am_ao_publish(&event);
+        }
+    }
+}
+
+int main(void) {
+    am_ao_state_ctor(/*cfg=*/NULL);
+
+    am_event_add_pool(
+        m_event_pool,
+        sizeof(m_event_pool),
+        sizeof(m_event_pool[0]),
+        AM_ALIGNOF(am_timer_t)
+    );
+
+    am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
+
+    struct app m;
+    app_ctor(&m);
+
+    am_ao_start(
+        &m.ao,
+        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
+        /*queue=*/m_queue, /*nqueue=*/AM_COUNTOF(m_queue),
+        /*stack=*/NULL, /*stack_size=*/0, /*name=*/"app", /*init_event=*/NULL
+    );
+
+    /* ticker thread to feed timers */
+    am_pal_task_create(
+        "ticker",
+        AM_AO_PRIO_MIN,
+        /*stack=*/NULL, /*stack_size=*/0,
+        /*entry=*/ticker_task, /*arg=*/NULL
+    );
+
+    /* user input controlling thread */
+    am_pal_task_create(
+        "input",
+        AM_AO_PRIO_MIN,
+        /*stack=*/NULL, /*stack_size=*/0,
+        /*entry=*/input_task, /*arg=*/&m
+    );
+
+    while (am_ao_get_cnt() > 0) {
+        am_ao_run_all();
+    }
+
+    am_ao_state_dtor();
+
+    return 0;
+}
+```
 
 ## Architecture Diagram
 
