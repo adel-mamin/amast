@@ -116,12 +116,7 @@ static int loopback_test_init(
 }
 
 int main(void) {
-    struct am_ao_state_cfg cfg_ao = {
-        .on_idle = am_pal_on_idle,
-        .crit_enter = am_pal_crit_enter,
-        .crit_exit = am_pal_crit_exit
-    };
-    am_ao_state_ctor(&cfg_ao);
+    am_ao_state_ctor(/*cfg=*/NULL);
 
     am_ao_ctor(&m_loopback.ao, AM_HSM_STATE_CTOR(loopback_init));
     am_ao_ctor(&m_loopback_test.ao, AM_HSM_STATE_CTOR(loopback_test_init));

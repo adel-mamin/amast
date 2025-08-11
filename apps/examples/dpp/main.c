@@ -120,12 +120,7 @@ static void ticker_task(void *param) {
 }
 
 int main(void) {
-    struct am_ao_state_cfg cfg_ao = {
-        .on_idle = am_pal_on_idle,
-        .crit_enter = am_pal_crit_enter,
-        .crit_exit = am_pal_crit_exit
-    };
-    am_ao_state_ctor(&cfg_ao);
+    am_ao_state_ctor(/*cfg=*/NULL);
 
     am_event_add_pool(
         m_event_pool,

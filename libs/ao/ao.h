@@ -458,7 +458,7 @@ void am_ao_stop(struct am_ao *ao);
  *
  * @param cfg  active object library configuration
  *             The active object library makes an internal copy of
- *             the configuration.
+ *             the configuration. Can be NULL.
  */
 void am_ao_state_ctor(const struct am_ao_state_cfg *cfg);
 

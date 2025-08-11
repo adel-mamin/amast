@@ -221,12 +221,7 @@ int main(int argc, const char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    struct am_ao_state_cfg cfg = {
-        .on_idle = am_pal_on_idle,
-        .crit_enter = am_pal_crit_enter,
-        .crit_exit = am_pal_crit_exit
-    };
-    am_ao_state_ctor(&cfg);
+    am_ao_state_ctor(/*cfg=*/NULL);
 
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
 

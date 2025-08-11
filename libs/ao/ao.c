@@ -261,10 +261,6 @@ static void am_ao_debug_stub(const struct am_ao *ao, const struct am_event *e) {
 }
 
 void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
-    AM_ASSERT(cfg);
-    AM_ASSERT(cfg->crit_enter);
-    AM_ASSERT(cfg->crit_exit);
-
     struct am_ao_state *me = &am_ao_state_;
     memset(me, 0, sizeof(*me));
 
@@ -274,27 +270,27 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
 
     AM_ATOMIC_STORE_N(&me->startup_complete, false);
 
-    me->debug = cfg->debug;
+    me->debug = cfg ? cfg->debug : NULL;
     if (!me->debug) {
         me->debug = am_ao_debug_stub;
     }
-    me->crit_enter = cfg->crit_enter;
-    me->crit_exit = cfg->crit_exit;
-    me->on_idle = cfg->on_idle;
+    me->crit_enter = cfg ? cfg->crit_enter : am_pal_crit_enter;
+    me->crit_exit = cfg ? cfg->crit_exit : am_pal_crit_exit;
+    me->on_idle = cfg ? cfg->on_idle : am_pal_on_idle;
 
     me->running_ao_prio = AM_AO_PRIO_INVALID;
 
     struct am_event_state_cfg cfg_event = {
-        .crit_enter = cfg->crit_enter,
-        .crit_exit = cfg->crit_exit,
+        .crit_enter = me->crit_enter,
+        .crit_exit = me->crit_exit,
     };
     am_event_state_ctor(&cfg_event);
 
     struct am_timer_state_cfg cfg_timer = {
         .post_unsafe = (am_timer_post_unsafe_fn)am_ao_post_fifo_unsafe,
         .publish = (am_timer_publish_fn)am_ao_publish,
-        .crit_enter = cfg->crit_enter,
-        .crit_exit = cfg->crit_exit,
+        .crit_enter = me->crit_enter,
+        .crit_exit = me->crit_exit,
     };
     am_timer_state_ctor(&cfg_timer);
 }
