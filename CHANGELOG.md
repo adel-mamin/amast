@@ -24,9 +24,6 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Added
 
 - "What is it useful for?" section to `README.md`
-
-### Added
-
 - AM_PRINTF() attribute to printf-like functions
 
 ## v0.13.0 - 3-August-2025
