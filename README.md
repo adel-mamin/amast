@@ -242,14 +242,12 @@ static void input_task(void *param) {
 
 int main(void) {
     am_ao_state_ctor(/*cfg=*/NULL);
-
     am_event_add_pool(
         m_event_pool,
         sizeof(m_event_pool),
         sizeof(m_event_pool[0]),
         AM_ALIGNOF(am_timer_t)
     );
-
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
 
     struct app m;
@@ -264,17 +262,13 @@ int main(void) {
 
     /* ticker thread to feed timers */
     am_pal_task_create(
-        "ticker",
-        AM_AO_PRIO_MIN,
-        /*stack=*/NULL, /*stack_size=*/0,
+        "ticker", AM_AO_PRIO_MIN, /*stack=*/NULL, /*stack_size=*/0,
         /*entry=*/ticker_task, /*arg=*/NULL
     );
 
     /* user input controlling thread */
     am_pal_task_create(
-        "input",
-        AM_AO_PRIO_MIN,
-        /*stack=*/NULL, /*stack_size=*/0,
+        "input", AM_AO_PRIO_MIN, /*stack=*/NULL, /*stack_size=*/0,
         /*entry=*/input_task, /*arg=*/&m
     );
 
