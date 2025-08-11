@@ -29,6 +29,7 @@
  * Event allocation unit tests.
  */
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "common/macros.h"
@@ -61,8 +62,6 @@ struct buf5 {
     int64_t _[5];
 } buf5;
 
-static void crit_stub(void) {}
-
 static void test_allocate(int size, int pool_index_plus_one) {
     const struct am_event *e = am_event_allocate(AM_EVT_USER, size);
     AM_ASSERT(e->pool_index_plus_one == pool_index_plus_one);
@@ -71,18 +70,15 @@ static void test_allocate(int size, int pool_index_plus_one) {
 
 int main(void) {
     const int align = AM_ALIGNOF(am_event_t);
-    static const struct am_event_state_cfg cfg = {
-        .crit_enter = crit_stub, .crit_exit = crit_stub
-    };
     {
-        am_event_state_ctor(&cfg);
+        am_event_state_ctor(/*cfg=*/NULL);
         am_event_add_pool(&buf1, sizeof(buf1), sizeof(buf1), align);
 
         test_allocate(sizeof(buf1), /*pool_index_plus_one=*/1);
         test_allocate(sizeof(buf1) - 1, /*pool_index_plus_one=*/1);
     }
     {
-        am_event_state_ctor(&cfg);
+        am_event_state_ctor(/*cfg=*/NULL);
         am_event_add_pool(&buf1, sizeof(buf1), sizeof(buf1), align);
         am_event_add_pool(&buf2, sizeof(buf2), sizeof(buf2), align);
 
@@ -92,7 +88,7 @@ int main(void) {
         test_allocate(sizeof(buf2) - 1, /*pool_index_plus_one=*/2);
     }
     {
-        am_event_state_ctor(&cfg);
+        am_event_state_ctor(/*cfg=*/NULL);
         am_event_add_pool(&buf1, sizeof(buf1), sizeof(buf1), align);
         am_event_add_pool(&buf2, sizeof(buf2), sizeof(buf2), align);
         am_event_add_pool(&buf3, sizeof(buf3), sizeof(buf3), align);
@@ -106,7 +102,7 @@ int main(void) {
         test_allocate(sizeof(buf3), /*pool_index_plus_one=*/3);
     }
     {
-        am_event_state_ctor(&cfg);
+        am_event_state_ctor(/*cfg=*/NULL);
         am_event_add_pool(&buf1, sizeof(buf1), sizeof(buf1), align);
         am_event_add_pool(&buf2, sizeof(buf2), sizeof(buf2), align);
         am_event_add_pool(&buf3, sizeof(buf3), sizeof(buf3), align);
@@ -124,7 +120,7 @@ int main(void) {
         test_allocate(sizeof(buf4), /*pool_index_plus_one=*/4);
     }
     {
-        am_event_state_ctor(&cfg);
+        am_event_state_ctor(/*cfg=*/NULL);
         am_event_add_pool(&buf1, sizeof(buf1), sizeof(buf1), align);
         am_event_add_pool(&buf2, sizeof(buf2), sizeof(buf2), align);
         am_event_add_pool(&buf3, sizeof(buf3), sizeof(buf3), align);

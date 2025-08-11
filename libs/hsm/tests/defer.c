@@ -39,7 +39,6 @@
 #include "hsm/hsm.h"
 #include "common.h"
 #include "queue/queue.h"
-#include "pal/pal.h"
 
 /**
  * The topology of the tested HSM:
@@ -175,10 +174,7 @@ static void defer_commit(void) {
 }
 
 static void test_defer(void) {
-    struct am_event_state_cfg cfg = {
-        .crit_enter = am_pal_crit_enter, .crit_exit = am_pal_crit_exit
-    };
-    am_event_state_ctor(&cfg);
+    am_event_state_ctor(/*cfg=*/NULL);
 
     {
         static char pool[2 * AM_POOL_BLOCK_SIZEOF(struct am_event)] AM_ALIGNED(

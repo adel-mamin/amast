@@ -57,10 +57,7 @@ static void post_cb(void *owner, const struct am_event *event) {
 /* cppcheck-suppress-end constParameterCallback */
 
 static void test_arm(void) {
-    struct am_event_state_cfg cfg_event = {
-        .crit_enter = am_pal_crit_enter, .crit_exit = am_pal_crit_exit
-    };
-    am_event_state_ctor(&cfg_event);
+    am_event_state_ctor(/*cfg=*/NULL);
 
     {
         static char pool[2 * AM_POOL_BLOCK_SIZEOF(struct am_timer)] AM_ALIGNED(

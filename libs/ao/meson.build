@@ -64,7 +64,7 @@ if pal != 'stubs'
         [
             'tests' / 'minimal.c'
         ],
-        dependencies: [libao_preemptive_dep, libassert_dep, libpal_dep],
+        dependencies: [libao_preemptive_dep, libassert_dep, libpal_dep, libevent_dep],
         include_directories: [include_directories('tests')])
     test('minimal_preemptive', e, suite: 'ao')
 
@@ -74,7 +74,7 @@ if pal != 'stubs'
             'tests' / 'minimal.c'
         ],
         dependencies: [
-            libao_cooperative_dep, libassert_dep, libpal_dep, libbit_dep
+            libao_cooperative_dep, libassert_dep, libpal_dep, libbit_dep, libevent_dep
         ],
         include_directories: [include_directories('tests')])
     test('minimal_cooperative', e, suite: 'ao')
@@ -109,7 +109,7 @@ if pal != 'stubs'
             'tests' / 'stop.c'
         ],
         dependencies: [
-            libao_cooperative_dep, libassert_dep, libpal_dep, libbit_dep
+            libao_cooperative_dep, libassert_dep, libpal_dep, libbit_dep, libevent_dep
         ],
         include_directories: [include_directories('tests')])
     test('stop_cooperative', e, suite: 'ao')

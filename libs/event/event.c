@@ -66,12 +66,14 @@ struct am_event_state {
 
 static struct am_event_state am_event_state_;
 
+static void crit_stub(void) {}
+
 void am_event_state_ctor(const struct am_event_state_cfg *cfg) {
     struct am_event_state *me = &am_event_state_;
     memset(me, 0, sizeof(*me));
 
-    me->crit_enter = cfg ? cfg->crit_enter : NULL;
-    me->crit_exit = cfg ? cfg->crit_exit : NULL;
+    me->crit_enter = cfg ? cfg->crit_enter : crit_stub;
+    me->crit_exit = cfg ? cfg->crit_exit : crit_stub;
 }
 
 void am_event_add_pool(void *pool, int size, int block_size, int alignment) {
