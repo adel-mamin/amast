@@ -31,7 +31,7 @@
 #include "common/macros.h"
 #include "common/compiler.h"
 
-#ifdef AM_ASSERT_FAILURE
+#ifdef AM_ASSERT_FAILURE_ENABLED
 
 AM_NORETURN void am_assert_failure(
     const char *assertion, const char *file, int line
@@ -42,4 +42,4 @@ AM_NORETURN void am_assert_failure(
     __builtin_trap();
 }
 
-#endif /* AM_ASSERT_FAILURE */
+#endif /* AM_ASSERT_FAILURE_ENABLED */
