@@ -21,6 +21,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Relocate compiler independent macros to `common/macros.h`.
 - Allow configuration set to NULL in `am_event_state_ctor()`.
 - Allow configuration set to NULL in `am_ao_state_ctor()`.
+- Improve HSM and FSM documentation.
 
 ### Added
 

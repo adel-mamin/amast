@@ -9,10 +9,12 @@ Glossary
        a unique ID plus optionally some data associated with it
 
    *entry event*
-       an event sent to a state when the state is entered (**AM_EVT_FSM_ENTRY**)
+       an event sent to a state when the state is entered.
+       The event has ID :cpp:enumerator:`AM_EVT_FSM_ENTRY <am_fsm_evt_id::AM_EVT_FSM_ENTRY>`.
 
    *exit event*
-       an event sent to a state when the state is exited (**AM_EVT_FSM_EXIT**)
+       an event sent to a state when the state is exited.
+       The event has ID :cpp:enumerator:`AM_EVT_FSM_EXIT <am_fsm_evt_id::AM_EVT_FSM_EXIT>`.
 
    *state*
        an event handler. `Idle`, `Processing` and `Completed` are all states
@@ -45,7 +47,7 @@ This library is ideal for applications that require structured and manageable
 state control in an embedded system or other C-based environments.
 
 The FSM is a combination of one or more state-handler functions of
-type **am_fsm_state**.
+type :cpp:type:`am_fsm_state_fn`.
 
 Example FSM
 ============
@@ -85,19 +87,19 @@ processes it accordingly.
 
 FSM reserved events are defined as follows:
 
-- **AM_EVT_FSM_ENTRY**: Indicates the entry into a state. Entry actions are executed here.
-- **AM_EVT_FSM_EXIT**: Indicates the exit from a state. Exit actions are executed here.
+- :cpp:enumerator:`AM_EVT_FSM_ENTRY <am_fsm_evt_id::AM_EVT_FSM_ENTRY>`: Indicates the entry into a state. Entry actions are executed here.
+- :cpp:enumerator:`AM_EVT_FSM_EXIT <am_fsm_evt_id::AM_EVT_FSM_EXIT>`: Indicates the exit from a state. Exit actions are executed here.
 
-The **am_fsm_dispatch()** function is used to send events to the FSM.
+The :cpp:func:`am_fsm_dispatch()` function is used to send events to the FSM.
 
 State Transition
 ================
 
 The library supports two main types of state transitions:
 
-1. Standard Transition (**AM_FSM_TRAN()**):
+1. Standard Transition (:c:macro:`AM_FSM_TRAN()`):
    Moves directly from the current state to the new state.
-2. Redispatch Transition (**AM_FSM_TRAN_REDISPATCH()**):
+2. Redispatch Transition (:c:macro:`AM_FSM_TRAN_REDISPATCH()`):
    Transitions to a new state and redispatches the event for further processing.
 
 Both type of state transitions are used within state handlers to initiate
@@ -115,12 +117,12 @@ Initial State
 =============
 
 The initial state of the FSM is provided during the FSM’s construction
-using the **am_fsm_ctor()** function.
+using the :cpp:func:`am_fsm_ctor()` function.
 
 This state is set to handle any initial setup required by the FSM and
 ensures that the FSM begins with a predictable configuration.
 
-The function **am_fsm_init()** initiates the FSM with an optional initial event.
+The function :cpp:func:`am_fsm_init()` initiates the FSM with an optional initial event.
 
 Example:
 
@@ -136,12 +138,12 @@ to proceed to the appropriate active state.
 FSM Coding Rules
 ================
 
-1. FSM states must be represented by event handlers of type **am_fsm_state_fn**.
+1. FSM states must be represented by event handlers of type :cpp:type:`am_fsm_state_fn`.
 2. The name of the first argument of all user event handler functions
    must be **me**.
 3. For convenience instead of using **struct am_fsm *me** the first argument
    can point to a user structure. In this case the user structure
-   must have **struct am_fsm** instance as its first field.
+   must have **struct** :cpp:struct:`am_fsm` instance as its first field.
    For example, the first argument can be **struct foo *me**, where
    **struct foo** is defined like this:
 
@@ -156,10 +158,14 @@ FSM Coding Rules
    events.
 5. Avoid placing any code with side effects outside of the switch-case of
    event handlers.
-6. Processing of **AM_EVT_FSM_ENTRY** and **AM_EVT_FSM_EXIT** events should
+6. Processing of :cpp:enumerator:`AM_EVT_FSM_ENTRY <am_fsm_evt_id::AM_EVT_FSM_ENTRY>` and
+   :cpp:enumerator:`AM_EVT_FSM_EXIT <am_fsm_evt_id::AM_EVT_FSM_EXIT>` events should
    not trigger state transitions. It means that user event handlers should
-   not return **AM_FSM_TRAN()** or **AM_FSM_TRAN_REDISPATCH()** for
+   not return :c:macro:`AM_FSM_TRAN()` or :c:macro:`AM_FSM_TRAN_REDISPATCH()` for
    these events.
+7. Processing of :cpp:enumerator:`AM_EVT_FSM_ENTRY <am_fsm_evt_id::AM_EVT_FSM_ENTRY>` and
+   :cpp:enumerator:`AM_EVT_FSM_EXIT <am_fsm_evt_id::AM_EVT_FSM_EXIT>` events should be
+   done at the top of the corresponding event handler for better readability.
 
 FSM Initialization
 ==================
@@ -167,8 +173,8 @@ FSM Initialization
 FSM initialization is divided into the following two steps for increased
 flexibility and better control of the initialization timeline:
 
-1. the state machine constructor (**am_fsm_ctor()**)
-2. the initial transition (**am_fsm_init()**).
+1. the state machine constructor (:cpp:func:`am_fsm_ctor()`)
+2. the initial transition (:cpp:func:`am_fsm_init()`).
 
 Transition To History
 =====================
@@ -204,7 +210,7 @@ happen from state *A* or state *B*. As an example, assume the the FSM
 is in the state *A*.
 
 The user code stores the current state in a local variable of type
-**am_fsm_state_fn**. This is done with:
+:cpp:type:`am_fsm_state_fn`. This is done with:
 
 .. code-block:: C
 

@@ -363,6 +363,10 @@ HSM Coding Rules
    event can optionally only trigger transition to a substate of the state triggering
    the transition.
    Transition to peer states of superstates is not allowed in this case.
+9. Processing of :cpp:enumerator:`AM_EVT_HSM_INIT <am_hsm_evt_id::AM_EVT_HSM_INIT>`,
+   :cpp:enumerator:`AM_EVT_HSM_ENTRY <am_hsm_evt_id::AM_EVT_HSM_ENTRY>` and
+   :cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>` events should be
+   done at the top of the corresponding event handler for better readability.
 
 Transition To History
 =====================
