@@ -267,7 +267,7 @@ struct am_hsm {
  *
  * @code{.c}
  * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = 0},
- *  ((struct am_hsm *)me)->smi = (uint8_t)i, AM_RC_TRAN)
+ *  ((struct am_hsm *)me)->smi = 0, AM_RC_TRAN)
  * @endcode
  *
  * AM_HSM_TRAN(s, i) is converted to
@@ -307,7 +307,7 @@ struct am_hsm {
  *
  * @code{.c}
  * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = 0},
- *  ((struct am_hsm *)me)->smi = (uint8_t)i, AM_RC_TRAN_REDISPATCH)
+ *  ((struct am_hsm *)me)->smi = 0, AM_RC_TRAN_REDISPATCH)
  * @endcode
  *
  * AM_HSM_TRAN_REDISPATCH(s, i) is converted to
@@ -346,7 +346,7 @@ struct am_hsm {
  *
  * @code{.c}
  * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = 0},
- *  ((struct am_hsm *)me)->smi = (uint8_t)i, AM_RC_SUPER)
+ *  ((struct am_hsm *)me)->smi = 0, AM_RC_SUPER)
  * @endcode
  *
  * AM_HSM_SUPER(s, i) is converted to
