@@ -67,7 +67,6 @@
 #include <string.h>
 
 #include "common/alignment.h"
-#include "common/compiler.h"
 #include "common/constants.h"
 #include "common/macros.h"
 #include "common/types.h"
@@ -98,7 +97,7 @@ struct async {
 
 static const struct am_event am_evt_start = {.id = ASYNC_EVT_START};
 
-static struct am_timer m_event_pool[1] AM_ALIGNED(AM_ALIGN_MAX);
+static struct am_timer m_event_pool[1];
 static struct am_ao_subscribe_list m_pubsub_list[ASYNC_EVT_PUB_MAX];
 static const struct am_event *m_queue[2];
 
