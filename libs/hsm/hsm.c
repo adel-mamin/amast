@@ -43,7 +43,7 @@ struct am_hsm_path {
      * state[i] is always a substate of state[i-1]
      */
     struct am_hsm_state state[AM_HSM_HIERARCHY_DEPTH_MAX];
-    /** the actual size of \p state */
+    /** the actual length of \p state */
     int len;
 };
 
