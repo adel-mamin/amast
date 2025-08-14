@@ -52,7 +52,7 @@ enum am_hsm_evt_id {
      * User event handlers should take care of not causing any side effects
      * when called with this event.
      *
-     * The event handlers must always return the AM_HSM_SUPER() in response
+     * The event handlers must return the AM_HSM_SUPER() in response
      * to this event.
      */
     AM_EVT_HSM_EMPTY = AM_EVT_RANGE_SM_BEGIN,
@@ -417,11 +417,11 @@ bool am_hsm_state_is_eq(const struct am_hsm *hsm, struct am_hsm_state state);
 /**
  * Get HSM submachine instance.
  *
- * Always returns the submachine instance of the calling event handler
+ * Returns the submachine instance of the calling event handler
  * state function.
  *
  * Calling the function from an event handler state that is not part
- * of any submachine always returns 0.
+ * of any submachine returns 0.
  *
  * @param hsm  the HSM
  *
@@ -434,7 +434,7 @@ int am_hsm_get_instance(const struct am_hsm *hsm);
  *
  * E.g., assume HSM is in state S11,
  * which is a substate of S1, which is in turn a substate of S.
- * In this case this function always returns S11.
+ * In this case this function returns S11.
  *
  * @param hsm  the HSM
  *
@@ -456,7 +456,7 @@ void am_hsm_ctor(struct am_hsm *hsm, struct am_hsm_state state);
 /**
  * HSM destructor.
  *
- * Exits all HSM states.
+ * Exits current state and all its superstates till am_hsm_top().
  *
  * The HSM is not usable after this call.
  * Call am_hsm_ctor() to construct HSM again.
