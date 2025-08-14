@@ -9,6 +9,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## v0.13.2 - 12-August-2025
 
+### Changed
+
+- Construct entry and exit FSM messages on stack.
+
 ### Fixed
 
 - Conditional protection in `libs/common/assert.c`.

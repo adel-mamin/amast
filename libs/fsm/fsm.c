@@ -35,10 +35,6 @@
 #include "common/types.h"
 #include "fsm/fsm.h"
 
-/** canned events */
-static const struct am_event m_fsm_evt_entry = {.id = AM_EVT_FSM_ENTRY};
-static const struct am_event m_fsm_evt_exit = {.id = AM_EVT_FSM_EXIT};
-
 am_fsm_state_fn am_fsm_get_state(const struct am_fsm *fsm) {
     AM_ASSERT(fsm);
     return AM_FSM_STATE_CTOR(fsm->state);
@@ -52,7 +48,8 @@ am_fsm_state_fn am_fsm_get_state(const struct am_fsm *fsm) {
  */
 static void fsm_enter(struct am_fsm *fsm, const am_fsm_state_fn state) {
     fsm->state = state;
-    enum am_rc rc = fsm->state(fsm, &m_fsm_evt_entry);
+    struct am_event entry = {.id = AM_EVT_FSM_ENTRY};
+    enum am_rc rc = fsm->state(fsm, &entry);
     AM_ASSERT(AM_RC_HANDLED == rc);
 }
 
@@ -62,7 +59,8 @@ static void fsm_enter(struct am_fsm *fsm, const am_fsm_state_fn state) {
  * @param fsm  FSM handler
  */
 static void fsm_exit(struct am_fsm *fsm) {
-    enum am_rc rc = fsm->state(fsm, &m_fsm_evt_exit);
+    struct am_event exit = {.id = AM_EVT_FSM_EXIT};
+    enum am_rc rc = fsm->state(fsm, &exit);
     AM_ASSERT(AM_RC_HANDLED == rc);
 }
 
