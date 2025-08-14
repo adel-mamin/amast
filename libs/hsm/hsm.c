@@ -119,7 +119,7 @@ static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
 /**
  * Exit current state.
  *
- * @param hsm    HSM handler
+ * @param hsm  HSM handler
  */
 static void hsm_exit_state(struct am_hsm *hsm) {
     struct am_event exit = {.id = AM_EVT_HSM_EXIT};
