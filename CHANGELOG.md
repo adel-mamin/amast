@@ -12,6 +12,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Changed
 
 - Construct entry and exit FSM messages on stack.
+- Construct init, entry and exit HSM messages on stack.
 
 ### Fixed
 
