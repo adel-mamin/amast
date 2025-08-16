@@ -19,6 +19,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - Conditional protection in `libs/common/assert.c`.
 - Documentation bug in `libs/hsm/hsm.h`.
+- `AM_ALIGNED(AM_ALIGN_MAX)` implementation.
 
 ## v0.13.1 - 12-August-2025
 

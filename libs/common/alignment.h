@@ -35,13 +35,6 @@
 
 #include <stddef.h>
 
-/** The maximum compiler alignment [bytes]. */
-#if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L))
-#define AM_ALIGN_MAX AM_ALIGNOF(max_align_t)
-#else
-#define AM_ALIGN_MAX 16
-#endif
-
 /**
  * Use this macro before using AM_ALIGNOF() for the same type.
  *
@@ -54,6 +47,14 @@
         char c;                    \
         type member;               \
     }
+
+/** The maximum compiler alignment [bytes]. */
+#if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L))
+AM_ALIGNOF_DEFINE(max_align_t);
+#define AM_ALIGN_MAX AM_ALIGNOF(max_align_t)
+#else
+#define AM_ALIGN_MAX 16
+#endif
 
 /**
  * Type alignment.
