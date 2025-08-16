@@ -39,18 +39,28 @@ struct app {
 
 static enum am_rc state_a(struct app *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_FSM_ENTRY: break;
-    case AM_EVT_FSM_EXIT: break;
-    case AM_EVT_B: return AM_FSM_TRAN(state_b);
+    case AM_EVT_FSM_ENTRY:
+        /* do state entry actions here */
+        break;
+    case AM_EVT_FSM_EXIT:
+        /* do state exit actions here */
+        break;
+    case AM_EVT_B:
+        return AM_FSM_TRAN(state_b);
     }
     return AM_FSM_HANDLED();
 }
 
 static enum am_rc state_b(struct app *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_FSM_ENTRY: break;
-    case AM_EVT_FSM_EXIT: break;
-    case AM_EVT_A: return AM_FSM_TRAN(state_a);
+    case AM_EVT_FSM_ENTRY:
+        /* do state entry actions here */
+        break;
+    case AM_EVT_FSM_EXIT:
+        /* do state exit actions here */
+        break;
+    case AM_EVT_A:
+        return AM_FSM_TRAN(state_a);
     }
     return AM_FSM_HANDLED();
 }
@@ -102,28 +112,44 @@ struct app {
 
 static enum am_rc superstate(struct app *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY: break;
-    case AM_EVT_HSM_EXIT: break;
-    case AM_EVT_HSM_INIT: return AM_HSM_TRAN(substate_a);
-    case AM_EVT_C: return AM_HSM_TRAN(substate_b);
+    case AM_EVT_HSM_ENTRY:
+        /* do state entry actions here */
+        break;
+    case AM_EVT_HSM_EXIT:
+        /* do state exit actions here */
+        break;
+    case AM_EVT_HSM_INIT:
+        return AM_HSM_TRAN(substate_a);
+    case AM_EVT_C:
+        return AM_HSM_TRAN(substate_b);
     }
     return AM_HSM_SUPER(am_hsm_top);
 }
 
 static enum am_rc substate_a(struct app *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY: break;
-    case AM_EVT_HSM_EXIT: break;
-    case AM_EVT_B: return AM_HSM_TRAN(substate_b);
+    case AM_EVT_HSM_ENTRY:
+        /* do state entry actions here */
+        break;
+    case AM_EVT_HSM_EXIT:
+        /* do state exit actions here */
+        break;
+    case AM_EVT_B:
+        return AM_HSM_TRAN(substate_b);
     }
     return AM_HSM_SUPER(superstate);
 }
 
 static enum am_rc substate_b(struct app *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY: break;
-    case AM_EVT_HSM_EXIT: break;
-    case AM_EVT_A: return AM_HSM_TRAN(state_a);
+    case AM_EVT_HSM_ENTRY:
+        /* do state entry actions here */
+        break;
+    case AM_EVT_HSM_EXIT:
+        /* do state exit actions here */
+        break;
+    case AM_EVT_A:
+        return AM_HSM_TRAN(state_a);
     }
     return AM_HSM_SUPER(superstate);
 }
@@ -155,7 +181,7 @@ It demonstrate several features:
 1. creating the active object
 2. creating and maintaining a timer
 3. event pubplishing
-4. creating a regular tasks, for blocking calls like
+4. creating regular tasks, for blocking calls like
    sleep and waiting for user input
 
 ```C
@@ -173,8 +199,10 @@ struct app {
 
 /* events are allocated from this memory pool */
 static struct am_timer m_event_pool[1] AM_ALIGNED(AM_ALIGN_MAX);
+
 /* event publish/subscribe memory */
 static struct am_ao_subscribe_list m_pubsub_list[APP_EVT_PUB_MAX];
+
 /* active object incoming events queue */
 static const struct am_event *m_queue[2];
 
@@ -191,11 +219,14 @@ static enum am_rc app_state_b(struct app *me, const struct am_event *event) {
     case AM_EVT_HSM_ENTRY:
         am_timer_arm_ticks(&app->timer, /*ticks=*/10, /*interval=*/0);
         return AM_HSM_HANDLED();
+
     case AM_EVT_HSM_EXIT:
         am_timer_disarm(me->timer);
         return AM_HSM_HANDLED();
+
     case APP_EVT_SWITCH_MODE:
         return AM_HSM_TRAN(app_state_a);
+
     case APP_EVT_TIMER:
         /* app specific timer actions are done here */
         am_timer_arm_ticks(&app->timer, /*ticks=*/10, /*interval=*/0);
@@ -256,20 +287,32 @@ int main(void) {
     am_ao_start(
         &m.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/m_queue, /*nqueue=*/AM_COUNTOF(m_queue),
-        /*stack=*/NULL, /*stack_size=*/0, /*name=*/"app", /*init_event=*/NULL
+        /*queue=*/m_queue,
+        /*nqueue=*/AM_COUNTOF(m_queue),
+        /*stack=*/NULL,
+        /*stack_size=*/0,
+        /*name=*/"app",
+        /*init_event=*/NULL
     );
 
     /* ticker thread to feed timers */
     am_pal_task_create(
-        "ticker", AM_AO_PRIO_MIN, /*stack=*/NULL, /*stack_size=*/0,
-        /*entry=*/ticker_task, /*arg=*/NULL
+        "ticker",
+        AM_AO_PRIO_MIN,
+        /*stack=*/NULL,
+        /*stack_size=*/0,
+        /*entry=*/ticker_task,
+        /*arg=*/NULL
     );
 
     /* user input controlling thread */
     am_pal_task_create(
-        "input", AM_AO_PRIO_MIN, /*stack=*/NULL, /*stack_size=*/0,
-        /*entry=*/input_task, /*arg=*/&m
+        "input",
+        AM_AO_PRIO_MIN,
+        /*stack=*/NULL,
+        /*stack_size=*/0,
+        /*entry=*/input_task,
+        /*arg=*/&m
     );
 
     while (am_ao_get_cnt() > 0) {
@@ -281,6 +324,11 @@ int main(void) {
     return 0;
 }
 ```
+
+The AO API can be found [here](https://amast.readthedocs.io/api.html#ao).
+The Event API can be found [here](https://amast.readthedocs.io/api.html#event).
+The Timer API can be found [here](https://amast.readthedocs.io/api.html#timer).
+The AO + event + timer + HSM requires less than (4 + 3 + 2 + 3) = 12kB of memory.
 
 ## Architecture Diagram
 
