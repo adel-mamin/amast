@@ -35,10 +35,8 @@ Here is the full implementation of the FSM:
 #include "amast_config.h"
 #include "amast.h"
 
-enum {
-    APP_EVT_A = AM_EVT_USER,
-    APP_EVT_B
-};
+#define EVT_A AM_EVT_USER
+#define EVT_B (AM_EVT_USER + 1)
 
 struct app {
     struct am_fsm fsm;
@@ -50,12 +48,12 @@ static enum am_rc state_b(struct app *me, const struct am_event *event);
 static enum am_rc state_a(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_FSM_ENTRY:
-        /* do state entry actions here */
+        am_pal_printf("state_a entry\n");
         break;
     case AM_EVT_FSM_EXIT:
-        /* do state exit actions here */
+        am_pal_printf("state_a exit\n");
         break;
-    case APP_EVT_B:
+    case EVT_B:
         return AM_FSM_TRAN(state_b);
     }
     return AM_FSM_HANDLED();
@@ -64,12 +62,12 @@ static enum am_rc state_a(struct app *me, const struct am_event *event) {
 static enum am_rc state_b(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_FSM_ENTRY:
-        /* do state entry actions here */
+        am_pal_printf("state_b entry\n");
         break;
     case AM_EVT_FSM_EXIT:
-        /* do state exit actions here */
+        am_pal_printf("state_b exit\n");
         break;
-    case APP_EVT_A:
+    case EVT_A:
         return AM_FSM_TRAN(state_a);
     }
     return AM_FSM_HANDLED();
@@ -82,10 +80,20 @@ static enum am_rc init(struct app *me, const struct am_event *event) {
 int main(void) {
     am_fsm_ctor(&app.fsm, AM_FSM_STATE_CTOR(init));
     am_fsm_init(&app.fsm, /*init_event=*/NULL);
-    am_fsm_dispatch(&app.fsm, &(struct am_event){.id = APP_EVT_B});
-    am_fsm_dispatch(&app.fsm, &(struct am_event){.id = APP_EVT_A});
+    am_fsm_dispatch(&app.fsm, &(struct am_event){.id = EVT_B});
+    am_fsm_dispatch(&app.fsm, &(struct am_event){.id = EVT_A});
     return 0;
 }
+```
+
+The console output:
+
+```
+state_a entry
+state_a exit
+state_b entry
+state_b exit
+state_a entry
 ```
 
 The FSM API can be found [here](https://amast.readthedocs.io/api.html#fsm).
@@ -116,6 +124,8 @@ stateDiagram-v2
 Here is the full implementation of the HSM:
 
 ```C
+#include <stdio.h>
+
 #include "amast_config.h"
 #include "amast.h"
 
@@ -123,7 +133,7 @@ enum {
     APP_EVT_A = AM_EVT_USER,
     APP_EVT_B,
     APP_EVT_C
-}
+};
 
 struct app {
     struct am_hsm hsm;
@@ -136,10 +146,10 @@ static enum am_rc substate_b(struct app *me, const struct am_event *event);
 static enum am_rc superstate(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
-        /* do state entry actions here */
+        am_pal_printf("superstate entry\n");
         break;
     case AM_EVT_HSM_EXIT:
-        /* do state exit actions here */
+        am_pal_printf("superstate exit\n");
         break;
     case AM_EVT_HSM_INIT:
         return AM_HSM_TRAN(substate_a);
@@ -152,10 +162,10 @@ static enum am_rc superstate(struct app *me, const struct am_event *event) {
 static enum am_rc substate_a(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
-        /* do state entry actions here */
+        am_pal_printf("substate_a entry\n");
         break;
     case AM_EVT_HSM_EXIT:
-        /* do state exit actions here */
+        am_pal_printf("substate_a exit\n");
         break;
     case APP_EVT_B:
         return AM_HSM_TRAN(substate_b);
@@ -166,10 +176,11 @@ static enum am_rc substate_a(struct app *me, const struct am_event *event) {
 static enum am_rc substate_b(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
+        am_pal_printf("substate_b entry\n");
         /* do state entry actions here */
         break;
     case AM_EVT_HSM_EXIT:
-        /* do state exit actions here */
+        am_pal_printf("substate_b exit\n");
         break;
     case APP_EVT_A:
         return AM_HSM_TRAN(substate_a);
@@ -189,6 +200,19 @@ int main(void) {
     am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_C});
     return 0;
 }
+```
+
+The console output:
+
+```
+superstate entry
+substate_a entry
+substate_a exit
+substate_b entry
+substate_b exit
+substate_a entry
+substate_a exit
+substate_b entry
 ```
 
 The HSM API can be found [here](https://amast.readthedocs.io/api.html#hsm).
@@ -225,7 +249,7 @@ enum {
 struct app {
     struct am_ao ao;
     struct am_timer *timer;
-    /* app data */
+    int ticks;
 };
 
 /* events are allocated from this memory pool */
@@ -242,6 +266,9 @@ static enum am_rc app_state_b(struct app *me, const struct am_event *event);
 
 static enum am_rc app_state_a(struct app *me, const struct am_event *event) {
     switch (event->id) {
+    case AM_EVT_HSM_ENTRY:
+        am_pal_printf("state A\n");
+        return AM_HSM_HANDLED();
     case APP_EVT_SWITCH_MODE:
         return AM_HSM_TRAN(app_state_b);
     }
@@ -251,7 +278,8 @@ static enum am_rc app_state_a(struct app *me, const struct am_event *event) {
 static enum am_rc app_state_b(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
-        am_timer_arm_ticks(me->timer, /*ticks=*/10, /*interval=*/0);
+        am_pal_printf("state B\n");
+        am_timer_arm_ticks(me->timer, me->ticks, /*interval=*/0);
         return AM_HSM_HANDLED();
 
     case AM_EVT_HSM_EXIT:
@@ -262,8 +290,8 @@ static enum am_rc app_state_b(struct app *me, const struct am_event *event) {
         return AM_HSM_TRAN(app_state_a);
 
     case APP_EVT_TIMER:
-        /* app specific timer actions are done here */
-        am_timer_arm_ticks(me->timer, /*ticks=*/10, /*interval=*/0);
+        am_pal_printf("timer\n");
+        am_timer_arm_ticks(me->timer, me->ticks, /*interval=*/0);
         return AM_HSM_HANDLED();
     }
     return AM_HSM_SUPER(am_hsm_top);
@@ -280,6 +308,7 @@ static void app_ctor(struct app *me) {
     me->timer = am_timer_allocate(
         APP_EVT_TIMER, sizeof(*me->timer), AM_PAL_TICK_DOMAIN_DEFAULT, &me->ao
     );
+    me->ticks = am_pal_time_get_tick_from_ms(AM_PAL_TICK_DOMAIN_DEFAULT, 1000);
 }
 
 static void ticker_task(void *param) {
