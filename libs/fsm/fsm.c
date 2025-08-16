@@ -67,10 +67,7 @@ static void fsm_exit(struct am_fsm *fsm) {
 static enum am_rc fsm_dispatch(
     struct am_fsm *fsm, const struct am_event *event
 ) {
-    AM_ASSERT(fsm);
     AM_ASSERT(fsm->state);
-    AM_ASSERT(event);
-    AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
 
     am_fsm_state_fn src = fsm->state;
     enum am_rc rc = fsm->state(fsm, event);
@@ -78,7 +75,7 @@ static enum am_rc fsm_dispatch(
         AM_ASSERT(fsm->state == src);
         return rc;
     }
-    /* transition was triggered */
+    AM_ASSERT((AM_RC_TRAN == rc) || (AM_RC_TRAN_REDISPATCH == rc));
     am_fsm_state_fn dst = fsm->state;
     fsm->state = src;
     fsm_exit(fsm);
