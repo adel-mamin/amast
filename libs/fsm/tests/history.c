@@ -83,7 +83,7 @@ static enum am_rc oven_fsm_on(
     struct oven_fsm *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_EVT_FSM_ENTRY:
+    case AM_EVT_ENTRY:
         me->history = am_fsm_get_state(&me->fsm);
         return AM_FSM_HANDLED();
 
@@ -103,7 +103,7 @@ static enum am_rc oven_fsm_off(
     struct oven_fsm *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_EVT_FSM_ENTRY:
+    case AM_EVT_ENTRY:
         me->history = am_fsm_get_state(&me->fsm);
         return AM_FSM_HANDLED();
 

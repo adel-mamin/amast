@@ -159,11 +159,11 @@ static int smoker_idle(struct smoker *me, const struct am_event *event) {
 
 static int smoker_smoking(struct smoker *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_timer_arm_ms(&me->timer_done_smoking, /*ms=*/20, /*interval=*/0);
         return AM_HSM_HANDLED();
 
-    case AM_EVT_HSM_EXIT:
+    case AM_EVT_EXIT:
         am_timer_disarm(&me->timer_done_smoking);
         return AM_HSM_HANDLED();
 
@@ -227,7 +227,7 @@ static void agent_check_stats(const struct agent *me) {
 
 static int agent_stopping(struct agent *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_ao_publish_exclude(&m_evt_stop, &me->ao);
         return AM_HSM_HANDLED();
 
@@ -280,7 +280,7 @@ static void publish_resources(struct agent *me) {
 
 static int agent_proc(struct agent *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY: {
+    case AM_EVT_ENTRY: {
         am_timer_arm_ms(&me->timeout, AM_TIMEOUT_MS, /*interval=*/0);
         am_ao_post_fifo(&me->ao, &m_evt_start);
         return AM_HSM_HANDLED();

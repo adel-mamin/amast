@@ -47,10 +47,10 @@ static enum am_rc state_b(struct app *me, const struct am_event *event);
 
 static enum am_rc state_a(struct app *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_FSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_pal_printf("state_a entry\n");
         break;
-    case AM_EVT_FSM_EXIT:
+    case AM_EVT_EXIT:
         am_pal_printf("state_a exit\n");
         break;
     case EVT_B:
@@ -61,10 +61,10 @@ static enum am_rc state_a(struct app *me, const struct am_event *event) {
 
 static enum am_rc state_b(struct app *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_FSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_pal_printf("state_b entry\n");
         break;
-    case AM_EVT_FSM_EXIT:
+    case AM_EVT_EXIT:
         am_pal_printf("state_b exit\n");
         break;
     case EVT_A:
@@ -145,13 +145,13 @@ static enum am_rc substate_b(struct app *me, const struct am_event *event);
 
 static enum am_rc superstate(struct app *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_pal_printf("superstate entry\n");
         break;
-    case AM_EVT_HSM_EXIT:
+    case AM_EVT_EXIT:
         am_pal_printf("superstate exit\n");
         break;
-    case AM_EVT_HSM_INIT:
+    case AM_EVT_INIT:
         return AM_HSM_TRAN(substate_a);
     case APP_EVT_C:
         return AM_HSM_TRAN(substate_b);
@@ -161,10 +161,10 @@ static enum am_rc superstate(struct app *me, const struct am_event *event) {
 
 static enum am_rc substate_a(struct app *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_pal_printf("substate_a entry\n");
         break;
-    case AM_EVT_HSM_EXIT:
+    case AM_EVT_EXIT:
         am_pal_printf("substate_a exit\n");
         break;
     case APP_EVT_B:
@@ -175,11 +175,11 @@ static enum am_rc substate_a(struct app *me, const struct am_event *event) {
 
 static enum am_rc substate_b(struct app *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_pal_printf("substate_b entry\n");
         /* do state entry actions here */
         break;
-    case AM_EVT_HSM_EXIT:
+    case AM_EVT_EXIT:
         am_pal_printf("substate_b exit\n");
         break;
     case APP_EVT_A:
@@ -266,7 +266,7 @@ static enum am_rc app_state_b(struct app *me, const struct am_event *event);
 
 static enum am_rc app_state_a(struct app *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_pal_printf("state A\n");
         return AM_HSM_HANDLED();
     case APP_EVT_SWITCH_MODE:
@@ -277,12 +277,12 @@ static enum am_rc app_state_a(struct app *me, const struct am_event *event) {
 
 static enum am_rc app_state_b(struct app *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_pal_printf("state B\n");
         am_timer_arm_ticks(me->timer, me->ticks, /*interval=*/0);
         return AM_HSM_HANDLED();
 
-    case AM_EVT_HSM_EXIT:
+    case AM_EVT_EXIT:
         am_timer_disarm(me->timer);
         return AM_HSM_HANDLED();
 

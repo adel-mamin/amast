@@ -18,12 +18,12 @@ Glossary
    *entry event*
        an event sent to a state when the state is entered.
        The state can optionally run entry actions on it.
-       The event has ID :cpp:enumerator:`AM_EVT_HSM_ENTRY <am_hsm_evt_id::AM_EVT_HSM_ENTRY>`.
+       The event has ID :c:macro:`AM_EVT_ENTRY`.
 
    *exit event*
        an event sent to a state when the state is exited.
        The state can optionally run exit actions on it.
-       The event has ID :cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>`.
+       The event has ID :c:macro:`AM_EVT_EXIT`.
 
    *external transition*
        An external transition is a transition that moves from one state to another,
@@ -34,7 +34,7 @@ Glossary
    *init event*
        an event sent to a target state, right after the state was entered.
        The state can optionally trigger transition to a substate on it.
-       The event has ID :cpp:enumerator:`AM_EVT_HSM_INIT <am_hsm_evt_id::AM_EVT_HSM_INIT>`.
+       The event has ID :c:macro:`AM_EVT_INIT`.
        It immediately follows the entry event.
 
    *internal transition*
@@ -219,13 +219,13 @@ a transition to the state *s2*.  In this case the current state is *s111*,
 the source state is *s1* and the target state is *s2*.
 
 When transitioning, exit events
-(:cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>`) are sent
+(:c:macro:`AM_EVT_EXIT`) are sent
 by the library automatically up the ancestor chain until reaching the nearest
 common ancestor (NCA) of the source and target states.
-Then, entry events (:cpp:enumerator:`AM_EVT_HSM_ENTRY <am_hsm_evt_id::AM_EVT_HSM_ENTRY>`)
+Then, entry events (:c:macro:`AM_EVT_ENTRY`)
 are sent automatically by the library down the ancestor chain to the target state.
 Finally the library sends the init event
-(:cpp:enumerator:`AM_EVT_HSM_INIT <am_hsm_evt_id::AM_EVT_HSM_INIT>`) to the target state.
+(:c:macro:`AM_EVT_INIT`) to the target state.
 The NCA does not receive the exit event nor does it receive the entry and init events.
 
 There is a special case when the source and target states match
@@ -316,8 +316,8 @@ HSM Topology
 ============
 
 HSM library discovers the user HSM topology at run time by sending
-:cpp:enumerator:`AM_EVT_HSM_EMPTY <am_hsm_evt_id::AM_EVT_HSM_EMPTY>` event
-to state event handlers. The state event handlers should always return
+:c:macro:`AM_EVT_EMPTY` event to state event handlers.
+The state event handlers should always return
 :c:macro:`AM_HSM_SUPER()` in response.
 
 HSM Coding Rules
@@ -350,22 +350,22 @@ HSM Coding Rules
    events.
 5. Avoid placing any code with side effects outside of the switch-case of
    event handlers.
-6. Processing of :cpp:enumerator:`AM_EVT_HSM_ENTRY <am_hsm_evt_id::AM_EVT_HSM_ENTRY>`
-   and :cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>` events should
+6. Processing of :c:macro:`AM_EVT_ENTRY`
+   and :c:macro:`AM_EVT_EXIT` events should
    not trigger state transitions. It means that user event handlers should
    not return :c:macro:`AM_HSM_TRAN()` or :c:macro:`AM_HSM_TRAN_REDISPATCH()` for
    these events.
-7. Processing of :cpp:enumerator:`AM_EVT_HSM_INIT <am_hsm_evt_id::AM_EVT_HSM_INIT>`
+7. Processing of :c:macro:`AM_EVT_INIT`
    event can optionally only trigger transition by returning the result of
    :c:macro:`AM_HSM_TRAN()` macro.
    The use of :c:macro:`AM_HSM_TRAN_REDISPATCH()` is not allowed in this case.
-8. Processing of :cpp:enumerator:`AM_EVT_HSM_INIT <am_hsm_evt_id::AM_EVT_HSM_INIT>`
+8. Processing of :c:macro:`AM_EVT_INIT`
    event can optionally only trigger transition to a substate of the state triggering
    the transition.
    Transition to peer states of superstates is not allowed in this case.
-9. Processing of :cpp:enumerator:`AM_EVT_HSM_INIT <am_hsm_evt_id::AM_EVT_HSM_INIT>`,
-   :cpp:enumerator:`AM_EVT_HSM_ENTRY <am_hsm_evt_id::AM_EVT_HSM_ENTRY>` and
-   :cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>` events should be
+9. Processing of :c:macro:`AM_EVT_INIT`,
+   :c:macro:`AM_EVT_ENTRY` and
+   :c:macro:`AM_EVT_EXIT` events should be
    done at the top of the corresponding event handler for better readability.
 
 Transition To History
@@ -391,7 +391,7 @@ of type **struct** :cpp:struct:`am_hsm_state`. This is done with:
    ...
    static enum am_rc s11(struct foo *me, const struct event *event) {
        switch (event->id) {
-       case AM_EVT_HSM_ENTRY:
+       case AM_EVT_ENTRY:
            me->history  = am_hsm_get_state(&me->hsm);
            return AM_HSM_HANDLED();
        ...
@@ -483,7 +483,7 @@ Here is how it is coded in pseudocode:
 
    static enum am_rc s1(struct sm *me, const struct event *event) {
        switch (event->id) {
-       case AM_EVT_HSM_INIT: {
+       case AM_EVT_INIT: {
            static const struct am_hsm_state tt[] = {
                [S1_0] = {.fn = AM_HSM_STATE_FN_CTOR(s2)},
                [S1_1] = {.fn = AM_HSM_STATE_FN_CTOR(s3)}
@@ -645,7 +645,7 @@ The HSM topology:
 
 - **A** is short of **HSM_EVT_A**
 - **B** is short of **HSM_EVT_B**
-- **X** is short of :cpp:enumerator:`AM_EVT_HSM_EXIT <am_hsm_evt_id::AM_EVT_HSM_EXIT>`
+- **X** is short of :c:macro:`AM_EVT_EXIT`
 
 The test steps:
 

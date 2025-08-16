@@ -44,18 +44,49 @@
 /** No event ID should have this value. */
 #define AM_EVT_INVALID -1
 
-/** State machine events range start (inclusive). */
-#define AM_EVT_RANGE_SM_BEGIN 0
-/** State machine events range end (inclusive). */
-#define AM_EVT_RANGE_SM_END 3
+/**
+ * Empty event.
+ *
+ * User event handlers should take care of not causing any side effects
+ * when called with this event.
+ *
+ * The event handlers must return the AM_HSM_SUPER() in response
+ * to this event in HSM library.
+ */
+#define AM_EVT_EMPTY 0
 
-#define AM_EVT_INTERNAL_MAX AM_EVT_RANGE_SM_END
+/**
+ * Init event.
+ *
+ * Run optional initial transition from a given state.
+ *
+ * Always follows the #AM_EVT_ENTRY event.
+ */
+#define AM_EVT_INIT 1
+
+/**
+ * Entry event.
+ *
+ * Run entry action(s) for a given state.
+ *
+ * No state transition is allowed in response to this event.
+ */
+#define AM_EVT_ENTRY 2
+
+/**
+ * Exit event.
+ *
+ * Run exit action(s) for a given state.
+ *
+ * No state transition is allowed in response to this event.
+ */
+#define AM_EVT_EXIT 3
 
 /**
  * The event IDs smaller than this value are reserved
  * and should not be used for user events.
  */
-#define AM_EVT_USER (AM_EVT_INTERNAL_MAX + 1) /* 4 */
+#define AM_EVT_USER 4
 
 #ifndef AM_EVENT_POOLS_NUM_MAX
 /**

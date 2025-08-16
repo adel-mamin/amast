@@ -158,7 +158,7 @@ static int balancer_stopping(
     struct balancer *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_ao_publish_exclude(&m_evt_stop, &me->ao);
         return AM_HSM_HANDLED();
 
@@ -181,7 +181,7 @@ static int balancer_stopping(
 
 static int balancer_proc(struct balancer *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY: {
+    case AM_EVT_ENTRY: {
         am_timer_arm_ms(&me->timeout, AM_TIMEOUT_MS, /*interval=*/0);
         am_ao_post_fifo(&me->ao, &m_evt_start);
         return AM_HSM_HANDLED();

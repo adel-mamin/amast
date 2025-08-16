@@ -56,7 +56,7 @@ static struct dtor_hsm m_dtor_hsm;
 
 static enum am_rc dtor_s(struct dtor_hsm *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_EXIT:
+    case AM_EVT_EXIT:
         return AM_HSM_HANDLED();
     default:
         break;

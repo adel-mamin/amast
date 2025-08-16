@@ -48,7 +48,7 @@ am_fsm_state_fn am_fsm_get_state(const struct am_fsm *fsm) {
  */
 static void fsm_enter(struct am_fsm *fsm, const am_fsm_state_fn state) {
     fsm->state = state;
-    struct am_event entry = {.id = AM_EVT_FSM_ENTRY};
+    struct am_event entry = {.id = AM_EVT_ENTRY};
     enum am_rc rc = fsm->state(fsm, &entry);
     AM_ASSERT(AM_RC_HANDLED == rc);
 }
@@ -59,7 +59,7 @@ static void fsm_enter(struct am_fsm *fsm, const am_fsm_state_fn state) {
  * @param fsm  FSM handler
  */
 static void fsm_exit(struct am_fsm *fsm) {
-    struct am_event exit = {.id = AM_EVT_FSM_EXIT};
+    struct am_event exit = {.id = AM_EVT_EXIT};
     enum am_rc rc = fsm->state(fsm, &exit);
     AM_ASSERT(AM_RC_HANDLED == rc);
 }

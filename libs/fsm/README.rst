@@ -10,11 +10,11 @@ Glossary
 
    *entry event*
        an event sent to a state when the state is entered.
-       The event has ID :cpp:enumerator:`AM_EVT_FSM_ENTRY <am_fsm_evt_id::AM_EVT_FSM_ENTRY>`.
+       The event has ID :c:macro:`AM_EVT_ENTRY`.
 
    *exit event*
        an event sent to a state when the state is exited.
-       The event has ID :cpp:enumerator:`AM_EVT_FSM_EXIT <am_fsm_evt_id::AM_EVT_FSM_EXIT>`.
+       The event has ID :c:macro:`AM_EVT_EXIT`.
 
    *state*
        an event handler. `Idle`, `Processing` and `Completed` are all states
@@ -87,8 +87,8 @@ processes it accordingly.
 
 FSM reserved events are defined as follows:
 
-- :cpp:enumerator:`AM_EVT_FSM_ENTRY <am_fsm_evt_id::AM_EVT_FSM_ENTRY>`: Indicates the entry into a state. Entry actions are executed here.
-- :cpp:enumerator:`AM_EVT_FSM_EXIT <am_fsm_evt_id::AM_EVT_FSM_EXIT>`: Indicates the exit from a state. Exit actions are executed here.
+- :c:macro:`AM_EVT_ENTRY`: Indicates the entry into a state. Entry actions are executed here.
+- :c:macro:`AM_EVT_EXIT`: Indicates the exit from a state. Exit actions are executed here.
 
 The :cpp:func:`am_fsm_dispatch()` function is used to send events to the FSM.
 
@@ -158,13 +158,11 @@ FSM Coding Rules
    events.
 5. Avoid placing any code with side effects outside of the switch-case of
    event handlers.
-6. Processing of :cpp:enumerator:`AM_EVT_FSM_ENTRY <am_fsm_evt_id::AM_EVT_FSM_ENTRY>` and
-   :cpp:enumerator:`AM_EVT_FSM_EXIT <am_fsm_evt_id::AM_EVT_FSM_EXIT>` events should
+6. Processing of :c:macro:`AM_EVT_ENTRY` and :c:macro:`AM_EVT_EXIT` events should
    not trigger state transitions. It means that user event handlers should
    not return :c:macro:`AM_FSM_TRAN()` or :c:macro:`AM_FSM_TRAN_REDISPATCH()` for
    these events.
-7. Processing of :cpp:enumerator:`AM_EVT_FSM_ENTRY <am_fsm_evt_id::AM_EVT_FSM_ENTRY>` and
-   :cpp:enumerator:`AM_EVT_FSM_EXIT <am_fsm_evt_id::AM_EVT_FSM_EXIT>` events should be
+7. Processing of :c:macro:`AM_EVT_ENTRY` and :c:macro:`AM_EVT_EXIT` events should be
    done at the top of the corresponding event handler for better readability.
 
 FSM Initialization
@@ -223,7 +221,7 @@ The user code stores the current state in a local variable of type
    ...
    static enum am_rc A(struct foo *me, const struct event *event) {
        switch (event->id) {
-       case AM_EVT_FSM_ENTRY:
+       case AM_EVT_ENTRY:
            me->history = am_fsm_state(&me->fsm);
            return AM_FSM_HANDLED();
        ...

@@ -53,15 +53,15 @@ static enum am_rc reenter_hsm_s(
     struct reenter_hsm *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         me->log("s-ENTRY;");
         return AM_HSM_HANDLED();
-    case AM_EVT_HSM_INIT:
+    case AM_EVT_INIT:
         return AM_HSM_TRAN(reenter_hsm_s1);
     case HSM_EVT_A:
         me->log("s-EVT_A;");
         return AM_HSM_TRAN(reenter_hsm_s);
-    case AM_EVT_HSM_EXIT:
+    case AM_EVT_EXIT:
         me->log("s-EXIT;");
         return AM_HSM_HANDLED();
     default:
@@ -74,7 +74,7 @@ static enum am_rc reenter_hsm_s1(
     struct reenter_hsm *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         me->log("s1-ENTRY;");
         return AM_HSM_HANDLED();
         break;
@@ -84,7 +84,7 @@ static enum am_rc reenter_hsm_s1(
     case HSM_EVT_C:
         me->log("s1-EVT_C;");
         return AM_HSM_TRAN(reenter_hsm_s);
-    case AM_EVT_HSM_EXIT:
+    case AM_EVT_EXIT:
         me->log("s1-EXIT;");
         return AM_HSM_HANDLED();
     default:

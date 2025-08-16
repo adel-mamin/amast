@@ -44,51 +44,6 @@
 #include "common/types.h"
 #include "event/event.h"
 
-/** HSM events. */
-enum am_hsm_evt_id {
-    /**
-     * Empty event.
-     *
-     * User event handlers should take care of not causing any side effects
-     * when called with this event.
-     *
-     * The event handlers must return the AM_HSM_SUPER() in response
-     * to this event.
-     */
-    AM_EVT_HSM_EMPTY = AM_EVT_RANGE_SM_BEGIN,
-
-    /**
-     * Init event.
-     *
-     * Run optional initial transition from a given state.
-     *
-     * Always follows the #AM_EVT_HSM_ENTRY event.
-     */
-    AM_EVT_HSM_INIT,
-
-    /**
-     * Entry event.
-     *
-     * Run entry action(s) for a given state.
-     *
-     * Always precedes the #AM_EVT_HSM_INIT event.
-     *
-     * No state transition is allowed in response to this event.
-     */
-    AM_EVT_HSM_ENTRY,
-
-    /**
-     * Exit event.
-     *
-     * Run exit action(s) for a given state.
-     *
-     * No state transition is allowed in response to this event.
-     */
-    AM_EVT_HSM_EXIT,
-};
-
-AM_ASSERT_STATIC(AM_EVT_HSM_EXIT <= AM_EVT_RANGE_SM_END);
-
 /** forward declaration of HSM descriptor */
 struct am_hsm;
 
@@ -254,9 +209,9 @@ struct am_hsm {
  * Event processing is over. Transition is triggered.
  *
  * It should never be returned in response to
- * #AM_EVT_HSM_ENTRY or #AM_EVT_HSM_EXIT events.
+ * #AM_EVT_ENTRY or #AM_EVT_EXIT events.
  *
- * Conversely, the response to #AM_EVT_HSM_INIT event can optionally use
+ * Conversely, the response to #AM_EVT_INIT event can optionally use
  * this macro as a return value to designate transition to
  * the provided state. The target state in this case must be
  * a substate of the current state.
@@ -296,8 +251,8 @@ struct am_hsm {
 /**
  * Same event redispatch is requested. Transition is triggered.
  *
- * It should never be returned for #AM_EVT_HSM_ENTRY, #AM_EVT_HSM_EXIT or
- * #AM_EVT_HSM_INIT events.
+ * It should never be returned for #AM_EVT_ENTRY, #AM_EVT_EXIT or
+ * #AM_EVT_INIT events.
  * Do not redispatch the same event more than once within same
  * am_hsm_dispatch() call.
  *

@@ -93,7 +93,7 @@ static enum am_rc bs_s(struct basic_sm *me, const struct am_event *event) {
 
 static enum am_rc bs_s1(struct basic_sm *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_INIT: {
+    case AM_EVT_INIT: {
         static const struct am_hsm_state tt[] = {
             [S1_0] = {.fn = (am_hsm_state_fn)bs_s2},
             [S1_1] = {.fn = (am_hsm_state_fn)bs_s3}

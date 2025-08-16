@@ -108,7 +108,7 @@ static enum am_rc async_exiting(struct async *me, const struct am_event *event);
 
 static enum am_rc async_top(struct async *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_INIT:
+    case AM_EVT_INIT:
         return AM_HSM_TRAN(async_regular);
 
     case ASYNC_EVT_SWITCH_MODE: {
@@ -193,13 +193,13 @@ static enum am_rc async_regular(
     struct async *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_async_ctor(&me->async);
         am_async_ctor(&me->async_blinking_green);
         am_ao_post_fifo(&me->ao, &am_evt_start);
         return AM_HSM_HANDLED();
 
-    case AM_EVT_HSM_EXIT:
+    case AM_EVT_EXIT:
         am_timer_disarm(me->timer);
         return AM_HSM_HANDLED();
 
@@ -215,12 +215,12 @@ static enum am_rc async_regular(
 
 static enum am_rc async_off(struct async *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_async_ctor(&me->async);
         am_ao_post_fifo(&me->ao, &am_evt_start);
         return AM_HSM_HANDLED();
 
-    case AM_EVT_HSM_EXIT:
+    case AM_EVT_EXIT:
         am_timer_disarm(me->timer);
         return AM_HSM_HANDLED();
 

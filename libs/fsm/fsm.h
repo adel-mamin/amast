@@ -38,32 +38,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "common/macros.h"
 #include "common/types.h"
 #include "event/event.h"
-
-/** FSM events. */
-enum am_fsm_evt_id {
-    /**
-     * Entry event.
-     *
-     * Run entry action(s) for a given state.
-     *
-     * No state transition is allowed in response to this event.
-     */
-    AM_EVT_FSM_ENTRY = AM_EVT_RANGE_SM_BEGIN,
-
-    /**
-     * Exit event.
-     *
-     * Run exit action(s) for a given state.
-     *
-     * No state transition is allowed in response to this event.
-     */
-    AM_EVT_FSM_EXIT,
-};
-
-AM_ASSERT_STATIC(AM_EVT_FSM_EXIT <= AM_EVT_RANGE_SM_END);
 
 /** Forward declaration. */
 struct am_fsm;
@@ -145,7 +121,7 @@ struct am_fsm {
  * Event processing is over. Transition is taken.
  *
  * It should never be returned in response to
- * #AM_EVT_FSM_ENTRY or #AM_EVT_FSM_EXIT events.
+ * #AM_EVT_ENTRY or #AM_EVT_EXIT events.
  *
  * AM_FSM_TRAN(s) is converted to
  *
@@ -160,7 +136,7 @@ struct am_fsm {
 /**
  * Same event redispatch is requested. Transition is taken.
  *
- * It should never be returned for #AM_EVT_FSM_ENTRY or #AM_EVT_FSM_EXIT events.
+ * It should never be returned for #AM_EVT_ENTRY or #AM_EVT_EXIT events.
  *
  * Do not redispatch the same event more than once within same
  * am_fsm_dispatch() call.

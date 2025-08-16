@@ -14,6 +14,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Construct entry and exit FSM messages on stack.
 - Construct init, entry and exit HSM messages on stack.
 - Rework asserts in FSM library.
+- Rename state machine signals: `AM_EVT_HSM_` -> `AM_EVT_`, `AM_EVT_FSM_` -> `AM_EVT_`.
 
 ### Fixed
 

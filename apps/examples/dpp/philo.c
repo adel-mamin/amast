@@ -74,7 +74,7 @@ static int philo_top(struct philo *me, const struct am_event *event) {
 
 static int philo_thinking(struct philo *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_pal_printf("philo %d is thinking\n", me->id);
         ++me->cnt;
         am_timer_arm_ms(me->timer, /*ms=*/20, /*interval=*/0);
@@ -96,7 +96,7 @@ static int philo_thinking(struct philo *me, const struct am_event *event) {
 
 static int philo_hungry(struct philo *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_pal_printf("philo %d is hungry\n", me->id);
         return AM_HSM_HANDLED();
 
@@ -115,7 +115,7 @@ static int philo_hungry(struct philo *me, const struct am_event *event) {
 
 static int philo_eating(struct philo *me, const struct am_event *event) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_pal_printf("philo %d is eating\n", me->id);
         am_timer_arm_ms(me->timer, /*ms=*/20, /*interval=*/0);
         return AM_HSM_HANDLED();

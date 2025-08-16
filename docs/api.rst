@@ -215,6 +215,14 @@ Event API documentation.
 
 The source code of the corresponding header file is in `event.h <https://github.com/adel-mamin/amast/blob/main/libs/event/event.h>`_.
 
+.. doxygendefine:: AM_EVT_EMPTY
+
+.. doxygendefine:: AM_EVT_INIT
+
+.. doxygendefine:: AM_EVT_ENTRY
+
+.. doxygendefine:: AM_EVT_EXIT
+
 .. doxygendefine:: AM_EVT_USER
 
 .. doxygendefine:: AM_EVENT_POOLS_NUM_MAX
@@ -352,8 +360,6 @@ Hierarchical State Machine (HSM) API documentation.
 
 The source code of the corresponding header file is in `hsm.h <https://github.com/adel-mamin/amast/blob/main/libs/hsm/hsm.h>`_.
 
-.. doxygenenum:: am_hsm_evt_id
-
 .. doxygentypedef:: am_hsm_state_fn
 
 .. doxygentypedef:: am_hsm_spy_fn
@@ -402,8 +408,6 @@ FSM
 Finite State Machine (FSM) API documentation.
 
 The source code of the corresponding header file is in `fsm.h <https://github.com/adel-mamin/amast/blob/main/libs/fsm/fsm.h>`_.
-
-.. doxygenenum:: am_fsm_evt_id
 
 .. doxygentypedef:: am_fsm_state_fn
 

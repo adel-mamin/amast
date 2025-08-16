@@ -90,7 +90,7 @@ static enum am_rc progress_done(
     struct progress *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         exit(me->rc);
         return AM_HSM_HANDLED();
     default:
@@ -103,11 +103,11 @@ static enum am_rc progress_top(
     struct progress *me, const struct am_event *event
 ) {
     switch (event->id) {
-    case AM_EVT_HSM_ENTRY:
+    case AM_EVT_ENTRY:
         am_timer_arm_ticks(&me->timer, me->progress_ticks, me->progress_ticks);
         return AM_HSM_HANDLED();
 
-    case AM_EVT_HSM_EXIT:
+    case AM_EVT_EXIT:
         am_timer_disarm(&me->timer);
         am_pal_printff("\r                  \r"); /* clean the terminal output*/
         return AM_HSM_HANDLED();
