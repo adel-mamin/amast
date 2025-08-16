@@ -32,10 +32,20 @@ stateDiagram-v2
 Here is the full implementation of the FSM:
 
 ```C
+#include "amast_config.h"
+#include "amast.h"
+
+enum {
+    APP_EVT_A = AM_EVT_USER,
+    APP_EVT_B
+};
+
 struct app {
     struct am_fsm fsm;
     /* app data */
 } app;
+
+static enum am_rc state_b(struct app *me, const struct am_event *event);
 
 static enum am_rc state_a(struct app *me, const struct am_event *event) {
     switch (event->id) {
@@ -45,7 +55,7 @@ static enum am_rc state_a(struct app *me, const struct am_event *event) {
     case AM_EVT_FSM_EXIT:
         /* do state exit actions here */
         break;
-    case AM_EVT_B:
+    case APP_EVT_B:
         return AM_FSM_TRAN(state_b);
     }
     return AM_FSM_HANDLED();
@@ -59,7 +69,7 @@ static enum am_rc state_b(struct app *me, const struct am_event *event) {
     case AM_EVT_FSM_EXIT:
         /* do state exit actions here */
         break;
-    case AM_EVT_A:
+    case APP_EVT_A:
         return AM_FSM_TRAN(state_a);
     }
     return AM_FSM_HANDLED();
@@ -72,15 +82,16 @@ static enum am_rc init(struct app *me, const struct am_event *event) {
 int main(void) {
     am_fsm_ctor(&app.fsm, AM_FSM_STATE_CTOR(init));
     am_fsm_init(&app.fsm, /*init_event=*/NULL);
-    am_fsm_dispatch(&app.fsm, &(struct am_event){.id = AM_EVT_B});
-    am_fsm_dispatch(&app.fsm, &(struct am_event){.id = AM_EVT_A});
+    am_fsm_dispatch(&app.fsm, &(struct am_event){.id = APP_EVT_B});
+    am_fsm_dispatch(&app.fsm, &(struct am_event){.id = APP_EVT_A});
     return 0;
 }
 ```
 
 The FSM API can be found [here](https://amast.readthedocs.io/api.html#fsm).
 The FSM documenation is [here](https://amast.readthedocs.io/fsm.html).
-The library requires less than 1kB of memory.
+
+The compiled binary on x86 is about 2kB of memory.
 
 ### Hierarchical state machine (HSM)
 
@@ -105,10 +116,22 @@ stateDiagram-v2
 Here is the full implementation of the HSM:
 
 ```C
+#include "amast_config.h"
+#include "amast.h"
+
+enum {
+    APP_EVT_A = AM_EVT_USER,
+    APP_EVT_B,
+    APP_EVT_C
+}
+
 struct app {
     struct am_hsm hsm;
     /* app data */
 } app;
+
+static enum am_rc substate_a(struct app *me, const struct am_event *event);
+static enum am_rc substate_b(struct app *me, const struct am_event *event);
 
 static enum am_rc superstate(struct app *me, const struct am_event *event) {
     switch (event->id) {
@@ -120,7 +143,7 @@ static enum am_rc superstate(struct app *me, const struct am_event *event) {
         break;
     case AM_EVT_HSM_INIT:
         return AM_HSM_TRAN(substate_a);
-    case AM_EVT_C:
+    case APP_EVT_C:
         return AM_HSM_TRAN(substate_b);
     }
     return AM_HSM_SUPER(am_hsm_top);
@@ -134,7 +157,7 @@ static enum am_rc substate_a(struct app *me, const struct am_event *event) {
     case AM_EVT_HSM_EXIT:
         /* do state exit actions here */
         break;
-    case AM_EVT_B:
+    case APP_EVT_B:
         return AM_HSM_TRAN(substate_b);
     }
     return AM_HSM_SUPER(superstate);
@@ -148,8 +171,8 @@ static enum am_rc substate_b(struct app *me, const struct am_event *event) {
     case AM_EVT_HSM_EXIT:
         /* do state exit actions here */
         break;
-    case AM_EVT_A:
-        return AM_HSM_TRAN(state_a);
+    case APP_EVT_A:
+        return AM_HSM_TRAN(substate_a);
     }
     return AM_HSM_SUPER(superstate);
 }
@@ -161,16 +184,17 @@ static enum am_rc init(struct app *me, const struct am_event *event) {
 int main(void) {
     am_hsm_ctor(&app.hsm, AM_HSM_STATE_CTOR(init));
     am_hsm_init(&app.hsm, /*init_event=*/NULL);
-    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = AM_EVT_B});
-    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = AM_EVT_A});
-    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = AM_EVT_C});
+    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_B});
+    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_A});
+    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_C});
     return 0;
 }
 ```
 
 The HSM API can be found [here](https://amast.readthedocs.io/api.html#hsm).
 The HSM documenation is [here](https://amast.readthedocs.io/hsm.html).
-The library requires less than 3kB of memory.
+
+The compiled binary on x86 is about 4kB of memory.
 
 ### Active Object
 
@@ -185,6 +209,13 @@ It demonstrate several features:
    sleep and waiting for user input
 
 ```C
+#include <stdio.h>
+#include <stddef.h>
+#include <string.h>
+
+#include "amast_config.h"
+#include "amast.h"
+
 enum {
     APP_EVT_SWITCH_MODE = AM_EVT_USER,
     APP_EVT_PUB_MAX,
@@ -206,6 +237,9 @@ static struct am_ao_subscribe_list m_pubsub_list[APP_EVT_PUB_MAX];
 /* active object incoming events queue */
 static const struct am_event *m_queue[2];
 
+static enum am_rc app_state_a(struct app *me, const struct am_event *event);
+static enum am_rc app_state_b(struct app *me, const struct am_event *event);
+
 static enum am_rc app_state_a(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case APP_EVT_SWITCH_MODE:
@@ -217,7 +251,7 @@ static enum am_rc app_state_a(struct app *me, const struct am_event *event) {
 static enum am_rc app_state_b(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_HSM_ENTRY:
-        am_timer_arm_ticks(&app->timer, /*ticks=*/10, /*interval=*/0);
+        am_timer_arm_ticks(me->timer, /*ticks=*/10, /*interval=*/0);
         return AM_HSM_HANDLED();
 
     case AM_EVT_HSM_EXIT:
@@ -229,7 +263,7 @@ static enum am_rc app_state_b(struct app *me, const struct am_event *event) {
 
     case APP_EVT_TIMER:
         /* app specific timer actions are done here */
-        am_timer_arm_ticks(&app->timer, /*ticks=*/10, /*interval=*/0);
+        am_timer_arm_ticks(me->timer, /*ticks=*/10, /*interval=*/0);
         return AM_HSM_HANDLED();
     }
     return AM_HSM_SUPER(am_hsm_top);
@@ -328,7 +362,8 @@ int main(void) {
 The AO API can be found [here](https://amast.readthedocs.io/api.html#ao).
 The Event API can be found [here](https://amast.readthedocs.io/api.html#event).
 The Timer API can be found [here](https://amast.readthedocs.io/api.html#timer).
-The AO + event + timer + HSM requires less than (4 + 3 + 2 + 3) = 12kB of memory.
+
+The compiled binary on x86 is about 17kB of memory.
 
 ## Architecture Diagram
 
