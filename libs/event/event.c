@@ -228,10 +228,10 @@ struct am_event *am_event_dup_x(
 
     struct am_event *dup = am_event_allocate_x(event->id, size, margin);
     if (dup && (size > (int)sizeof(struct am_event))) {
-        char *dst = (char *)dup + sizeof(struct am_event);
-        const char *src = (const char *)event + sizeof(struct am_event);
-        int sz = size - (int)sizeof(struct am_event);
-        memcpy(dst, src, (size_t)sz);
+        char *dst = (char *)&dup[1];
+        const char *src = (const char *)&event[1];
+        size_t sz = (size_t)size - sizeof(struct am_event);
+        memcpy(dst, src, sz);
     }
 
     return dup;
