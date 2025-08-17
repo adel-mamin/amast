@@ -155,6 +155,11 @@ extern "C" {
  * Might be useful, if the AO publishing the \p event does not want
  * the library to route the same event back to this AO.
  *
+ * Application might observe changed order of events after publishing.
+ * This change of order might happen, if the publishing is from low-pirority
+ * active object, which then will get immediately preempted by higher-priority
+ * subscribers. This might or might not matter to your application.
+ *
  * Use am_ao_subscribe() to subscribe an active object to an event.
  * Use am_ao_unsubscribe() to unsubscribe it from the event
  * or am_ao_unsubscribe_all() to unsubscribe it from all events.
@@ -235,6 +240,11 @@ void am_ao_publish_exclude(
  * which are subscribed to the \p event including the AO publishing
  * the \p event.
  * The \p event is then handled asynchronously by the active objects.
+ *
+ * Application might observe changed order of events after publishing.
+ * This change of order might happen, if the publishing is from low-pirority
+ * active object, which then will get immediately preempted by higher-priority
+ * subscribers. This might or might not matter to your application.
  *
  * Use am_ao_subscribe() to subscribe an active object to an event.
  * Use am_ao_unsubscribe() to unsubscribe it from the event.
