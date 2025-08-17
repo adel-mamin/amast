@@ -156,7 +156,7 @@ extern "C" {
  * the library to route the same event back to this AO.
  *
  * Application might observe changed order of events after publishing.
- * This change of order might happen, if the publishing is from low-pirority
+ * This change of order might happen, if the publishing is from low-priority
  * active object, which then will get immediately preempted by higher-priority
  * subscribers. This might or might not matter to your application.
  *
@@ -242,7 +242,7 @@ void am_ao_publish_exclude(
  * The \p event is then handled asynchronously by the active objects.
  *
  * Application might observe changed order of events after publishing.
- * This change of order might happen, if the publishing is from low-pirority
+ * This change of order might happen, if the publishing is from low-priority
  * active object, which then will get immediately preempted by higher-priority
  * subscribers. This might or might not matter to your application.
  *

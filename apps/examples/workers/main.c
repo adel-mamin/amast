@@ -299,7 +299,7 @@ int main(void) {
 
     am_pal_task_create(
         "ticker",
-        /*prio=*/AM_AO_PRIO_MIN,
+        /*prio=*/AM_AO_PRIO_MAX,
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*entry=*/ticker_task,
