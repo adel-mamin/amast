@@ -82,11 +82,15 @@ struct am_ao_prio {
     /**
      * Define the priority of active object.
      * Used by AO library. Valid range [0, #AM_PAL_TASK_NUM_MAX[.
+     * Must be unique for different active objects.
+     * Used by both cooperative and preemptive ports of active objects.
      */
     unsigned ao : 8;
     /**
      * Define the priority of the task, which runs active object.
      * Used by PAL library. Valid range [0, #AM_PAL_TASK_NUM_MAX[.
+     * More than one active object may have same task priority.
+     * Only used by preemptive port of active objects.
      */
     unsigned task : 8;
 };
