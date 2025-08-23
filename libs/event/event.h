@@ -184,7 +184,7 @@ extern "C" {
  *
  * Must be called before calling any other event library APIs.
  *
- * Not thread safe.
+ * Thread unsafe.
  *
  * @param cfg  event library state configuration.
  *             The event library makes an internal copy of the configuration.
@@ -197,7 +197,7 @@ void am_event_state_ctor(const struct am_event_state_cfg *cfg);
  *
  * Event memory pools must be added in the order of increasing block sizes.
  *
- * Not thread safe.
+ * Thread unsafe.
  *
  * Must be called before using any event allocation APIs.
  *
@@ -274,7 +274,7 @@ typedef void (*am_event_log_fn)(
  *
  * To be used for debugging purposes.
  *
- * Not thread safe.
+ * Thread usafe.
  *
  * @param num  the number of events to log in each pool (if <0, then log all)
  * @param cb   the logging callback
@@ -702,6 +702,8 @@ int am_event_queue_get_nbusy_unsafe(const struct am_event_queue *queue);
 
 /**
  * Return event queue capacity.
+ *
+ * Thread usafe.
  *
  * @param queue  the event queue
  *
