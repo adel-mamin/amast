@@ -256,6 +256,20 @@ int am_event_pool_get_nblocks(int index);
 int am_event_pool_get_num(void);
 
 /**
+ * Log event content callback type.
+ *
+ * Used as a parameter to am_event_pool_log_unsafe() API.
+ *
+ * @param pool_index   pool index
+ * @param event_index  event_index within the pool
+ * @param event        event to log
+ * @param size         the event size [bytes]
+ */
+typedef void (*am_event_log_fn)(
+    int pool_index, int event_index, const struct am_event *event, int size
+);
+
+/**
  * Log events content of the first \p num events in each event pool.
  *
  * To be used for debugging purposes.
@@ -379,20 +393,6 @@ struct am_event *am_event_dup_x(
 struct am_event *am_event_dup(const struct am_event *event, int size);
 
 /**
- * Log event content callback type.
- *
- * Used as a parameter to am_event_pool_log_unsafe() API.
- *
- * @param pool_index   pool index
- * @param event_index  event_index within the pool
- * @param event        event to log
- * @param size         the event size [bytes]
- */
-typedef void (*am_event_log_fn)(
-    int pool_index, int event_index, const struct am_event *event, int size
-);
-
-/**
  * Check if event is static.
  *
  * Thread safe.
@@ -454,6 +454,24 @@ void am_event_dec_ref_cnt(const struct am_event *event);
  * @return the event reference counter
  */
 int am_event_get_ref_cnt(const struct am_event *event);
+
+/**
+ * Construct event queue with a array of event pointers.
+ *
+ * @param queue    the queue
+ * @param events   the array of event pointers
+ * @param nevents  the number of event pointers in \a events
+ */
+void am_event_queue_ctor(
+    struct am_event_queue *queue, const struct am_event *events[], int nevents
+);
+
+/**
+ * Destruct event queue.
+ *
+ * @param queue  the queue
+ */
+void am_event_queue_dtor(struct am_event_queue *queue);
 
 /**
  * Push event to the back of event queue (eXtended version).
@@ -636,24 +654,6 @@ typedef void (*am_event_handle_fn)(void *ctx, const struct am_event *event);
 bool am_event_queue_pop_front_with_cb(
     struct am_event_queue *queue, am_event_handle_fn cb, void *ctx
 );
-
-/**
- * Construct event queue with a array of event pointers.
- *
- * @param queue    the queue
- * @param events   the array of event pointers
- * @param nevents  the number of event pointers in \a events
- */
-void am_event_queue_ctor(
-    struct am_event_queue *queue, const struct am_event *events[], int nevents
-);
-
-/**
- * Destruct event queue.
- *
- * @param queue  the queue
- */
-void am_event_queue_dtor(struct am_event_queue *queue);
 
 /**
  * Check if constructor was called for event queue.

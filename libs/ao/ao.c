@@ -175,7 +175,8 @@ bool am_ao_post_lifo_x(
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
 
-    enum am_rc rc = am_event_queue_push_front_x(&ao->event_queue, event, margin);
+    enum am_rc rc =
+        am_event_queue_push_front_x(&ao->event_queue, event, margin);
     if (AM_RC_QUEUE_WAS_EMPTY == rc) {
         am_ao_notify(ao);
     }

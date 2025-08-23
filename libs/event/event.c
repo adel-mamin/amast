@@ -160,7 +160,7 @@ const struct am_event *am_event_queue_pop_front(struct am_event_queue *queue) {
  * @retval true   success
  * @retval false  failure
  */
-static bool am_event_queue_push_back(
+static bool event_queue_push_back(
     struct am_event_queue *queue, const struct am_event *event
 ) {
     AM_ASSERT(queue);
@@ -192,7 +192,7 @@ static bool am_event_queue_push_back(
  * @retval true   success
  * @retval false  failure
  */
-static bool am_event_queue_push_front(
+static bool event_queue_push_front(
     struct am_event_queue *queue, const struct am_event *event
 ) {
     AM_ASSERT(queue);
@@ -565,7 +565,7 @@ enum am_rc am_event_queue_push_back_x(
     struct am_event_queue *queue, const struct am_event *event, int margin
 ) {
     return am_event_push_x(
-        queue, event, margin, /*safe=*/true, am_event_queue_push_back
+        queue, event, margin, /*safe=*/true, event_queue_push_back
     );
 }
 
@@ -581,7 +581,7 @@ enum am_rc am_event_queue_push_back_unsafe(
     struct am_event_queue *queue, const struct am_event *event
 ) {
     enum am_rc rc = am_event_push_x(
-        queue, event, /*margin=*/0, /*safe=*/false, am_event_queue_push_back
+        queue, event, /*margin=*/0, /*safe=*/false, event_queue_push_back
     );
     AM_ASSERT(AM_RC_ERR != rc);
     return rc;
@@ -591,7 +591,7 @@ enum am_rc am_event_queue_push_front_x(
     struct am_event_queue *queue, const struct am_event *event, int margin
 ) {
     return am_event_push_x(
-        queue, event, margin, /*safe=*/true, am_event_queue_push_front
+        queue, event, margin, /*safe=*/true, event_queue_push_front
     );
 }
 
