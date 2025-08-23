@@ -658,6 +658,8 @@ bool am_event_queue_pop_front_with_cb(
 /**
  * Check if constructor was called for event queue.
  *
+ * Thread safe.
+ *
  * @param queue  the event queue
  *
  * @retval true   the queue is valid
