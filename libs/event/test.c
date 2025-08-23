@@ -115,15 +115,15 @@ int main(void) {
     const int align = AM_ALIGNOF(am_event_t);
     {
         am_event_state_ctor(/*cfg=*/NULL);
-        am_event_add_pool(&buf1, sizeof(buf1), sizeof(buf1), align);
+        am_event_pool_add(&buf1, sizeof(buf1), sizeof(buf1), align);
 
         test_allocate(sizeof(buf1), /*pool_index_plus_one=*/1);
         test_allocate(sizeof(buf1) - 1, /*pool_index_plus_one=*/1);
     }
     {
         am_event_state_ctor(/*cfg=*/NULL);
-        am_event_add_pool(&buf1, sizeof(buf1), sizeof(buf1), align);
-        am_event_add_pool(&buf2, sizeof(buf2), sizeof(buf2), align);
+        am_event_pool_add(&buf1, sizeof(buf1), sizeof(buf1), align);
+        am_event_pool_add(&buf2, sizeof(buf2), sizeof(buf2), align);
 
         test_allocate(sizeof(buf1), /*pool_index_plus_one=*/1);
         test_allocate(sizeof(buf1) + 1, /*pool_index_plus_one=*/2);
@@ -132,9 +132,9 @@ int main(void) {
     }
     {
         am_event_state_ctor(/*cfg=*/NULL);
-        am_event_add_pool(&buf1, sizeof(buf1), sizeof(buf1), align);
-        am_event_add_pool(&buf2, sizeof(buf2), sizeof(buf2), align);
-        am_event_add_pool(&buf3, sizeof(buf3), sizeof(buf3), align);
+        am_event_pool_add(&buf1, sizeof(buf1), sizeof(buf1), align);
+        am_event_pool_add(&buf2, sizeof(buf2), sizeof(buf2), align);
+        am_event_pool_add(&buf3, sizeof(buf3), sizeof(buf3), align);
 
         test_allocate(sizeof(buf1), /*pool_index_plus_one=*/1);
         test_allocate(sizeof(buf2), /*pool_index_plus_one=*/2);
@@ -146,10 +146,10 @@ int main(void) {
     }
     {
         am_event_state_ctor(/*cfg=*/NULL);
-        am_event_add_pool(&buf1, sizeof(buf1), sizeof(buf1), align);
-        am_event_add_pool(&buf2, sizeof(buf2), sizeof(buf2), align);
-        am_event_add_pool(&buf3, sizeof(buf3), sizeof(buf3), align);
-        am_event_add_pool(&buf4, sizeof(buf4), sizeof(buf4), align);
+        am_event_pool_add(&buf1, sizeof(buf1), sizeof(buf1), align);
+        am_event_pool_add(&buf2, sizeof(buf2), sizeof(buf2), align);
+        am_event_pool_add(&buf3, sizeof(buf3), sizeof(buf3), align);
+        am_event_pool_add(&buf4, sizeof(buf4), sizeof(buf4), align);
 
         test_allocate(sizeof(buf1), /*pool_index_plus_one=*/1);
         test_allocate(sizeof(buf1) + 1, /*pool_index_plus_one=*/2);
@@ -164,11 +164,11 @@ int main(void) {
     }
     {
         am_event_state_ctor(/*cfg=*/NULL);
-        am_event_add_pool(&buf1, sizeof(buf1), sizeof(buf1), align);
-        am_event_add_pool(&buf2, sizeof(buf2), sizeof(buf2), align);
-        am_event_add_pool(&buf3, sizeof(buf3), sizeof(buf3), align);
-        am_event_add_pool(&buf4, sizeof(buf4), sizeof(buf4), align);
-        am_event_add_pool(&buf5, sizeof(buf5), sizeof(buf5), align);
+        am_event_pool_add(&buf1, sizeof(buf1), sizeof(buf1), align);
+        am_event_pool_add(&buf2, sizeof(buf2), sizeof(buf2), align);
+        am_event_pool_add(&buf3, sizeof(buf3), sizeof(buf3), align);
+        am_event_pool_add(&buf4, sizeof(buf4), sizeof(buf4), align);
+        am_event_pool_add(&buf5, sizeof(buf5), sizeof(buf5), align);
 
         test_allocate(sizeof(buf1), /*pool_index_plus_one=*/1);
         test_allocate(sizeof(buf1) + 1, /*pool_index_plus_one=*/2);

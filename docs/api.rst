@@ -211,7 +211,7 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_queue_pop_front
 
-.. doxygenfunction:: am_event_add_pool
+.. doxygenfunction:: am_event_pool_add
 
 .. doxygenfunction:: am_event_get_pool_nfree
 

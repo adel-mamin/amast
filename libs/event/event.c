@@ -232,7 +232,7 @@ void am_event_state_ctor(const struct am_event_state_cfg *cfg) {
     me->crit_exit = cfg ? cfg->crit_exit : crit_stub;
 }
 
-void am_event_add_pool(void *pool, int size, int block_size, int alignment) {
+void am_event_pool_add(void *pool, int size, int block_size, int alignment) {
     struct am_event_state *me = &am_event_state_;
     AM_ASSERT(me->npools < AM_EVENT_POOLS_NUM_MAX);
     if (me->npools > 0) {

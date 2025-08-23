@@ -206,7 +206,7 @@ void am_event_state_ctor(const struct am_event_state_cfg *cfg);
  * @param block_size  the maximum size of allocated memory block [bytes]
  * @param alignment   the required alignment of allocated memory blocks [bytes]
  */
-void am_event_add_pool(void *pool, int size, int block_size, int alignment);
+void am_event_pool_add(void *pool, int size, int block_size, int alignment);
 
 /**
  * Get minimum number of free memory blocks observed so far.
@@ -259,7 +259,7 @@ int am_event_get_npools(void);
  * Allocate event (eXtended version).
  *
  * The event is allocated from one of the memory pools provided
- * with am_event_add_pool() function.
+ * with am_event_pool_add() function.
  *
  * Checks if there are more free memory blocks available than \p margin.
  * If not, then returns NULL. Otherwise allocates the event and returns it.
@@ -283,7 +283,7 @@ struct am_event *am_event_allocate_x(int id, int size, int margin);
  * Allocate event.
  *
  * The event is allocated from one of the memory pools provided
- * with am_event_add_pool() function.
+ * with am_event_pool_add() function.
  *
  * The function asserts, if there is no memory left to accommodate the event.
  *
@@ -322,7 +322,7 @@ void am_event_free(const struct am_event *event);
 /**
  * Duplicate an event (eXtended version).
  *
- * Allocates it from memory pools provided by am_event_add_pool() function.
+ * Allocates it from memory pools provided by am_event_pool_add() function.
  *
  * Checks if there are more free memory blocks available than \p margin.
  * If not, then returns NULL. Otherwise allocates memory block
@@ -348,7 +348,7 @@ struct am_event *am_event_dup_x(
 /**
  * Duplicate an event.
  *
- * Allocates it from memory pools provided by am_event_add_pool() function.
+ * Allocates it from memory pools provided by am_event_pool_add() function.
  *
  * The function asserts, if there is no memory left to allocated the event.
  *

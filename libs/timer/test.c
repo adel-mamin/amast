@@ -63,7 +63,7 @@ static void test_arm(void) {
         static char pool[2 * AM_POOL_BLOCK_SIZEOF(struct am_timer)] AM_ALIGNED(
             AM_ALIGN_MAX
         );
-        am_event_add_pool(
+        am_event_pool_add(
             pool,
             (int)sizeof(pool),
             AM_POOL_BLOCK_SIZEOF(struct am_timer),

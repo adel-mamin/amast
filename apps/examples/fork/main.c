@@ -225,7 +225,7 @@ int main(int argc, const char *argv[]) {
 
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
 
-    am_event_add_pool(
+    am_event_pool_add(
         m_event_pool,
         sizeof(m_event_pool),
         sizeof(m_event_pool[0]),
