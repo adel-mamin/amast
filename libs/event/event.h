@@ -747,6 +747,8 @@ int am_event_queue_get_nfree(const struct am_event_queue *queue);
  *
  * Could be used to assess the usage of the event queue.
  *
+ * Thread safe.
+ *
  * @param queue  the event queue
  *
  * @return the minimum number of slots observed so far

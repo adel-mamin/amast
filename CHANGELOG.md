@@ -19,6 +19,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Rename `am_event_flush_queue()` to `am_event_queue_flush()`.
 - Make `am_event_queue_pop_front()` thread safe.
 - Make `am_event_queue_is_empty()` thread safe.
+- Make `am_event_queue_get_nfree_min()` thread safe.
 
 ### Added
 

@@ -222,7 +222,12 @@ int am_event_queue_get_nfree(const struct am_event_queue *queue) {
 int am_event_queue_get_nfree_min(const struct am_event_queue *queue) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
-    return queue->nfree_min;
+
+    struct am_event_state *me = &am_event_state_;
+    me->crit_enter();
+    int min = queue->nfree_min;
+    me->crit_exit();
+    return min;
 }
 
 void am_event_state_ctor(const struct am_event_state_cfg *cfg) {
