@@ -83,7 +83,9 @@ static enum am_rc defer_s1(
 ) {
     switch (event->id) {
     case AM_EVT_EXIT:
-        (void)am_event_pop_front(&me->defer_queue, defer_push_front, me);
+        (void)am_event_queue_pop_front_with_cb(
+            &me->defer_queue, defer_push_front, me
+        );
         return AM_HSM_HANDLED();
     case HSM_EVT_A:
         me->log("s1-A;");
@@ -155,7 +157,9 @@ static void defer_dispatch(void *ctx, const struct am_event *event) {
 static void defer_commit(void) {
     struct test_defer *me = &m_test_defer;
     while (!am_event_queue_is_empty(&me->event_queue)) {
-        bool popped = am_event_pop_front(&me->event_queue, defer_dispatch, me);
+        bool popped = am_event_queue_pop_front_with_cb(
+            &me->event_queue, defer_dispatch, me
+        );
         AM_ASSERT(popped);
     }
 }

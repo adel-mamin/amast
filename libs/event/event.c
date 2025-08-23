@@ -586,7 +586,7 @@ enum am_rc am_event_push_front(
     return rc;
 }
 
-bool am_event_pop_front(
+bool am_event_queue_pop_front_with_cb(
     struct am_event_queue *queue, am_event_handle_fn cb, void *ctx
 ) {
     AM_ASSERT(queue);
@@ -614,7 +614,7 @@ bool am_event_pop_front(
      *  const struct am_event *e = am_event_allocate(id, size);
      *  am_event_inc_ref_cnt(e); <-- THIS IS MISSING
      *  am_hsm_dispatch(hsm, e);
-     *      am_event_push_XXX(queue, e) & am_event_pop_front(queue, ...)
+     *      am_event_push_XXX(...) & am_event_queue_pop_front_with_cb(...)
      *      OR
      *      am_event_inc_ref_cnt(e) & am_event_dec_ref_cnt(e)
      *  am_event_free(&e);

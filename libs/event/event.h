@@ -597,7 +597,7 @@ enum am_rc am_event_push_front(
 /**
  * The type of a callback used to handle popped events.
  *
- * Used as a parameter to am_event_pop_front() API.
+ * Used as a parameter to am_event_queue_pop_front_with_cb() API.
  *
  * @param ctx    the callback context
  * @param event  the popped event
@@ -633,7 +633,7 @@ typedef void (*am_event_handle_fn)(void *ctx, const struct am_event *event);
  * @retval true   an event was popped
  * @retval false  no event was popped
  */
-bool am_event_pop_front(
+bool am_event_queue_pop_front_with_cb(
     struct am_event_queue *queue, am_event_handle_fn cb, void *ctx
 );
 

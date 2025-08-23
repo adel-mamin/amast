@@ -69,7 +69,9 @@ static void am_ao_task(void *param) {
             me->crit_enter();
         }
         me->crit_exit();
-        bool popped = am_event_pop_front(&ao->event_queue, am_ao_handle, ao);
+        bool popped = am_event_queue_pop_front_with_cb(
+            &ao->event_queue, am_ao_handle, ao
+        );
         AM_ASSERT(popped);
     }
 }

@@ -86,7 +86,9 @@ bool am_ao_run_all(void) {
         AM_ASSERT(ao);
         AM_ASSERT(ao->prio.ao == msb);
 
-        bool popped = am_event_pop_front(&ao->event_queue, am_ao_handle, ao);
+        bool popped = am_event_queue_pop_front_with_cb(
+            &ao->event_queue, am_ao_handle, ao
+        );
         if (!popped) {
             me->crit_enter();
             if (am_event_queue_is_empty(&ao->event_queue)) {

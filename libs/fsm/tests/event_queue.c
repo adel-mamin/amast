@@ -84,7 +84,8 @@ static void fsmq_handle(void *ctx, const struct am_event *event) {
 static void fsmq_commit(void) {
     struct am_fsmq *me = &am_fsmq_;
     while (!am_event_queue_is_empty(&me->event_queue)) {
-        bool popped = am_event_pop_front(&me->event_queue, fsmq_handle, me);
+        bool popped =
+            am_event_queue_pop_front_with_cb(&me->event_queue, fsmq_handle, me);
         AM_ASSERT(popped);
     }
 }

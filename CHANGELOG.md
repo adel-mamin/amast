@@ -15,6 +15,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Rename state machine signals: `AM_EVT_HSM_` -> `AM_EVT_`, `AM_EVT_FSM_` -> `AM_EVT_`.
 - Set ticker task to the highest priority in workers example.
 - Merge queue library into event library.
+- Rename `am_event_pop_front()` to `am_event_queue_pop_front_with_cb()`.
 
 ### Added
 
