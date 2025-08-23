@@ -166,7 +166,7 @@ int main(void) {
             AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF(am_event_t))
         );
         AM_ASSERT(1 == am_event_get_pool_nblocks(/*index=*/0));
-        AM_ASSERT(1 == am_event_get_pool_nfree(/*index=*/0));
+        AM_ASSERT(1 == am_event_pool_get_nfree(/*index=*/0));
     }
 
     hsmq_ctor(hsmq_log);
@@ -193,7 +193,7 @@ int main(void) {
     am_hsm_dtor(am_hsmq);
 
     /* make sure there is no memory leak */
-    AM_ASSERT(1 == am_event_get_pool_nfree(/*index=*/0));
+    AM_ASSERT(1 == am_event_pool_get_nfree(/*index=*/0));
 
     return 0;
 }

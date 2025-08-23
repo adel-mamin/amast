@@ -233,7 +233,7 @@ int am_event_pool_get_nfree_min(int index);
  *
  * @return the number of free blocks available now in the memory pool
  */
-int am_event_get_pool_nfree(int index);
+int am_event_pool_get_nfree(int index);
 
 /**
  * The number of memory blocks in the pool with the given index.
