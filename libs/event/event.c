@@ -430,7 +430,7 @@ static void am_event_log_cb(void *ctx, int index, const char *buf, int size) {
     log->cb(log->pool_ind, index, event, size);
 }
 
-void am_event_log_pools_unsafe(int num, am_event_log_fn cb) {
+void am_event_pool_log_unsafe(int num, am_event_log_fn cb) {
     AM_ASSERT(num != 0);
     AM_ASSERT(cb);
 

@@ -369,7 +369,7 @@ struct am_event *am_event_dup(const struct am_event *event, int size);
 /**
  * Log event content callback type.
  *
- * Used as a parameter to am_event_log_pools_unsafe() API.
+ * Used as a parameter to am_event_pool_log_unsafe() API.
  *
  * @param pool_index   pool index
  * @param event_index  event_index within the pool
@@ -390,7 +390,7 @@ typedef void (*am_event_log_fn)(
  * @param num  the number of events to log in each pool (if <0, then log all)
  * @param cb   the logging callback
  */
-void am_event_log_pools_unsafe(int num, am_event_log_fn cb);
+void am_event_pool_log_unsafe(int num, am_event_log_fn cb);
 
 /**
  * Check if event is static.

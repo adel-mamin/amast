@@ -233,7 +233,7 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygentypedef:: am_event_log_fn
 
-.. doxygenfunction:: am_event_log_pools_unsafe
+.. doxygenfunction:: am_event_pool_log_unsafe
 
 .. doxygenfunction:: am_event_is_static
 
