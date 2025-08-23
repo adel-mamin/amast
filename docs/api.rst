@@ -205,8 +205,6 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_queue_get_nbusy
 
-.. doxygenfunction:: am_event_queue_get_nfree
-
 .. doxygenfunction:: am_event_queue_get_nfree_min
 
 .. doxygenfunction:: am_event_queue_get_capacity

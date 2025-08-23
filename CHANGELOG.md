@@ -20,6 +20,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Make `am_event_queue_pop_front()` thread safe.
 - Make `am_event_queue_is_empty()` thread safe.
 - Make `am_event_queue_get_nfree_min()` thread safe.
+- Remove `am_event_queue_get_nfree()`.
 
 ### Added
 

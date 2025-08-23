@@ -734,15 +734,6 @@ const struct am_event *am_event_queue_pop_front_unsafe(
 const struct am_event *am_event_queue_pop_front(struct am_event_queue *queue);
 
 /**
- * Get number of free slots available in event queue.
- *
- * @param queue  the event queue
- *
- * @return the number of free slots available now
- */
-int am_event_queue_get_nfree(const struct am_event_queue *queue);
-
-/**
  * Get minimum number of free slots ever observed in event queue.
  *
  * Could be used to assess the usage of the event queue.

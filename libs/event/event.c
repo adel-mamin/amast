@@ -213,12 +213,6 @@ static bool am_event_queue_push_front(
     return true;
 }
 
-int am_event_queue_get_nfree(const struct am_event_queue *queue) {
-    AM_ASSERT(queue);
-    AM_ASSERT(queue->ctor_called);
-    return queue->nfree;
-}
-
 int am_event_queue_get_nfree_min(const struct am_event_queue *queue) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
@@ -536,7 +530,7 @@ static enum am_rc am_event_push_x(
         me->crit_enter();
     }
 
-    int nfree = am_event_queue_get_nfree(queue);
+    int nfree = queue->nfree;
     if (nfree <= margin) {
         if (safe) {
             me->crit_exit();
