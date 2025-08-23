@@ -330,7 +330,7 @@ void am_event_free(const struct am_event *event) {
     me->crit_exit();
 }
 
-int am_event_get_pool_nfree_min(int index) {
+int am_event_pool_get_nfree_min(int index) {
     struct am_event_state *me = &am_event_state_;
     AM_ASSERT(index >= 0);
     AM_ASSERT(index < me->npools);
