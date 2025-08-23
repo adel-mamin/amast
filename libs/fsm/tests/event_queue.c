@@ -149,7 +149,7 @@ int main(void) {
             AM_POOL_BLOCK_SIZEOF(struct am_event),
             AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF(am_event_t))
         );
-        AM_ASSERT(1 == am_event_get_pool_nblocks(/*index=*/0));
+        AM_ASSERT(1 == am_event_pool_get_nblocks(/*index=*/0));
         AM_ASSERT(1 == am_event_pool_get_nfree(/*index=*/0));
     }
 

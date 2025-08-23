@@ -244,7 +244,7 @@ int am_event_pool_get_nfree(int index);
  *
  * @return the number of memory blocks
  */
-int am_event_get_pool_nblocks(int index);
+int am_event_pool_get_nblocks(int index);
 
 /**
  * The number of registered pools.
