@@ -30,7 +30,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Rename `am_event_log_pools_unsafe()` to `am_event_pool_log_unsafe()`.
 - Rename `am_event_push_back...()` to `am_event_queue_push_back...()`
 - Rename `am_event_push_front...()` to `am_event_queue_push_front...()`
-- Change return valus of `am_event_queue_pop_front_with_cb()` to `enum am_rc`
+- Change return values of `am_event_queue_pop_front_with_cb()` to `enum am_rc`
 
 ### Added
 

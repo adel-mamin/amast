@@ -123,22 +123,22 @@ Event Ownership Diagram
   |              |------------------------------->|   event owned by    |
   |              |                                |   application       |
   |              |  am_event_free(event)          |   with read and     |
-  |              |  am_event_push_...(event)      |   write permissions |
+  |              |  am_event_queue_push_...(event)|   write permissions |
   |              |  am_ao_publish_...(event)      |                     |
   |              |  am_ao_post_...(event)         |                     |
   |              |<-------------------------------|                     |
   |              |                                +---------------------+
   |              |                                           |
   |              |                                           |
-  |              |                            am_event_inc_ref_cnt(event) and
-  |              |                            am_event_push_...(event) and/or
-  |              |                            am_ao_publish_...(event) and/or
-  | event owned  |                            am_ao_post_...(event)
+  |              |                         am_event_inc_ref_cnt(event) and
+  |              |                         am_event_queue_push_...(event) and/or
+  |              |                         am_ao_publish_...(event) and/or
+  | event owned  |                         am_ao_post_...(event)
   | by event lib |                                           |
   |              |                                           v
   |              |  am_hsm_dispatch(event)        +---------------------+
   |              |  am_fsm_dispatch(event)        |                     |
-  |              |  am_event_pop_front()          |                     |
+  |              |  am_event_queue_pop_front()    |                     |
   |              |------------------------------->|                     |
   |              |                                |   event owned by    |
   |              |  return from                   |   application       |
@@ -152,9 +152,9 @@ Event Ownership Diagram
   |              |                                    |              ^
   |              |                                    |              |
   |              |                                    +--------------+
-  |              |                                 am_event_push_...(event)
-  |              |                                 am_ao_publish_...(event)
-  +--------------+                                 am_ao_post_...(event)
+  |              |                               am_event_queue_push_...(event)
+  |              |                               am_ao_publish_...(event)
+  +--------------+                               am_ao_post_...(event)
 
 
 Please note that the following pseudocode shows an incorrect use of the API:

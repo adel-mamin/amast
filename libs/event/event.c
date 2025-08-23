@@ -500,7 +500,7 @@ typedef bool (*am_push_fn)(
     struct am_event_queue *queue, const struct am_event *event
 );
 
-static enum am_rc am_event_push_x(
+static enum am_rc event_queue_push_x(
     struct am_event_queue *queue,
     const struct am_event *event,
     int margin,
@@ -564,7 +564,7 @@ static enum am_rc am_event_push_x(
 enum am_rc am_event_queue_push_back_x(
     struct am_event_queue *queue, const struct am_event *event, int margin
 ) {
-    return am_event_push_x(
+    return event_queue_push_x(
         queue, event, margin, /*safe=*/true, event_queue_push_back
     );
 }
@@ -580,7 +580,7 @@ enum am_rc am_event_queue_push_back(
 enum am_rc am_event_queue_push_back_unsafe(
     struct am_event_queue *queue, const struct am_event *event
 ) {
-    enum am_rc rc = am_event_push_x(
+    enum am_rc rc = event_queue_push_x(
         queue, event, /*margin=*/0, /*safe=*/false, event_queue_push_back
     );
     AM_ASSERT(AM_RC_ERR != rc);
@@ -590,7 +590,7 @@ enum am_rc am_event_queue_push_back_unsafe(
 enum am_rc am_event_queue_push_front_x(
     struct am_event_queue *queue, const struct am_event *event, int margin
 ) {
-    return am_event_push_x(
+    return event_queue_push_x(
         queue, event, margin, /*safe=*/true, event_queue_push_front
     );
 }
@@ -626,7 +626,7 @@ enum am_rc am_event_queue_pop_front_with_cb(
      *  const struct am_event *e = am_event_allocate(id, size);
      *  am_event_inc_ref_cnt(e); <-- THIS IS MISSING
      *  am_hsm_dispatch(hsm, e);
-     *      am_event_push_XXX(...) & am_event_queue_pop_front_with_cb(...)
+     *      am_event_queue_push_XXX(...) & am_event_queue_pop_front_with_cb(...)
      *      OR
      *      am_event_inc_ref_cnt(e) & am_event_dec_ref_cnt(e)
      *  am_event_free(&e);
