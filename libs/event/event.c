@@ -107,7 +107,7 @@ bool am_event_queue_is_full(const struct am_event_queue *queue) {
 int am_event_queue_get_nbusy(const struct am_event_queue *queue) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
-    return am_event_queue_get_capacity(queue) - queue->nfree;
+    return queue->capacity - queue->nfree;
 }
 
 int am_event_queue_get_capacity(const struct am_event_queue *queue) {
@@ -492,8 +492,7 @@ static enum am_rc am_event_push_x(
     AM_ASSERT(queue);
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
-    const int capacity = am_event_queue_get_capacity(queue);
-    AM_ASSERT(margin < capacity);
+    AM_ASSERT(margin < queue->capacity);
     AM_ASSERT(push);
     if (!am_event_is_static(event)) {
         /*
@@ -538,7 +537,7 @@ static enum am_rc am_event_push_x(
 
     AM_ASSERT(true == rc);
 
-    if (capacity == nfree) {
+    if (queue->capacity == nfree) {
         return AM_RC_QUEUE_WAS_EMPTY;
     }
     return AM_RC_OK;
@@ -634,15 +633,13 @@ int am_event_queue_flush(struct am_event_queue *queue) {
     int cnt = 0;
     struct am_event_state *me = &am_event_state_;
 
-    int capacity = am_event_queue_get_capacity(queue);
-
     me->crit_enter();
 
     const struct am_event *e = NULL;
     while ((e = am_event_queue_pop_front(queue)) != NULL) {
         me->crit_exit();
         ++cnt;
-        AM_ASSERT(cnt <= capacity);
+        AM_ASSERT(cnt <= queue->capacity);
         am_event_free(e);
         me->crit_enter();
     }
