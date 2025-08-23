@@ -648,10 +648,10 @@ typedef void (*am_event_handle_fn)(void *ctx, const struct am_event *event);
  *               partially emptied to make space for newer events.
  * @param ctx    the callback context
  *
- * @retval true   an event was popped
- * @retval false  no event was popped
+ * @retval #AM_RC_OK   the event was popped
+ * @retval #AM_RC_ERR  the event was not popped
  */
-bool am_event_queue_pop_front_with_cb(
+enum am_rc am_event_queue_pop_front_with_cb(
     struct am_event_queue *queue, am_event_handle_fn cb, void *ctx
 );
 

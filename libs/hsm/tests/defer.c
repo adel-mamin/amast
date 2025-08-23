@@ -24,7 +24,6 @@
  * SOFTWARE.
  */
 
-#include <stdbool.h>
 #include <stdarg.h>
 #include <string.h>
 
@@ -157,10 +156,10 @@ static void defer_dispatch(void *ctx, const struct am_event *event) {
 static void defer_commit(void) {
     struct test_defer *me = &m_test_defer;
     while (!am_event_queue_is_empty(&me->event_queue)) {
-        bool popped = am_event_queue_pop_front_with_cb(
+        enum am_rc rc = am_event_queue_pop_front_with_cb(
             &me->event_queue, defer_dispatch, me
         );
-        AM_ASSERT(popped);
+        AM_ASSERT(AM_RC_OK == rc);
     }
 }
 

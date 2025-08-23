@@ -32,7 +32,6 @@
  * transition to state fsm_b, where the event B is processed.
  */
 
-#include <stdbool.h>
 #include <stdarg.h>
 #include <string.h>
 
@@ -84,9 +83,9 @@ static void fsmq_handle(void *ctx, const struct am_event *event) {
 static void fsmq_commit(void) {
     struct am_fsmq *me = &am_fsmq_;
     while (!am_event_queue_is_empty(&me->event_queue)) {
-        bool popped =
+        enum am_rc rc =
             am_event_queue_pop_front_with_cb(&me->event_queue, fsmq_handle, me);
-        AM_ASSERT(popped);
+        AM_ASSERT(AM_RC_OK == rc);
     }
 }
 

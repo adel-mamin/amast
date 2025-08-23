@@ -48,7 +48,6 @@
  * transition to state hsm_b, where the event B is processed.
  */
 
-#include <stdbool.h>
 #include <stdarg.h>
 #include <string.h>
 
@@ -99,10 +98,10 @@ static void hsmq_dispatch(void *ctx, const struct am_event *event) {
 static void hsmq_commit(void) {
     struct am_hsmq *me = &am_hsmq_;
     while (!am_event_queue_is_empty(&me->event_queue)) {
-        bool popped = am_event_queue_pop_front_with_cb(
+        enum am_rc rc = am_event_queue_pop_front_with_cb(
             &me->event_queue, hsmq_dispatch, me
         );
-        AM_ASSERT(popped);
+        AM_ASSERT(AM_RC_OK == rc);
     }
 }
 

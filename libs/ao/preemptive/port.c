@@ -29,6 +29,7 @@
 
 #include "common/compiler.h"
 #include "common/macros.h"
+#include "common/types.h"
 #include "hsm/hsm.h"
 #include "event/event.h"
 #include "pal/pal.h"
@@ -64,10 +65,10 @@ static void am_ao_task(void *param) {
         while (am_event_queue_is_empty(&ao->event_queue)) {
             am_pal_task_wait(ao->task_id);
         }
-        bool popped = am_event_queue_pop_front_with_cb(
+        enum am_rc rc = am_event_queue_pop_front_with_cb(
             &ao->event_queue, am_ao_handle, ao
         );
-        AM_ASSERT(popped);
+        AM_ASSERT(AM_RC_OK == rc);
     }
 }
 

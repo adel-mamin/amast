@@ -603,14 +603,14 @@ enum am_rc am_event_queue_push_front(
     return rc;
 }
 
-bool am_event_queue_pop_front_with_cb(
+enum am_rc am_event_queue_pop_front_with_cb(
     struct am_event_queue *queue, am_event_handle_fn cb, void *ctx
 ) {
     AM_ASSERT(queue);
 
     const struct am_event *event = am_event_queue_pop_front(queue);
     if (!event) {
-        return false;
+        return AM_RC_ERR;
     }
     const int id = event->id;
 
@@ -634,12 +634,12 @@ bool am_event_queue_pop_front_with_cb(
     AM_ASSERT(id == event->id); /* cppcheck-suppress knownArgument */
 
     if (am_event_is_static(event)) {
-        return true;
+        return AM_RC_OK;
     }
 
     am_event_free(event);
 
-    return true;
+    return AM_RC_OK;
 }
 
 int am_event_queue_flush(struct am_event_queue *queue) {

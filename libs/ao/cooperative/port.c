@@ -30,6 +30,7 @@
 #include "bit/bit.h"
 #include "common/compiler.h"
 #include "common/macros.h"
+#include "common/types.h"
 #include "hsm/hsm.h"
 #include "event/event.h"
 #include "pal/pal.h"
@@ -86,10 +87,10 @@ bool am_ao_run_all(void) {
         AM_ASSERT(ao);
         AM_ASSERT(ao->prio.ao == msb);
 
-        bool popped = am_event_queue_pop_front_with_cb(
+        enum am_rc rc = am_event_queue_pop_front_with_cb(
             &ao->event_queue, am_ao_handle, ao
         );
-        if (!popped) {
+        if (AM_RC_ERR == rc) {
             me->crit_enter();
             if (am_event_queue_is_empty_unsafe(&ao->event_queue)) {
                 am_bit_u64_clear(&am_ready_aos_, ao->prio.ao);
