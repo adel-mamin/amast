@@ -331,7 +331,7 @@ void am_ao_log_event_queues_unsafe(
             continue;
         }
         const int cap = am_event_queue_get_capacity(q);
-        const int nbusy = am_event_queue_get_nbusy(q);
+        const int nbusy = am_event_queue_get_nbusy_unsafe(q);
         const int tnum = AM_MIN(num, nbusy);
         if (0 == tnum) {
             log(ao->name, 0, nbusy, cap, /*event=*/NULL);

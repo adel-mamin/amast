@@ -668,6 +668,8 @@ bool am_event_queue_is_valid(const struct am_event_queue *queue);
 /**
  * Check if event queue is empty.
  *
+ * Thread safe.
+ *
  * @param queue  the event queue
  *
  * @retval true   queue is empty
@@ -678,7 +680,7 @@ bool am_event_queue_is_empty(const struct am_event_queue *queue);
 /**
  * Check if event queue is empty.
  *
- * Not thread safe.
+ * Thread unsafe.
  *
  * @param queue  the event queue
  *
@@ -690,11 +692,13 @@ bool am_event_queue_is_empty_unsafe(const struct am_event_queue *queue);
 /**
  * Return how many items are in event queue.
  *
+ * Thread unsafe.
+ *
  * @param queue  the event queue
  *
  * @return number of queued events
  */
-int am_event_queue_get_nbusy(const struct am_event_queue *queue);
+int am_event_queue_get_nbusy_unsafe(const struct am_event_queue *queue);
 
 /**
  * Return event queue capacity.

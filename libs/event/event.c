@@ -108,7 +108,7 @@ bool am_event_queue_is_empty(const struct am_event_queue *queue) {
     return empty;
 }
 
-int am_event_queue_get_nbusy(const struct am_event_queue *queue) {
+int am_event_queue_get_nbusy_unsafe(const struct am_event_queue *queue) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
     return queue->capacity - queue->nfree;
