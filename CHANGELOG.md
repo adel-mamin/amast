@@ -29,6 +29,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Rename `am_event_get_npools()` to `am_event_pool_get_num()`.
 - Rename `am_event_log_pools_unsafe()` to `am_event_pool_log_unsafe()`.
 - Rename `am_event_push_back...()` to `am_event_queue_push_back...()`
+- Rename `am_event_push_front...()` to `am_event_queue_push_front...()`
 
 ### Added
 

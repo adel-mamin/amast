@@ -587,7 +587,7 @@ enum am_rc am_event_queue_push_back_unsafe(
     return rc;
 }
 
-enum am_rc am_event_push_front_x(
+enum am_rc am_event_queue_push_front_x(
     struct am_event_queue *queue, const struct am_event *event, int margin
 ) {
     return am_event_push_x(
@@ -595,10 +595,10 @@ enum am_rc am_event_push_front_x(
     );
 }
 
-enum am_rc am_event_push_front(
+enum am_rc am_event_queue_push_front(
     struct am_event_queue *queue, const struct am_event *event
 ) {
-    enum am_rc rc = am_event_push_front_x(queue, event, /*margin=*/0);
+    enum am_rc rc = am_event_queue_push_front_x(queue, event, /*margin=*/0);
     AM_ASSERT(AM_RC_ERR != rc);
     return rc;
 }

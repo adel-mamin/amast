@@ -567,7 +567,7 @@ enum am_rc am_event_queue_push_back_unsafe(
  *                                 queue was empty
  * @retval #AM_RC_ERR              the event was not pushed
  */
-enum am_rc am_event_push_front_x(
+enum am_rc am_event_queue_push_front_x(
     struct am_event_queue *queue, const struct am_event *event, int margin
 );
 
@@ -590,7 +590,7 @@ enum am_rc am_event_push_front_x(
  * @retval #AM_RC_QUEUE_WAS_EMPTY  the event was pushed,
  *                                 queue was empty
  */
-enum am_rc am_event_push_front(
+enum am_rc am_event_queue_push_front(
     struct am_event_queue *queue, const struct am_event *event
 );
 

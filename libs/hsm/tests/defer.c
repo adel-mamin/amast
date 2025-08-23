@@ -75,7 +75,7 @@ static void defer_push_front(void *ctx, const struct am_event *event) {
     AM_ASSERT(event);
 
     struct test_defer *me = (struct test_defer *)ctx;
-    am_event_push_front(&me->event_queue, event);
+    am_event_queue_push_front(&me->event_queue, event);
 }
 
 static enum am_rc defer_s1(
