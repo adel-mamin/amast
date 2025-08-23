@@ -253,7 +253,7 @@ int am_event_pool_get_nblocks(int index);
  *
  * @return the number of pools
  */
-int am_event_get_npools(void);
+int am_event_pool_get_num(void);
 
 /**
  * Allocate event (eXtended version).

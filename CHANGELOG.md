@@ -26,6 +26,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Rename `am_event_get_pool_nfree_min()` to `am_event_pool_get_nfree_min()`.
 - Rename `am_event_get_pool_nfree()` to `am_event_pool_get_nfree()`.
 - Rename `am_event_get_pool_nblocks()` to `am_event_pool_get_nblocks()`.
+- Rename `am_event_get_npools()` to `am_event_pool_get_num()`.
 
 ### Added
 
