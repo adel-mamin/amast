@@ -630,7 +630,7 @@ bool am_event_queue_pop_front_with_cb(
     return true;
 }
 
-int am_event_flush_queue(struct am_event_queue *queue) {
+int am_event_queue_flush(struct am_event_queue *queue) {
     int cnt = 0;
     struct am_event_state *me = &am_event_state_;
 

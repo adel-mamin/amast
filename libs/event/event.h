@@ -797,7 +797,7 @@ int am_event_queue_get_nfree_min(const struct am_event_queue *queue);
  *
  * @return the number of events flushed
  */
-int am_event_flush_queue(struct am_event_queue *queue);
+int am_event_queue_flush(struct am_event_queue *queue);
 
 #ifdef __cplusplus
 }

@@ -16,6 +16,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Set ticker task to the highest priority in workers example.
 - Merge queue library into event library.
 - Rename `am_event_pop_front()` to `am_event_queue_pop_front_with_cb()`.
+- Rename `am_event_flush_queue()` to `am_event_queue_flush()`.
 
 ### Added
 
