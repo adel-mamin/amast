@@ -256,6 +256,18 @@ int am_event_pool_get_nblocks(int index);
 int am_event_pool_get_num(void);
 
 /**
+ * Log events content of the first \p num events in each event pool.
+ *
+ * To be used for debugging purposes.
+ *
+ * Not thread safe.
+ *
+ * @param num  the number of events to log in each pool (if <0, then log all)
+ * @param cb   the logging callback
+ */
+void am_event_pool_log_unsafe(int num, am_event_log_fn cb);
+
+/**
  * Allocate event (eXtended version).
  *
  * The event is allocated from one of the memory pools provided
@@ -381,18 +393,6 @@ typedef void (*am_event_log_fn)(
 );
 
 /**
- * Log events content of the first \p num events in each event pool.
- *
- * To be used for debugging purposes.
- *
- * Not thread safe.
- *
- * @param num  the number of events to log in each pool (if <0, then log all)
- * @param cb   the logging callback
- */
-void am_event_pool_log_unsafe(int num, am_event_log_fn cb);
-
-/**
  * Check if event is static.
  *
  * Thread safe.
@@ -484,7 +484,7 @@ int am_event_get_ref_cnt(const struct am_event *event);
  *                                 queue was empty
  * @retval #AM_RC_ERR              the event was not pushed
  */
-enum am_rc am_event_push_back_x(
+enum am_rc am_event_queue_push_back_x(
     struct am_event_queue *queue, const struct am_event *event, int margin
 );
 
@@ -507,7 +507,7 @@ enum am_rc am_event_push_back_x(
  * @retval #AM_RC_QUEUE_WAS_EMPTY  the event was pushed,
  *                                 queue was empty
  */
-enum am_rc am_event_push_back(
+enum am_rc am_event_queue_push_back(
     struct am_event_queue *queue, const struct am_event *event
 );
 
@@ -534,7 +534,7 @@ enum am_rc am_event_push_back(
  * @retval #AM_RC_QUEUE_WAS_EMPTY  the event was pushed,
  *                                 queue was empty
  */
-enum am_rc am_event_push_back_unsafe(
+enum am_rc am_event_queue_push_back_unsafe(
     struct am_event_queue *queue, const struct am_event *event
 );
 

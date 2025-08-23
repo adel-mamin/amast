@@ -243,11 +243,11 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_get_ref_cnt
 
-.. doxygenfunction:: am_event_push_back_x
+.. doxygenfunction:: am_event_queue_push_back_x
 
-.. doxygenfunction:: am_event_push_back
+.. doxygenfunction:: am_event_queue_push_back
 
-.. doxygenfunction:: am_event_push_back_unsafe
+.. doxygenfunction:: am_event_queue_push_back_unsafe
 
 .. doxygenfunction:: am_event_push_front_x
 

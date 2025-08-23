@@ -89,7 +89,7 @@ static enum am_rc defer_s1(
         return AM_HSM_HANDLED();
     case HSM_EVT_A:
         me->log("s1-A;");
-        am_event_push_back(&me->defer_queue, event);
+        am_event_queue_push_back(&me->defer_queue, event);
         return AM_HSM_HANDLED();
     case HSM_EVT_B:
         me->log("s1-B;");

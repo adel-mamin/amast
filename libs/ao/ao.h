@@ -177,7 +177,7 @@ extern "C" {
  * then use am_ao_publish_exclude() function instead.
  *
  * Internally the \p event is pushed to subscribed active object event queues
- * using am_event_push_back() function.
+ * using am_event_queue_push_back() function.
  *
  * Tries to free the \p event synchronously, if it was not delivered
  * to any subscriber.
@@ -263,7 +263,7 @@ void am_ao_publish_exclude(
  * then use am_ao_publish() function instead.
  *
  * Internally the \p event is pushed to subscribed active object event queues
- * using am_event_push_back() function.
+ * using am_event_queue_push_back() function.
  *
  * Tries to free the event synchronously, if it was not delivered
  * to any subscriber.
