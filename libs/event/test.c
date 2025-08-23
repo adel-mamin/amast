@@ -83,7 +83,7 @@ static void test_am_event_queue(const int capacity, const int rdwr_num) {
     struct am_event events[rdwr_num];
 
     for (int i = 1; i < rdwr_num; ++i) {
-        bool rc = am_event_queue_push_back(&q, &events[i]);
+        bool rc = am_event_push_back(&q, &events[i]);
         AM_ASSERT(rc);
         AM_ASSERT(am_event_queue_get_nbusy(&q) == i);
         AM_ASSERT(!am_event_queue_is_empty(&q));
@@ -95,7 +95,7 @@ static void test_am_event_queue(const int capacity, const int rdwr_num) {
     }
 
     for (int i = 1; i <= rdwr_num; ++i) {
-        bool rc = am_event_queue_push_front(&q, &events[i]);
+        bool rc = am_event_push_front(&q, &events[i]);
         AM_ASSERT(rc);
         AM_ASSERT(am_event_queue_get_nbusy(&q) > 0);
         AM_ASSERT(am_event_queue_get_nbusy(&q) == i);

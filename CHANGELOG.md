@@ -17,11 +17,14 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Merge queue library into event library.
 - Rename `am_event_pop_front()` to `am_event_queue_pop_front_with_cb()`.
 - Rename `am_event_flush_queue()` to `am_event_queue_flush()`.
+- Make `am_event_queue_pop_front()` thread safe.
+- Make `am_event_queue_is_empty()` thread safe.
 
 ### Added
 
 - Clarification to active object event publishing APIs about the possible change
   of events order.
+- New API `am_event_queue_pop_front_unsafe()`.
 
 ### Fixed
 

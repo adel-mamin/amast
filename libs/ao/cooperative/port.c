@@ -91,7 +91,7 @@ bool am_ao_run_all(void) {
         );
         if (!popped) {
             me->crit_enter();
-            if (am_event_queue_is_empty(&ao->event_queue)) {
+            if (am_event_queue_is_empty_unsafe(&ao->event_queue)) {
                 am_bit_u64_clear(&am_ready_aos_, ao->prio.ao);
             }
             me->crit_exit();
@@ -151,14 +151,13 @@ void am_ao_stop(struct am_ao *ao) {
         am_ao_unsubscribe_all(ao);
     }
 
-    me->crit_enter();
-
     const struct am_event *e = NULL;
     while ((e = am_event_queue_pop_front(&ao->event_queue)) != NULL) {
-        me->crit_exit();
         am_event_free(e);
-        me->crit_enter();
     }
+
+    me->crit_enter();
+
     am_event_queue_dtor(&ao->event_queue);
     am_bit_u64_clear(&am_ready_aos_, ao->prio.ao);
 

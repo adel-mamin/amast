@@ -203,8 +203,6 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_queue_is_empty
 
-.. doxygenfunction:: am_event_queue_is_full
-
 .. doxygenfunction:: am_event_queue_get_nbusy
 
 .. doxygenfunction:: am_event_queue_get_nfree
@@ -214,14 +212,6 @@ The source code of the corresponding header file is in `event.h <https://github.
 .. doxygenfunction:: am_event_queue_get_capacity
 
 .. doxygenfunction:: am_event_queue_pop_front
-
-.. doxygenfunction:: am_event_queue_peek_front
-
-.. doxygenfunction:: am_event_queue_peek_back
-
-.. doxygenfunction:: am_event_queue_push_front
-
-.. doxygenfunction:: am_event_queue_push_back
 
 .. doxygenfunction:: am_event_add_pool
 

@@ -676,14 +676,16 @@ bool am_event_queue_is_valid(const struct am_event_queue *queue);
 bool am_event_queue_is_empty(const struct am_event_queue *queue);
 
 /**
- * Check if event queue is full.
+ * Check if event queue is empty.
+ *
+ * Not thread safe.
  *
  * @param queue  the event queue
  *
- * @retval true   the queue is full
- * @retval false  the queue is not full
+ * @retval true   queue is empty
+ * @retval false  queue is not empty
  */
-bool am_event_queue_is_full(const struct am_event_queue *queue);
+bool am_event_queue_is_empty_unsafe(const struct am_event_queue *queue);
 
 /**
  * Return how many items are in event queue.
@@ -708,63 +710,28 @@ int am_event_queue_get_capacity(const struct am_event_queue *queue);
  *
  * Takes O(1) to complete.
  *
+ * Thread unsafe.
+ *
+ * @param queue  the event queue
+ *
+ * @return The popped item or NULL, if event queue was empty.
+ */
+const struct am_event *am_event_queue_pop_front_unsafe(
+    struct am_event_queue *queue
+);
+
+/**
+ * Pop an item from the front (head) of event queue.
+ *
+ * Takes O(1) to complete.
+ *
+ * Thread safe.
+ *
  * @param queue  the event queue
  *
  * @return The popped item or NULL, if event queue was empty.
  */
 const struct am_event *am_event_queue_pop_front(struct am_event_queue *queue);
-
-/**
- * Peek an item from the front (head) of event queue.
- *
- * Takes O(1) to complete.
- *
- * @param queue  the event queue
- *
- * @return The peeked item or NULL, if event queue is empty.
- */
-const struct am_event *am_event_queue_peek_front(struct am_event_queue *queue);
-
-/**
- * Peek an item from the back (tail) of event queue.
- *
- * Takes O(1) to complete.
- *
- * @param queue  the event queue
- *
- * @return The peeked item or NULL, if event queue is empty.
- */
-const struct am_event *am_event_queue_peek_back(struct am_event_queue *queue);
-
-/**
- * Push an item to the front (head) of event queue.
- *
- * Takes O(1) to complete.
- *
- * @param queue  the event queue
- * @param event  the new queue item.
- *
- * @retval true   success
- * @retval false  failure
- */
-bool am_event_queue_push_front(
-    struct am_event_queue *queue, const struct am_event *event
-);
-
-/**
- * Push an item to the back (tail) of event queue.
- *
- * Takes O(1) to complete.
- *
- * @param queue  the event queue
- * @param event  the new queue item.
- *
- * @retval true   success
- * @retval false  failure
- */
-bool am_event_queue_push_back(
-    struct am_event_queue *queue, const struct am_event *event
-);
 
 /**
  * Get number of free slots available in event queue.

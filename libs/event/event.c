@@ -92,16 +92,20 @@ bool am_event_queue_is_valid(const struct am_event_queue *queue) {
     return queue->ctor_called;
 }
 
-bool am_event_queue_is_empty(const struct am_event_queue *queue) {
+bool am_event_queue_is_empty_unsafe(const struct am_event_queue *queue) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
     return (queue->rd == queue->wr) && !queue->full;
 }
 
-bool am_event_queue_is_full(const struct am_event_queue *queue) {
+bool am_event_queue_is_empty(const struct am_event_queue *queue) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
-    return queue->full;
+    struct am_event_state *me = &am_event_state_;
+    me->crit_enter();
+    bool empty = am_event_queue_is_empty_unsafe(queue);
+    me->crit_exit();
+    return empty;
 }
 
 int am_event_queue_get_nbusy(const struct am_event_queue *queue) {
@@ -116,32 +120,13 @@ int am_event_queue_get_capacity(const struct am_event_queue *queue) {
     return queue->capacity;
 }
 
-const struct am_event *am_event_queue_peek_front(struct am_event_queue *queue) {
+const struct am_event *am_event_queue_pop_front_unsafe(
+    struct am_event_queue *queue
+) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
 
-    if (am_event_queue_is_empty(queue)) {
-        return NULL;
-    }
-    return queue->events[queue->rd];
-}
-
-const struct am_event *am_event_queue_peek_back(struct am_event_queue *queue) {
-    AM_ASSERT(queue);
-    AM_ASSERT(queue->ctor_called);
-
-    if (am_event_queue_is_empty(queue)) {
-        return NULL;
-    }
-    int ind = queue->wr ? (queue->wr - 1) : (queue->capacity - 1);
-    return queue->events[ind];
-}
-
-const struct am_event *am_event_queue_pop_front(struct am_event_queue *queue) {
-    AM_ASSERT(queue);
-    AM_ASSERT(queue->ctor_called);
-
-    if (am_event_queue_is_empty(queue)) {
+    if (am_event_queue_is_empty_unsafe(queue)) {
         return NULL;
     }
     const struct am_event *event = queue->events[queue->rd];
@@ -152,14 +137,37 @@ const struct am_event *am_event_queue_pop_front(struct am_event_queue *queue) {
     return event;
 }
 
-bool am_event_queue_push_back(
+const struct am_event *am_event_queue_pop_front(struct am_event_queue *queue) {
+    AM_ASSERT(queue);
+    AM_ASSERT(queue->ctor_called);
+
+    struct am_event_state *me = &am_event_state_;
+    me->crit_enter();
+    const struct am_event *event = am_event_queue_pop_front_unsafe(queue);
+    me->crit_exit();
+
+    return event;
+}
+
+/**
+ * Push an item to the back (tail) of event queue.
+ *
+ * Takes O(1) to complete.
+ *
+ * @param queue  the event queue
+ * @param event  the new queue item.
+ *
+ * @retval true   success
+ * @retval false  failure
+ */
+static bool am_event_queue_push_back(
     struct am_event_queue *queue, const struct am_event *event
 ) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
     AM_ASSERT(event);
 
-    if (am_event_queue_is_full(queue)) {
+    if (queue->full) {
         return false;
     }
     queue->events[queue->wr] = event;
@@ -173,14 +181,25 @@ bool am_event_queue_push_back(
     return true;
 }
 
-bool am_event_queue_push_front(
+/**
+ * Push an item to the front (head) of event queue.
+ *
+ * Takes O(1) to complete.
+ *
+ * @param queue  the event queue
+ * @param event  the new queue item.
+ *
+ * @retval true   success
+ * @retval false  failure
+ */
+static bool am_event_queue_push_front(
     struct am_event_queue *queue, const struct am_event *event
 ) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
     AM_ASSERT(event);
 
-    if (am_event_queue_is_full(queue)) {
+    if (queue->full) {
         return false;
     }
     queue->rd = queue->rd ? (queue->rd - 1) : (queue->capacity - 1);
@@ -590,12 +609,7 @@ bool am_event_queue_pop_front_with_cb(
 ) {
     AM_ASSERT(queue);
 
-    struct am_event_state *me = &am_event_state_;
-
-    me->crit_enter();
     const struct am_event *event = am_event_queue_pop_front(queue);
-    me->crit_exit();
-
     if (!event) {
         return false;
     }
@@ -631,20 +645,11 @@ bool am_event_queue_pop_front_with_cb(
 
 int am_event_queue_flush(struct am_event_queue *queue) {
     int cnt = 0;
-    struct am_event_state *me = &am_event_state_;
-
-    me->crit_enter();
-
     const struct am_event *e = NULL;
     while ((e = am_event_queue_pop_front(queue)) != NULL) {
-        me->crit_exit();
         ++cnt;
         AM_ASSERT(cnt <= queue->capacity);
         am_event_free(e);
-        me->crit_enter();
     }
-
-    me->crit_exit();
-
     return cnt;
 }

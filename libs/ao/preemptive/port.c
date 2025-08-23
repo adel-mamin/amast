@@ -61,14 +61,9 @@ static void am_ao_task(void *param) {
     ao->task_id = am_pal_task_get_own_id();
 
     while (AM_LIKELY(!ao->stopped)) {
-        struct am_ao_state *me = &am_ao_state_;
-        me->crit_enter();
         while (am_event_queue_is_empty(&ao->event_queue)) {
-            me->crit_exit();
             am_pal_task_wait(ao->task_id);
-            me->crit_enter();
         }
-        me->crit_exit();
         bool popped = am_event_queue_pop_front_with_cb(
             &ao->event_queue, am_ao_handle, ao
         );
@@ -143,14 +138,13 @@ void am_ao_stop(struct am_ao *ao) {
         am_ao_unsubscribe_all(ao);
     }
 
-    me->crit_enter();
-
     const struct am_event *e = NULL;
     while ((e = am_event_queue_pop_front(&ao->event_queue)) != NULL) {
-        me->crit_exit();
         am_event_free(e);
-        me->crit_enter();
     }
+
+    me->crit_enter();
+
     am_event_queue_dtor(&ao->event_queue);
 
     me->aos[ao->prio.ao] = NULL;

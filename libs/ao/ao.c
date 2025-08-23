@@ -338,7 +338,7 @@ void am_ao_log_event_queues_unsafe(
             continue;
         }
         for (int j = 0; j < tnum; ++j) {
-            const struct am_event *e = am_event_queue_pop_front(q);
+            const struct am_event *e = am_event_queue_pop_front_unsafe(q);
             AM_ASSERT(e);
             log(ao->name, j, nbusy, cap, e);
         }
