@@ -29,6 +29,7 @@
  * Event allocation unit tests.
  */
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -66,6 +67,48 @@ static void test_allocate(int size, int pool_index_plus_one) {
     const struct am_event *e = am_event_allocate(AM_EVT_USER, size);
     AM_ASSERT(e->pool_index_plus_one == pool_index_plus_one);
     am_event_free(e);
+}
+
+static void test_am_event_queue(const int capacity, const int rdwr_num) {
+    const struct am_event *pool[capacity];
+
+    struct am_event_queue q;
+    am_event_queue_ctor(&q, pool, capacity);
+    AM_ASSERT(am_event_queue_is_empty(&q));
+
+    if (!rdwr_num) {
+        return;
+    }
+    AM_ASSERT(rdwr_num > 0);
+    struct am_event events[rdwr_num];
+
+    for (int i = 1; i < rdwr_num; ++i) {
+        bool rc = am_event_queue_push_back(&q, &events[i]);
+        AM_ASSERT(rc);
+        AM_ASSERT(am_event_queue_get_nbusy(&q) == i);
+        AM_ASSERT(!am_event_queue_is_empty(&q));
+    }
+
+    for (int i = 1; i <= rdwr_num; ++i) {
+        const struct am_event *event = am_event_queue_pop_front(&q);
+        AM_ASSERT(event == &events[i]);
+    }
+
+    for (int i = 1; i <= rdwr_num; ++i) {
+        bool rc = am_event_queue_push_front(&q, &events[i]);
+        AM_ASSERT(rc);
+        AM_ASSERT(am_event_queue_get_nbusy(&q) > 0);
+        AM_ASSERT(am_event_queue_get_nbusy(&q) == i);
+        AM_ASSERT(!am_event_queue_is_empty(&q));
+    }
+
+    for (int i = rdwr_num; i > 0; --i) {
+        const struct am_event *event = am_event_queue_pop_front(&q);
+        AM_ASSERT(&events[i] == event);
+    }
+
+    AM_ASSERT(am_event_queue_get_nbusy(&q) == 0);
+    AM_ASSERT(am_event_queue_is_empty(&q));
 }
 
 int main(void) {
@@ -141,6 +184,11 @@ int main(void) {
         test_allocate(sizeof(buf5) - 1, /*pool_index_plus_one=*/5);
         test_allocate(sizeof(buf5), /*pool_index_plus_one=*/5);
     }
+
+    test_am_event_queue(/*capacity=*/1, /*rdwr_num=*/0);
+    /* test_am_event_queue(/\*capacity=*\/1, /\*rdwr_num=*\/1); */
+    /* test_am_event_queue(/\*capacity=*\/2, /\*rdwr_num=*\/1); */
+    /* test_am_event_queue(/\*capacity=*\/3, /\*rdwr_num=*\/3); */
 
     return 0;
 }

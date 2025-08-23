@@ -38,7 +38,6 @@
 #include "strlib/strlib.h"
 #include "hsm/hsm.h"
 #include "common.h"
-#include "queue/queue.h"
 
 /**
  * The topology of the tested HSM:
@@ -60,8 +59,8 @@
 
 struct test_defer {
     struct am_hsm hsm;
-    struct am_queue event_queue;
-    struct am_queue defer_queue;
+    struct am_event_queue event_queue;
+    struct am_event_queue defer_queue;
     AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
     char log_buf[256];
 };
@@ -127,25 +126,13 @@ static void defer_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
     /* setup HSM event queue */
     {
         static const struct am_event *pool[2];
-        am_queue_ctor(
-            &me->event_queue,
-            /*isize=*/sizeof(pool[0]),
-            AM_ALIGNOF(am_event_ptr_t),
-            pool,
-            (int)sizeof(pool)
-        );
+        am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool));
     }
 
     /* setup HSM defer queue */
     {
         static const struct am_event *pool[2];
-        am_queue_ctor(
-            &me->defer_queue,
-            /*isize=*/sizeof(pool[0]),
-            AM_ALIGNOF(am_event_ptr_t),
-            pool,
-            (int)sizeof(pool)
-        );
+        am_event_queue_ctor(&me->defer_queue, pool, AM_COUNTOF(pool));
     }
 }
 
@@ -167,7 +154,7 @@ static void defer_dispatch(void *ctx, const struct am_event *event) {
 
 static void defer_commit(void) {
     struct test_defer *me = &m_test_defer;
-    while (!am_queue_is_empty(&me->event_queue)) {
+    while (!am_event_queue_is_empty(&me->event_queue)) {
         bool popped = am_event_pop_front(&me->event_queue, defer_dispatch, me);
         AM_ASSERT(popped);
     }

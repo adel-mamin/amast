@@ -17,10 +17,6 @@
 @SRC_ROOT@/libs/bit/bit.c
 @SRC_ROOT@/libs/bit/test.c
 
-@SRC_ROOT@/libs/queue/queue.h
-@SRC_ROOT@/libs/queue/queue.c
-@SRC_ROOT@/libs/queue/test.c
-
 @SRC_ROOT@/libs/event/event.h
 @SRC_ROOT@/libs/event/event.c
 

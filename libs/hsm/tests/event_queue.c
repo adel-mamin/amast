@@ -57,7 +57,6 @@
 #include "common/macros.h"
 #include "common/types.h"
 #include "event/event.h"
-#include "queue/queue.h"
 #include "onesize/onesize.h"
 #include "slist/slist.h"
 #include "strlib/strlib.h"
@@ -78,7 +77,7 @@ static AM_PRINTF(1, 0) void hsmq_log(const char *fmt, ...) {
 
 struct am_hsmq {
     struct am_hsm hsm;
-    struct am_queue event_queue;
+    struct am_event_queue event_queue;
     AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
 };
 
@@ -99,7 +98,7 @@ static void hsmq_dispatch(void *ctx, const struct am_event *event) {
 
 static void hsmq_commit(void) {
     struct am_hsmq *me = &am_hsmq_;
-    while (!am_queue_is_empty(&me->event_queue)) {
+    while (!am_event_queue_is_empty(&me->event_queue)) {
         bool popped = am_event_pop_front(&me->event_queue, hsmq_dispatch, me);
         AM_ASSERT(popped);
     }
@@ -117,13 +116,7 @@ static void hsmq_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
 
     /* setup HSM event queue */
     static const struct am_event *pool[2];
-    am_queue_ctor(
-        &me->event_queue,
-        /*isize=*/sizeof(pool[0]),
-        AM_ALIGNOF(am_event_ptr_t),
-        pool,
-        (int)sizeof(pool)
-    );
+    am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool));
 }
 
 static enum am_rc hsmq_s1(struct am_hsmq *me, const struct am_event *event) {

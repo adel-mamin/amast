@@ -35,7 +35,7 @@ libevent = library(
 
 libevent_dep = declare_dependency(
     sources: [event_src],
-    dependencies: [libonesize_dep, libqueue_dep],
+    dependencies: [libonesize_dep],
     include_directories: [inc]
 )
 
@@ -46,7 +46,7 @@ if unit_test
         'event',
         ['event.c', 'test.c', slist_src],
         c_args: ['-DAM_EVENT_POOLS_NUM_MAX=32'],
-        dependencies : [libonesize_dep, libqueue_dep, libassert_dep],
+        dependencies : [libonesize_dep, libassert_dep],
         include_directories: inc)
     test('event', e)
 endif

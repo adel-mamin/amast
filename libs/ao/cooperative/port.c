@@ -28,11 +28,9 @@
 #include <string.h>
 
 #include "bit/bit.h"
-#include "common/alignment.h"
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "hsm/hsm.h"
-#include "queue/queue.h"
 #include "event/event.h"
 #include "pal/pal.h"
 #include "ao/ao.h"
@@ -91,7 +89,7 @@ bool am_ao_run_all(void) {
         bool popped = am_event_pop_front(&ao->event_queue, am_ao_handle, ao);
         if (!popped) {
             me->crit_enter();
-            if (am_queue_is_empty(&ao->event_queue)) {
+            if (am_event_queue_is_empty(&ao->event_queue)) {
                 am_bit_u64_clear(&am_ready_aos_, ao->prio.ao);
             }
             me->crit_exit();
@@ -122,13 +120,7 @@ void am_ao_start(
     AM_ASSERT(queue);
     AM_ASSERT(queue_size > 0);
 
-    am_queue_ctor(
-        &ao->event_queue,
-        sizeof(struct am_event *),
-        AM_ALIGNOF(am_event_ptr_t),
-        queue,
-        (int)sizeof(struct am_event *) * queue_size
-    );
+    am_event_queue_ctor(&ao->event_queue, queue, queue_size);
 
     ao->prio = prio;
     ao->name = name;
@@ -159,14 +151,13 @@ void am_ao_stop(struct am_ao *ao) {
 
     me->crit_enter();
 
-    struct am_event **e = NULL;
-    while ((e = am_queue_pop_front(&ao->event_queue)) != NULL) {
+    const struct am_event *e = NULL;
+    while ((e = am_event_queue_pop_front(&ao->event_queue)) != NULL) {
         me->crit_exit();
-        AM_ASSERT(*e);
-        am_event_free(*e);
+        am_event_free(e);
         me->crit_enter();
     }
-    am_queue_dtor(&ao->event_queue);
+    am_event_queue_dtor(&ao->event_queue);
     am_bit_u64_clear(&am_ready_aos_, ao->prio.ao);
 
     me->aos[ao->prio.ao] = NULL;

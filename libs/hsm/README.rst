@@ -559,7 +559,6 @@ The key libraries at play here are:
 - :ref:`hsm_api`
 - :ref:`event_api`
 - :ref:`onesize_api`
-- :ref:`queue_api`
 
 The source code is in `event_queue.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/event_queue.c>`_.
 

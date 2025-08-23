@@ -38,7 +38,6 @@
 
 #include "common/macros.h"
 #include "event/event.h"
-#include "queue/queue.h"
 #include "hsm/hsm.h"
 #include "pal/pal.h"
 
@@ -97,11 +96,11 @@ struct am_ao_prio {
 
 /** The active object. */
 struct am_ao {
-    struct am_hsm hsm;           /**< top level AO state machine */
-    const char *name;            /**< human readable name of AO */
-    struct am_queue event_queue; /**< event queue */
-    int last_event;              /**< last processed event */
-    int task_id;                 /**< task handle */
+    struct am_hsm hsm;                 /**< top level AO state machine */
+    const char *name;                  /**< human readable name of AO */
+    struct am_event_queue event_queue; /**< event queue */
+    int last_event;                    /**< last processed event */
+    int task_id;                       /**< task handle */
     /** initial user event - the parameter of am_ao_start() API */
     const struct am_event *init_event;
     /** AO priority */

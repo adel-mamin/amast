@@ -41,7 +41,6 @@
 #include "common/macros.h"
 #include "common/types.h"
 #include "event/event.h"
-#include "queue/queue.h"
 #include "onesize/onesize.h"
 #include "slist/slist.h"
 #include "strlib/strlib.h"
@@ -62,7 +61,7 @@ static AM_PRINTF(1, 0) void fsmq_log(const char *fmt, ...) {
 
 struct am_fsmq {
     struct am_fsm fsm;
-    struct am_queue event_queue;
+    struct am_event_queue event_queue;
     AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
 };
 
@@ -84,7 +83,7 @@ static void fsmq_handle(void *ctx, const struct am_event *event) {
 
 static void fsmq_commit(void) {
     struct am_fsmq *me = &am_fsmq_;
-    while (!am_queue_is_empty(&me->event_queue)) {
+    while (!am_event_queue_is_empty(&me->event_queue)) {
         bool popped = am_event_pop_front(&me->event_queue, fsmq_handle, me);
         AM_ASSERT(popped);
     }
@@ -102,13 +101,7 @@ static void fsmq_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
 
     /* setup FSM event queue */
     static const struct am_event *pool[2];
-    am_queue_ctor(
-        &me->event_queue,
-        /*isize=*/sizeof(pool[0]),
-        AM_ALIGNOF(am_event_ptr_t),
-        pool,
-        (int)sizeof(pool)
-    );
+    am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool));
 }
 
 static enum am_rc fsmq_a(struct am_fsmq *me, const struct am_event *event) {

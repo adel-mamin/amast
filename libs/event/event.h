@@ -39,7 +39,6 @@
 #include "common/alignment.h"
 #include "common/macros.h"
 #include "common/types.h"
-#include "queue/queue.h"
 
 /** No event ID should have this value. */
 #define AM_EVT_INVALID -1
@@ -139,6 +138,19 @@ struct am_event {
      * Used for sanity checks.
      */
     uint32_t id_lsw : AM_EVENT_ID_LSW_BITS;
+};
+
+/** Event queue handler. */
+struct am_event_queue {
+    int rd;        /**< read index */
+    int wr;        /**< write index */
+    int nfree;     /**< number of free slots */
+    int nfree_min; /**< minimum number of free slots observed so far */
+    int capacity;  /**< queue capacity [number of items of isize] */
+    const struct am_event **events; /**< event queue */
+    unsigned full : 1;              /**< queue is full */
+    /** safety net to catch missing am_event_queue_ctor() call */
+    unsigned ctor_called : 1;
 };
 
 AM_ASSERT_STATIC(sizeof(struct am_event) == (2 * sizeof(int32_t)));
@@ -473,7 +485,7 @@ int am_event_get_ref_cnt(const struct am_event *event);
  * @retval #AM_RC_ERR              the event was not pushed
  */
 enum am_rc am_event_push_back_x(
-    struct am_queue *queue, const struct am_event *event, int margin
+    struct am_event_queue *queue, const struct am_event *event, int margin
 );
 
 /**
@@ -496,7 +508,7 @@ enum am_rc am_event_push_back_x(
  *                                 queue was empty
  */
 enum am_rc am_event_push_back(
-    struct am_queue *queue, const struct am_event *event
+    struct am_event_queue *queue, const struct am_event *event
 );
 
 /**
@@ -523,7 +535,7 @@ enum am_rc am_event_push_back(
  *                                 queue was empty
  */
 enum am_rc am_event_push_back_unsafe(
-    struct am_queue *queue, const struct am_event *event
+    struct am_event_queue *queue, const struct am_event *event
 );
 
 /**
@@ -556,7 +568,7 @@ enum am_rc am_event_push_back_unsafe(
  * @retval #AM_RC_ERR              the event was not pushed
  */
 enum am_rc am_event_push_front_x(
-    struct am_queue *queue, const struct am_event *event, int margin
+    struct am_event_queue *queue, const struct am_event *event, int margin
 );
 
 /**
@@ -579,7 +591,7 @@ enum am_rc am_event_push_front_x(
  *                                 queue was empty
  */
 enum am_rc am_event_push_front(
-    struct am_queue *queue, const struct am_event *event
+    struct am_event_queue *queue, const struct am_event *event
 );
 
 /**
@@ -622,8 +634,157 @@ typedef void (*am_event_handle_fn)(void *ctx, const struct am_event *event);
  * @retval false  no event was popped
  */
 bool am_event_pop_front(
-    struct am_queue *queue, am_event_handle_fn cb, void *ctx
+    struct am_event_queue *queue, am_event_handle_fn cb, void *ctx
 );
+
+/**
+ * Construct event queue with a array of event pointers.
+ *
+ * @param queue    the queue
+ * @param events   the array of event pointers
+ * @param nevents  the number of event pointers in \a events
+ */
+void am_event_queue_ctor(
+    struct am_event_queue *queue, const struct am_event *events[], int nevents
+);
+
+/**
+ * Destruct event queue.
+ *
+ * @param queue  the queue
+ */
+void am_event_queue_dtor(struct am_event_queue *queue);
+
+/**
+ * Check if constructor was called for event queue.
+ *
+ * @param queue  the event queue
+ *
+ * @retval true   the queue is valid
+ * @retval false  the queue is invalid
+ */
+bool am_event_queue_is_valid(const struct am_event_queue *queue);
+
+/**
+ * Check if event queue is empty.
+ *
+ * @param queue  the event queue
+ *
+ * @retval true   queue is empty
+ * @retval false  queue is not empty
+ */
+bool am_event_queue_is_empty(const struct am_event_queue *queue);
+
+/**
+ * Check if event queue is full.
+ *
+ * @param queue  the event queue
+ *
+ * @retval true   the queue is full
+ * @retval false  the queue is not full
+ */
+bool am_event_queue_is_full(const struct am_event_queue *queue);
+
+/**
+ * Return how many items are in event queue.
+ *
+ * @param queue  the event queue
+ *
+ * @return number of queued events
+ */
+int am_event_queue_get_nbusy(const struct am_event_queue *queue);
+
+/**
+ * Return event queue capacity.
+ *
+ * @param queue  the event queue
+ *
+ * @return the event queue capacity in number of items (slots)
+ */
+int am_event_queue_get_capacity(const struct am_event_queue *queue);
+
+/**
+ * Pop an item from the front (head) of event queue.
+ *
+ * Takes O(1) to complete.
+ *
+ * @param queue  the event queue
+ *
+ * @return The popped item or NULL, if event queue was empty.
+ */
+const struct am_event *am_event_queue_pop_front(struct am_event_queue *queue);
+
+/**
+ * Peek an item from the front (head) of event queue.
+ *
+ * Takes O(1) to complete.
+ *
+ * @param queue  the event queue
+ *
+ * @return The peeked item or NULL, if event queue is empty.
+ */
+const struct am_event *am_event_queue_peek_front(struct am_event_queue *queue);
+
+/**
+ * Peek an item from the back (tail) of event queue.
+ *
+ * Takes O(1) to complete.
+ *
+ * @param queue  the event queue
+ *
+ * @return The peeked item or NULL, if event queue is empty.
+ */
+const struct am_event *am_event_queue_peek_back(struct am_event_queue *queue);
+
+/**
+ * Push an item to the front (head) of event queue.
+ *
+ * Takes O(1) to complete.
+ *
+ * @param queue  the event queue
+ * @param event  the new queue item.
+ *
+ * @retval true   success
+ * @retval false  failure
+ */
+bool am_event_queue_push_front(
+    struct am_event_queue *queue, const struct am_event *event
+);
+
+/**
+ * Push an item to the back (tail) of event queue.
+ *
+ * Takes O(1) to complete.
+ *
+ * @param queue  the event queue
+ * @param event  the new queue item.
+ *
+ * @retval true   success
+ * @retval false  failure
+ */
+bool am_event_queue_push_back(
+    struct am_event_queue *queue, const struct am_event *event
+);
+
+/**
+ * Get number of free slots available in event queue.
+ *
+ * @param queue  the event queue
+ *
+ * @return the number of free slots available now
+ */
+int am_event_queue_get_nfree(const struct am_event_queue *queue);
+
+/**
+ * Get minimum number of free slots ever observed in event queue.
+ *
+ * Could be used to assess the usage of the event queue.
+ *
+ * @param queue  the event queue
+ *
+ * @return the minimum number of slots observed so far
+ */
+int am_event_queue_get_nfree_min(const struct am_event_queue *queue);
 
 /**
  * Flush all events from event queue.
@@ -632,11 +793,11 @@ bool am_event_pop_front(
  *
  * Thread safe.
  *
- * @param queue  the queue to flush
+ * @param queue  the event queue to flush
  *
  * @return the number of events flushed
  */
-int am_event_flush_queue(struct am_queue *queue);
+int am_event_flush_queue(struct am_event_queue *queue);
 
 #ifdef __cplusplus
 }

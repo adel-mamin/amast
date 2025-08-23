@@ -38,7 +38,6 @@
 #include "common/types.h"
 #include "hsm/hsm.h"
 #include "event/event.h"
-#include "queue/queue.h"
 #include "bit/bit.h"
 #include "timer/timer.h"
 #include "pal/pal.h"
@@ -52,7 +51,7 @@ struct am_ao_state am_ao_state_;
 bool am_ao_event_queue_is_empty(struct am_ao *ao) {
     struct am_ao_state *me = &am_ao_state_;
     me->crit_enter();
-    bool empty = am_queue_is_empty(&ao->event_queue);
+    bool empty = am_event_queue_is_empty(&ao->event_queue);
     me->crit_exit();
     return empty;
 }
@@ -327,22 +326,21 @@ void am_ao_log_event_queues_unsafe(
         if (!ao) {
             continue;
         }
-        struct am_queue *q = &ao->event_queue;
-        if (!am_queue_is_valid(q)) {
+        struct am_event_queue *q = &ao->event_queue;
+        if (!am_event_queue_is_valid(q)) {
             continue;
         }
-        const int cap = am_queue_get_capacity(q);
-        const int nbusy = am_queue_get_nbusy(q);
+        const int cap = am_event_queue_get_capacity(q);
+        const int nbusy = am_event_queue_get_nbusy(q);
         const int tnum = AM_MIN(num, nbusy);
         if (0 == tnum) {
             log(ao->name, 0, nbusy, cap, /*event=*/NULL);
             continue;
         }
         for (int j = 0; j < tnum; ++j) {
-            struct am_event **e = am_queue_pop_front(q);
+            const struct am_event *e = am_event_queue_pop_front(q);
             AM_ASSERT(e);
-            AM_ASSERT(*e);
-            log(ao->name, j, nbusy, cap, *e);
+            log(ao->name, j, nbusy, cap, e);
         }
     }
 }

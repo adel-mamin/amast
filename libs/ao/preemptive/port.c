@@ -27,11 +27,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "common/alignment.h"
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "hsm/hsm.h"
-#include "queue/queue.h"
 #include "event/event.h"
 #include "pal/pal.h"
 #include "ao/ao.h"
@@ -65,7 +63,7 @@ static void am_ao_task(void *param) {
     while (AM_LIKELY(!ao->stopped)) {
         struct am_ao_state *me = &am_ao_state_;
         me->crit_enter();
-        while (am_queue_is_empty(&ao->event_queue)) {
+        while (am_event_queue_is_empty(&ao->event_queue)) {
             me->crit_exit();
             am_pal_task_wait(ao->task_id);
             me->crit_enter();
@@ -105,13 +103,7 @@ void am_ao_start(
     AM_ASSERT(queue);
     AM_ASSERT(queue_size > 0);
 
-    am_queue_ctor(
-        &ao->event_queue,
-        sizeof(struct am_event *),
-        AM_ALIGNOF(am_event_ptr_t),
-        queue,
-        (int)sizeof(struct am_event *) * queue_size
-    );
+    am_event_queue_ctor(&ao->event_queue, queue, queue_size);
 
     ao->prio = prio;
     ao->name = name;
@@ -151,14 +143,13 @@ void am_ao_stop(struct am_ao *ao) {
 
     me->crit_enter();
 
-    struct am_event **e = NULL;
-    while ((e = am_queue_pop_front(&ao->event_queue)) != NULL) {
+    const struct am_event *e = NULL;
+    while ((e = am_event_queue_pop_front(&ao->event_queue)) != NULL) {
         me->crit_exit();
-        AM_ASSERT(*e);
-        am_event_free(*e);
+        am_event_free(e);
         me->crit_enter();
     }
-    am_queue_dtor(&ao->event_queue);
+    am_event_queue_dtor(&ao->event_queue);
 
     me->aos[ao->prio.ao] = NULL;
     --me->aos_cnt;

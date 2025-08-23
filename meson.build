@@ -162,7 +162,6 @@ files_to_check = run_command(
     meson.project_source_root() / 'libs' / 'ihsm',
     meson.project_source_root() / 'libs' / 'onesize',
     meson.project_source_root() / 'libs' / 'pal',
-    meson.project_source_root() / 'libs' / 'queue',
     meson.project_source_root() / 'libs' / 'slist',
     meson.project_source_root() / 'libs' / 'strlib',
     meson.project_source_root() / 'libs' / 'timer',

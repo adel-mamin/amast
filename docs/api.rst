@@ -127,49 +127,6 @@ The source code of the corresponding header file is in `ringbuf.h <https://githu
 
 .. doxygenfunction:: am_ringbuf_clear_dropped
 
-.. _queue_api:
-
-Queue
------
-
-Queue API documentation.
-
-The source code of the corresponding header file is in `queue.h <https://github.com/adel-mamin/amast/blob/main/libs/bit/bit.h>`_.
-
-.. doxygenstruct:: am_queue
-
-.. doxygenfunction:: am_queue_ctor
-
-.. doxygenfunction:: am_queue_dtor
-
-.. doxygenfunction:: am_queue_is_valid
-
-.. doxygenfunction:: am_queue_is_empty
-
-.. doxygenfunction:: am_queue_is_full
-
-.. doxygenfunction:: am_queue_get_nbusy
-
-.. doxygenfunction:: am_queue_get_nfree
-
-.. doxygenfunction:: am_queue_get_nfree_min
-
-.. doxygenfunction:: am_queue_get_capacity
-
-.. doxygenfunction:: am_queue_item_size
-
-.. doxygenfunction:: am_queue_pop_front
-
-.. doxygenfunction:: am_queue_pop_front_and_copy
-
-.. doxygenfunction:: am_queue_peek_front
-
-.. doxygenfunction:: am_queue_peek_back
-
-.. doxygenfunction:: am_queue_push_front
-
-.. doxygenfunction:: am_queue_push_back
-
 .. _onesize_api:
 
 Onesize
@@ -231,10 +188,40 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenstruct:: am_event
 
+.. doxygenstruct:: am_event_queue
+
 .. doxygenstruct:: am_event_state_cfg
    :members:
 
 .. doxygenfunction:: am_event_state_ctor
+
+.. doxygenfunction:: am_event_queue_ctor
+
+.. doxygenfunction:: am_event_queue_dtor
+
+.. doxygenfunction:: am_event_queue_is_valid
+
+.. doxygenfunction:: am_event_queue_is_empty
+
+.. doxygenfunction:: am_event_queue_is_full
+
+.. doxygenfunction:: am_event_queue_get_nbusy
+
+.. doxygenfunction:: am_event_queue_get_nfree
+
+.. doxygenfunction:: am_event_queue_get_nfree_min
+
+.. doxygenfunction:: am_event_queue_get_capacity
+
+.. doxygenfunction:: am_event_queue_pop_front
+
+.. doxygenfunction:: am_event_queue_peek_front
+
+.. doxygenfunction:: am_event_queue_peek_back
+
+.. doxygenfunction:: am_event_queue_push_front
+
+.. doxygenfunction:: am_event_queue_push_back
 
 .. doxygenfunction:: am_event_add_pool
 
