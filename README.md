@@ -336,7 +336,7 @@ static void input_task(void *param) {
 
 int main(void) {
     am_ao_state_ctor(/*cfg=*/NULL);
-    am_event_add_pool(
+    am_event_pool_add(
         m_event_pool,
         sizeof(m_event_pool),
         sizeof(m_event_pool[0]),
