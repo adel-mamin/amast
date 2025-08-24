@@ -49,7 +49,7 @@
 struct am_ao_state am_ao_state_;
 
 bool am_ao_event_queue_is_empty(struct am_ao *ao) {
-    return am_event_queue_is_empty(&am_ao_state_.event_queue);
+    return am_event_queue_is_empty(&ao->event_queue);
 }
 
 bool am_ao_publish_exclude_x(
