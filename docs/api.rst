@@ -211,6 +211,20 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_queue_pop_front
 
+.. doxygenfunction:: am_event_queue_push_back_x
+
+.. doxygenfunction:: am_event_queue_push_back
+
+.. doxygenfunction:: am_event_queue_push_back_unsafe
+
+.. doxygenfunction:: am_event_queue_push_front_x
+
+.. doxygenfunction:: am_event_queue_push_front
+
+.. doxygenfunction:: am_event_queue_pop_front_with_cb
+
+.. doxygenfunction:: am_event_queue_flush
+
 .. doxygenfunction:: am_event_pool_add
 
 .. doxygenfunction:: am_event_pool_get_nfree
@@ -220,6 +234,8 @@ The source code of the corresponding header file is in `event.h <https://github.
 .. doxygenfunction:: am_event_pool_get_nblocks
 
 .. doxygenfunction:: am_event_pool_get_num
+
+.. doxygenfunction:: am_event_pool_log_unsafe
 
 .. doxygenfunction:: am_event_allocate_x
 
@@ -233,8 +249,6 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygentypedef:: am_event_log_fn
 
-.. doxygenfunction:: am_event_pool_log_unsafe
-
 .. doxygenfunction:: am_event_is_static
 
 .. doxygenfunction:: am_event_inc_ref_cnt
@@ -243,21 +257,7 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_get_ref_cnt
 
-.. doxygenfunction:: am_event_queue_push_back_x
-
-.. doxygenfunction:: am_event_queue_push_back
-
-.. doxygenfunction:: am_event_queue_push_back_unsafe
-
-.. doxygenfunction:: am_event_queue_push_front_x
-
-.. doxygenfunction:: am_event_queue_push_front
-
 .. doxygentypedef:: am_event_handle_fn
-
-.. doxygenfunction:: am_event_queue_pop_front_with_cb
-
-.. doxygenfunction:: am_event_queue_flush
 
 .. _timer_api:
 
