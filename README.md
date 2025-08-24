@@ -99,7 +99,7 @@ state_a entry
 The FSM API can be found [here](https://amast.readthedocs.io/api.html#fsm).
 The FSM documenation is [here](https://amast.readthedocs.io/fsm.html).
 
-The compiled binary on x86 is about 2.3kB of memory (gcc, `-Os`, `-flto`).
+The compiled binary on x86 is about 2.4kB of memory (gcc, `-Os`, `-flto`).
 
 ### Hierarchical state machine (HSM)
 
@@ -129,11 +129,7 @@ Here is the full implementation of the HSM:
 #include "amast_config.h"
 #include "amast.h"
 
-enum {
-    APP_EVT_A = AM_EVT_USER,
-    APP_EVT_B,
-    APP_EVT_C
-};
+enum { APP_EVT_A = AM_EVT_USER, APP_EVT_B, APP_EVT_C };
 
 struct app {
     struct am_hsm hsm;
@@ -218,7 +214,7 @@ substate_b entry
 The HSM API can be found [here](https://amast.readthedocs.io/api.html#hsm).
 The HSM documenation is [here](https://amast.readthedocs.io/hsm.html).
 
-The compiled binary on x86 is about 3.9kB of memory (gcc, `-Os`, `-flto`).
+The compiled binary on x86 is about 4.0kB of memory (gcc, `-Os`, `-flto`).
 
 ### Active Object
 
@@ -392,7 +388,7 @@ The AO API can be found [here](https://amast.readthedocs.io/api.html#ao).
 The Event API can be found [here](https://amast.readthedocs.io/api.html#event).
 The Timer API can be found [here](https://amast.readthedocs.io/api.html#timer).
 
-The compiled binary on x86 is about 10.7kB of memory (gcc, `-Os`, `-flto`).
+The compiled binary on x86 is about 10.6kB of memory (gcc, `-Os`, `-flto`).
 
 ## Architecture Diagram
 
