@@ -49,11 +49,7 @@
 struct am_ao_state am_ao_state_;
 
 bool am_ao_event_queue_is_empty(struct am_ao *ao) {
-    struct am_ao_state *me = &am_ao_state_;
-    me->crit_enter();
-    bool empty = am_event_queue_is_empty(&ao->event_queue);
-    me->crit_exit();
-    return empty;
+    return am_event_queue_is_empty(&am_ao_state_.event_queue);
 }
 
 bool am_ao_publish_exclude_x(
