@@ -7,6 +7,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+## v0.14.0 - 24-August-2025
+
 ### Changed
 
 - Construct entry and exit FSM messages on stack.
