@@ -8,12 +8,12 @@
 ## Introduction
 <a name="introduction"></a>
 
-Amast is a minimalist asynchronous toolkit to help developing projects with asynchronous intractions and state machines.
+Amast is a minimalist asynchronous toolkit to help developing projects with asynchronous interactions and state machines.
 Written in C99.
 
 ## What is it useful for?
 
-Here are several usecases in increasing level of complexity.
+Here are several use cases in increasing level of complexity.
 
 ### Finite state machine (FSM)
 
@@ -107,7 +107,12 @@ The compiled binary on x86 is about 2.4kB of memory (gcc, `-Os`, `-flto`).
 
 ### Hierarchical state machine (HSM)
 
-The HSM has two sub-states and one superstate:
+The HSM has two sub-states and one superstate.
+
+It demonstrates:
+
+1. creating of hierarchy of states
+2. behavioral inheritance by handling the event C in superstate
 
 ```mermaid
 stateDiagram-v2
@@ -230,11 +235,11 @@ The compiled binary on x86 is about 4.0kB of memory (gcc, `-Os`, `-flto`).
 
 Here is a full implementation of one active object with two states.
 
-It demonstrate several features:
+It demonstrates:
 
 1. creating the active object
 2. creating and maintaining a timer
-3. event pubplishing
+3. event publishing
 4. creating regular tasks, for blocking calls like
    sleep and waiting for user input
 
@@ -414,7 +419,7 @@ async | async/await ([documentation](https://github.com/adel-mamin/amast/blob/ma
 dlist | doubly linked list
 event | events ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/event/README.rst))
 fsm | finite state machine (FSM) ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/fsm/README.rst))
-hsm | hierarchical state machine (HSM) with submachines support ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/hsm/README.rst), [examples](https://github.com/adel-mamin/amast/tree/main/apps/examples/hsm))
+hsm | hierarchical state machine (HSM) with sub-machines support ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/hsm/README.rst), [examples](https://github.com/adel-mamin/amast/tree/main/apps/examples/hsm))
 onesize | onesize memory allocator ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/onesize/README.rst))
 ringbuf | ring buffer ([documentation](https://github.com/adel-mamin/amast/blob/main/libs/ringbuf/README.rst), [example](https://github.com/adel-mamin/amast/tree/main/apps/examples/ringbuf))
 slist | singly linked list
