@@ -208,7 +208,7 @@ extern "C" {
  *
  * @retval true   the event was delivered to all subscribed active objects
  *                except the active object \p ao
- * @retval false  at least one delivery of he event has failed
+ * @retval false  at least one delivery of the event has failed
  */
 bool am_ao_publish_exclude_x(
     const struct am_event *event, const struct am_ao *ao, int margin
