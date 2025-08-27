@@ -7,6 +7,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Clarification to `AM_DO_ONCE()`, `AM_DO_EACH_MS()` and `AM_DO_EVERY()` macros.
+
 ## v0.14.0 - 24-August-2025
 
 ### Changed

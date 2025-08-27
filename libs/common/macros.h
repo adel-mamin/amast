@@ -119,6 +119,20 @@ AM_NORETURN void am_assert_failure(
  *         ++i;
  *     }
  * }
+ *
+ * Note:
+ *
+ * The macro requires explicit curly braces, when used
+ * in the context of if, switch-case, for, while:
+ *
+ * E.g., this is correct:
+ *
+ * if (smth) { AM_DO_EVERY(2) {smth} }
+ *
+ * This is NOT correct and will not compile:
+ *
+ * if (smth) AM_DO_EVERY(2) {smth}
+ *
  * after iteration number| i
  * ----------------------+--
  *   1                   | 1
@@ -144,6 +158,19 @@ AM_NORETURN void am_assert_failure(
  *     }
  * }
  *
+ * Note:
+ *
+ * The macro requires explicit curly braces, when used
+ * in the context of if, switch-case, for, while:
+ *
+ * E.g., this is correct:
+ *
+ * if (smth) { AM_DO_ONCE() {smth} }
+ *
+ * This is NOT correct and will not compile:
+ *
+ * if (smth) AM_DO_ONCE() {smth}
+ *
  * after iteration number| i
  * ----------------------+--
  *   1                   | 1
@@ -157,6 +184,19 @@ AM_NORETURN void am_assert_failure(
 /**
  * Execute code in the attached scope immediately and
  * then repeatedly every \p ms milliseconds.
+ *
+ * Note:
+ *
+ * The macro requires explicit curly braces, when used
+ * in the context of if, switch-case, for, while:
+ *
+ * E.g., this is correct:
+ *
+ * if (smth) { AM_DO_EACH_MS(5) {smth} }
+ *
+ * This is NOT correct and will not compile:
+ *
+ * if (smth) AM_DO_EACH_MS(5) {smth}
  *
  * Example:
  * AM_DO_EACH_MS(100) {
