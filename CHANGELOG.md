@@ -7,6 +7,12 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+## v0.14.1 - 30-August-2025
+
+### Changed
+
+- Rearrange event API documentation.
+
 ### Added
 
 - Clarification to `AM_DO_ONCE()`, `AM_DO_EACH_MS()` and `AM_DO_EVERY()` macros.
