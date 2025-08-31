@@ -5,12 +5,46 @@ API
 
 This part of the documentation covers all the Amast interfaces.
 
-.. _common_constants:
+.. _common_macros_and_constants:
 
-Common Constants
-----------------
+Common Macros And Constants
+---------------------------
 
-.. doxygenfile:: alignment.h
+.. doxygendefine:: AM_ALIGNOF
+
+.. doxygendefine:: AM_ALIGNOF_DEFINE
+
+.. doxygendefine:: AM_ALIGNOF_PTR
+
+.. doxygendefine:: AM_ALIGN_MAX
+
+.. doxygendefine:: AM_ALIGN_PTR_DOWN
+
+.. doxygendefine:: AM_ALIGN_PTR_UP
+
+.. doxygendefine:: AM_ALIGN_SIZE
+
+.. doxygendefine:: AM_ASSERT
+
+.. doxygendefine:: AM_ASSERT_STATIC
+
+.. doxygendefine:: AM_CAST
+
+.. doxygendefine:: AM_COUNTOF
+
+.. doxygendefine:: AM_CONTAINER_OF
+
+.. doxygendefine:: AM_DO_EVERY
+
+.. doxygendefine:: AM_DO_ONCE
+
+.. doxygendefine:: AM_DO_EACH_MS
+
+.. doxygendefine:: AM_MAX
+
+.. doxygendefine:: AM_MIN
+
+.. doxygendefine:: AM_VCAST
 
 .. _common_types:
 

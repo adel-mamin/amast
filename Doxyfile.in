@@ -12,23 +12,18 @@ WARN_AS_ERROR          = YES
 
 MACRO_EXPANSION        = YES
 PREDEFINED             = "AM_PRINTF(a,b)=" \
-                         "AM_MAY_ALIAS="
+                         "AM_MAY_ALIAS=" \
+                         "AM_ASSERT_STATIC(x)="
 
 EXCLUDE_PATTERNS       = *test*,\
                          *stubs*,\
                          *cobszpe*,\
                          *freertos*
 
-EXCLUDE_SYMBOLS        = AM_ASSERT_STATIC \
-                         AM_POOL_BLOCK_SIZEOF \
+EXCLUDE_SYMBOLS        = AM_POOL_BLOCK_SIZEOF \
                          AM_POOL_BLOCK_ALIGNMENT \
                          _POSIX_C_SOURCE \
                          _GNU_SOURCE \
-                         AM_EVT_RANGE_HSM_BEGIN \
-                         AM_EVT_RANGE_HSM_END \
-                         AM_EVT_RANGE_FSM_BEGIN \
-                         AM_EVT_RANGE_FSM_END \
-                         AM_EVT_INTERNAL_MAX \
                          AM_EVENT_REF_COUNTER_BITS \
                          AM_EVENT_REF_COUNTER_MASK \
                          AM_EVENT_TICK_DOMAIN_BITS \
