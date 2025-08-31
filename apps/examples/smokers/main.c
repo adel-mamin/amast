@@ -323,7 +323,7 @@ static void agent_ctor(void) {
 static void ticker_task(void *param) {
     (void)param;
 
-    am_pal_wait_all_tasks();
+    am_pal_task_wait_all();
 
     uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     while (am_ao_get_cnt() > 0) {

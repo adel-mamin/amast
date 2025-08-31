@@ -11,6 +11,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - Improve macro comments in `libs/common/macros.h`.
 - Improve macro and comments documentation.
+- Rename PAL task APIs.
 
 ## v0.14.1 - 30-August-2025
 

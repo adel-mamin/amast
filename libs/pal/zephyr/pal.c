@@ -340,15 +340,15 @@ int am_pal_get_cpu_count(void) {
 #endif
 }
 
-void am_pal_run_all_tasks(void) {}
+void am_pal_task_run_all(void) {}
 
-void am_pal_lock_all_tasks(void) { am_pal_mutex_lock(startup_complete_mutex_); }
+void am_pal_task_lock_all(void) { am_pal_mutex_lock(startup_complete_mutex_); }
 
-void am_pal_unlock_all_tasks(void) {
+void am_pal_task_unlock_all(void) {
     am_pal_mutex_unlock(startup_complete_mutex_);
 }
 
-void am_pal_wait_all_tasks(void) {
+void am_pal_task_wait_all(void) {
     am_pal_mutex_lock(startup_complete_mutex_);
     am_pal_mutex_unlock(startup_complete_mutex_);
 }

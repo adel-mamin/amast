@@ -269,7 +269,7 @@ static void async_ctor(struct async *me) {
 static void ticker_task(void *param) {
     (void)param;
 
-    am_pal_wait_all_tasks();
+    am_pal_task_wait_all();
 
     uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     while (am_ao_get_cnt() > 0) {
@@ -282,7 +282,7 @@ static void ticker_task(void *param) {
 static void input_task(void *param) {
     (void)param;
 
-    am_pal_wait_all_tasks();
+    am_pal_task_wait_all();
 
     int ch;
     uint32_t prev_ms = am_pal_time_get_ms() - 2 * ASYNC_TWO_NEWLINES_TIMEOUT_MS;
