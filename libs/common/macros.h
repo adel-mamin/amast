@@ -113,12 +113,27 @@ AM_NORETURN void am_assert_failure(
 /**
  * Example:
  *
+ * @code{.c}
  * int i = 0;
  * for (int j = 0; j < 3; ++j) {
  *     AM_DO_EVERY(2) {
  *         ++i;
  *     }
  * }
+ * @endcode
+ *
+ * Results:
+ *
+ * ```
+ * iteration number| value of i
+ * ----------------+-----------
+ *   1             | 1
+ *   2             | 1
+ *   3             | 2
+ *   4             | 2
+ *   5             | 3
+ *   6             | 3
+ * ```
  *
  * Note:
  *
@@ -127,20 +142,22 @@ AM_NORETURN void am_assert_failure(
  *
  * E.g., this is correct:
  *
- * if (smth) { AM_DO_EVERY(2) {smth} }
+ * @code{.c}
+ * if (smth) {
+ *     AM_DO_EVERY(2) {
+ *         smth
+ *     }
+ * }
+ * @endcode
  *
  * This is NOT correct and will not compile:
  *
- * if (smth) AM_DO_EVERY(2) {smth}
- *
- * after iteration number| i
- * ----------------------+--
- *   1                   | 1
- *   2                   | 1
- *   3                   | 2
- *   4                   | 2
- *   5                   | 3
- *   6                   | 3
+ * @code{.c}
+ * if (smth)
+ *     AM_DO_EVERY(2) {
+ *         smth
+ *     }
+ * @endcode
  */
 #define AM_DO_EVERY(cnt)                                               \
     static unsigned AM_UNIQUE(call_cnt) = 0;                           \
@@ -151,12 +168,24 @@ AM_NORETURN void am_assert_failure(
 /**
  * Example:
  *
+ * @code{.c}
  * int i = 0;
  * for (int j = 0; j < 3; ++j) {
  *     AM_DO_ONCE() {
  *         ++i;
  *     }
  * }
+ * @endcode
+ *
+ * Results:
+ *
+ * ```
+ * iteration number | value of i
+ * -----------------+-----------
+ *   1              | 1
+ *   2              | 1
+ *   3              | 1
+ * ```
  *
  * Note:
  *
@@ -165,17 +194,22 @@ AM_NORETURN void am_assert_failure(
  *
  * E.g., this is correct:
  *
- * if (smth) { AM_DO_ONCE() {smth} }
+ * @code{.c}
+ * if (smth) {
+ *     AM_DO_ONCE() {
+ *         // smth
+ *     }
+ * }
+ * @endcode
  *
  * This is NOT correct and will not compile:
  *
- * if (smth) AM_DO_ONCE() {smth}
- *
- * after iteration number| i
- * ----------------------+--
- *   1                   | 1
- *   2                   | 1
- *   3                   | 1
+ * @code{.c}
+ * if (smth)
+ *     AM_DO_ONCE() {
+ *         smth
+ *     }
+ * @endcode
  */
 #define AM_DO_ONCE()                 \
     static char AM_UNIQUE(done) = 0; \
@@ -192,16 +226,30 @@ AM_NORETURN void am_assert_failure(
  *
  * E.g., this is correct:
  *
- * if (smth) { AM_DO_EACH_MS(5) {smth} }
+ * @code{.c}
+ * if (smth) {
+ *     AM_DO_EACH_MS(5) {
+ *         // smth
+ *     }
+ * }
+ * @endcode
  *
  * This is NOT correct and will not compile:
  *
- * if (smth) AM_DO_EACH_MS(5) {smth}
+ * @code{.c}
+ * if (smth)
+ *     AM_DO_EACH_MS(5) {
+ *         // smth
+ *     }
+ * @endcode
  *
  * Example:
+ *
+ * @code{.c}
  * AM_DO_EACH_MS(100) {
  *     am_pal_printf("Hello, world!\n");
  * }
+ * @endcode
  */
 #define AM_DO_EACH_MS(ms)                                                    \
     static uint32_t AM_UNIQUE(prev_ms) = 0;                                  \
