@@ -42,11 +42,7 @@
  *              For example, "struct foo" will not work,
  *              but foo_t will, where "typedef struct foo foo_t".
  */
-#define AM_ALIGNOF_DEFINE(type)    \
-    struct alignof_helper_##type { \
-        char c;                    \
-        type member;               \
-    }
+#define AM_ALIGNOF_DEFINE(type) struct alignof_##type { char c; type member; }
 
 /** The maximum compiler alignment [bytes]. */
 #if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L))
@@ -59,13 +55,13 @@ AM_ALIGNOF_DEFINE(max_align_t);
 /**
  * Type alignment.
  *
- * Must be preceded by AM_ALIGNOF_DEFINE() for the same type.
+ * Must be preceded by AM_ALIGNOF_DEFINE for the same type.
  *
  * @param type  return the alignment of this type [bytes]
  *
  * @return the type alignment [bytes]
  */
-#define AM_ALIGNOF(type) (int)offsetof(struct alignof_helper_##type, member)
+#define AM_ALIGNOF(type) (int)offsetof(struct alignof_##type, member)
 
 /**
  * Pointer alignment.
