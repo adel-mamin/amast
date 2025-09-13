@@ -7,6 +7,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+## v0.14.2 - 13-September-2025
+
 ### Changed
 
 - Improve macro comments in `libs/common/macros.h`.
