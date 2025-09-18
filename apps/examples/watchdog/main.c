@@ -36,6 +36,7 @@
 #include <string.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "timer/timer.h"
 #include "ao/ao.h"
@@ -75,7 +76,9 @@ static const struct am_event m_evt_wdt_feed = {.id = EVT_WDT_FEED};
 
 /* 'watched' task */
 
-static int watched_proc(struct watched *me, const struct am_event *event) {
+static enum am_rc watched_proc(
+    struct watched *me, const struct am_event *event
+) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_timer_arm_ms(
@@ -97,7 +100,9 @@ static int watched_proc(struct watched *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static int watched_init(struct watched *me, const struct am_event *event) {
+static enum am_rc watched_init(
+    struct watched *me, const struct am_event *event
+) {
     (void)event;
     am_timer_ctor(
         &me->timer_wdt_feed,
@@ -115,7 +120,7 @@ static void watched_ctor(struct watched *me) {
 
 /* 'wdt' task */
 
-static int wdt_proc(struct wdt *me, const struct am_event *event) {
+static enum am_rc wdt_proc(struct wdt *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_timer_arm_ms(
@@ -141,7 +146,7 @@ static int wdt_proc(struct wdt *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static int wdt_init(struct wdt *me, const struct am_event *event) {
+static enum am_rc wdt_init(struct wdt *me, const struct am_event *event) {
     (void)event;
     am_timer_ctor(
         &me->timer_wdt_bark,

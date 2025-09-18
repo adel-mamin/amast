@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "hsm/hsm.h"
 #include "event/event.h"
 #include "pal/pal.h"
@@ -54,12 +55,14 @@ struct am_ao *g_ao_philo[PHILO_NUM] = {
 
 static struct am_event event_stopped_ = {.id = EVT_STOPPED};
 
-static int philo_top(struct philo *me, const struct am_event *event);
-static int philo_thinking(struct philo *me, const struct am_event *event);
-static int philo_hungry(struct philo *me, const struct am_event *event);
-static int philo_eating(struct philo *me, const struct am_event *event);
+static enum am_rc philo_top(struct philo *me, const struct am_event *event);
+static enum am_rc philo_thinking(
+    struct philo *me, const struct am_event *event
+);
+static enum am_rc philo_hungry(struct philo *me, const struct am_event *event);
+static enum am_rc philo_eating(struct philo *me, const struct am_event *event);
 
-static int philo_top(struct philo *me, const struct am_event *event) {
+static enum am_rc philo_top(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case EVT_STOP:
         am_timer_disarm(me->timer);
@@ -72,7 +75,9 @@ static int philo_top(struct philo *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static int philo_thinking(struct philo *me, const struct am_event *event) {
+static enum am_rc philo_thinking(
+    struct philo *me, const struct am_event *event
+) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_pal_printf("philo %d is thinking\n", me->id);
@@ -94,7 +99,7 @@ static int philo_thinking(struct philo *me, const struct am_event *event) {
     return AM_HSM_SUPER(philo_top);
 }
 
-static int philo_hungry(struct philo *me, const struct am_event *event) {
+static enum am_rc philo_hungry(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_pal_printf("philo %d is hungry\n", me->id);
@@ -113,7 +118,7 @@ static int philo_hungry(struct philo *me, const struct am_event *event) {
     return AM_HSM_SUPER(philo_top);
 }
 
-static int philo_eating(struct philo *me, const struct am_event *event) {
+static enum am_rc philo_eating(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_pal_printf("philo %d is eating\n", me->id);
@@ -134,7 +139,7 @@ static int philo_eating(struct philo *me, const struct am_event *event) {
     return AM_HSM_SUPER(philo_top);
 }
 
-static int philo_init(struct philo *me, const struct am_event *event) {
+static enum am_rc philo_init(struct philo *me, const struct am_event *event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_EAT);
     am_ao_subscribe(&me->ao, EVT_STOP);

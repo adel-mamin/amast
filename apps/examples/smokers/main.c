@@ -35,6 +35,7 @@
 
 #include "common/alignment.h"
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "timer/timer.h"
 #include "ao/ao.h"
@@ -108,12 +109,18 @@ static int rand_012(void) {
     return (int)((unsigned)(next / 65536) % 3);
 }
 
-static int smoker_top(struct smoker *me, const struct am_event *event);
-static int smoker_idle(struct smoker *me, const struct am_event *event);
-static int smoker_smoking(struct smoker *me, const struct am_event *event);
-static int smoker_stopping(struct smoker *me, const struct am_event *event);
+static enum am_rc smoker_top(struct smoker *me, const struct am_event *event);
+static enum am_rc smoker_idle(struct smoker *me, const struct am_event *event);
+static enum am_rc smoker_smoking(
+    struct smoker *me, const struct am_event *event
+);
+static enum am_rc smoker_stopping(
+    struct smoker *me, const struct am_event *event
+);
 
-static int smoker_stopping(struct smoker *me, const struct am_event *event) {
+static enum am_rc smoker_stopping(
+    struct smoker *me, const struct am_event *event
+) {
     switch (event->id) {
     case EVT_STOP: {
         am_ao_publish(&m_evt_stopped);
@@ -126,7 +133,7 @@ static int smoker_stopping(struct smoker *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static int smoker_top(struct smoker *me, const struct am_event *event) {
+static enum am_rc smoker_top(struct smoker *me, const struct am_event *event) {
     switch (event->id) {
     case EVT_STOP: {
         return AM_HSM_TRAN_REDISPATCH(smoker_stopping);
@@ -137,7 +144,7 @@ static int smoker_top(struct smoker *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static int smoker_idle(struct smoker *me, const struct am_event *event) {
+static enum am_rc smoker_idle(struct smoker *me, const struct am_event *event) {
     switch (event->id) {
     case EVT_RESOURCE: {
         const struct resource *e = (const struct resource *)event;
@@ -157,7 +164,9 @@ static int smoker_idle(struct smoker *me, const struct am_event *event) {
     return AM_HSM_SUPER(smoker_top);
 }
 
-static int smoker_smoking(struct smoker *me, const struct am_event *event) {
+static enum am_rc smoker_smoking(
+    struct smoker *me, const struct am_event *event
+) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_timer_arm_ms(&me->timer_done_smoking, /*ms=*/20, /*interval=*/0);
@@ -185,7 +194,7 @@ static int smoker_smoking(struct smoker *me, const struct am_event *event) {
     return AM_HSM_SUPER(smoker_top);
 }
 
-static int smoker_init(struct smoker *me, const struct am_event *event) {
+static enum am_rc smoker_init(struct smoker *me, const struct am_event *event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_RESOURCE);
     am_ao_subscribe(&me->ao, EVT_STOP);
@@ -225,7 +234,9 @@ static void agent_check_stats(const struct agent *me) {
     }
 }
 
-static int agent_stopping(struct agent *me, const struct am_event *event) {
+static enum am_rc agent_stopping(
+    struct agent *me, const struct am_event *event
+) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_ao_publish_exclude(&m_evt_stop, &me->ao);
@@ -278,7 +289,7 @@ static void publish_resources(struct agent *me) {
     me->resource_id++;
 }
 
-static int agent_proc(struct agent *me, const struct am_event *event) {
+static enum am_rc agent_proc(struct agent *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_timer_arm_ms(&me->timeout, AM_TIMEOUT_MS, /*interval=*/0);
@@ -306,7 +317,7 @@ static int agent_proc(struct agent *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static int agent_init(struct agent *me, const struct am_event *event) {
+static enum am_rc agent_init(struct agent *me, const struct am_event *event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_DONE_SMOKING);
     am_ao_subscribe(&me->ao, EVT_STOPPED);

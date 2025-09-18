@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "hsm/hsm.h"
 #include "pal/pal.h"
@@ -107,7 +108,9 @@ static void table_serve(int philo) {
     }
 }
 
-static int table_stopping(struct table *me, const struct am_event *event) {
+static enum am_rc table_stopping(
+    struct table *me, const struct am_event *event
+) {
     switch (event->id) {
     case EVT_STOPPED: {
         ++me->nstops;
@@ -126,7 +129,9 @@ static bool table_sessions_are_over(const struct table *me) {
     return me->nsessions == 0;
 }
 
-static int table_serving(struct table *me, const struct am_event *event) {
+static enum am_rc table_serving(
+    struct table *me, const struct am_event *event
+) {
     switch (event->id) {
     case EVT_HUNGRY: {
         const struct hungry *hungry = (const struct hungry *)event;
@@ -171,7 +176,7 @@ static int table_serving(struct table *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static int table_init(struct table *me, const struct am_event *event) {
+static enum am_rc table_init(struct table *me, const struct am_event *event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_DONE);
     return AM_HSM_TRAN(table_serving);

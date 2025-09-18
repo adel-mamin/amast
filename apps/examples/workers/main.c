@@ -35,6 +35,7 @@
 
 #include "common/alignment.h"
 #include "common/macros.h"
+#include "common/types.h"
 #include "event/event.h"
 #include "timer/timer.h"
 #include "ao/ao.h"
@@ -97,7 +98,7 @@ static void work(int cycles) {
     }
 }
 
-static int worker_proc(struct worker *me, const struct am_event *event) {
+static enum am_rc worker_proc(struct worker *me, const struct am_event *event) {
     switch (event->id) {
     case EVT_JOB_REQ: {
         const struct job_req *req = AM_CAST(const struct job_req *, event);
@@ -121,7 +122,7 @@ static int worker_proc(struct worker *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static int worker_init(struct worker *me, const struct am_event *event) {
+static enum am_rc worker_init(struct worker *me, const struct am_event *event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_JOB_REQ);
     am_ao_subscribe(&me->ao, EVT_STOP);
@@ -154,7 +155,7 @@ static void balancer_check_stats(const struct balancer *me) {
     }
 }
 
-static int balancer_stopping(
+static enum am_rc balancer_stopping(
     struct balancer *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -179,7 +180,9 @@ static int balancer_stopping(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static int balancer_proc(struct balancer *me, const struct am_event *event) {
+static enum am_rc balancer_proc(
+    struct balancer *me, const struct am_event *event
+) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_timer_arm_ms(&me->timeout, AM_TIMEOUT_MS, /*interval=*/0);
@@ -219,7 +222,9 @@ static int balancer_proc(struct balancer *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static int balancer_init(struct balancer *me, const struct am_event *event) {
+static enum am_rc balancer_init(
+    struct balancer *me, const struct am_event *event
+) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_JOB_DONE);
     am_ao_subscribe(&me->ao, EVT_STOPPED);
