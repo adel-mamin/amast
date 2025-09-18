@@ -155,6 +155,17 @@ smokers = executable(
     ]
 )
 
+watchdog = executable(
+    'watchdog',
+    ['watchdog' / 'main.c'],
+    dependencies: [
+        libhsm_dep,
+        libao_preemptive_dep,
+        libpal_dep,
+        libassert_dep,
+    ]
+)
+
 if pal != 'stubs'
     test('smokers', smokers, suite: 'smokers')
     test('workers', workers, suite: 'workers')
