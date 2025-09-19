@@ -105,7 +105,6 @@ void am_ao_start(
 
     ao->prio = prio;
     ao->name = name;
-    ao->init_event = init_event;
 
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(NULL == me->aos[prio.ao]);

@@ -7,6 +7,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Prune `struct am_ao::init_event` pointer as unused.
+
 ### Added
 
 - Watchdog example

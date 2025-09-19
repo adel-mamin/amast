@@ -128,7 +128,6 @@ void am_ao_start(
     ao->prio = prio;
     ao->name = name;
     ao->task_id = am_pal_task_get_own_id();
-    ao->init_event = init_event;
 
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(NULL == me->aos[prio.ao]);
@@ -136,7 +135,7 @@ void am_ao_start(
     ++me->aos_cnt;
 
     me->running_ao_prio = prio;
-    am_hsm_init(&ao->hsm, ao->init_event);
+    am_hsm_init(&ao->hsm, init_event);
     me->running_ao_prio = AM_AO_PRIO_INVALID;
 }
 

@@ -101,8 +101,6 @@ struct am_ao {
     struct am_event_queue event_queue; /**< event queue */
     int last_event;                    /**< last processed event */
     int task_id;                       /**< task handle */
-    /** initial user event - the parameter of am_ao_start() API */
-    const struct am_event *init_event;
     /** AO priority */
     struct am_ao_prio prio;
     /** safety net to catch missing am_ao_ctor() call */
