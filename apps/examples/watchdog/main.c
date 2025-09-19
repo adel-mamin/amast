@@ -26,11 +26,10 @@
 
 /*
  * A task 'watched' is monitored by a watchdog task 'wdt'.
- * The 'watched' tasks works fine for 3 seconds, after which
+ * The 'watched' task works fine for 3 seconds, after which
  * it fails to feed 'wdt' in time.
  */
 
-#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,8 +42,8 @@
 #include "pal/pal.h"
 #include "hsm/hsm.h"
 
-#define AM_WDT_FEED_TIMEOUT_MS 1000
-#define AM_WDT_BARK_TIMEOUT_MS (AM_WDT_FEED_TIMEOUT_MS + 100)
+#define AM_FEED_TIMEOUT_MS 1000
+#define AM_BARK_TIMEOUT_MS (AM_FEED_TIMEOUT_MS + 100)
 
 enum evt {
     EVT_WATCHED_TIMEOUT = AM_EVT_USER,
@@ -54,13 +53,13 @@ enum evt {
 
 struct watched {
     struct am_ao ao;
-    struct am_timer timer_wdt_feed;
+    struct am_timer timer_feed;
     int feeds_num;
 };
 
 struct wdt {
     struct am_ao ao;
-    struct am_timer timer_wdt_bark;
+    struct am_timer timer_bark;
 };
 
 /* tasks */
@@ -82,7 +81,7 @@ static enum am_rc watched_proc(
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_timer_arm_ms(
-            &me->timer_wdt_feed, AM_WDT_FEED_TIMEOUT_MS, AM_WDT_FEED_TIMEOUT_MS
+            &me->timer_feed, AM_FEED_TIMEOUT_MS, AM_FEED_TIMEOUT_MS
         );
         return AM_HSM_HANDLED();
     }
@@ -104,18 +103,18 @@ static enum am_rc watched_init(
     struct watched *me, const struct am_event *event
 ) {
     (void)event;
-    am_timer_ctor(
-        &me->timer_wdt_feed,
-        EVT_WATCHED_TIMEOUT,
-        AM_PAL_TICK_DOMAIN_DEFAULT,
-        /*owner=*/&me->ao
-    );
     return AM_HSM_TRAN(watched_proc);
 }
 
 static void watched_ctor(struct watched *me) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(watched_init));
+    am_timer_ctor(
+        &me->timer_feed,
+        EVT_WATCHED_TIMEOUT,
+        AM_PAL_TICK_DOMAIN_DEFAULT,
+        /*owner=*/&me->ao
+    );
 }
 
 /* 'wdt' task */
@@ -123,22 +122,18 @@ static void watched_ctor(struct watched *me) {
 static enum am_rc wdt_proc(struct wdt *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_timer_arm_ms(
-            &me->timer_wdt_bark, AM_WDT_BARK_TIMEOUT_MS, /*interval=*/0
-        );
+        am_timer_arm_ms(&me->timer_bark, AM_BARK_TIMEOUT_MS, /*interval=*/0);
         return AM_HSM_HANDLED();
     }
     case EVT_WDT_FEED: {
         am_pal_printff("EVT_WDT_FEED received\n");
         /* re-arm bark timer */
-        am_timer_arm_ms(
-            &me->timer_wdt_bark, AM_WDT_BARK_TIMEOUT_MS, /*interval=*/0
-        );
+        am_timer_arm_ms(&me->timer_bark, AM_BARK_TIMEOUT_MS, /*interval=*/0);
         return AM_HSM_HANDLED();
     }
     case EVT_WDT_BARK: {
         am_pal_printff("WATCHED TASK FAILED!\n");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
     default:
         break;
@@ -148,18 +143,18 @@ static enum am_rc wdt_proc(struct wdt *me, const struct am_event *event) {
 
 static enum am_rc wdt_init(struct wdt *me, const struct am_event *event) {
     (void)event;
-    am_timer_ctor(
-        &me->timer_wdt_bark,
-        EVT_WDT_BARK,
-        AM_PAL_TICK_DOMAIN_DEFAULT,
-        /*owner=*/&me->ao
-    );
     return AM_HSM_TRAN(wdt_proc);
 }
 
 static void wdt_ctor(struct wdt *me) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(wdt_init));
+    am_timer_ctor(
+        &me->timer_bark,
+        EVT_WDT_BARK,
+        AM_PAL_TICK_DOMAIN_DEFAULT,
+        /*owner=*/&me->ao
+    );
 }
 
 /* timer task to drive timers  */
