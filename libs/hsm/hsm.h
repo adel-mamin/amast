@@ -221,15 +221,15 @@ struct am_hsm {
  * AM_HSM_TRAN(s) is converted to
  *
  * @code{.c}
- * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = 0},
- *  ((struct am_hsm *)me)->smi = 0, AM_RC_TRAN)
+ * (((struct am_hsm *)me)->state = AM_HSM_STATE_CTOR(s, 0),
+ *  ((struct am_hsm *)me)->smi = 0), AM_RC_TRAN
  * @endcode
  *
  * AM_HSM_TRAN(s, i) is converted to
  *
  * @code{.c}
- * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = i},
- *  ((struct am_hsm *)me)->smi = (uint8_t)i, AM_RC_TRAN)
+ * (((struct am_hsm *)me)->state = AM_HSM_STATE_CTOR(s, i),
+ *  ((struct am_hsm *)me)->smi = i), AM_RC_TRAN
  * @endcode
  *
  * Below are the parameters to the macro:
@@ -261,15 +261,15 @@ struct am_hsm {
  * AM_HSM_TRAN_REDISPATCH(s) is converted to
  *
  * @code{.c}
- * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = 0},
- *  ((struct am_hsm *)me)->smi = 0, AM_RC_TRAN_REDISPATCH)
+ * (((struct am_hsm *)me)->state = AM_HSM_STATE_CTOR(s, 0),
+ *  ((struct am_hsm *)me)->smi = 0), AM_RC_TRAN_REDISPATCH
  * @endcode
  *
  * AM_HSM_TRAN_REDISPATCH(s, i) is converted to
  *
  * @code{.c}
- * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = i},
- *  ((struct am_hsm *)me)->smi = (uint8_t)i, AM_RC_TRAN_REDISPATCH)
+ * (((struct am_hsm *)me)->state = AM_HSM_STATE_CTOR(s, i),
+ *  ((struct am_hsm *)me)->smi = i), AM_RC_TRAN_REDISPATCH
  * @endcode
  *
  * Below are the parameters to the macro:
@@ -300,15 +300,15 @@ struct am_hsm {
  * AM_HSM_SUPER(s) is converted to
  *
  * @code{.c}
- * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = 0},
- *  ((struct am_hsm *)me)->smi = 0, AM_RC_SUPER)
+ * (((struct am_hsm *)me)->state = AM_HSM_STATE_CTOR(s, 0),
+ *  ((struct am_hsm *)me)->smi) = 0, AM_RC_SUPER
  * @endcode
  *
  * AM_HSM_SUPER(s, i) is converted to
  *
  * @code{.c}
- * (((struct am_hsm *)me)->state = (struct am_hsm_state){.fn = s, .smi = i},
- *  ((struct am_hsm *)me)->smi = (uint8_t)i, AM_RC_SUPER)
+ * (((struct am_hsm *)me)->state = AM_HSM_STATE_CTOR(s, i),
+ *  ((struct am_hsm *)me)->smi = i), AM_RC_SUPER
  * @endcode
  *
  * Below are the parameters to the macro:
