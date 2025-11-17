@@ -49,11 +49,11 @@ static enum am_rc state_a(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_pal_printf("state_a entry\n");
-        return AM_HSM_HANDLED();
+        return AM_FSM_HANDLED();
 
     case AM_EVT_EXIT:
         am_pal_printf("state_a exit\n");
-        return AM_HSM_HANDLED();
+        return AM_FSM_HANDLED();
 
     case EVT_B:
         return AM_FSM_TRAN(state_b);
@@ -65,11 +65,11 @@ static enum am_rc state_b(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_pal_printf("state_b entry\n");
-        return AM_HSM_HANDLED();
+        return AM_FSM_HANDLED();
 
     case AM_EVT_EXIT:
         am_pal_printf("state_b exit\n");
-        return AM_HSM_HANDLED();
+        return AM_FSM_HANDLED();
 
     case EVT_A:
         return AM_FSM_TRAN(state_a);
