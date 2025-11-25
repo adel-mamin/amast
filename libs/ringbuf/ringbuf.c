@@ -177,11 +177,16 @@ int am_ringbuf_get_free_size(const struct am_ringbuf *rb) {
     AM_ASSERT(rb);
     AM_ASSERT(rb->buf);
 
+    int rd_skip = AM_ATOMIC_LOAD_N(&rb->read_skip);
     int rd = AM_ATOMIC_LOAD_N(&rb->read_offset);
     int wr = AM_ATOMIC_LOAD_N(&rb->write_offset);
     if (wr >= rd) {
         return rb->buf_size - 1 - wr + rd;
     }
+    if (rd == (rb->buf_size - rd_skip)) {
+        return rb->buf_size - wr - 1;
+    }
+    AM_ASSERT(rd < (rb->buf_size - rd_skip));
     return rd - wr - 1;
 }
 
