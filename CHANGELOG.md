@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [0-based versioning](https://0ver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- Set buffer size to 9 in apps/examples/ringbuf/main.c
+
+### Fixed
+
+- Wrap around bug in ring buffer
+- am_ringbuf_get_free_size()
+- HSM documentation build
+
 ## v0.14.3 - 18-October-2025
 
 ### Changed
