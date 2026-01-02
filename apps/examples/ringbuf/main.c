@@ -63,7 +63,7 @@ AM_NORETURN static void ticker_task(void *param) {
 }
 
 static void test_ringbuf_threading(void) {
-    uint8_t buf[32];
+    uint8_t buf[9];
 
     am_ringbuf_ctor(&g_ringbuf, buf, AM_COUNTOF(buf));
 
