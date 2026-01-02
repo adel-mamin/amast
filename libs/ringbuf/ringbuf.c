@@ -57,7 +57,7 @@ int am_ringbuf_get_read_ptr(struct am_ringbuf *rb, uint8_t **ptr) {
         return 0;
     }
     *ptr = &rb->buf[rd];
-    if (rd <= wr) {
+    if (rd < wr) {
         return wr - rd;
     }
     int rds = AM_ATOMIC_LOAD_N(&rb->read_skip);
@@ -86,19 +86,21 @@ int am_ringbuf_get_write_ptr(struct am_ringbuf *rb, uint8_t **ptr, int size) {
     int rd = AM_ATOMIC_LOAD_N(&rb->read_offset);
     int wr = AM_ATOMIC_LOAD_N(&rb->write_offset);
     if (wr >= rd) {
-        int avail = (0 == rd) ? rb->buf_size - 1 - wr : rb->buf_size - wr;
+        int till_end = rb->buf_size - wr;
+        int avail = (0 == rd) ? till_end - 1 : till_end;
         if (avail >= size) {
             *ptr = &rb->buf[wr];
-            AM_ATOMIC_STORE_N(&rb->read_skip, 0);
             return avail;
+        }
+        if (rd > 0) {
+            AM_ATOMIC_STORE_N(&rb->read_skip, till_end);
+            AM_ATOMIC_STORE_N(&rb->write_offset, 0);
+            wr = 0;
         }
         if (rd <= size) {
             *ptr = NULL;
             return 0;
         }
-        AM_ATOMIC_STORE_N(&rb->read_skip, avail);
-        AM_ATOMIC_STORE_N(&rb->write_offset, 0);
-        wr = 0;
     }
     AM_ASSERT(wr < rd);
     int avail = rd - wr - 1;
@@ -118,9 +120,13 @@ void am_ringbuf_flush(struct am_ringbuf *rb, int offset) {
     int rd = AM_ATOMIC_LOAD_N(&rb->read_offset);
     int wr = AM_ATOMIC_LOAD_N(&rb->write_offset);
     if (wr >= rd) {
-        int avail = (0 == rd) ? rb->buf_size - 1 - wr : rb->buf_size - wr;
+        int till_end = rb->buf_size - wr;
+        int avail = (0 == rd) ? till_end - 1 : till_end;
         AM_ASSERT(offset <= avail);
         wr = (wr + offset) % rb->buf_size;
+        if (0 == wr) {
+            AM_ATOMIC_STORE_N(&rb->read_skip, 0);
+        }
     } else {
         int avail = rd - wr;
         AM_ASSERT(offset < avail);
