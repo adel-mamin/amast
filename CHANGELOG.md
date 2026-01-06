@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [0-based versioning](https://0ver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- Rework PAL API naming
+- Rework `AM_DO_EACH_MS()`, `AM_DO_ONCE()` and `AM_DO_EVERY()` macros
+
 ## v0.14.4 - 02-January-2026
 
 ### Changed

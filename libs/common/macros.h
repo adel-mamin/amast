@@ -110,6 +110,19 @@ AM_NORETURN void am_assert_failure(
 /** Make a unique name. */
 #define AM_UNIQUE(name) AM_CONCAT(name, __LINE__)
 
+/** Context used with AM_DO_...() macros */
+struct am_do_ctx {
+    /** previous ms reading */
+    union {
+        uint32_t prev_ms;
+        uint32_t call_cnt;
+    } state;
+    /** init done */
+    unsigned char init_done : 1;
+    /** action done */
+    unsigned char done : 1;
+};
+
 /**
  * Example:
  *
@@ -144,7 +157,7 @@ AM_NORETURN void am_assert_failure(
  *
  * @code{.c}
  * if (smth) {
- *     AM_DO_EVERY(2) {
+ *     AM_DO_EVERY(2, ctx) {
  *         smth
  *     }
  * }
@@ -154,15 +167,21 @@ AM_NORETURN void am_assert_failure(
  *
  * @code{.c}
  * if (smth)
- *     AM_DO_EVERY(2) {
+ *     AM_DO_EVERY(2, ctx) {
  *         smth
  *     }
  * @endcode
+ *
+ * @param cnt  the count
+ * @param ctx  the context
  */
-#define AM_DO_EVERY(cnt)                                               \
-    static unsigned AM_UNIQUE(call_cnt) = 0;                           \
-    int AM_UNIQUE(do_now) = (0 == AM_UNIQUE(call_cnt));                \
-    AM_UNIQUE(call_cnt) = (AM_UNIQUE(call_cnt) + 1) % (unsigned)(cnt); \
+#define AM_DO_EVERY(/*int*/ cnt, /*struct am_do_ctx*/ ctx)             \
+    if (0 == ctx->init_done) {                                         \
+        ctx->state.call_cnt = 0;                                       \
+        ctx->init_done = 1;                                            \
+    }                                                                  \
+    int AM_UNIQUE(do_now) = (0 == ctx->state.call_cnt);                \
+    ctx->state.call_cnt = (ctx->state.call_cnt + 1) % (unsigned)(cnt); \
     if (AM_UNIQUE(do_now))
 
 /**
@@ -171,7 +190,7 @@ AM_NORETURN void am_assert_failure(
  * @code{.c}
  * int i = 0;
  * for (int j = 0; j < 3; ++j) {
- *     AM_DO_ONCE() {
+ *     AM_DO_ONCE(ctx) {
  *         ++i;
  *     }
  * }
@@ -196,7 +215,7 @@ AM_NORETURN void am_assert_failure(
  *
  * @code{.c}
  * if (smth) {
- *     AM_DO_ONCE() {
+ *     AM_DO_ONCE(ctx) {
  *         // smth
  *     }
  * }
@@ -206,14 +225,14 @@ AM_NORETURN void am_assert_failure(
  *
  * @code{.c}
  * if (smth)
- *     AM_DO_ONCE() {
+ *     AM_DO_ONCE(ctx) {
  *         smth
  *     }
  * @endcode
+ *
+ * @param ctx  the context
  */
-#define AM_DO_ONCE()                 \
-    static char AM_UNIQUE(done) = 0; \
-    if (!AM_UNIQUE(done) && (AM_UNIQUE(done) = 1))
+#define AM_DO_ONCE(/*struct am_do_ctx*/ ctx) if (!ctx->done && (ctx->done = 1))
 
 /**
  * Execute code in the attached scope immediately and
@@ -228,7 +247,7 @@ AM_NORETURN void am_assert_failure(
  *
  * @code{.c}
  * if (smth) {
- *     AM_DO_EACH_MS(5) {
+ *     AM_DO_EACH_MS(5, ctx, now_ms) {
  *         // smth
  *     }
  * }
@@ -238,7 +257,7 @@ AM_NORETURN void am_assert_failure(
  *
  * @code{.c}
  * if (smth)
- *     AM_DO_EACH_MS(5) {
+ *     AM_DO_EACH_MS(5, ctx, now_ms) {
  *         // smth
  *     }
  * @endcode
@@ -246,22 +265,25 @@ AM_NORETURN void am_assert_failure(
  * Example:
  *
  * @code{.c}
- * AM_DO_EACH_MS(100) {
+ * AM_DO_EACH_MS(100, ctx, now_ms) {
  *     am_printf("Hello, world!\n");
  * }
  * @endcode
+ *
+ * @param each_ms  the interval
+ * @param ctx      the context
+ * @param now_ms   the current ms time reading
  */
-#define AM_DO_EACH_MS(ms)                                                    \
-    static uint32_t AM_UNIQUE(prev_ms) = 0;                                  \
-    static char AM_UNIQUE(init_done) = 0;                                    \
-    uint32_t AM_UNIQUE(now_ms) = am_time_get_ms();                           \
-    if (!AM_UNIQUE(init_done)) {                                             \
-        AM_UNIQUE(init_done) = 1;                                            \
-        /* make sure to do the first time around */                          \
-        AM_UNIQUE(prev_ms) = AM_UNIQUE(now_ms) - (ms);                       \
-    }                                                                        \
-    if (((ms) >= 0) && ((AM_UNIQUE(now_ms) - AM_UNIQUE(prev_ms)) >= (ms)) && \
-        (AM_UNIQUE(prev_ms) += (ms), 1))
+#define AM_DO_EACH_MS(/*uint32_t*/ each_ms,                             \
+                      /*struct am_do_ctx*/ ctx,                         \
+                      /*uint32_t*/ now_ms)                              \
+    if (!ctx->init_done) {                                              \
+        ctx->init_done = 1;                                             \
+        /* make sure to do the first time around */                     \
+        ctx->state.prev_ms = now_ms - each_ms;                          \
+    }                                                                   \
+    if ((each_ms >= 0) && ((now_ms - ctx->state.prev_ms) >= each_ms) && \
+        (ctx->state.prev_ms += each_ms, 1))
 
 /** Test \p d1 and \p d2 for equality within \p tolerance. */
 #define AM_DOUBLE_EQ(d1, d2, tolerance) (fabs((d1) - (d2)) <= (tolerance))

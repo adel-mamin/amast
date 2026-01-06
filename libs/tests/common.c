@@ -35,67 +35,66 @@
 #include "common/macros.h"
 #include "pal/pal.h"
 
-void am_time_set_ms(uint32_t ms);
-
-static void do_each_ms(int *i) {
-    AM_DO_EACH_MS(1) {
+static void do_each_ms(int *i, struct am_do_ctx *ctx, uint32_t now_ms) {
+    AM_DO_EACH_MS(1, ctx, now_ms) {
         ++(*i);
     }
 }
 
 static void test_do_each_ms(void) {
+    struct am_do_ctx ctx = {0};
     int i = 0;
-    do_each_ms(&i);
+    do_each_ms(&i, &ctx, /*now_ms=*/0);
     AM_ASSERT(1 == i);
 
-    do_each_ms(&i);
+    do_each_ms(&i, &ctx, /*now_ms=*/0);
     AM_ASSERT(1 == i);
 
-    am_time_set_ms(1);
-
-    do_each_ms(&i);
+    do_each_ms(&i, &ctx, /*now_ms=*/1);
     AM_ASSERT(2 == i);
 
-    do_each_ms(&i);
+    do_each_ms(&i, &ctx, /*now_ms=*/1);
     AM_ASSERT(2 == i);
 }
 
-static void do_once(int *i) {
-    AM_DO_ONCE() {
+static void do_once(struct am_do_ctx *ctx, int *i) {
+    AM_DO_ONCE(ctx) {
         ++(*i);
     }
 }
 
 static void test_do_once(void) {
+    struct am_do_ctx ctx = {0};
     int i = 0;
-    do_once(&i);
+    do_once(&ctx, &i);
     AM_ASSERT(1 == i);
 
-    do_once(&i);
+    do_once(&ctx, &i);
     AM_ASSERT(1 == i);
 }
 
-static void do_every(int *i) {
-    AM_DO_EVERY(2) {
+static void do_every(struct am_do_ctx *ctx, int *i) {
+    AM_DO_EVERY(2, ctx) {
         ++(*i);
     }
 }
 
 static void test_do_every(void) {
+    struct am_do_ctx ctx = {0};
     int i = 0;
-    do_every(&i);
+    do_every(&ctx, &i);
     AM_ASSERT(1 == i);
 
-    do_every(&i);
+    do_every(&ctx, &i);
     AM_ASSERT(1 == i);
 
-    do_every(&i);
+    do_every(&ctx, &i);
     AM_ASSERT(2 == i);
 
-    do_every(&i);
+    do_every(&ctx, &i);
     AM_ASSERT(2 == i);
 
-    do_every(&i);
+    do_every(&ctx, &i);
     AM_ASSERT(3 == i);
 }
 
