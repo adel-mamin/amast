@@ -91,7 +91,7 @@ static AM_PRINTF(1, 0) void publish_log(const char *fmt, ...) {
 
 static void test_publish(void) {
     struct am_ao_state_cfg cfg = {
-        .crit_enter = am_pal_crit_enter, .crit_exit = am_pal_crit_exit
+        .crit_enter = am_crit_enter, .crit_exit = am_crit_exit
     };
     am_ao_state_ctor(&cfg);
 

@@ -167,7 +167,7 @@ static enum am_rc balancer_stopping(
         ++me->nstops;
         if (me->nstops == me->nworkers) {
             for (int i = 0; i < me->nworkers; ++i) {
-                am_pal_printf("worker: %d jobs done: %d\n", i, me->stats[i]);
+                am_printf("worker: %d jobs done: %d\n", i, me->stats[i]);
             }
             balancer_check_stats(me);
             am_ao_stop(&me->ao);
@@ -228,7 +228,7 @@ static enum am_rc balancer_init(
     (void)event;
     am_ao_subscribe(&me->ao, EVT_JOB_DONE);
     am_ao_subscribe(&me->ao, EVT_STOPPED);
-    am_timer_ctor(&me->timeout, EVT_TIMEOUT, AM_PAL_TICK_DOMAIN_DEFAULT, me);
+    am_timer_ctor(&me->timeout, EVT_TIMEOUT, AM_TICK_DOMAIN_DEFAULT, me);
     return AM_HSM_TRAN(balancer_proc);
 }
 
@@ -242,13 +242,13 @@ static void balancer_ctor(int nworkers) {
 static void ticker_task(void *param) {
     (void)param;
 
-    am_pal_task_wait_all();
+    am_task_wait_all();
 
-    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    uint32_t now_ticks = am_time_get_tick(AM_TICK_DOMAIN_DEFAULT);
     while (am_ao_get_cnt() > 0) {
-        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
-        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+        am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
     }
 }
 
@@ -266,8 +266,8 @@ int main(void) {
 
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
 
-    int ncpus = am_pal_get_cpu_count();
-    am_pal_printf("Number of CPUs: %d\n", ncpus);
+    int ncpus = am_get_cpu_count();
+    am_printf("Number of CPUs: %d\n", ncpus);
 
     ncpus = AM_MIN(ncpus, AM_WORKERS_NUM_MAX);
     ncpus = AM_MIN(ncpus, AM_AO_NUM_MAX);
@@ -302,7 +302,7 @@ int main(void) {
         );
     }
 
-    am_pal_task_create(
+    am_task_create(
         "ticker",
         /*prio=*/AM_AO_PRIO_MAX,
         /*stack=*/NULL,

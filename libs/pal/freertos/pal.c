@@ -32,7 +32,7 @@
 
 #include "pal/pal.h"
 
-struct am_pal_task {
+struct am_task {
     /* task data */
     static StaticTask_t task;
     /* flag to track notification state */
@@ -45,10 +45,10 @@ struct am_pal_task {
     void *arg;
 };
 
-static struct am_pal_task task_main_ = {0};
-static struct am_pal_task task_arr_[AM_PAL_TASK_NUM_MAX] = {0};
+static struct am_task task_main_ = {0};
+static struct am_task task_arr_[AM_TASK_NUM_MAX] = {0};
 
-void am_pal_crit_enter(void) {
+void am_crit_enter(void) {
     if (xPortIsInsideInterrupt()) {
         taskENTER_CRITICAL_FROM_ISR();
     } else {
@@ -56,7 +56,7 @@ void am_pal_crit_enter(void) {
     }
 }
 
-void am_pal_crit_exit(void) {
+void am_crit_exit(void) {
     if (xPortIsInsideInterrupt()) {
         taskEXIT_CRITICAL_FROM_ISR();
     } else {
@@ -64,11 +64,9 @@ void am_pal_crit_exit(void) {
     }
 }
 
-int am_pal_task_get_own_id(void) {
-    TaskHandle_t h = xTaskGetCurrentTaskHandle();
-}
+int am_task_get_own_id(void) { TaskHandle_t h = xTaskGetCurrentTaskHandle(); }
 
-void *am_pal_task_create(
+void *am_task_create(
     const char *name,
     int prio,
     void *stack,
@@ -82,7 +80,7 @@ void *am_pal_task_create(
     AM_ASSERT(prio >= 0);
 
     int index = -1;
-    struct am_pal_task *task = NULL;
+    struct am_task *task = NULL;
     for (int i = 0; i < AM_COUNTOF(task_arr_); ++i) {
         if (!task_arr_[i].valid) {
             index = i;
@@ -108,7 +106,7 @@ void *am_pal_task_create(
     return h;
 }
 
-void am_pal_task_notify(void *task) {
+void am_task_notify(void *task) {
     if (xPortIsInsideInterrupt()) {
         xTaskNotifyGiveFromIsr((TaskHandle_t)task);
     } else {
@@ -116,7 +114,7 @@ void am_pal_task_notify(void *task) {
     }
 }
 
-void am_pal_task_wait(void *task) {
+void am_task_wait(void *task) {
     (void)task;
     if (xPortIsInsideInterrupt()) {
         ulTaskNotifyTakeFromIsr(
@@ -129,12 +127,12 @@ void am_pal_task_wait(void *task) {
     }
 }
 
-uint32_t am_pal_time_get_ms(void) {
-    uint32_t ticks = am_pal_time_get_tick();
+uint32_t am_time_get_ms(void) {
+    uint32_t ticks = am_time_get_tick();
     return ticks * portTICK_PERIOD_MS;
 }
 
-uint32_t am_pal_time_get_tick(int domain) {
+uint32_t am_time_get_tick(int domain) {
     (void)domain;
     if (xPortIsInsideInterrupt()) {
         return (uint32_t)xTaskGetTickCountFromISR();
@@ -142,7 +140,7 @@ uint32_t am_pal_time_get_tick(int domain) {
     return (uint32_t)xTaskGetTickCount();
 }
 
-uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms) {
+uint32_t am_time_get_tick_from_ms(int domain, uint32_t ms) {
     (void)domain;
     if (0 == ms) {
         return 0;
@@ -150,18 +148,17 @@ uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms) {
     return AM_MAX(1, AM_DIV_CEIL(ms, portTICK_PERIOD_MS));
 }
 
-void am_pal_sleep_ticks(int domain, int ticks) {
-    AM_ASSERT(AM_PAL_TICK_DOMAIN_DEFAULT == domain);
+void am_sleep_ticks(int domain, int ticks) {
+    AM_ASSERT(AM_TICK_DOMAIN_DEFAULT == domain);
     vTaskDelay(ticks);
 }
 
-void am_pal_sleep_ms(int ms) {
-    uint32_t ticks =
-        am_pal_time_get_tick_from_ms(AM_PAL_TICK_DOMAIN_DEFAULT, ms);
+void am_sleep_ms(int ms) {
+    uint32_t ticks = am_time_get_tick_from_ms(AM_TICK_DOMAIN_DEFAULT, ms);
     vTaskDelay(ticks);
 }
 
-int am_pal_get_cpu_count(void) {
+int am_get_cpu_count(void) {
 #ifdef configNUMBER_OF_CORES
     return configNUMBER_OF_CORES;
 #else
@@ -169,10 +166,10 @@ int am_pal_get_cpu_count(void) {
 #endif
 }
 
-void am_pal_task_wait_all(void) {}
+void am_task_wait_all(void) {}
 
-void am_pal_task_lock_all(void) {}
+void am_task_lock_all(void) {}
 
-void am_pal_task_unlock_all(void) {}
+void am_task_unlock_all(void) {}
 
-void am_pal_task_run_all(void) { vTaskStartScheduler(); }
+void am_task_run_all(void) { vTaskStartScheduler(); }

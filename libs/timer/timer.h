@@ -41,7 +41,7 @@
 #include "slist/slist.h"
 #include "pal/pal.h"
 
-AM_ASSERT_STATIC(AM_EVENT_TICK_DOMAIN_MAX >= AM_PAL_TICK_DOMAIN_MAX);
+AM_ASSERT_STATIC(AM_EVENT_TICK_DOMAIN_MAX >= AM_TICK_DOMAIN_MAX);
 
 /**
  * Expired timer events are posted using this callback.
@@ -146,7 +146,7 @@ void am_timer_state_ctor(const struct am_timer_state_cfg *cfg);
  * @param timer   the timer to construct
  * @param id      the timer event identifier
  * @param domain  tick clock domain the timer belongs to.
- *                The valid range is [0, #AM_PAL_TICK_DOMAIN_MAX[.
+ *                The valid range is [0, #AM_TICK_DOMAIN_MAX[.
  * @param owner   the timer's owner, which receives the posted event.
  *                If NULL, then timer event is published and
  *                the configuration parameter am_timer_state_cfg::publish
@@ -173,7 +173,7 @@ void am_timer_ctor(struct am_timer *timer, int id, int domain, void *owner);
  * @param id      the timer event id
  * @param size    the timer size [bytes]
  * @param domain  the clock domain.
- *                The valid range is [0, #AM_PAL_TICK_DOMAIN_MAX[.
+ *                The valid range is [0, #AM_TICK_DOMAIN_MAX[.
  * @param owner   the timer's owner, which receives the posted event.
  *                If NULL, then timer event is published and
  *                the configuration parameter am_timer_state_cfg::publish
@@ -193,7 +193,7 @@ struct am_timer *am_timer_allocate(int id, int size, int domain, void *owner);
  * Must be called every tick in every used domain.
  *
  * @param domain  only tick timers in this tick domain.
- *                The valid range is [0, #AM_PAL_TICK_DOMAIN_MAX[.
+ *                The valid range is [0, #AM_TICK_DOMAIN_MAX[.
  */
 void am_timer_tick(int domain);
 
@@ -269,7 +269,7 @@ bool am_timer_is_armed(const struct am_timer *timer);
  * critical section is not used in the function implementation.
  *
  * @param domain  the domain to check.
- *                The valid range is [0, #AM_PAL_TICK_DOMAIN_MAX[.
+ *                The valid range is [0, #AM_TICK_DOMAIN_MAX[.
  *
  * @retval true   the timer domain is empty
  * @retval false  the timer domain has armed timers

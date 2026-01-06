@@ -52,13 +52,13 @@ static const struct am_event *m_queue_ringbuf_writer[1];
 AM_NORETURN static void ticker_task(void *param) {
     (void)param;
 
-    am_pal_task_wait_all();
+    am_task_wait_all();
 
-    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    uint32_t now_ticks = am_time_get_tick(AM_TICK_DOMAIN_DEFAULT);
     for (;;) {
-        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
-        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+        am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
     }
 }
 
@@ -94,7 +94,7 @@ static void test_ringbuf_threading(void) {
         /*init_event=*/NULL
     );
 
-    am_pal_task_create(
+    am_task_create(
         "ticker",
         AM_AO_PRIO_MIN,
         /*stack=*/NULL,

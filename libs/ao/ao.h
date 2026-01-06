@@ -74,20 +74,20 @@ struct am_ao_prio;
 #define AM_AO_PRIO_IS_VALID(prio) \
     ((prio.ao <= AM_AO_PRIO_MAX) && (prio.task <= AM_AO_PRIO_MAX))
 
-AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_PAL_TASK_NUM_MAX);
+AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_TASK_NUM_MAX);
 
 /** AO priorities. */
 struct am_ao_prio {
     /**
      * Define the priority of active object.
-     * Used by AO library. Valid range [0, #AM_PAL_TASK_NUM_MAX[.
+     * Used by AO library. Valid range [0, #AM_TASK_NUM_MAX[.
      * Must be unique for different active objects.
      * Used by both cooperative and preemptive ports of active objects.
      */
     unsigned ao : 8;
     /**
      * Define the priority of the task, which runs active object.
-     * Used by PAL library. Valid range [0, #AM_PAL_TASK_NUM_MAX[.
+     * Used by PAL library. Valid range [0, #AM_TASK_NUM_MAX[.
      * More than one active object may have same task priority.
      * Only used by preemptive port of active objects.
      */
@@ -593,7 +593,7 @@ void am_ao_log_last_events(void (*log)(const char *name, int event));
  * process events.
  *
  * To be run once at the start of regular (non-AO) user tasks created with
- * am_pal_task_create() API. These regular user tasks are typically
+ * am_task_create() API. These regular user tasks are typically
  * used to execute blocking calls and post/publish events to active objects.
  */
 void am_ao_wait_start_all(void);

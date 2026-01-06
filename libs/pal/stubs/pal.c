@@ -40,13 +40,13 @@ void *am_pal_ctor(void *arg) {
 
 void am_pal_dtor(void) {}
 
-void am_pal_on_idle(void) {}
+void am_on_idle(void) {}
 
-void am_pal_crit_enter(void) {}
+void am_crit_enter(void) {}
 
-void am_pal_crit_exit(void) {}
+void am_crit_exit(void) {}
 
-int am_pal_task_create(
+int am_task_create(
     const char *name,
     int prio,
     void *stack,
@@ -61,61 +61,61 @@ int am_pal_task_create(
     (void)entry;
     (void)arg;
 
-    return AM_PAL_TASK_ID_NONE;
+    return AM_TASK_ID_NONE;
 }
 
-void am_pal_task_notify(int task_id) { (void)task_id; }
+void am_task_notify(int task_id) { (void)task_id; }
 
-void am_pal_task_wait(int task_id) { (void)task_id; }
+void am_task_wait(int task_id) { (void)task_id; }
 
-int am_pal_mutex_create(void) { return 0; }
+int am_mutex_create(void) { return 0; }
 
-void am_pal_mutex_lock(int mutex) { (void)mutex; }
+void am_mutex_lock(int mutex) { (void)mutex; }
 
-void am_pal_mutex_unlock(int mutex) { (void)mutex; }
+void am_mutex_unlock(int mutex) { (void)mutex; }
 
-void am_pal_mutex_destroy(int mutex) { (void)mutex; }
+void am_mutex_destroy(int mutex) { (void)mutex; }
 
 static uint32_t am_pal_ms = 0;
 
-void am_pal_time_set_ms(uint32_t ms);
+void am_time_set_ms(uint32_t ms);
 
-void am_pal_time_set_ms(uint32_t ms) { am_pal_ms = ms; }
+void am_time_set_ms(uint32_t ms) { am_pal_ms = ms; }
 
-uint32_t am_pal_time_get_ms(void) { return am_pal_ms; }
+uint32_t am_time_get_ms(void) { return am_pal_ms; }
 
-uint32_t am_pal_time_get_tick(int domain) {
+uint32_t am_time_get_tick(int domain) {
     (void)domain;
     return 0;
 }
 
-uint32_t am_pal_time_get_tick_from_ms(int domain, uint32_t ms) {
+uint32_t am_time_get_tick_from_ms(int domain, uint32_t ms) {
     (void)domain;
     (void)ms;
     return 0;
 }
 
-uint32_t am_pal_time_get_ms_from_tick(int domain, uint32_t tick) {
+uint32_t am_time_get_ms_from_tick(int domain, uint32_t tick) {
     (void)domain;
     (void)tick;
     return 0;
 }
 
-void am_pal_sleep_ticks(int domain, int ticks) {
+void am_sleep_ticks(int domain, int ticks) {
     (void)domain;
     (void)ticks;
 }
 
-void am_pal_sleep_till_ticks(int domain, uint32_t ticks) {
+void am_sleep_till_ticks(int domain, uint32_t ticks) {
     (void)domain;
     (void)ticks;
 }
 
-void am_pal_sleep_ms(int ms) { (void)ms; }
+void am_sleep_ms(int ms) { (void)ms; }
 
-int am_pal_task_get_own_id(void) { return -1; }
+int am_task_get_own_id(void) { return -1; }
 
-int am_pal_printf(const char *fmt, ...) {
+int am_printf(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     int rc = vprintf(fmt, args);
@@ -123,7 +123,7 @@ int am_pal_printf(const char *fmt, ...) {
     return rc;
 }
 
-int am_pal_printf_unsafe(const char *fmt, ...) {
+int am_printf_unsafe(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     int rc = vprintf(fmt, args);
@@ -131,7 +131,7 @@ int am_pal_printf_unsafe(const char *fmt, ...) {
     return rc;
 }
 
-int am_pal_printff(const char *fmt, ...) {
+int am_printff(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     int rc = vprintf(fmt, args);
@@ -140,9 +140,9 @@ int am_pal_printff(const char *fmt, ...) {
     return rc;
 }
 
-int am_pal_vprintf(const char *fmt, va_list args) { return vprintf(fmt, args); }
+int am_vprintf(const char *fmt, va_list args) { return vprintf(fmt, args); }
 
-int am_pal_vprintff(const char *fmt, va_list args) {
+int am_vprintff(const char *fmt, va_list args) {
     int rc = vprintf(fmt, args);
     am_pal_flush();
     return rc;
@@ -150,12 +150,12 @@ int am_pal_vprintff(const char *fmt, va_list args) {
 
 void am_pal_flush(void) {}
 
-int am_pal_get_cpu_count(void) { return 1; }
+int am_get_cpu_count(void) { return 1; }
 
-void am_pal_task_run_all(void) {}
+void am_task_run_all(void) {}
 
-void am_pal_task_lock_all(void) {}
+void am_task_lock_all(void) {}
 
-void am_pal_task_unlock_all(void) {}
+void am_task_unlock_all(void) {}
 
-void am_pal_task_wait_all(void) {}
+void am_task_wait_all(void) {}

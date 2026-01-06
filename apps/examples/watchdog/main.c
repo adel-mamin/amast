@@ -87,7 +87,7 @@ static enum am_rc watched_proc(
     }
     case EVT_WATCHED_TIMEOUT: {
         if (me->feeds_num < 3) {
-            am_pal_printff("EVT_WDT_FEED sent\n");
+            am_printff("EVT_WDT_FEED sent\n");
             am_ao_post_fifo(&m_wdt.ao, &m_evt_wdt_feed);
             ++me->feeds_num;
         }
@@ -112,7 +112,7 @@ static void watched_ctor(struct watched *me) {
     am_timer_ctor(
         &me->timer_feed,
         EVT_WATCHED_TIMEOUT,
-        AM_PAL_TICK_DOMAIN_DEFAULT,
+        AM_TICK_DOMAIN_DEFAULT,
         /*owner=*/&me->ao
     );
 }
@@ -126,13 +126,13 @@ static enum am_rc wdt_proc(struct wdt *me, const struct am_event *event) {
         return AM_HSM_HANDLED();
     }
     case EVT_WDT_FEED: {
-        am_pal_printff("EVT_WDT_FEED received\n");
+        am_printff("EVT_WDT_FEED received\n");
         /* re-arm bark timer */
         am_timer_arm_ms(&me->timer_bark, AM_BARK_TIMEOUT_MS, /*interval=*/0);
         return AM_HSM_HANDLED();
     }
     case EVT_WDT_BARK: {
-        am_pal_printff("WATCHED TASK FAILED!\n");
+        am_printff("WATCHED TASK FAILED!\n");
         exit(EXIT_FAILURE);
     }
     default:
@@ -152,7 +152,7 @@ static void wdt_ctor(struct wdt *me) {
     am_timer_ctor(
         &me->timer_bark,
         EVT_WDT_BARK,
-        AM_PAL_TICK_DOMAIN_DEFAULT,
+        AM_TICK_DOMAIN_DEFAULT,
         /*owner=*/&me->ao
     );
 }
@@ -162,13 +162,13 @@ static void wdt_ctor(struct wdt *me) {
 static void ticker_task(void *param) {
     (void)param;
 
-    am_pal_task_wait_all();
+    am_task_wait_all();
 
-    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    uint32_t now_ticks = am_time_get_tick(AM_TICK_DOMAIN_DEFAULT);
     while (am_ao_get_cnt() > 0) {
-        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
-        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+        am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
     }
 }
 
@@ -200,7 +200,7 @@ int main(void) {
         /*init_event=*/NULL
     );
 
-    am_pal_task_create(
+    am_task_create(
         "ticker",
         /*prio=*/AM_AO_PRIO_MIN,
         /*stack=*/NULL,

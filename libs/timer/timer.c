@@ -45,7 +45,7 @@ struct am_timer_state {
      * which belong to this domain.
      * Each domain has a unique tick rate.
      */
-    struct am_slist domains[AM_PAL_TICK_DOMAIN_MAX];
+    struct am_slist domains[AM_TICK_DOMAIN_MAX];
     /**
      * Pending timer event domains.
      *
@@ -57,12 +57,12 @@ struct am_timer_state {
      * exclusively to am_timer_tick() call to avoid race conditions
      * between timer owners the ticker task/ISR.
      */
-    struct am_slist domains_pend[AM_PAL_TICK_DOMAIN_MAX];
+    struct am_slist domains_pend[AM_TICK_DOMAIN_MAX];
     /** number of timers in each tick domain */
     struct {
         int16_t pend;    /**< pending timers count */
         int16_t running; /**< running timers count */
-    } ntimers[AM_PAL_TICK_DOMAIN_MAX];
+    } ntimers[AM_TICK_DOMAIN_MAX];
     /** timer library configuration */
     struct am_timer_state_cfg cfg;
 };
@@ -87,7 +87,7 @@ void am_timer_state_ctor(const struct am_timer_state_cfg *cfg) {
 void am_timer_ctor(struct am_timer *timer, int id, int domain, void *owner) {
     AM_ASSERT(timer);
     AM_ASSERT(id >= AM_EVT_USER);
-    AM_ASSERT(domain < AM_PAL_TICK_DOMAIN_MAX);
+    AM_ASSERT(domain < AM_TICK_DOMAIN_MAX);
 
     /* timer events are never deallocated */
     memset(timer, 0, sizeof(*timer));
@@ -130,9 +130,9 @@ void am_timer_arm_ms(struct am_timer *timer, int ms, int interval) {
     AM_ASSERT(ms >= 0);
     AM_ASSERT(interval >= 0);
     int domain = timer->event.tick_domain;
-    int ticks = (int)am_pal_time_get_tick_from_ms(domain, (uint32_t)ms);
+    int ticks = (int)am_time_get_tick_from_ms(domain, (uint32_t)ms);
     int interval_ticks =
-        (int)am_pal_time_get_tick_from_ms(domain, (uint32_t)interval);
+        (int)am_time_get_tick_from_ms(domain, (uint32_t)interval);
     am_timer_arm_ticks(timer, ticks, interval_ticks);
 }
 

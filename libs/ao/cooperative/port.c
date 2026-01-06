@@ -127,7 +127,7 @@ void am_ao_start(
 
     ao->prio = prio;
     ao->name = name;
-    ao->task_id = am_pal_task_get_own_id();
+    ao->task_id = am_task_get_own_id();
 
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(NULL == me->aos[prio.ao]);
@@ -142,7 +142,7 @@ void am_ao_start(
 void am_ao_stop(struct am_ao *ao) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
-    int task_id = am_pal_task_get_own_id();
+    int task_id = am_task_get_own_id();
     AM_ASSERT(task_id == ao->task_id); /* check API description */
     struct am_ao_state *me = &am_ao_state_;
     AM_ASSERT(me->aos_cnt);
@@ -170,11 +170,11 @@ void am_ao_stop(struct am_ao *ao) {
 }
 
 void am_ao_notify_unsafe(const struct am_ao *ao) {
-    if (AM_PAL_TASK_ID_NONE == ao->task_id) {
+    if (AM_TASK_ID_NONE == ao->task_id) {
         return;
     }
     am_bit_u64_set(&am_ready_aos_, ao->prio.ao);
-    am_pal_task_notify(ao->task_id);
+    am_task_notify(ao->task_id);
 }
 
 void am_ao_notify(const struct am_ao *ao) {

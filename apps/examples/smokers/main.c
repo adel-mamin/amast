@@ -201,7 +201,7 @@ static enum am_rc smoker_init(struct smoker *me, const struct am_event *event) {
     am_timer_ctor(
         &me->timer_done_smoking,
         EVT_DONE_SMOKING_TIMER,
-        AM_PAL_TICK_DOMAIN_DEFAULT,
+        AM_TICK_DOMAIN_DEFAULT,
         /*owner=*/&me->ao
     );
     return AM_HSM_TRAN(smoker_idle);
@@ -246,7 +246,7 @@ static enum am_rc agent_stopping(
         ++me->nstops;
         if (me->nstops == AM_SMOKERS_NUM_MAX) {
             for (int i = 0; i < AM_SMOKERS_NUM_MAX; ++i) {
-                am_pal_printf("smoker: %d smokes done: %d\n", i, me->stats[i]);
+                am_printf("smoker: %d smokes done: %d\n", i, me->stats[i]);
             }
             agent_check_stats(me);
             am_ao_stop(&me->ao);
@@ -321,7 +321,7 @@ static enum am_rc agent_init(struct agent *me, const struct am_event *event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_DONE_SMOKING);
     am_ao_subscribe(&me->ao, EVT_STOPPED);
-    am_timer_ctor(&me->timeout, EVT_TIMEOUT, AM_PAL_TICK_DOMAIN_DEFAULT, me);
+    am_timer_ctor(&me->timeout, EVT_TIMEOUT, AM_TICK_DOMAIN_DEFAULT, me);
     return AM_HSM_TRAN(agent_proc);
 }
 
@@ -334,13 +334,13 @@ static void agent_ctor(void) {
 static void ticker_task(void *param) {
     (void)param;
 
-    am_pal_task_wait_all();
+    am_task_wait_all();
 
-    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    uint32_t now_ticks = am_time_get_tick(AM_TICK_DOMAIN_DEFAULT);
     while (am_ao_get_cnt() > 0) {
-        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
-        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+        am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
     }
 }
 
@@ -390,7 +390,7 @@ int main(void) {
         );
     }
 
-    am_pal_task_create(
+    am_task_create(
         "ticker",
         /*prio=*/AM_AO_PRIO_MIN,
         /*stack=*/NULL,

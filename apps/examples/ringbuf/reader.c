@@ -105,7 +105,7 @@ void ringbuf_reader_ctor(void) {
     am_timer_ctor(
         &me->timer_wait,
         /*id=*/AM_EVT_RINGBUF_WAIT,
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT,
+        /*domain=*/AM_TICK_DOMAIN_DEFAULT,
         &me->ao
     );
 }

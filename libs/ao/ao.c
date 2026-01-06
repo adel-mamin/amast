@@ -270,9 +270,9 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     if (!me->debug) {
         me->debug = am_ao_debug_stub;
     }
-    me->crit_enter = cfg ? cfg->crit_enter : am_pal_crit_enter;
-    me->crit_exit = cfg ? cfg->crit_exit : am_pal_crit_exit;
-    me->on_idle = cfg ? cfg->on_idle : am_pal_on_idle;
+    me->crit_enter = cfg ? cfg->crit_enter : am_crit_enter;
+    me->crit_exit = cfg ? cfg->crit_exit : am_crit_exit;
+    me->on_idle = cfg ? cfg->on_idle : am_on_idle;
 
     me->running_ao_prio = AM_AO_PRIO_INVALID;
 

@@ -76,22 +76,20 @@ static void test_arm(void) {
         .post_unsafe = post_cb,
         .publish = NULL,
         .update = NULL,
-        .crit_enter = am_pal_crit_enter,
-        .crit_exit = am_pal_crit_exit,
+        .crit_enter = am_crit_enter,
+        .crit_exit = am_crit_exit,
     };
     am_timer_state_ctor(&cfg_timer);
 
     struct am_timer event;
-    am_timer_ctor(
-        &event, /*id=*/EVT_TEST, AM_PAL_TICK_DOMAIN_DEFAULT, &m_owner
-    );
+    am_timer_ctor(&event, /*id=*/EVT_TEST, AM_TICK_DOMAIN_DEFAULT, &m_owner);
     am_timer_arm_ticks(&event, /*ticks=*/1, /*interval=*/0);
     AM_ASSERT(am_timer_is_armed(&event));
 
     struct am_timer *event2 = am_timer_allocate(
         /*id=*/EVT_TEST2,
         /*size=*/(int)sizeof(*event2),
-        AM_PAL_TICK_DOMAIN_DEFAULT,
+        AM_TICK_DOMAIN_DEFAULT,
         &m_owner
     );
     AM_ASSERT(event2);
@@ -100,29 +98,29 @@ static void test_arm(void) {
     AM_ASSERT(am_timer_is_armed(event2));
     am_timer_disarm(event2);
     AM_ASSERT(!am_timer_is_armed(event2));
-    AM_ASSERT(!am_timer_domain_is_empty_unsafe(AM_PAL_TICK_DOMAIN_DEFAULT));
+    AM_ASSERT(!am_timer_domain_is_empty_unsafe(AM_TICK_DOMAIN_DEFAULT));
 
-    am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
     AM_ASSERT(1 == m_owner.npost);
 
-    AM_ASSERT(am_timer_domain_is_empty_unsafe(AM_PAL_TICK_DOMAIN_DEFAULT));
+    AM_ASSERT(am_timer_domain_is_empty_unsafe(AM_TICK_DOMAIN_DEFAULT));
 
-    am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
     AM_ASSERT(1 == m_owner.npost);
 
     am_timer_arm_ticks(&event, /*ticks=*/1, /*interval=*/0);
     AM_ASSERT(am_timer_is_armed(&event));
 
-    am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
     AM_ASSERT(2 == m_owner.npost);
 
     am_timer_arm_ticks(event2, /*ticks=*/1, /*interval=*/0);
     AM_ASSERT(am_timer_is_armed(event2));
 
-    am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
     AM_ASSERT(3 == m_owner.npost);
 
-    AM_ASSERT(am_timer_domain_is_empty_unsafe(AM_PAL_TICK_DOMAIN_DEFAULT));
+    AM_ASSERT(am_timer_domain_is_empty_unsafe(AM_TICK_DOMAIN_DEFAULT));
 }
 
 int main(void) {

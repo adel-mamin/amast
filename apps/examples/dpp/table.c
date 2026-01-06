@@ -98,13 +98,13 @@ static void table_serve(int philo) {
     struct eat *eat =
         (struct eat *)am_event_allocate(EVT_EAT, sizeof(struct eat));
     eat->philo = philo;
-    am_pal_printf("table serving philo %d\n", philo);
+    am_printf("table serving philo %d\n", philo);
     am_ao_publish(AM_CAST(const struct am_event *, eat));
     philo_mark_eating(philo);
 
     if (m_table.nsessions) {
         --m_table.nsessions;
-        am_pal_printf("table session %d\n", m_table.nsessions);
+        am_printf("table session %d\n", m_table.nsessions);
     }
 }
 
@@ -150,7 +150,7 @@ static enum am_rc table_serving(
     case EVT_DONE: {
         const struct done *done = (const struct done *)event;
         AM_ASSERT(philo_is_eating(done->philo));
-        am_pal_printf("table: philo %d is done\n", done->philo);
+        am_printf("table: philo %d is done\n", done->philo);
         philo_mark_done(done->philo);
         int left = LEFT(done->philo);
         if (philo_is_hungry(left)) {

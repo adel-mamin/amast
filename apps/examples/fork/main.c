@@ -109,7 +109,7 @@ static enum am_rc progress_top(
 
     case AM_EVT_EXIT:
         am_timer_disarm(&me->timer);
-        am_pal_printff("\r                  \r"); /* clean the terminal output*/
+        am_printf("\r                  \r"); /* clean the terminal output*/
         return AM_HSM_HANDLED();
 
     case EVT_FORK_SUCCESS:
@@ -122,7 +122,7 @@ static enum am_rc progress_top(
 
     case EVT_PROGRESS_TICK: {
         static const char prog[] = {'|', '/', '-', '\\'};
-        am_pal_printff("\r%c running %us", prog[me->iprog], me->prog_ms / 1000);
+        am_printf("\r%c running %us", prog[me->iprog], me->prog_ms / 1000);
         me->iprog = (me->iprog + 1) % AM_COUNTOF(prog);
         me->prog_ms += PROGRESS_UPDATE_RATE_MS;
         return AM_HSM_HANDLED();
@@ -148,29 +148,29 @@ static void progress_ctor(struct progress *me) {
     am_timer_ctor(
         &me->timer,
         EVT_PROGRESS_TICK,
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT,
+        /*domain=*/AM_TICK_DOMAIN_DEFAULT,
         &me->ao
     );
-    me->progress_ticks = (int)am_pal_time_get_tick_from_ms(
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT, /*ms=*/PROGRESS_UPDATE_RATE_MS
+    me->progress_ticks = (int)am_time_get_tick_from_ms(
+        /*domain=*/AM_TICK_DOMAIN_DEFAULT, /*ms=*/PROGRESS_UPDATE_RATE_MS
     );
 }
 
 AM_NORETURN static void ticker_task(void *param) {
     (void)param;
 
-    am_pal_task_wait_all();
+    am_task_wait_all();
 
-    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    uint32_t now_ticks = am_time_get_tick(AM_TICK_DOMAIN_DEFAULT);
     for (;;) {
-        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
-        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+        am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
     }
 }
 
 static void job_task(void *param) {
-    am_pal_task_wait_all();
+    am_task_wait_all();
 
     static struct am_event success = {.id = EVT_FORK_SUCCESS};
     static struct am_event failure = {.id = EVT_FORK_FAILURE};
@@ -248,7 +248,7 @@ int main(int argc, const char *argv[]) {
         /*init_event=*/NULL
     );
 
-    am_pal_task_create(
+    am_task_create(
         "ticker",
         AM_AO_PRIO_MIN,
         /*stack=*/NULL,
@@ -257,7 +257,7 @@ int main(int argc, const char *argv[]) {
         /*arg=*/NULL
     );
 
-    am_pal_task_create(
+    am_task_create(
         "job",
         AM_AO_PRIO_MAX,
         /*stack=*/NULL,

@@ -63,7 +63,7 @@ static void log_pool(
     int pool_index, int event_index, const struct am_event *event, int size
 ) {
     (void)size;
-    am_pal_printf(
+    am_printf(
         "pool %d index %d event %s (%p)\n",
         pool_index,
         event_index,
@@ -75,7 +75,7 @@ static void log_pool(
 static void log_queue(
     const char *name, int i, int len, int cap, const struct am_event *event
 ) {
-    am_pal_printf(
+    am_printf(
         "name %s, index %d, len %d cap %d event %s\n",
         name,
         i,
@@ -93,12 +93,12 @@ AM_NORETURN void am_assert_failure(
         __builtin_trap();
     }
     AM_ATOMIC_FETCH_ADD(&nasserts, 1);
-    am_pal_printf_unsafe(
+    am_printf_unsafe(
         AM_COLOR_RED "ASSERT: %s (%s:%d)(task %d)\n" AM_COLOR_RESET,
         assertion,
         file,
         line,
-        am_pal_task_get_own_id()
+        am_task_get_own_id()
     );
     am_event_pool_log_unsafe(/*num=*/-1, log_pool);
     am_ao_log_event_queues_unsafe(/*num=*/-1, log_queue);
@@ -109,13 +109,13 @@ AM_NORETURN void am_assert_failure(
 static void ticker_task(void *param) {
     (void)param;
 
-    am_pal_task_wait_all();
+    am_task_wait_all();
 
-    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    uint32_t now_ticks = am_time_get_tick(AM_TICK_DOMAIN_DEFAULT);
     while (am_ao_get_cnt() > 0) {
-        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
-        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+        am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
     }
 }
 
@@ -165,7 +165,7 @@ int main(void) {
         );
     }
 
-    am_pal_task_create(
+    am_task_create(
         "ticker",
         AM_AO_PRIO_MIN,
         /*stack=*/NULL,

@@ -112,7 +112,7 @@ static enum am_rc async_top(struct async *me, const struct am_event *event) {
         return AM_HSM_TRAN(async_regular);
     }
     case ASYNC_EVT_SWITCH_MODE: {
-        am_pal_printff("\b");
+        am_printff("\b");
         if (am_hsm_is_in(&me->ao.hsm, AM_HSM_STATE_CTOR(async_regular))) {
             return AM_HSM_TRAN(async_off);
         }
@@ -146,11 +146,11 @@ static enum am_rc async_blinking_green(struct async *me) {
 
     /* blinking green */
     for (me->i = 0; me->i < 4; ++me->i) {
-        am_pal_printff("\b");
+        am_printff("\b");
         am_timer_arm_ms(me->timer, /*ms=*/700, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
 
-        am_pal_printff(AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
+        am_printff(AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm_ms(me->timer, /*ms=*/700, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
     }
@@ -165,23 +165,23 @@ static enum am_rc async_regular_(struct async *me) {
 
     for (;;) {
         /* red */
-        am_pal_printff(AM_COLOR_RED AM_SOLID_BLOCK AM_COLOR_RESET);
+        am_printff(AM_COLOR_RED AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm_ms(me->timer, /*ms=*/2000, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
 
         /* yellow */
-        am_pal_printff("\b" AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
+        am_printff("\b" AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm_ms(me->timer, /*ms=*/1000, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
 
         /* green */
-        am_pal_printff("\b" AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
+        am_printff("\b" AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm_ms(me->timer, /*ms=*/2000, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
 
         /* blinking green */
         AM_ASYNC_CHAIN(async_blinking_green(me));
-        am_pal_printff("\b");
+        am_printff("\b");
     }
 
     AM_ASYNC_END();
@@ -229,12 +229,12 @@ static enum am_rc async_off(struct async *me, const struct am_event *event) {
         AM_ASYNC_BEGIN(&me->async);
 
         for (;;) {
-            am_pal_printff("\b");
-            am_pal_printff(AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
+            am_printff("\b");
+            am_printff(AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
             am_timer_arm_ms(me->timer, /*ms=*/1000, /*interval=*/0);
             AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
 
-            am_pal_printff("\b");
+            am_printff("\b");
             am_timer_arm_ms(me->timer, /*ms=*/700, /*interval=*/0);
             AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
         }
@@ -262,36 +262,36 @@ static void async_ctor(struct async *me) {
     am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(async_init));
 
     me->timer = am_timer_allocate(
-        ASYNC_EVT_TIMER, sizeof(*me->timer), AM_PAL_TICK_DOMAIN_DEFAULT, &me->ao
+        ASYNC_EVT_TIMER, sizeof(*me->timer), AM_TICK_DOMAIN_DEFAULT, &me->ao
     );
 }
 
 static void ticker_task(void *param) {
     (void)param;
 
-    am_pal_task_wait_all();
+    am_task_wait_all();
 
-    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    uint32_t now_ticks = am_time_get_tick(AM_TICK_DOMAIN_DEFAULT);
     while (am_ao_get_cnt() > 0) {
-        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
-        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+        am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
     }
 }
 
 static void input_task(void *param) {
     (void)param;
 
-    am_pal_task_wait_all();
+    am_task_wait_all();
 
     int ch;
-    uint32_t prev_ms = am_pal_time_get_ms() - 2 * ASYNC_TWO_NEWLINES_TIMEOUT_MS;
+    uint32_t prev_ms = am_time_get_ms() - 2 * ASYNC_TWO_NEWLINES_TIMEOUT_MS;
     while ((ch = getc(stdin)) != EOF) {
         if ('\n' != ch) {
             continue;
         }
-        am_pal_printff(AM_CURSOR_UP);
-        uint32_t now_ms = am_pal_time_get_ms();
+        am_printff(AM_CURSOR_UP);
+        uint32_t now_ms = am_time_get_ms();
         uint32_t diff_ms = now_ms - prev_ms;
         prev_ms = now_ms;
         if (diff_ms > ASYNC_TWO_NEWLINES_TIMEOUT_MS) {
@@ -333,7 +333,7 @@ int main(void) {
     );
 
     /* ticker thread to feed timers */
-    am_pal_task_create(
+    am_task_create(
         "ticker",
         AM_AO_PRIO_MIN,
         /*stack=*/NULL,
@@ -343,7 +343,7 @@ int main(void) {
     );
 
     /* user input controlling thread */
-    am_pal_task_create(
+    am_task_create(
         "input",
         AM_AO_PRIO_MIN,
         /*stack=*/NULL,

@@ -247,14 +247,14 @@ AM_NORETURN void am_assert_failure(
  *
  * @code{.c}
  * AM_DO_EACH_MS(100) {
- *     am_pal_printf("Hello, world!\n");
+ *     am_printf("Hello, world!\n");
  * }
  * @endcode
  */
 #define AM_DO_EACH_MS(ms)                                                    \
     static uint32_t AM_UNIQUE(prev_ms) = 0;                                  \
     static char AM_UNIQUE(init_done) = 0;                                    \
-    uint32_t AM_UNIQUE(now_ms) = am_pal_time_get_ms();                       \
+    uint32_t AM_UNIQUE(now_ms) = am_time_get_ms();                           \
     if (!AM_UNIQUE(init_done)) {                                             \
         AM_UNIQUE(init_done) = 1;                                            \
         /* make sure to do the first time around */                          \

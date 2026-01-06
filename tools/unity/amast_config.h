@@ -70,7 +70,7 @@
  * Total number of tick domains.
  * Valid range: [1,8].
  */
-#define AM_PAL_TICK_DOMAIN_MAX 1
+#define AM_TICK_DOMAIN_MAX 1
 
 /**
  * Maximum number of mutexes.

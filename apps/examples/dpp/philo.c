@@ -80,7 +80,7 @@ static enum am_rc philo_thinking(
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
-        am_pal_printf("philo %d is thinking\n", me->id);
+        am_printf("philo %d is thinking\n", me->id);
         ++me->cnt;
         am_timer_arm_ms(me->timer, /*ms=*/20, /*interval=*/0);
         return AM_HSM_HANDLED();
@@ -102,7 +102,7 @@ static enum am_rc philo_thinking(
 static enum am_rc philo_hungry(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
-        am_pal_printf("philo %d is hungry\n", me->id);
+        am_printf("philo %d is hungry\n", me->id);
         return AM_HSM_HANDLED();
 
     case EVT_EAT: {
@@ -121,12 +121,12 @@ static enum am_rc philo_hungry(struct philo *me, const struct am_event *event) {
 static enum am_rc philo_eating(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
-        am_pal_printf("philo %d is eating\n", me->id);
+        am_printf("philo %d is eating\n", me->id);
         am_timer_arm_ms(me->timer, /*ms=*/20, /*interval=*/0);
         return AM_HSM_HANDLED();
 
     case EVT_TIMEOUT: {
-        am_pal_printf("philo %d publishing DONE\n", me->id);
+        am_printf("philo %d publishing DONE\n", me->id);
         struct done *msg =
             (struct done *)am_event_allocate(EVT_DONE, sizeof(struct done));
         msg->philo = me->id;
@@ -159,7 +159,7 @@ void philo_ctor(int id) {
     me->timer = (struct am_timer *)am_timer_allocate(
         /*id=*/EVT_TIMEOUT,
         /*size=*/sizeof(struct am_timer),
-        /*domain=*/AM_PAL_TICK_DOMAIN_DEFAULT,
+        /*domain=*/AM_TICK_DOMAIN_DEFAULT,
         &me->ao
     );
 }
