@@ -92,9 +92,70 @@ static void test_container_of(void) {
     AM_ASSERT(1 == AM_CONTAINER_OF(bp, struct foo, b)->a);
 }
 
+static void do_each_ms(int *i, struct am_do_ctx *ctx, uint32_t now_ms) {
+    AM_DO_EACH_MS(1, ctx, now_ms) { ++(*i); }
+}
+
+static void test_do_each_ms(void) {
+    struct am_do_ctx ctx = {0};
+    int i = 0;
+    do_each_ms(&i, &ctx, /*now_ms=*/0);
+    AM_ASSERT(1 == i);
+
+    do_each_ms(&i, &ctx, /*now_ms=*/0);
+    AM_ASSERT(1 == i);
+
+    do_each_ms(&i, &ctx, /*now_ms=*/1);
+    AM_ASSERT(2 == i);
+
+    do_each_ms(&i, &ctx, /*now_ms=*/1);
+    AM_ASSERT(2 == i);
+}
+
+static void do_once(struct am_do_ctx *ctx, int *i) {
+    AM_DO_ONCE(ctx) { ++(*i); }
+}
+
+static void test_do_once(void) {
+    struct am_do_ctx ctx = {0};
+    int i = 0;
+    do_once(&ctx, &i);
+    AM_ASSERT(1 == i);
+
+    do_once(&ctx, &i);
+    AM_ASSERT(1 == i);
+}
+
+static void do_every(struct am_do_ctx *ctx, int *i) {
+    AM_DO_EVERY(2, ctx) { ++(*i); }
+}
+
+static void test_do_every(void) {
+    struct am_do_ctx ctx = {0};
+    int i = 0;
+    do_every(&ctx, &i);
+    AM_ASSERT(1 == i);
+
+    do_every(&ctx, &i);
+    AM_ASSERT(1 == i);
+
+    do_every(&ctx, &i);
+    AM_ASSERT(2 == i);
+
+    do_every(&ctx, &i);
+    AM_ASSERT(2 == i);
+
+    do_every(&ctx, &i);
+    AM_ASSERT(3 == i);
+}
+
 int main(void) {
     test_align();
     test_container_of();
+
+    test_do_each_ms();
+    test_do_once();
+    test_do_every();
 
     return 0;
 }

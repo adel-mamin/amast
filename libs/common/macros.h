@@ -129,7 +129,7 @@ struct am_do_ctx {
  * @code{.c}
  * int i = 0;
  * for (int j = 0; j < 3; ++j) {
- *     AM_DO_EVERY(2) {
+ *     AM_DO_EVERY(2, ctx) {
  *         ++i;
  *     }
  * }
