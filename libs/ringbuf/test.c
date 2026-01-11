@@ -61,7 +61,8 @@ static void test_ringbuf_1(void) {
         }
         {
             uint8_t *ptr = NULL;
-            int size = am_ringbuf_get_read_ptr(&rb, &ptr);
+            int size = 0;
+            (void)am_ringbuf_get_read_ptr(&rb, &ptr, &size);
             AM_ASSERT(i == size);
             uint8_t tmp[AM_COUNTOF(data)];
             memcpy(tmp, ptr, (size_t)size);

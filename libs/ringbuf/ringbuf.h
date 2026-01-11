@@ -81,12 +81,14 @@ void am_ringbuf_ctor(struct am_ringbuf *rb, void *buf, int buf_size);
  * Call am_ringbuf_seek() to inform writer that the data reading is complete.
  * Until then writer will not be able to write to the memory.
  *
- * @param rb   the ring buffer
- * @param ptr  the read data pointer is returned here. Can be NULL.
+ * @param rb    the ring buffer
+ * @param ptr   the read data pointer is returned here. Can be NULL.
+ * @param size  the byte size of the memory pointed to by \p ptr is
+ *              returned here. Can be 0.
  *
- * @return the byte size of the memory pointed to by \p ptr. Can be 0.
+ * @return true if the ring buffer state was updated and false otherwise
  */
-int am_ringbuf_get_read_ptr(struct am_ringbuf *rb, uint8_t **ptr);
+bool am_ringbuf_get_read_ptr(struct am_ringbuf *rb, uint8_t **ptr, int *size);
 
 /**
  * Return ring buffer write data pointer.

@@ -64,7 +64,8 @@ static int ringbuf_reader_proc(
     case AM_EVT_RINGBUF_WAIT:
     case AM_EVT_RINGBUF_READ: {
         uint8_t *ptr = NULL;
-        int size = am_ringbuf_get_read_ptr(&g_ringbuf, &ptr);
+        int size = 0;
+        (void)am_ringbuf_get_read_ptr(&g_ringbuf, &ptr, &size);
         if (size < me->len) {
             am_timer_arm_ticks(&me->timer_wait, /*ticks=*/1, /*interval=*/0);
             return AM_HSM_HANDLED();
