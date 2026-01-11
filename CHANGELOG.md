@@ -11,6 +11,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - Rework PAL API naming
 - Rework `AM_DO_EACH_MS()`, `AM_DO_ONCE()` and `AM_DO_EVERY()` macros
+- Rework `am_ringbuf_get_write_ptr()` API
 
 ## v0.14.4 - 02-January-2026
 

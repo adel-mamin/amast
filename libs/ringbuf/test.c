@@ -49,7 +49,8 @@ static void test_ringbuf_1(void) {
         }
         {
             uint8_t *ptr = NULL;
-            int size = am_ringbuf_get_write_ptr(&rb, &ptr, /*size=*/i);
+            int size = i;
+            (void)am_ringbuf_get_write_ptr(&rb, &ptr, &size);
             AM_ASSERT(size >= i);
             memcpy(ptr, data, (size_t)i);
             am_ringbuf_flush(&rb, /*offset=*/i);

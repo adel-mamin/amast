@@ -33,6 +33,7 @@
 #ifndef AM_RINGBUF_H_INCLUDED
 #define AM_RINGBUF_H_INCLUDED
 
+#include <stdbool.h>
 #include <stdint.h>
 
 /**
@@ -99,11 +100,12 @@ int am_ringbuf_get_read_ptr(struct am_ringbuf *rb, uint8_t **ptr);
  * @param ptr   the write data pointer is returned here. Can be NULL.
  * @param size  the requested memory size behind the write date pointer [bytes].
  *              Can be set to 0.
+ *              Returns the byte size of all the available memory pointed
+ *              to by \p ptr. Can be 0 or more than the requested size.
  *
- * @return the byte size of all the available memory pointed to by \p ptr.
- *         Can be 0 or more than the requested size.
+ * @return true if the ring buffer state was updated and false otherwise
  */
-int am_ringbuf_get_write_ptr(struct am_ringbuf *rb, uint8_t **ptr, int size);
+bool am_ringbuf_get_write_ptr(struct am_ringbuf *rb, uint8_t **ptr, int *size);
 
 /**
  * Increase by offset bytes the amount of written data available to reader.
