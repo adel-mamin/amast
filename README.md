@@ -320,22 +320,22 @@ static void app_ctor(struct app *me) {
     me->timer = am_timer_allocate(
         APP_EVT_TIMER, sizeof(*me->timer), AM_PAL_TICK_DOMAIN_DEFAULT, &me->ao
     );
-    me->ticks = am_pal_time_get_tick_from_ms(AM_PAL_TICK_DOMAIN_DEFAULT, 1000);
+    me->ticks = am_time_get_tick_from_ms(AM_PAL_TICK_DOMAIN_DEFAULT, 1000);
 }
 
 static void ticker_task(void *param) {
-    am_pal_wait_all_tasks();
+    am_taks_wait_all();
 
-    uint32_t now_ticks = am_pal_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    uint32_t now_ticks = am_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     while (am_ao_get_cnt() > 0) {
-        am_pal_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        am_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
         am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
     }
 }
 
 static void input_task(void *param) {
-    am_pal_wait_all_tasks();
+    am_task_wait_all();
 
     int ch;
     while ((ch = getc(stdin)) != EOF) {
@@ -371,7 +371,7 @@ int main(void) {
     );
 
     /* ticker thread to feed timers */
-    am_pal_task_create(
+    am_task_create(
         "ticker",
         AM_AO_PRIO_MIN,
         /*stack=*/NULL,
@@ -381,7 +381,7 @@ int main(void) {
     );
 
     /* user input controlling thread */
-    am_pal_task_create(
+    am_task_create(
         "input",
         AM_AO_PRIO_MIN,
         /*stack=*/NULL,
