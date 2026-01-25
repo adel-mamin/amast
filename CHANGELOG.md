@@ -7,6 +7,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+## v0.14.5 - 25-January-2026
+
 ### Changed
 
 - Rework PAL API naming
