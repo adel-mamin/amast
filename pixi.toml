@@ -7,7 +7,7 @@ platforms = ["linux-64"]
 version = "0.1.0"
 
 [tasks]
-setup_stubs = "meson setup builds/stubs -Dunit_test=true -Dpal=stubs -Dbuildtype=debug -Db_lto=false"
+setup_stubs = "CC=gcc CXX=g++ meson setup builds/stubs -Dunit_test=true -Dpal=stubs -Dbuildtype=debug -Db_lto=false"
 setup_posix = "meson setup builds/posix -Dpal=posix"
 setup_posix_debug = "meson setup builds/posix_debug -Dpal=posix -Dbuildtype=debug -Db_lto=false -Db_sanitize=none"
 setup_posix_size = "meson setup builds/posix_size -Dpal=posix -Dbuildtype=minsize -Db_lto=false -Db_sanitize=none"
