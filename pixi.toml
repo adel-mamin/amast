@@ -1,4 +1,4 @@
-[project]
+[workspace]
 authors = ["Adel Mamin <adel@mm.st>"]
 channels = ["conda-forge"]
 description = "A Minimalist Asynchronous Toolkit"
