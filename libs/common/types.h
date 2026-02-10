@@ -36,26 +36,16 @@
  * Return codes.
  */
 enum am_rc {
-    /** Not enough memory. */
-    AM_RC_ERR_NOMEM = -5,
-    /** Unknown model. */
-    AM_RC_ERR_UNKNOWN_MODEL = -4,
-    /** Malformed model. */
-    AM_RC_ERR_MALFORMED_MODEL = -3,
-    /** Action failure. */
-    AM_RC_ERR_ACTION = -2,
     /** Common error */
     AM_RC_ERR = -1,
     /** Success. */
     AM_RC_OK = 0,
-    /** Operation is ongoing. */
+    /** Async/await operation is ongoing. Event was handled. */
     AM_RC_BUSY,
-    /** Operation is complete. */
+    /** Async/await operation is complete. Event was handled. */
     AM_RC_DONE,
     /** Event was handled. */
-    AM_RC_HANDLED = AM_RC_BUSY,
-    /** Event was handled. */
-    AM_RC_HANDLED_ALIAS = AM_RC_DONE,
+    AM_RC_HANDLED,
     /** Event caused state transition. */
     AM_RC_TRAN,
     /** Event caused state transition and redispatch. */

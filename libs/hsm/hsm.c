@@ -267,7 +267,7 @@ static enum am_rc hsm_dispatch(
     bool tran = (AM_RC_TRAN == rc) || (AM_RC_TRAN_REDISPATCH == rc);
     if (!tran) {
         AM_ASSERT(
-            (AM_RC_HANDLED == rc) || (AM_RC_HANDLED_ALIAS == rc) ||
+            (AM_RC_HANDLED == rc) || (AM_RC_BUSY == rc) || (AM_RC_DONE == rc) ||
             (AM_RC_SUPER == rc)
         );
         hsm_set_state(hsm, state);

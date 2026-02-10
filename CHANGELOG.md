@@ -7,6 +7,11 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Rework `enum am_rc` type
+- Clarify return values of FSM and HSM state functions
+
 ## v0.14.5 - 25-January-2026
 
 ### Changed
