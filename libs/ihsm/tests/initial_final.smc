@@ -1,4 +1,0 @@
-initial => todo;
-todo    => doing;
-doing   => done;
-done    => final;

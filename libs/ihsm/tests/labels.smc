@@ -1,2 +1,0 @@
-on => off: switch flicked [not an emergency]/light off;
-off => on: switch flicked/light on;

@@ -43,7 +43,6 @@ subdir('async')
 subdir('ringbuf')
 subdir('fsm')
 subdir('hsm')
-subdir('ihsm')
 subdir('ao')
 
 library_paths = []
