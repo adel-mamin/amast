@@ -2,6 +2,8 @@
 Finite State Machine (FSM)
 ==========================
 
+See the rendered version of this document `here <https://amast.readthedocs.io/fsm.html>`_.
+
 Glossary
 ========
 

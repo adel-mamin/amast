@@ -2,6 +2,8 @@
 Hierarchical State Machine (HSM)
 ================================
 
+See the rendered version of this document `here <https://amast.readthedocs.io/hsm.html>`_.
+
 Credit
 ======
 
