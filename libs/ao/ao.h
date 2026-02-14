@@ -72,7 +72,7 @@ struct am_ao_prio;
  * @retval false  the priority is invalid.
  */
 #define AM_AO_PRIO_IS_VALID(prio) \
-    ((prio.ao <= AM_AO_PRIO_MAX) && (prio.task <= AM_AO_PRIO_MAX))
+    (((prio).ao <= AM_AO_PRIO_MAX) && ((prio).task <= AM_AO_PRIO_MAX))
 
 AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_TASK_NUM_MAX);
 
