@@ -48,7 +48,6 @@ static void am_ao_handle(void *ctx, const struct am_event *event) {
 
     struct am_ao *ao = ctx;
     struct am_ao_state *me = &am_ao_state_;
-    me->debug(ao, event);
     AM_ATOMIC_STORE_N(&ao->last_event, event->id);
     me->running_ao_prio = ao->prio;
 

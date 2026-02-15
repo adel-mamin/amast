@@ -59,8 +59,6 @@ struct am_ao_state {
     int startup_complete_mutex;
     /** User callback on idle state, when no AO is running. */
     void (*on_idle)(void);
-    /** Debug callback. */
-    void (*debug)(const struct am_ao *ao, const struct am_event *e);
 
     /** Enter critical section. */
     void (*crit_enter)(void);

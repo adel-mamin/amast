@@ -256,11 +256,6 @@ void am_ao_ctor(
     ao->ctor_called = true;
 }
 
-static void am_ao_debug_stub(const struct am_ao *ao, const struct am_event *e) {
-    (void)ao;
-    (void)e;
-}
-
 void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     struct am_ao_state *me = &am_ao_state_;
     memset(me, 0, sizeof(*me));
@@ -271,10 +266,6 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
 
     AM_ATOMIC_STORE_N(&me->startup_complete, false);
 
-    me->debug = cfg ? cfg->debug : NULL;
-    if (!me->debug) {
-        me->debug = am_ao_debug_stub;
-    }
     me->crit_enter = cfg ? cfg->crit_enter : am_crit_enter;
     me->crit_exit = cfg ? cfg->crit_exit : am_crit_exit;
     me->on_idle = cfg ? cfg->on_idle : am_on_idle;

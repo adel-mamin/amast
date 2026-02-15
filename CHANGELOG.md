@@ -13,6 +13,9 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Clarify return values of FSM and HSM state functions
 - Require explicit event handler for active objects.
   Active objects can now be based on FSM, HSM or a simple event handler.
+- Prune debug callback mechanism in active objects.
+  This can now be modeled by callers by doing the logging by registering
+  a dedicated logging wrappers as event handlers to active objects.
 
 ## v0.14.5 - 25-January-2026
 

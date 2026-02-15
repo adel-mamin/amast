@@ -117,8 +117,6 @@ struct am_ao {
 
 /** Active object library state configuration. */
 struct am_ao_state_cfg {
-    /** Debug callback. */
-    void (*debug)(const struct am_ao *ao, const struct am_event *e);
     /**
      * Callback to enter low power mode.
      *
