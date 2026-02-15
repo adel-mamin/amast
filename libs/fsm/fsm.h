@@ -28,8 +28,6 @@
  * @file
  *
  * Finite State Machine (FSM) libary API declaration.
- * Configuration defines:
- * AM_FSM_SPY - enables FSM spy callback support for debugging
  */
 
 #ifndef AM_FSM_H_INCLUDED
@@ -60,24 +58,6 @@ typedef enum am_rc (*am_fsm_state_fn)(
 );
 
 /**
- * FSM spy user callback type.
- *
- * Used as one place to catch all events for the given FSM.
- *
- * Called on each user event BEFORE the event is processes by the FSM.
- *
- * Should only be used for debugging purposes.
- *
- * Set by am_fsm_set_spy().
- *
- * Only supported, if the FSM library is compiled with `AM_FSM_SPY` defined.
- *
- * @param fsm    the handler of the FSM to spy
- * @param event  the event to spy
- */
-typedef void (*am_fsm_spy_fn)(struct am_fsm *fsm, const struct am_event *event);
-
-/**
  * Construct FSM state from FSM event handler.
  *
  * @param s  the FSM event handler
@@ -95,10 +75,6 @@ typedef void (*am_fsm_spy_fn)(struct am_fsm *fsm, const struct am_event *event);
 struct am_fsm {
     /** Active state. */
     am_fsm_state_fn state;
-#ifdef AM_FSM_SPY
-    /** FSM spy callback. */
-    am_fsm_spy_fn spy;
-#endif
     /** Safety net to catch missing am_fsm_init() call. */
     uint8_t init_called : 1;
     /** Safety net to catch erroneous reentrant am_fsm_dispatch() call. */
@@ -222,20 +198,6 @@ void am_fsm_dtor(struct am_fsm *fsm);
  * @param init_event  the init event. Can be NULL.
  */
 void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event);
-
-/**
- * Set spy user callback as a one place to catch all events for the given FSM.
- *
- * Is only available, if the FSM library is compiled with `AM_FSM_SPY` defined.
- *
- * Should only be used for debugging purposes.
- *
- * Should only be called after calling am_fsm_ctor().
- *
- * @param fsm  the FSM to spy
- * @param spy  the spy callback. Use NULL to unset.
- */
-void am_fsm_set_spy(struct am_fsm *fsm, am_fsm_spy_fn spy);
 
 #ifdef __cplusplus
 }

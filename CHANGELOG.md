@@ -16,6 +16,9 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Prune debug callback mechanism in active objects.
   This can now be modeled by callers by doing the logging by registering
   a dedicated logging wrappers as event handlers to active objects.
+- Prune FSM and HSM spy callbacks mechanisms as redundant.
+  Users always have an option to control over
+  the `am_fsm_dispatch()` and `am_hsm_dispatch()` calls.
 
 ## v0.14.5 - 25-January-2026
 

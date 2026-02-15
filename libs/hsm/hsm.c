@@ -296,11 +296,6 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event) {
     hsm->dispatch_in_progress = true;
     const int id = event->id;
 
-#ifdef AM_HSM_SPY
-    if (hsm->spy) {
-        hsm->spy(hsm, event);
-    }
-#endif
     enum am_rc rc = hsm_dispatch(hsm, event);
     if (AM_RC_TRAN_REDISPATCH == rc) {
         /* Event was freed / corrupted ? */
@@ -393,14 +388,6 @@ void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event) {
     hsm_enter_and_init(hsm, &path);
     hsm->init_called = true;
 }
-
-#ifdef AM_HSM_SPY
-void am_hsm_set_spy(struct am_hsm *hsm, am_hsm_spy_fn spy) {
-    AM_ASSERT(hsm);
-    AM_ASSERT(hsm->state.fn); /* was am_hsm_ctor() called? */
-    hsm->spy = spy;
-}
-#endif
 
 enum am_rc am_hsm_top(struct am_hsm *hsm, const struct am_event *event) {
     (void)hsm;

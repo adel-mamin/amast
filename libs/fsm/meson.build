@@ -69,17 +69,6 @@ if unit_test
     test('dtor', e, suite: 'fsm')
 
     e = executable(
-        'spy',
-        [
-            'tests' / 'spy.c',
-            fsm_src,
-        ],
-        c_args: ['-DAM_FSM_SPY'],
-        dependencies: [libstr_dep, libassert_dep],
-        include_directories: [include_directories('tests')])
-    test('spy', e, suite: 'fsm')
-
-    e = executable(
         'reenter',
         [
             'tests' / 'reenter.c',

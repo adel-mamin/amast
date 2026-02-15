@@ -133,17 +133,6 @@ if unit_test
     test('submachine-calc', e, suite: 'hsm')
 
     e = executable(
-        'spy',
-        [
-            'tests' / 'spy.c',
-            hsm_src,
-        ],
-        c_args: ['-DAM_HSM_SPY'],
-        dependencies: [libstr_dep, libassert_dep, libassert_dep],
-        include_directories: [include_directories('tests')])
-    test('spy', e, suite: 'hsm')
-
-    e = executable(
         'reenter',
         [
             'tests' / 'reenter.c',

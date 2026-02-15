@@ -28,14 +28,6 @@
 #define AMAST_CONFIG_H_INCLUDED
 
 /**
- * Enable am_hsm_set_spy() API to register user callback
- * to intercept external events passed via am_hsm_dispatch() API.
- * Increases the size of struct am_hsm by the size of a function
- * pointer.
- */
-#define AM_HSM_SPY
-
-/**
  * Enable am_fsm_set_spy() API to register user callback
  * to intercept external events passed via am_fsm_dispatch() API.
  * Increases the size of struct am_fsm by the size of a function

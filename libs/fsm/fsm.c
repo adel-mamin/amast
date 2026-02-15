@@ -95,11 +95,6 @@ void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event) {
     fsm->dispatch_in_progress = true;
     const int id = event->id;
 
-#ifdef AM_FSM_SPY
-    if (fsm->spy) {
-        fsm->spy(fsm, event);
-    }
-#endif
     enum am_rc rc = fsm_dispatch(fsm, event);
     if (AM_RC_TRAN_REDISPATCH == rc) {
         rc = fsm_dispatch(fsm, event);
@@ -153,10 +148,3 @@ void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event) {
     fsm_enter(fsm, fsm->state);
     fsm->init_called = true;
 }
-
-#ifdef AM_FSM_SPY
-void am_fsm_set_spy(struct am_fsm *fsm, am_fsm_spy_fn spy) {
-    AM_ASSERT(fsm);
-    fsm->spy = spy;
-}
-#endif

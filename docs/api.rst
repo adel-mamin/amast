@@ -371,8 +371,6 @@ The source code of the corresponding header file is in `hsm.h <https://github.co
 
 .. doxygentypedef:: am_hsm_state_fn
 
-.. doxygentypedef:: am_hsm_spy_fn
-
 .. doxygenstruct:: am_hsm_state
 
 .. doxygendefine:: AM_HSM_STATE_CTOR
@@ -405,8 +403,6 @@ The source code of the corresponding header file is in `hsm.h <https://github.co
 
 .. doxygenfunction:: am_hsm_init
 
-.. doxygenfunction:: am_hsm_set_spy
-
 .. doxygenfunction:: am_hsm_top
 
 .. _fsm_api:
@@ -419,8 +415,6 @@ Finite State Machine (FSM) API documentation.
 The source code of the corresponding header file is in `fsm.h <https://github.com/adel-mamin/amast/blob/main/libs/fsm/fsm.h>`_.
 
 .. doxygentypedef:: am_fsm_state_fn
-
-.. doxygentypedef:: am_fsm_spy_fn
 
 .. doxygendefine:: AM_FSM_STATE_CTOR
 
@@ -443,8 +437,6 @@ The source code of the corresponding header file is in `fsm.h <https://github.co
 .. doxygenfunction:: am_fsm_dtor
 
 .. doxygenfunction:: am_fsm_init
-
-.. doxygenfunction:: am_fsm_set_spy
 
 .. _ao_api:
 

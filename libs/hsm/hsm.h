@@ -30,7 +30,6 @@
  *
  * Hierarchical State Machine (HSM) library API declaration.
  * Configuration defines:
- * AM_HSM_SPY - enables HSM spy callback support for debugging
  * AM_HSM_HIERARCHY_DEPTH_MAX - HSM hierarchy maximum depth
  */
 
@@ -69,24 +68,6 @@ struct am_hsm;
 typedef enum am_rc (*am_hsm_state_fn)(
     struct am_hsm *hsm, const struct am_event *event
 );
-
-/**
- * HSM spy user callback type.
- *
- * Used as one place to catch all events for a given HSM.
- *
- * Called on each user event BEFORE the event is processes by the HSM.
- *
- * Should only be used for debugging purposes.
- *
- * Set by am_hsm_set_spy().
- *
- * Only supported, if the HSM library is compiled with `AM_HSM_SPY` defined.
- *
- * @param hsm    the handler of the HSM to spy
- * @param event  the event to spy
- */
-typedef void (*am_hsm_spy_fn)(struct am_hsm *hsm, const struct am_event *event);
 
 /** HSM state. */
 struct am_hsm_state {
@@ -184,10 +165,6 @@ struct am_hsm {
     uint8_t init_called : 1;
     /** safety net to catch erroneous reentrant am_hsm_dispatch() call */
     uint8_t dispatch_in_progress : 1;
-#ifdef AM_HSM_SPY
-    /** HSM spy callback */
-    am_hsm_spy_fn spy;
-#endif
 };
 
 /**
@@ -435,20 +412,6 @@ void am_hsm_dtor(struct am_hsm *hsm);
  * @param init_event  the initial event. Can be NULL.
  */
 void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event);
-
-/**
- * Set spy user callback as a one place to catch all events for the given HSM.
- *
- * Is only available, if the HSM library is compiled with `AM_HSM_SPY` defined.
- *
- * Should only be used for debugging purposes.
- *
- * Should only be called after calling am_hsm_ctor().
- *
- * @param hsm  the HSM to spy
- * @param spy  the spy callback. Use NULL to unset.
- */
-void am_hsm_set_spy(struct am_hsm *hsm, am_hsm_spy_fn spy);
 
 /**
  * Ultimate top superstate of any HSM.
