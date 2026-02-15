@@ -421,6 +421,14 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
  *
  * @param ao             the active object to construct
  * @param init_handler   the init event handler
+ *                       The init event handler is run once on the start of
+ *                       the active object, when the event queue is already
+ *                       initialized. The init event handler can post events
+ *                       to itself. The event queues of other active objects
+ *                       are not guaranteed to be initialized when the init
+ *                       event handler is called. Therefore the init event
+ *                       handler is not allowed to post/publish events
+ *                       to other active objects.
  * @param event_handler  the event handler
  * @param ctx            the event handler context
  */
