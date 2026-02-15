@@ -42,6 +42,11 @@
 static const struct am_event *m_queue_test[1];
 
 static struct test {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
 } m_test;
 
@@ -82,14 +87,17 @@ static void start_ao(void) {
 int main(void) {
     am_ao_state_ctor(/*cfg=*/NULL);
 
-    am_ao_ctor(&m_test.ao, AM_HSM_STATE_CTOR(test_init));
+    struct test *me = &m_test;
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(test_init));
     start_ao();
 
     while (am_ao_get_cnt() > 0) {
         am_ao_run_all();
     }
 
-    am_ao_ctor(&m_test.ao, AM_HSM_STATE_CTOR(test_init));
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(test_init));
     start_ao();
 
     while (am_ao_get_cnt() > 0) {

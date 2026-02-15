@@ -11,6 +11,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - Rework `enum am_rc` type
 - Clarify return values of FSM and HSM state functions
+- Require explicit event handler for active objects.
+  Active objects can now be based on FSM, HSM or a simple event handler.
 
 ## v0.14.5 - 25-January-2026
 

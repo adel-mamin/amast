@@ -92,6 +92,11 @@ static const struct am_event *m_queue_agent[2 * AM_SMOKERS_NUM_MAX];
 static const struct am_event *m_queue_smoker[AM_SMOKERS_NUM_MAX][5];
 
 struct smoker {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer timer_done_smoking;
     int id;
@@ -209,12 +214,18 @@ static enum am_rc smoker_init(struct smoker *me, const struct am_event *event) {
 
 static void smoker_ctor(struct smoker *me, int id, unsigned resource) {
     memset(me, 0, sizeof(*me));
-    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(smoker_init));
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(smoker_init));
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     me->id = id;
     me->resource_own = me->resource_acquired = resource;
 }
 
 struct agent {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer timeout;
     int stats[AM_SMOKERS_NUM_MAX];
@@ -321,14 +332,15 @@ static enum am_rc agent_init(struct agent *me, const struct am_event *event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_DONE_SMOKING);
     am_ao_subscribe(&me->ao, EVT_STOPPED);
-    am_timer_ctor(&me->timeout, EVT_TIMEOUT, AM_TICK_DOMAIN_DEFAULT, me);
+    am_timer_ctor(&me->timeout, EVT_TIMEOUT, AM_TICK_DOMAIN_DEFAULT, &me->ao);
     return AM_HSM_TRAN(agent_proc);
 }
 
 static void agent_ctor(void) {
     struct agent *me = &m_agent;
     memset(me, 0, sizeof(*me));
-    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(agent_init));
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(agent_init));
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
 }
 
 static void ticker_task(void *param) {

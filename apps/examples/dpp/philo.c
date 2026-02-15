@@ -39,6 +39,11 @@
 #include "table.h"
 
 static struct philo {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
     int id;
     int cnt;
@@ -154,7 +159,8 @@ void philo_ctor(int id) {
     memset(me, 0, sizeof(*me));
     me->cnt = 0;
     me->id = id;
-    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(philo_init));
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(philo_init));
 
     me->timer = (struct am_timer *)am_timer_allocate(
         /*id=*/EVT_TIMEOUT,

@@ -51,10 +51,20 @@ static const struct am_event *m_queue_loopback[1];
 static const struct am_event *m_queue_loopback_test[1];
 
 static struct loopback {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
 } m_loopback;
 
 static struct loopback_test {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
     int cnt;
 } m_loopback_test;
@@ -118,8 +128,21 @@ static int loopback_test_init(
 int main(void) {
     am_ao_state_ctor(/*cfg=*/NULL);
 
-    am_ao_ctor(&m_loopback.ao, AM_HSM_STATE_CTOR(loopback_init));
-    am_ao_ctor(&m_loopback_test.ao, AM_HSM_STATE_CTOR(loopback_test_init));
+    am_ao_ctor(
+        &m_loopback.ao,
+        (am_ao_fn)am_hsm_init,
+        (am_ao_fn)am_hsm_dispatch,
+        &m_loopback
+    );
+    am_hsm_ctor(&m_loopback.hsm, AM_HSM_STATE_CTOR(loopback_init));
+
+    am_ao_ctor(
+        &m_loopback_test.ao,
+        (am_ao_fn)am_hsm_init,
+        (am_ao_fn)am_hsm_dispatch,
+        &m_loopback_test
+    );
+    am_hsm_ctor(&m_loopback_test.hsm, AM_HSM_STATE_CTOR(loopback_test_init));
 
     am_ao_start(
         &m_loopback.ao,

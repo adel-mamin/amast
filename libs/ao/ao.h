@@ -38,7 +38,6 @@
 
 #include "common/macros.h"
 #include "event/event.h"
-#include "hsm/hsm.h"
 #include "pal/pal.h"
 
 #ifndef AM_AO_NUM_MAX
@@ -94,9 +93,16 @@ struct am_ao_prio {
     unsigned task : 8;
 };
 
+struct am_ao;
+
+/** Active object event handler */
+typedef void (*am_ao_fn)(struct am_ao *ao, const struct am_event *event);
+
 /** The active object. */
 struct am_ao {
-    struct am_hsm hsm;                 /**< top level AO state machine */
+    am_ao_fn init_handler;             /**< init event handler */
+    am_ao_fn event_handler;            /**< event handler */
+    void *ctx;                         /**< the event handler context */
     const char *name;                  /**< human readable name of AO */
     struct am_event_queue event_queue; /**< event queue */
     int last_event;                    /**< last processed event */
@@ -415,10 +421,14 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
 /**
  * Active object constructor.
  *
- * @param ao     the active object to construct
- * @param state  the initial state of the active object
+ * @param ao             the active object to construct
+ * @param init_handler   the init event handler
+ * @param event_handler  the event handler
+ * @param ctx            the event handler context
  */
-void am_ao_ctor(struct am_ao *ao, struct am_hsm_state state);
+void am_ao_ctor(
+    struct am_ao *ao, am_ao_fn init_handler, am_ao_fn event_handler, void *ctx
+);
 
 /**
  * Start active object.

@@ -52,12 +52,22 @@ enum evt {
 };
 
 struct watched {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer timer_feed;
     int feeds_num;
 };
 
 struct wdt {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer timer_bark;
 };
@@ -108,7 +118,8 @@ static enum am_rc watched_init(
 
 static void watched_ctor(struct watched *me) {
     memset(me, 0, sizeof(*me));
-    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(watched_init));
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(watched_init));
     am_timer_ctor(
         &me->timer_feed,
         EVT_WATCHED_TIMEOUT,
@@ -148,7 +159,8 @@ static enum am_rc wdt_init(struct wdt *me, const struct am_event *event) {
 
 static void wdt_ctor(struct wdt *me) {
     memset(me, 0, sizeof(*me));
-    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(wdt_init));
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(wdt_init));
     am_timer_ctor(
         &me->timer_bark,
         EVT_WDT_BARK,

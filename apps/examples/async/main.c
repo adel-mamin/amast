@@ -88,6 +88,11 @@ enum {
 };
 
 struct async {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer *timer;
     struct am_async async;
@@ -113,7 +118,7 @@ static enum am_rc async_top(struct async *me, const struct am_event *event) {
     }
     case ASYNC_EVT_SWITCH_MODE: {
         am_printff("\b");
-        if (am_hsm_is_in(&me->ao.hsm, AM_HSM_STATE_CTOR(async_regular))) {
+        if (am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(async_regular))) {
             return AM_HSM_TRAN(async_off);
         }
         return AM_HSM_TRAN(async_regular);
@@ -259,7 +264,8 @@ static enum am_rc async_init(struct async *me, const struct am_event *event) {
 static void async_ctor(struct async *me) {
     memset(me, 0, sizeof(*me));
 
-    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(async_init));
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(async_init));
 
     me->timer = am_timer_allocate(
         ASYNC_EVT_TIMER, sizeof(*me->timer), AM_TICK_DOMAIN_DEFAULT, &me->ao

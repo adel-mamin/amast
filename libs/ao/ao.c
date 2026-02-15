@@ -36,7 +36,6 @@
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
-#include "hsm/hsm.h"
 #include "event/event.h"
 #include "bit/bit.h"
 #include "timer/timer.h"
@@ -243,11 +242,17 @@ void am_ao_unsubscribe_all(const struct am_ao *ao) {
     }
 }
 
-void am_ao_ctor(struct am_ao *ao, struct am_hsm_state state) {
+void am_ao_ctor(
+    struct am_ao *ao, am_ao_fn init_handler, am_ao_fn event_handler, void *ctx
+) {
     AM_ASSERT(ao);
+    AM_ASSERT(event_handler);
+    AM_ASSERT(ctx);
 
     memset(ao, 0, sizeof(*ao));
-    am_hsm_ctor(&ao->hsm, state);
+    ao->init_handler = init_handler;
+    ao->event_handler = event_handler;
+    ao->ctx = ctx;
     ao->ctor_called = true;
 }
 

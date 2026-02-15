@@ -39,6 +39,10 @@ Here is the full implementation of the FSM:
 #define EVT_B (AM_EVT_USER + 1)
 
 struct app {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/fsm.html#fsm-coding-rules
+     */
     struct am_fsm fsm;
     /* app data */
 } app;
@@ -258,6 +262,11 @@ enum {
 };
 
 struct app {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer *timer;
     int ticks;
@@ -316,7 +325,8 @@ static enum am_rc app_init(struct app *me, const struct am_event *event) {
 
 static void app_ctor(struct app *me) {
     memset(me, 0, sizeof(*me));
-    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(app_init));
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(app_init));
     me->timer = am_timer_allocate(
         APP_EVT_TIMER, sizeof(*me->timer), AM_PAL_TICK_DOMAIN_DEFAULT, &me->ao
     );

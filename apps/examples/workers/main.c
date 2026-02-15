@@ -82,6 +82,11 @@ static const struct am_event *m_queue_balancer[AM_WORKERS_NUM_MAX];
 static const struct am_event *m_queue_worker[AM_WORKERS_NUM_MAX][2];
 
 struct worker {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
     int id;
 };
@@ -131,11 +136,17 @@ static enum am_rc worker_init(struct worker *me, const struct am_event *event) {
 
 static void worker_ctor(struct worker *me, int id) {
     memset(me, 0, sizeof(*me));
-    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(worker_init));
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(worker_init));
     me->id = id;
 }
 
 struct balancer {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer timeout;
     int nworkers;
@@ -228,7 +239,7 @@ static enum am_rc balancer_init(
     (void)event;
     am_ao_subscribe(&me->ao, EVT_JOB_DONE);
     am_ao_subscribe(&me->ao, EVT_STOPPED);
-    am_timer_ctor(&me->timeout, EVT_TIMEOUT, AM_TICK_DOMAIN_DEFAULT, me);
+    am_timer_ctor(&me->timeout, EVT_TIMEOUT, AM_TICK_DOMAIN_DEFAULT, &me->ao);
     return AM_HSM_TRAN(balancer_proc);
 }
 
@@ -236,7 +247,8 @@ static void balancer_ctor(int nworkers) {
     struct balancer *me = &m_balancer;
     memset(me, 0, sizeof(*me));
     me->nworkers = nworkers;
-    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(balancer_init));
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(balancer_init));
 }
 
 static void ticker_task(void *param) {

@@ -41,6 +41,11 @@
 #define AM_AO_EVT_PUB_MAX (AM_EVT_PUB + 1)
 
 struct test_publish {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
     AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
     char log_buf[256];
@@ -77,7 +82,8 @@ static enum am_rc publish_sinit(
 
 static void publish_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
     struct test_publish *me = &m_publish;
-    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(publish_sinit));
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(publish_sinit));
     me->log = log;
 }
 

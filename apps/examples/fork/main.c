@@ -78,6 +78,11 @@ static char m_event_pool[EVT_MAX][128] AM_ALIGNED(AM_ALIGN_MAX);
 static struct am_ao_subscribe_list m_pubsub_list[EVT_PUB_MAX];
 
 struct progress {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
     int progress_ticks;
     struct am_timer timer;
@@ -143,7 +148,8 @@ static enum am_rc progress_init(
 }
 
 static void progress_ctor(struct progress *me) {
-    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(progress_init));
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(progress_init));
 
     am_timer_ctor(
         &me->timer,

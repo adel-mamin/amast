@@ -38,7 +38,6 @@
 #include "ringbuf/ringbuf.h"
 #include "timer/timer.h"
 #include "event/event.h"
-#include "hsm/hsm.h"
 #include "pal/pal.h"
 #include "ao/ao.h"
 #include "state.h"
@@ -57,7 +56,14 @@ struct am_ao *g_ringbuf_reader = &m_ringbuf_reader.ao;
 
 static const struct am_event m_evt_ringbuf_read = {.id = AM_EVT_RINGBUF_READ};
 
-static int ringbuf_reader_proc(
+static void ringbuf_reader_init_handler(
+    struct ringbuf_reader *me, const struct am_event *event
+) {
+    (void)event;
+    am_ao_post_fifo(&me->ao, &m_evt_ringbuf_read);
+}
+
+static void ringbuf_reader_event_handler(
     struct ringbuf_reader *me, const struct am_event *event
 ) {
     switch (event->id) {
@@ -68,7 +74,7 @@ static int ringbuf_reader_proc(
         (void)am_ringbuf_get_read_ptr(&g_ringbuf, &ptr, &size);
         if (size < me->len) {
             am_timer_arm_ticks(&me->timer_wait, /*ticks=*/1, /*interval=*/0);
-            return AM_HSM_HANDLED();
+            return;
         }
         AM_ASSERT(ptr);
         AM_ASSERT(0 == memcmp(ptr, g_ringbuf_data, (size_t)me->len));
@@ -82,27 +88,23 @@ static int ringbuf_reader_proc(
             me->len = 1;
         }
         am_ao_post_fifo(&me->ao, &m_evt_ringbuf_read);
-        return AM_HSM_HANDLED();
+        return;
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
-}
-
-static int ringbuf_reader_init(
-    struct ringbuf_reader *me, const struct am_event *event
-) {
-    (void)event;
-    am_ao_post_fifo(&me->ao, &m_evt_ringbuf_read);
-    return AM_HSM_TRAN(ringbuf_reader_proc);
 }
 
 void ringbuf_reader_ctor(void) {
     struct ringbuf_reader *me = &m_ringbuf_reader;
     memset(me, 0, sizeof(*me));
     me->len = 1;
-    am_ao_ctor(&me->ao, AM_HSM_STATE_CTOR(ringbuf_reader_init));
+    am_ao_ctor(
+        &me->ao,
+        (am_ao_fn)ringbuf_reader_init_handler,
+        (am_ao_fn)ringbuf_reader_event_handler,
+        me
+    );
     am_timer_ctor(
         &me->timer_wait,
         /*id=*/AM_EVT_RINGBUF_WAIT,

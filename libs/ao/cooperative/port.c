@@ -31,7 +31,6 @@
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
-#include "hsm/hsm.h"
 #include "event/event.h"
 #include "pal/pal.h"
 #include "ao/ao.h"
@@ -53,7 +52,7 @@ static void am_ao_handle(void *ctx, const struct am_event *event) {
     AM_ATOMIC_STORE_N(&ao->last_event, event->id);
     me->running_ao_prio = ao->prio;
 
-    am_hsm_dispatch(&ao->hsm, event);
+    ao->event_handler(ao->ctx, event);
 
     me->running_ao_prio = AM_AO_PRIO_INVALID;
     AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
@@ -135,7 +134,9 @@ void am_ao_start(
     ++me->aos_cnt;
 
     me->running_ao_prio = prio;
-    am_hsm_init(&ao->hsm, init_event);
+    if (ao->init_handler) {
+        ao->init_handler(ao->ctx, init_event);
+    }
     me->running_ao_prio = AM_AO_PRIO_INVALID;
 }
 

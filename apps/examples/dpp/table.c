@@ -41,6 +41,11 @@
 enum { PHILO_DONE, PHILO_HUNGRY, PHILO_EATING };
 
 static struct table {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
+     */
+    struct am_hsm hsm;
     struct am_ao ao;
     int philo[PHILO_NUM];
     int nsessions;
@@ -188,6 +193,7 @@ void table_ctor(int nsessions) {
     for (int i = 0; i < AM_COUNTOF(me->philo); ++i) {
         me->philo[i] = PHILO_DONE;
     }
-    am_ao_ctor(&m_table.ao, AM_HSM_STATE_CTOR(table_init));
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(table_init));
     me->nsessions = nsessions;
 }

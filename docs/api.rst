@@ -457,6 +457,8 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygenstruct:: am_ao
 
+.. doxygentypedef:: am_ao_fn
+
 .. doxygenstruct:: am_ao_state_cfg
    :members:
 
