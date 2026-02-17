@@ -20,6 +20,11 @@ and this project adheres to [0-based versioning](https://0ver.org/).
   Users always have an option to control
   the `am_fsm_dispatch()` and `am_hsm_dispatch()` calls.
 
+### Fixed
+
+- `AM_ASYNC_CHAIN()` now handles all possible state machine event handler
+  return values.
+
 ## v0.14.5 - 25-January-2026
 
 ### Changed
