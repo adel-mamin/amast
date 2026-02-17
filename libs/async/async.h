@@ -106,9 +106,8 @@ struct am_async {
 /**
  * Chain an async function call and evaluate its return value.
  *
- * Returns, if the async function call return value is #AM_RC_BUSY,
- * in which case the macro returns and the function call is evaluated
- * again on next invocation.
+ * Returns, if the async function call returns #AM_RC_BUSY.
+ * The function call is evaluated again on next invocation.
  *
  * @param call  the function call to check the return value of
  */
