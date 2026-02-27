@@ -269,11 +269,12 @@ struct app {
     struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer *timer;
+    int tix;
     int ticks;
 };
 
-/* events are allocated from this memory pool */
-static struct am_timer m_event_pool[1] AM_ALIGNED(AM_ALIGN_MAX);
+/* Timer state */
+struct am_timer m_timer;
 
 /* event publish/subscribe memory */
 static struct am_ao_subscribe_list m_pubsub_list[APP_EVT_PUB_MAX];
@@ -300,11 +301,11 @@ static enum am_rc app_state_b(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("state B\n");
-        am_timer_arm_ticks(me->timer, me->ticks, /*interval=*/0);
+        am_timer_arm_ticks(me->timer, me->tix, me->ticks, /*interval=*/0);
         return AM_HSM_HANDLED();
 
     case AM_EVT_EXIT:
-        am_timer_disarm(me->timer);
+        am_timer_disarm(me->timer, me->tix);
         return AM_HSM_HANDLED();
 
     case APP_EVT_SWITCH_MODE:
@@ -312,7 +313,7 @@ static enum am_rc app_state_b(struct app *me, const struct am_event *event) {
 
     case APP_EVT_TIMER:
         am_printf("timer\n");
-        am_timer_arm_ticks(me->timer, me->ticks, /*interval=*/0);
+        am_timer_arm_ticks(me->timer, me->tix, me->ticks, /*interval=*/0);
         return AM_HSM_HANDLED();
     }
     return AM_HSM_SUPER(am_hsm_top);
@@ -323,24 +324,37 @@ static enum am_rc app_init(struct app *me, const struct am_event *event) {
     return AM_HSM_TRAN(app_state_a);
 }
 
-static void app_ctor(struct app *me) {
+static void app_ctor(struct app *me, struct am_timer *timer) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(app_init));
-    me->timer = am_timer_allocate(
-        APP_EVT_TIMER, sizeof(*me->timer), AM_PAL_TICK_DOMAIN_DEFAULT, &me->ao
-    );
+    me->timer = timer;
+    me->tix = am_timer_allocate_x(timer, APP_EVT_TIMER, &me->ao);
     me->ticks = am_time_get_tick_from_ms(AM_PAL_TICK_DOMAIN_DEFAULT, 1000);
 }
 
 static void ticker_task(void *param) {
     am_taks_wait_all();
 
-    uint32_t now_ticks = am_time_get_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+    const int domain = 0;
+    uint32_t now_ticks = am_time_get_tick(domain);
     while (am_ao_get_cnt() > 0) {
-        am_sleep_till_ticks(AM_PAL_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        am_sleep_till_ticks(domain, now_ticks + 1);
         now_ticks += 1;
-        am_timer_tick(AM_PAL_TICK_DOMAIN_DEFAULT);
+        am_timer_tick(&m_timer, domain);
+
+        uint32_t fired = am_timer_tick(&m_timer);
+        while (fired) {
+            int tix = AM_CTZL(fired);
+            struct am_timer_event *event = am_timer_from_tix(&m_timer, tix);
+            fired &= (uint32_t)~(1UL << (unsigned)tix);
+            void *owner = AM_CAST(struct am_timer_event_x *, event)->ctx;
+            if (owner) {
+                am_ao_post_fifo(owner, &event->base);
+            } else {
+                am_ao_publish(&event->base);
+            }
+        }
     }
 }
 
@@ -357,6 +371,16 @@ static void input_task(void *param) {
 }
 
 int main(void) {
+    struct am_timer_event_x timer_events[1];
+
+    am_timer_ctor(
+        &m_timer,
+        /*domain_id=*/0,
+        timer_events,
+        AM_COUNTOF(timer_events),
+        sizeof(struct am_timer_event_x)
+    );
+
     am_ao_state_ctor(/*cfg=*/NULL);
     am_event_pool_add(
         m_event_pool,
@@ -367,7 +391,7 @@ int main(void) {
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
 
     struct app m;
-    app_ctor(&m);
+    app_ctor(&m, &m_timer);
 
     am_ao_start(
         &m.ao,
@@ -447,16 +471,16 @@ LTO is disabled.
 
 Library name | Code size [kB] | Data size [kB]
 -------------|----------------|---------------
-ao_cooperative | 3.83 | 0.57
-ao_preemptive | 3.77 | 0.56
+ao_cooperative | 3.62 | 0.57
+ao_preemptive | 3.56 | 0.56
 dlist | 1.29 | 0.00
-event | 3.97 | 0.23
+event | 4.00 | 0.23
 fsm | 0.88 | 0.00
-hsm | 2.65 | 0.01
+hsm | 2.66 | 0.01
 onesize | 1.43 | 0.00
-ringbuf | 1.39 | 0.00
+ringbuf | 1.55 | 0.00
 slist | 1.21 | 0.00
-timer | 1.81 | 0.08
+timer | 1.50 | 0.08
 
 ## How To Compile For Amast Development
 <a name="how-to-compile"></a>

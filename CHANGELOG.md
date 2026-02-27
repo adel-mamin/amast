@@ -19,6 +19,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Prune FSM and HSM spy callbacks mechanisms as redundant.
   Users always have an option to control
   the `am_fsm_dispatch()` and `am_hsm_dispatch()` calls.
+- Rework timer library
 
 ### Fixed
 
