@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
 #include "event/event.h"
@@ -58,7 +59,7 @@ struct watched {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    struct am_timer timer_feed;
+    int timer_feed;
     int feeds_num;
 };
 
@@ -69,8 +70,10 @@ struct wdt {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    struct am_timer timer_bark;
+    int timer_bark;
 };
+
+static struct am_timer m_timer;
 
 /* tasks */
 static struct watched m_watched;
@@ -91,7 +94,7 @@ static enum am_rc watched_proc(
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_timer_arm_ms(
-            &me->timer_feed, AM_FEED_TIMEOUT_MS, AM_FEED_TIMEOUT_MS
+            &m_timer, me->timer_feed, AM_FEED_TIMEOUT_MS, AM_FEED_TIMEOUT_MS
         );
         return AM_HSM_HANDLED();
     }
@@ -120,10 +123,9 @@ static void watched_ctor(struct watched *me) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(watched_init));
-    am_timer_ctor(
-        &me->timer_feed,
+    me->timer_feed = am_timer_allocate_x(
+        &m_timer,
         EVT_WATCHED_TIMEOUT,
-        AM_TICK_DOMAIN_DEFAULT,
         /*owner=*/&me->ao
     );
 }
@@ -133,13 +135,17 @@ static void watched_ctor(struct watched *me) {
 static enum am_rc wdt_proc(struct wdt *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_timer_arm_ms(&me->timer_bark, AM_BARK_TIMEOUT_MS, /*interval=*/0);
+        am_timer_arm_ms(
+            &m_timer, me->timer_bark, AM_BARK_TIMEOUT_MS, /*interval=*/0
+        );
         return AM_HSM_HANDLED();
     }
     case EVT_WDT_FEED: {
         am_printff("EVT_WDT_FEED received\n");
         /* re-arm bark timer */
-        am_timer_arm_ms(&me->timer_bark, AM_BARK_TIMEOUT_MS, /*interval=*/0);
+        am_timer_arm_ms(
+            &m_timer, me->timer_bark, AM_BARK_TIMEOUT_MS, /*interval=*/0
+        );
         return AM_HSM_HANDLED();
     }
     case EVT_WDT_BARK: {
@@ -161,12 +167,7 @@ static void wdt_ctor(struct wdt *me) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(wdt_init));
-    am_timer_ctor(
-        &me->timer_bark,
-        EVT_WDT_BARK,
-        AM_TICK_DOMAIN_DEFAULT,
-        /*owner=*/&me->ao
-    );
+    me->timer_bark = am_timer_allocate_x(&m_timer, EVT_WDT_BARK, &me->ao);
 }
 
 /* timer task to drive timers  */
@@ -180,11 +181,34 @@ static void ticker_task(void *param) {
     while (am_ao_get_cnt() > 0) {
         am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
-        am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
+        uint32_t fired = am_timer_tick(&m_timer);
+        while (fired) {
+            int tix = AM_CTZL(fired);
+            struct am_timer_event *event = am_timer_from_tix(&m_timer, tix);
+            fired &= (uint32_t)~(1UL << (unsigned)tix);
+            void *owner = AM_CAST(struct am_timer_event_x *, event)->ctx;
+            if (owner) {
+                am_ao_post_fifo(owner, &event->base);
+            } else {
+                am_ao_publish(&event->base);
+            }
+        }
     }
 }
 
 int main(void) {
+    struct am_timer_event_x timer_events[4];
+
+    am_timer_ctor(
+        &m_timer,
+        /*domain_id=*/0,
+        timer_events,
+        AM_COUNTOF(timer_events),
+        sizeof(struct am_timer_event_x)
+    );
+
+    am_timer_register_cbs(&m_timer, am_crit_enter, am_crit_exit);
+
     am_ao_state_ctor(/*cfg=*/NULL);
 
     watched_ctor(&m_watched);

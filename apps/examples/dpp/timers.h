@@ -24,44 +24,12 @@
  * SOFTWARE.
  */
 
-#ifndef AMAST_CONFIG_H_INCLUDED
-#define AMAST_CONFIG_H_INCLUDED
+#ifndef TIMERS_H_INCLUDED
+#define TIMERS_H_INCLUDED
 
-/**
- * Enable am_fsm_set_spy() API to register user callback
- * to intercept external events passed via am_fsm_dispatch() API.
- * Increases the size of struct am_fsm by the size of a function
- * pointer.
- */
-#define AM_FSM_SPY
+#include "common/macros.h"
+#include "timer/timer.h"
 
-/** Enable am_assert_failure() implementation. */
-#ifndef AM_ASSERT_FAILURE_ENABLED
-#define AM_ASSERT_FAILURE_ENABLED 1
-#endif
+extern struct am_timer* g_timer;
 
-/**
- * The max number of event pools.
- * Valid range: [1,32].
- */
-#define AM_EVENT_POOLS_NUM_MAX 3
-
-/**
- * The maximum number of active objects.
- * Valid range: [1,64].
- */
-#define AM_AO_NUM_MAX 64
-
-/**
- * HSM hierarchy maximum depth.
- * Valid range: [2,32].
- */
-#define AM_HSM_HIERARCHY_DEPTH_MAX 16
-
-/**
- * Maximum number of mutexes.
- * Valid range: [2,INT_MAX].
- */
-#define AM_PAL_MUTEX_NUM_MAX 2
-
-#endif /* AMAST_CONFIG_H_INCLUDED */
+#endif /* #ifndef TIMERS_H_INCLUDED */

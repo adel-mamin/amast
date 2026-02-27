@@ -49,6 +49,7 @@
  */
 
 #include <stdarg.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "common/alignment.h"
@@ -174,7 +175,7 @@ int main(void) {
     am_hsm_init(am_hsmq, /*init_event=*/NULL);
 
     static const struct hsmq_test {
-        int event;
+        uint16_t event;
         const char *out;
     } in[] = {
         {.event = AM_EVT_A, .out = "a-A;b-B;"},

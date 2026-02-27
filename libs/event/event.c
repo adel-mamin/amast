@@ -66,8 +66,6 @@ struct am_event_state {
 
 static struct am_event_state am_event_state_;
 
-static void crit_stub(void) {}
-
 void am_event_queue_ctor(
     struct am_event_queue *queue, const struct am_event *events[], int nevents
 ) {
@@ -224,12 +222,14 @@ int am_event_queue_get_nfree_min(const struct am_event_queue *queue) {
     return min;
 }
 
+static void event_crit_stub(void) {}
+
 void am_event_state_ctor(const struct am_event_state_cfg *cfg) {
     struct am_event_state *me = &am_event_state_;
     memset(me, 0, sizeof(*me));
 
-    me->crit_enter = cfg ? cfg->crit_enter : crit_stub;
-    me->crit_exit = cfg ? cfg->crit_exit : crit_stub;
+    me->crit_enter = cfg ? cfg->crit_enter : event_crit_stub;
+    me->crit_exit = cfg ? cfg->crit_exit : event_crit_stub;
 }
 
 void am_event_pool_add(void *pool, int size, int block_size, int alignment) {
@@ -284,8 +284,8 @@ struct am_event *am_event_allocate_x(int id, int size, int margin) {
     }
 
     memset(event, 0, sizeof(*event));
-    event->id = id;
-    event->id_lsw = (uint32_t)id & AM_EVENT_ID_LSW_MASK;
+    event->id = (uint16_t)id;
+    event->id_lsw = (uint16_t)id & AM_EVENT_ID_LSW_MASK;
     event->pool_index_plus_one =
         (unsigned)(left + 1) & AM_EVENT_POOL_INDEX_MASK;
 

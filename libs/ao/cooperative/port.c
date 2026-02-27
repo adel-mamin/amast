@@ -54,7 +54,7 @@ static void am_ao_handle(void *ctx, const struct am_event *event) {
     ao->event_handler(ao->ctx, event);
 
     me->running_ao_prio = AM_AO_PRIO_INVALID;
-    AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
+    AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_EMPTY);
 }
 
 bool am_ao_run_all(void) {

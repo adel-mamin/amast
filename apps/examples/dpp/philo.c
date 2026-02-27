@@ -35,6 +35,7 @@
 #include "ao/ao.h"
 
 #include "events.h"
+#include "timers.h"
 #include "philo.h"
 #include "table.h"
 
@@ -47,7 +48,7 @@ static struct philo {
     struct am_ao ao;
     int id;
     int cnt;
-    struct am_timer *timer;
+    int timer;
 } m_philo[PHILO_NUM];
 
 struct am_ao *g_ao_philo[PHILO_NUM] = {
@@ -70,7 +71,7 @@ static enum am_rc philo_eating(struct philo *me, const struct am_event *event);
 static enum am_rc philo_top(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case EVT_STOP:
-        am_timer_disarm(me->timer);
+        am_timer_disarm(g_timer, me->timer);
         am_ao_post_fifo(g_ao_table, &event_stopped_);
         am_ao_stop(&me->ao);
         return AM_HSM_HANDLED();
@@ -87,7 +88,7 @@ static enum am_rc philo_thinking(
     case AM_EVT_ENTRY:
         am_printf("philo %d is thinking\n", me->id);
         ++me->cnt;
-        am_timer_arm_ms(me->timer, /*ms=*/20, /*interval=*/0);
+        am_timer_arm_ms(g_timer, me->timer, /*ms=*/20, /*interval=*/0);
         return AM_HSM_HANDLED();
 
     case EVT_TIMEOUT: {
@@ -127,7 +128,7 @@ static enum am_rc philo_eating(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("philo %d is eating\n", me->id);
-        am_timer_arm_ms(me->timer, /*ms=*/20, /*interval=*/0);
+        am_timer_arm_ms(g_timer, me->timer, /*ms=*/20, /*interval=*/0);
         return AM_HSM_HANDLED();
 
     case EVT_TIMEOUT: {
@@ -162,10 +163,5 @@ void philo_ctor(int id) {
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(philo_init));
 
-    me->timer = (struct am_timer *)am_timer_allocate(
-        /*id=*/EVT_TIMEOUT,
-        /*size=*/sizeof(struct am_timer),
-        /*domain=*/AM_TICK_DOMAIN_DEFAULT,
-        &me->ao
-    );
+    me->timer = am_timer_allocate_x(g_timer, EVT_TIMEOUT, &me->ao);
 }

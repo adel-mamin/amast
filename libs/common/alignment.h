@@ -112,6 +112,6 @@ AM_ALIGNOF_DEFINE(max_align_t);
  * `AM_ALIGN_SIZE(5, 4) == 8`
  */
 #define AM_ALIGN_SIZE(size, align) \
-    (((size_t)(size) + (size_t)(align) - 1) & ~(size_t)((align) - 1))
+    ((int)(((size_t)(size) + (size_t)(align) - 1) & ~(size_t)((align) - 1)))
 
 #endif /* AM_ALIGNMENT_H_INCLUDED */

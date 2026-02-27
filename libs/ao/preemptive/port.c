@@ -45,7 +45,7 @@ static void am_ao_handle(void *ctx, const struct am_event *event) {
 
     AM_ATOMIC_STORE_N(&ao->last_event, event->id);
     ao->event_handler(ao->ctx, event);
-    AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_INVALID);
+    AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_EMPTY);
 }
 
 static void am_ao_task(void *param) {

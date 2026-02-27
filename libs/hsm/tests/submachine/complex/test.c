@@ -24,6 +24,7 @@
  * SOFTWARE.
  */
 
+#include <stdint.h>
 #include <stdarg.h>
 #include <string.h>
 
@@ -64,7 +65,7 @@ static void test_submachine(void) {
     }
 
     struct test2 {
-        int event;
+        uint16_t event;
         const char *out;
     };
     static const struct test2 in[] = {

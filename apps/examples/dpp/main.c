@@ -46,6 +46,9 @@
 #include "table.h"
 #include "events.h"
 
+static struct am_timer m_timer;
+struct am_timer *g_timer = &m_timer;
+
 static const struct am_event *m_queue_philo[PHILO_NUM][2 * PHILO_NUM];
 static const struct am_event *m_queue_table[2 * PHILO_NUM];
 static char m_event_pool[3 * PHILO_NUM][128] AM_ALIGNED(AM_ALIGN_MAX);
@@ -111,15 +114,38 @@ static void ticker_task(void *param) {
 
     am_task_wait_all();
 
-    uint32_t now_ticks = am_time_get_tick(AM_TICK_DOMAIN_DEFAULT);
+    uint32_t now_ticks = am_time_get_tick(/*domain=*/0);
     while (am_ao_get_cnt() > 0) {
-        am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        am_sleep_till_ticks(/*domain=*/0, now_ticks + 1);
         now_ticks += 1;
-        am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
+        uint32_t fired = am_timer_tick(g_timer);
+        while (fired) {
+            int tix = AM_CTZL(fired);
+            struct am_timer_event *event = am_timer_from_tix(g_timer, tix);
+            fired &= (uint32_t)~(1UL << (unsigned)tix);
+            void *owner = AM_CAST(struct am_timer_event_x *, event)->ctx;
+            if (owner) {
+                am_ao_post_fifo(owner, &event->base);
+            } else {
+                am_ao_publish(&event->base);
+            }
+        }
     }
 }
 
 int main(void) {
+    struct am_timer_event_x timer_events[32];
+
+    am_timer_ctor(
+        g_timer,
+        /*domain_id=*/0,
+        timer_events,
+        AM_COUNTOF(timer_events),
+        sizeof(struct am_timer_event_x)
+    );
+
+    am_timer_register_cbs(&m_timer, am_crit_enter, am_crit_exit);
+
     am_ao_state_ctor(/*cfg=*/NULL);
 
     am_event_pool_add(

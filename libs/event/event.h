@@ -37,11 +37,7 @@
 #include <stdint.h>
 
 #include "common/alignment.h"
-#include "common/macros.h"
 #include "common/types.h"
-
-/** No event ID should have this value. */
-#define AM_EVT_INVALID -1
 
 /**
  * Empty event.
@@ -109,32 +105,23 @@
 /** Number of bits reserved for event reference counter. */
 #define AM_EVENT_REF_COUNTER_BITS 7
 
-/** Number of bits reserved for number of time domains. */
-#define AM_EVENT_TICK_DOMAIN_BITS 3
-/** Tick domain bit mask. */
-#define AM_EVENT_TICK_DOMAIN_MASK ((1U << AM_EVENT_TICK_DOMAIN_BITS) - 1U)
-/** Maximum value of tick domain. */
-#define AM_EVENT_TICK_DOMAIN_MAX AM_EVENT_TICK_DOMAIN_MASK
-
 /** Number of bits reserved for number of pools. */
 #define AM_EVENT_POOL_INDEX_BITS 5
 
 /** Number of bits reserved for least significant bits of event ID. */
-#define AM_EVENT_ID_LSW_BITS 16
+#define AM_EVENT_ID_LSW_BITS 4
 
 /** Event descriptor. */
 struct am_event {
     /** event ID */
-    int32_t id;
+    uint32_t id : 16;
 
     /** reference counter */
     uint32_t ref_counter : AM_EVENT_REF_COUNTER_BITS;
-    /** if set to zero, then event is statically allocated */
+    /** if set to zero, then event is not event pool allocated */
     uint32_t pool_index_plus_one : AM_EVENT_POOL_INDEX_BITS;
-    /** tick domain for time events */
-    uint32_t tick_domain : AM_EVENT_TICK_DOMAIN_BITS;
     /**
-     * Least significant word of id for allocated events.
+     * Least significant bits of id for event pool allocated events.
      * Used for sanity checks.
      */
     uint32_t id_lsw : AM_EVENT_ID_LSW_BITS;
@@ -152,8 +139,6 @@ struct am_event_queue {
     /** safety net to catch missing am_event_queue_ctor() call */
     unsigned ctor_called : 1;
 };
-
-AM_ASSERT_STATIC(sizeof(struct am_event) == (2 * sizeof(int32_t)));
 
 /** To use with AM_ALIGNOF() macro. */
 typedef struct am_event am_event_t;

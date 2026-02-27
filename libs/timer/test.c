@@ -29,98 +29,55 @@
  * Timer unit tests.
  */
 
-#include <string.h>
-
-#include "common/alignment.h"
-#include "common/compiler.h"
 #include "common/macros.h"
 #include "event/event.h"
 #include "timer/timer.h"
-#include "onesize/onesize.h"
-#include "pal/pal.h"
-#include "slist/slist.h"
 
 #define EVT_TEST AM_EVT_USER
 #define EVT_TEST2 (AM_EVT_USER + 1)
 
-static struct owner {
-    int npost;
-} m_owner;
-
-/* cppcheck-suppress-begin constParameterCallback */
-static void post_cb(void *owner, const struct am_event *event) {
-    (void)event;
-    AM_ASSERT(owner == &m_owner);
-    AM_ASSERT((EVT_TEST == event->id) || (EVT_TEST2 == event->id));
-    ++m_owner.npost;
-}
-/* cppcheck-suppress-end constParameterCallback */
-
 static void test_arm(void) {
-    am_event_state_ctor(/*cfg=*/NULL);
+    struct am_timer timer;
 
-    {
-        static char pool[2 * AM_POOL_BLOCK_SIZEOF(struct am_timer)] AM_ALIGNED(
-            AM_ALIGN_MAX
-        );
-        am_event_pool_add(
-            pool,
-            (int)sizeof(pool),
-            AM_POOL_BLOCK_SIZEOF(struct am_timer),
-            AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF(am_event_t))
-        );
-    }
+    struct am_timer_event timer_events[2];
 
-    memset(&m_owner, 0, sizeof(m_owner));
-    struct am_timer_state_cfg cfg_timer = {
-        .post_unsafe = post_cb,
-        .publish = NULL,
-        .update = NULL,
-        .crit_enter = am_crit_enter,
-        .crit_exit = am_crit_exit,
-    };
-    am_timer_state_ctor(&cfg_timer);
-
-    struct am_timer event;
-    am_timer_ctor(&event, /*id=*/EVT_TEST, AM_TICK_DOMAIN_DEFAULT, &m_owner);
-    am_timer_arm_ticks(&event, /*ticks=*/1, /*interval=*/0);
-    AM_ASSERT(am_timer_is_armed(&event));
-
-    struct am_timer *event2 = am_timer_allocate(
-        /*id=*/EVT_TEST2,
-        /*size=*/(int)sizeof(*event2),
-        AM_TICK_DOMAIN_DEFAULT,
-        &m_owner
+    am_timer_ctor(
+        &timer,
+        /*domain_id=*/0,
+        timer_events,
+        AM_COUNTOF(timer_events),
+        sizeof(struct am_timer_event)
     );
-    AM_ASSERT(event2);
 
-    am_timer_arm_ticks(event2, /*ticks=*/1, /*interval=*/0);
-    AM_ASSERT(am_timer_is_armed(event2));
-    am_timer_disarm(event2);
-    AM_ASSERT(!am_timer_is_armed(event2));
-    AM_ASSERT(!am_timer_domain_is_empty_unsafe(AM_TICK_DOMAIN_DEFAULT));
+    int tix = am_timer_allocate(&timer, EVT_TEST);
+    am_timer_arm_ticks(&timer, tix, /*ticks=*/1, /*interval=*/0);
+    AM_ASSERT(am_timer_is_armed(&timer, tix));
 
-    am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
-    AM_ASSERT(1 == m_owner.npost);
+    int tix2 = am_timer_allocate(&timer, EVT_TEST2);
+    am_timer_arm_ticks(&timer, tix2, /*ticks=*/1, /*interval=*/0);
+    AM_ASSERT(am_timer_is_armed(&timer, tix2));
 
-    AM_ASSERT(am_timer_domain_is_empty_unsafe(AM_TICK_DOMAIN_DEFAULT));
+    am_timer_disarm(&timer, tix2);
+    AM_ASSERT(!am_timer_is_armed(&timer, tix2));
+    AM_ASSERT(!am_timer_is_empty_unsafe(&timer));
 
-    am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
-    AM_ASSERT(1 == m_owner.npost);
+    AM_ASSERT(am_timer_tick(&timer) & (1UL << (unsigned)tix));
 
-    am_timer_arm_ticks(&event, /*ticks=*/1, /*interval=*/0);
-    AM_ASSERT(am_timer_is_armed(&event));
+    AM_ASSERT(am_timer_is_empty_unsafe(&timer));
 
-    am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
-    AM_ASSERT(2 == m_owner.npost);
+    AM_ASSERT(0 == am_timer_tick(&timer));
 
-    am_timer_arm_ticks(event2, /*ticks=*/1, /*interval=*/0);
-    AM_ASSERT(am_timer_is_armed(event2));
+    am_timer_arm_ticks(&timer, tix, /*ticks=*/1, /*interval=*/0);
+    AM_ASSERT(am_timer_is_armed(&timer, tix));
 
-    am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
-    AM_ASSERT(3 == m_owner.npost);
+    AM_ASSERT(am_timer_tick(&timer) & (1UL << (unsigned)tix));
 
-    AM_ASSERT(am_timer_domain_is_empty_unsafe(AM_TICK_DOMAIN_DEFAULT));
+    am_timer_arm_ticks(&timer, tix2, /*ticks=*/1, /*interval=*/0);
+    AM_ASSERT(am_timer_is_armed(&timer, tix2));
+
+    AM_ASSERT(am_timer_tick(&timer) & (1UL << (unsigned)tix2));
+
+    AM_ASSERT(am_timer_is_empty_unsafe(&timer));
 }
 
 int main(void) {

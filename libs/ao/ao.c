@@ -38,7 +38,6 @@
 #include "common/types.h"
 #include "event/event.h"
 #include "bit/bit.h"
-#include "timer/timer.h"
 #include "pal/pal.h"
 #include "ao/state.h"
 
@@ -144,18 +143,6 @@ bool am_ao_post_fifo_x(
         am_ao_notify(ao);
     }
     return (AM_RC_OK == rc) || (AM_RC_QUEUE_WAS_EMPTY == rc);
-}
-
-static void am_ao_post_fifo_unsafe(
-    struct am_ao *ao, const struct am_event *event
-) {
-    AM_ASSERT(ao);
-    AM_ASSERT(event);
-
-    enum am_rc rc = am_event_queue_push_back_unsafe(&ao->event_queue, event);
-    if (AM_RC_QUEUE_WAS_EMPTY == rc) {
-        am_ao_notify_unsafe(ao);
-    }
 }
 
 void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event) {
@@ -277,14 +264,6 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
         .crit_exit = me->crit_exit,
     };
     am_event_state_ctor(&cfg_event);
-
-    struct am_timer_state_cfg cfg_timer = {
-        .post_unsafe = (am_timer_post_unsafe_fn)am_ao_post_fifo_unsafe,
-        .publish = (am_timer_publish_fn)am_ao_publish,
-        .crit_enter = me->crit_enter,
-        .crit_exit = me->crit_exit,
-    };
-    am_timer_state_ctor(&cfg_timer);
 }
 
 void am_ao_state_dtor(void) { am_pal_dtor(); }

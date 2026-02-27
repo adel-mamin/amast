@@ -24,6 +24,7 @@
  * SOFTWARE.
  */
 
+#include <stdint.h>
 #include <stdarg.h>
 #include <string.h>
 
@@ -65,7 +66,7 @@ static void test_regular(void) {
     }
 
     struct test2 {
-        int event;
+        uint16_t event;
         const char *out;
     };
     /* clang-format off */

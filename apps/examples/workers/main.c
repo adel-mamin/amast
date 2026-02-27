@@ -34,6 +34,7 @@
 #include <string.h>
 
 #include "common/alignment.h"
+#include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
 #include "event/event.h"
@@ -73,6 +74,8 @@ typedef union events {
     struct job_req req;   /* cppcheck-suppress unusedStructMember */
     struct job_done done; /* cppcheck-suppress unusedStructMember */
 } events_t;
+
+static struct am_timer m_timer;
 
 static struct am_ao_subscribe_list m_pubsub_list[EVT_PUB_MAX];
 static union events m_event_pool[AM_WORKERS_NUM_MAX];
@@ -148,7 +151,7 @@ struct balancer {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    struct am_timer timeout;
+    int timeout;
     int nworkers;
     int nstops;
     int stats[AM_WORKERS_NUM_MAX];
@@ -196,7 +199,7 @@ static enum am_rc balancer_proc(
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_timer_arm_ms(&me->timeout, AM_TIMEOUT_MS, /*interval=*/0);
+        am_timer_arm_ms(&m_timer, me->timeout, AM_TIMEOUT_MS, /*interval=*/0);
         am_ao_post_fifo(&me->ao, &m_evt_start);
         return AM_HSM_HANDLED();
     }
@@ -239,7 +242,7 @@ static enum am_rc balancer_init(
     (void)event;
     am_ao_subscribe(&me->ao, EVT_JOB_DONE);
     am_ao_subscribe(&me->ao, EVT_STOPPED);
-    am_timer_ctor(&me->timeout, EVT_TIMEOUT, AM_TICK_DOMAIN_DEFAULT, &me->ao);
+    me->timeout = am_timer_allocate_x(&m_timer, EVT_TIMEOUT, &me->ao);
     return AM_HSM_TRAN(balancer_proc);
 }
 
@@ -260,13 +263,36 @@ static void ticker_task(void *param) {
     while (am_ao_get_cnt() > 0) {
         am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
-        am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
+        uint32_t fired = am_timer_tick(&m_timer);
+        while (fired) {
+            int tix = AM_CTZL(fired);
+            struct am_timer_event *event = am_timer_from_tix(&m_timer, tix);
+            fired &= (uint32_t)~(1UL << (unsigned)tix);
+            void *owner = AM_CAST(struct am_timer_event_x *, event)->ctx;
+            if (owner) {
+                am_ao_post_fifo(owner, &event->base);
+            } else {
+                am_ao_publish(&event->base);
+            }
+        }
     }
 }
 
 AM_ALIGNOF_DEFINE(events_t);
 
 int main(void) {
+    struct am_timer_event_x timer_events[4];
+
+    am_timer_ctor(
+        &m_timer,
+        /*domain_id=*/0,
+        timer_events,
+        AM_COUNTOF(timer_events),
+        sizeof(struct am_timer_event_x)
+    );
+
+    am_timer_register_cbs(&m_timer, am_crit_enter, am_crit_exit);
+
     am_ao_state_ctor(/*cfg=*/NULL);
 
     am_event_pool_add(

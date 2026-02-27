@@ -37,13 +37,13 @@
 #include "ringbuf/ringbuf.h"
 #include "timer/timer.h"
 #include "event/event.h"
-#include "pal/pal.h"
 #include "ao/ao.h"
 #include "state.h"
+#include "timers.h"
 
 struct ringbuf_writer {
     struct am_ao ao;
-    struct am_timer timer_wait;
+    int timer_wait;
     int len;
 };
 
@@ -69,7 +69,9 @@ static void ringbuf_writer_event_handler(
         int size = me->len;
         (void)am_ringbuf_get_write_ptr(&g_ringbuf, &ptr, &size);
         if (size < me->len) {
-            am_timer_arm_ticks(&me->timer_wait, /*ticks=*/1, /*interval=*/0);
+            am_timer_arm_ticks(
+                g_timer, me->timer_wait, /*ticks=*/1, /*interval=*/0
+            );
             return;
         }
         AM_ASSERT(ptr);
@@ -97,10 +99,5 @@ void ringbuf_writer_ctor(void) {
         (am_ao_fn)ringbuf_writer_event_handler,
         me
     );
-    am_timer_ctor(
-        &me->timer_wait,
-        /*id=*/AM_EVT_RINGBUF_WAIT,
-        /*domain=*/AM_TICK_DOMAIN_DEFAULT,
-        &me->ao
-    );
+    me->timer_wait = am_timer_allocate_x(g_timer, AM_EVT_RINGBUF_WAIT, &me->ao);
 }

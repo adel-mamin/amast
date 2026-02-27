@@ -33,6 +33,7 @@
  */
 
 #include <stdarg.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "common/alignment.h"
@@ -158,7 +159,7 @@ int main(void) {
     am_fsm_init(am_fsmq, /*init_event=*/NULL);
 
     static const struct fsmq_test {
-        int event;
+        uint16_t event;
         const char *out;
     } in[] = {{AM_EVT_A, "a-A;b-B;"}, {AM_EVT_C, "b-C;"}};
 

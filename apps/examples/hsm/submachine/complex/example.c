@@ -25,6 +25,7 @@
  */
 
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <ctype.h>
 
@@ -65,7 +66,7 @@ int main(void) {
     test_print('*');
 
     static const char *blank = "        ";
-    static const int e[] = {
+    static const uint16_t e[] = {
         HSM_EVT_A,
         HSM_EVT_B,
         HSM_EVT_C,

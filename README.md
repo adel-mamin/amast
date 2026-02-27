@@ -362,7 +362,7 @@ int main(void) {
         m_event_pool,
         sizeof(m_event_pool),
         sizeof(m_event_pool[0]),
-        AM_ALIGNOF(am_timer_t)
+        AM_ALIGNOF(am_event_t)
     );
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
 

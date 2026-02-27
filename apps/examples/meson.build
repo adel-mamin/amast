@@ -71,8 +71,8 @@ dpp_cooperative = executable(
     link_with: libdpp)
 
 if pal != 'stubs'
-    test('threaded_preemptive', dpp_preemptive, suite: 'dpp')
-    test('threaded_cooperative', dpp_cooperative, suite: 'dpp')
+    test('dpp_preemptive', dpp_preemptive, suite: 'dpp')
+    test('dpp_cooperative', dpp_cooperative, suite: 'dpp')
 endif
 
 libringbuf_example = library(

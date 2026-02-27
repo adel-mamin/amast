@@ -24,6 +24,7 @@
  * SOFTWARE.
  */
 
+#include <stdint.h>
 #include <string.h>
 #include <stdarg.h>
 
@@ -132,7 +133,7 @@ static void test_reenter_hsm(void) {
     }
 
     struct test {
-        int event;
+        uint16_t event;
         const char *out;
     };
     static const struct test in[] = {

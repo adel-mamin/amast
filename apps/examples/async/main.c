@@ -66,7 +66,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "common/alignment.h"
+#include "common/compiler.h"
 #include "common/constants.h"
 #include "common/macros.h"
 #include "common/types.h"
@@ -94,15 +94,16 @@ struct async {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    struct am_timer *timer;
+    int timer;
     struct am_async async;
     struct am_async async_blinking_green;
     unsigned i;
 };
 
+static struct am_timer m_timer;
+
 static const struct am_event am_evt_start = {.id = ASYNC_EVT_START};
 
-static struct am_timer m_event_pool[1];
 static struct am_ao_subscribe_list m_pubsub_list[ASYNC_EVT_PUB_MAX];
 static const struct am_event *m_queue[2];
 
@@ -152,12 +153,12 @@ static enum am_rc async_blinking_green(struct async *me) {
     /* blinking green */
     for (me->i = 0; me->i < 4; ++me->i) {
         am_printff("\b");
-        am_timer_arm_ms(me->timer, /*ms=*/700, /*interval=*/0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
+        am_timer_arm_ms(&m_timer, me->timer, /*ms=*/700, /*interval=*/0);
+        AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
 
         am_printff(AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm_ms(me->timer, /*ms=*/700, /*interval=*/0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
+        am_timer_arm_ms(&m_timer, me->timer, /*ms=*/700, /*interval=*/0);
+        AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
     }
 
     AM_ASYNC_END();
@@ -171,18 +172,18 @@ static enum am_rc async_regular_(struct async *me) {
     for (;;) {
         /* red */
         am_printff(AM_COLOR_RED AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm_ms(me->timer, /*ms=*/2000, /*interval=*/0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
+        am_timer_arm_ms(&m_timer, me->timer, /*ms=*/2000, /*interval=*/0);
+        AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
 
         /* yellow */
         am_printff("\b" AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm_ms(me->timer, /*ms=*/1000, /*interval=*/0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
+        am_timer_arm_ms(&m_timer, me->timer, /*ms=*/1000, /*interval=*/0);
+        AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
 
         /* green */
         am_printff("\b" AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm_ms(me->timer, /*ms=*/2000, /*interval=*/0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
+        am_timer_arm_ms(&m_timer, me->timer, /*ms=*/2000, /*interval=*/0);
+        AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
 
         /* blinking green */
         AM_ASYNC_CHAIN(async_blinking_green(me));
@@ -205,7 +206,7 @@ static enum am_rc async_regular(
         return AM_HSM_HANDLED();
     }
     case AM_EVT_EXIT: {
-        am_timer_disarm(me->timer);
+        am_timer_disarm(&m_timer, me->timer);
         return AM_HSM_HANDLED();
     }
     case ASYNC_EVT_START:
@@ -226,7 +227,7 @@ static enum am_rc async_off(struct async *me, const struct am_event *event) {
         return AM_HSM_HANDLED();
     }
     case AM_EVT_EXIT: {
-        am_timer_disarm(me->timer);
+        am_timer_disarm(&m_timer, me->timer);
         return AM_HSM_HANDLED();
     }
     case ASYNC_EVT_START:
@@ -236,12 +237,12 @@ static enum am_rc async_off(struct async *me, const struct am_event *event) {
         for (;;) {
             am_printff("\b");
             am_printff(AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
-            am_timer_arm_ms(me->timer, /*ms=*/1000, /*interval=*/0);
-            AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
+            am_timer_arm_ms(&m_timer, me->timer, /*ms=*/1000, /*interval=*/0);
+            AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
 
             am_printff("\b");
-            am_timer_arm_ms(me->timer, /*ms=*/700, /*interval=*/0);
-            AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer));
+            am_timer_arm_ms(&m_timer, me->timer, /*ms=*/700, /*interval=*/0);
+            AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
         }
 
         AM_ASYNC_END();
@@ -267,9 +268,7 @@ static void async_ctor(struct async *me) {
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(async_init));
 
-    me->timer = am_timer_allocate(
-        ASYNC_EVT_TIMER, sizeof(*me->timer), AM_TICK_DOMAIN_DEFAULT, &me->ao
-    );
+    me->timer = am_timer_allocate_x(&m_timer, ASYNC_EVT_TIMER, &me->ao);
 }
 
 static void ticker_task(void *param) {
@@ -281,7 +280,18 @@ static void ticker_task(void *param) {
     while (am_ao_get_cnt() > 0) {
         am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
         now_ticks += 1;
-        am_timer_tick(AM_TICK_DOMAIN_DEFAULT);
+        uint32_t fired = am_timer_tick(&m_timer);
+        while (fired) {
+            int tix = AM_CTZL(fired);
+            struct am_timer_event *event = am_timer_from_tix(&m_timer, tix);
+            fired &= (uint32_t)~(1UL << (unsigned)tix);
+            void *owner = AM_CAST(struct am_timer_event_x *, event)->ctx;
+            if (owner) {
+                am_ao_post_fifo(owner, &event->base);
+            } else {
+                am_ao_publish(&event->base);
+            }
+        }
     }
 }
 
@@ -312,14 +322,19 @@ static void input_task(void *param) {
 }
 
 int main(void) {
-    am_ao_state_ctor(/*cfg=*/NULL);
+    struct am_timer_event_x timer_events[4];
 
-    am_event_pool_add(
-        m_event_pool,
-        sizeof(m_event_pool),
-        sizeof(m_event_pool[0]),
-        AM_ALIGNOF(am_timer_t)
+    am_timer_ctor(
+        &m_timer,
+        /*domain_id=*/0,
+        timer_events,
+        AM_COUNTOF(timer_events),
+        sizeof(struct am_timer_event_x)
     );
+
+    am_timer_register_cbs(&m_timer, am_crit_enter, am_crit_exit);
+
+    am_ao_state_ctor(/*cfg=*/NULL);
 
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
 

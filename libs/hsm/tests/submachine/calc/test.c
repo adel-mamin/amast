@@ -25,8 +25,9 @@
  */
 
 #include <stdarg.h>
-#include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 #include <math.h> /* IWYU pragma: keep */
 
 #include "common/compiler.h"
@@ -54,7 +55,7 @@ static void test_calc(void) {
 
     /* NOLINTBEGIN(clang-analyzer-optin.performance.Padding) */
     struct test {
-        int event;
+        uint16_t event;
         char event_data;
         const char *out;
         const char *data[2];

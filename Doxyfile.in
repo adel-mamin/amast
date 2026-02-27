@@ -26,8 +26,6 @@ EXCLUDE_SYMBOLS        = AM_POOL_BLOCK_SIZEOF \
                          _GNU_SOURCE \
                          AM_EVENT_REF_COUNTER_BITS \
                          AM_EVENT_REF_COUNTER_MASK \
-                         AM_EVENT_TICK_DOMAIN_BITS \
-                         AM_EVENT_TICK_DOMAIN_MASK \
                          AM_EVENT_POOL_INDEX_BITS \
                          AM_EVENT_POOL_INDEX_MASK \
                          AM_EVENT_ID_LSW_BITS \

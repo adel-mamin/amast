@@ -38,9 +38,9 @@
 #include "ringbuf/ringbuf.h"
 #include "timer/timer.h"
 #include "event/event.h"
-#include "pal/pal.h"
 #include "ao/ao.h"
 #include "state.h"
+#include "timers.h"
 
 #define AM_TEST_RINGBUF_TOTAL 1000
 
@@ -48,7 +48,7 @@ struct ringbuf_reader {
     struct am_ao ao;
     int len;
     int total_len;
-    struct am_timer timer_wait;
+    int timer_wait;
 };
 
 static struct ringbuf_reader m_ringbuf_reader;
@@ -73,7 +73,9 @@ static void ringbuf_reader_event_handler(
         int size = 0;
         (void)am_ringbuf_get_read_ptr(&g_ringbuf, &ptr, &size);
         if (size < me->len) {
-            am_timer_arm_ticks(&me->timer_wait, /*ticks=*/1, /*interval=*/0);
+            am_timer_arm_ticks(
+                g_timer, me->timer_wait, /*ticks=*/1, /*interval=*/0
+            );
             return;
         }
         AM_ASSERT(ptr);
@@ -105,10 +107,5 @@ void ringbuf_reader_ctor(void) {
         (am_ao_fn)ringbuf_reader_event_handler,
         me
     );
-    am_timer_ctor(
-        &me->timer_wait,
-        /*id=*/AM_EVT_RINGBUF_WAIT,
-        /*domain=*/AM_TICK_DOMAIN_DEFAULT,
-        &me->ao
-    );
+    me->timer_wait = am_timer_allocate_x(g_timer, AM_EVT_RINGBUF_WAIT, &me->ao);
 }

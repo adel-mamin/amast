@@ -302,20 +302,21 @@ Timer API documentation.
 
 The source code of the corresponding header file is in `timer.h <https://github.com/adel-mamin/amast/blob/main/libs/timer/timer.h>`_.
 
-.. doxygentypedef:: am_timer_post_unsafe_fn
-
-.. doxygentypedef:: am_timer_publish_fn
-
-.. doxygenstruct:: am_timer_state_cfg
-   :members:
-
 .. doxygenstruct:: am_timer
 
-.. doxygenfunction:: am_timer_state_ctor
+.. doxygenstruct:: am_timer_event
+
+.. doxygenstruct:: am_timer_event_x
 
 .. doxygenfunction:: am_timer_ctor
 
+.. doxygenfunction:: am_timer_register_cbs
+
 .. doxygenfunction:: am_timer_allocate
+
+.. doxygenfunction:: am_timer_allocate_x
+
+.. doxygenfunction:: am_timer_from_tix
 
 .. doxygenfunction:: am_timer_tick
 
@@ -327,7 +328,7 @@ The source code of the corresponding header file is in `timer.h <https://github.
 
 .. doxygenfunction:: am_timer_is_armed
 
-.. doxygenfunction:: am_timer_domain_is_empty_unsafe
+.. doxygenfunction:: am_timer_is_empty_unsafe
 
 .. doxygenfunction:: am_timer_get_ticks
 
