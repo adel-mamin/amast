@@ -88,6 +88,10 @@
 #define AM_NORETURN __attribute__((noreturn))
 /** alignment compiler instruction */
 #define AM_ALIGNED(x) __attribute__((aligned(x)))
+/** count leading zeros in unsigned long */
+#define AM_CLZL(x) __builtin_clzl(x)
+/** count trailing zeros in unsigned long */
+#define AM_CTZL(x) __builtin_ctzl(x)
 
 /**
  * The parameter `si` specifies which argument is the format string argument
