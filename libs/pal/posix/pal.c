@@ -56,9 +56,6 @@
 /* to silence unused macro warnings */
 AM_ASSERT_STATIC(_POSIX_C_SOURCE);
 
-/** Default tick rate [ms] */
-#define AM_TICK_DOMAIN_DEFAULT_MS 10
-
 /** PAL task descriptor */
 struct am_task {
     /** pthread data */
@@ -320,46 +317,30 @@ uint32_t am_time_get_ms(void) {
 
 uint32_t am_time_get_tick(int domain) {
     AM_ASSERT(AM_TICK_DOMAIN_DEFAULT == domain);
-
-    uint32_t ms = am_time_get_ms();
-    return (uint32_t)AM_DIV_CEIL(ms, AM_TICK_DOMAIN_DEFAULT_MS);
+    return am_time_get_ms();
 }
 
 uint32_t am_time_get_tick_from_ms(int domain, uint32_t ms) {
     AM_ASSERT(AM_TICK_DOMAIN_DEFAULT == domain);
-
-    return (uint32_t)AM_DIV_CEIL(ms, AM_TICK_DOMAIN_DEFAULT_MS);
+    return ms;
 }
 
 uint32_t am_time_get_ms_from_tick(int domain, uint32_t tick) {
     AM_ASSERT(AM_TICK_DOMAIN_DEFAULT == domain);
-
-    return (uint32_t)(tick * AM_TICK_DOMAIN_DEFAULT_MS);
+    return tick;
 }
 
-void am_sleep_ticks(int domain, int ticks) {
+void am_sleep_ticks(int domain, uint32_t ticks) {
     AM_ASSERT(AM_TICK_DOMAIN_DEFAULT == domain);
     if (0 == ticks) {
         return;
     }
-    if (ticks < 0) {
-        am_sleep_ms(-1);
-        return;
-    }
-    am_sleep_ms(ticks * AM_TICK_DOMAIN_DEFAULT_MS);
+    am_sleep_ms(ticks);
 }
 
-void am_sleep_ms(int ms) {
+void am_sleep_ms(uint32_t ms) {
     if (0 == ms) {
         return;
-    }
-    if (ms < 0) {
-        struct timespec req = {
-            .tv_sec = 86400, .tv_nsec = 0
-        }; /* 1 day in seconds */
-        while (1) {
-            nanosleep(&req, NULL); /* Sleep for 1 day at a time */
-        }
     }
     struct timespec ts = {
         .tv_sec = ms / 1000,             /**< convert ms -> s */
@@ -383,8 +364,7 @@ void am_sleep_till_ticks(int domain, uint32_t ticks) {
     if ((0 == sleep_ticks) || (sleep_ticks > UINT32_MAX / 2)) {
         return;
     }
-    useconds_t us =
-        (useconds_t)sleep_ticks * AM_TICK_DOMAIN_DEFAULT_MS * 1000UL;
+    useconds_t us = (useconds_t)sleep_ticks * 1000UL;
     usleep(us);
 }
 

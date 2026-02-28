@@ -254,13 +254,7 @@ uint32_t am_time_get_ms_from_tick(int domain, uint32_t tick) {
     return k_ticks_to_ms_ceil32(tick);
 }
 
-void am_sleep_ticks(int domain, int ticks) {
-    if (ticks < 0) {
-        k_sleep(K_FOREVER);
-    } else {
-        k_sleep(K_TICKS(ticks));
-    }
-}
+void am_sleep_ticks(int domain, uint32_t ticks) { k_sleep(K_TICKS(ticks)); }
 
 void am_sleep_till_ticks(int domain, uint32_t ticks) {
     (void)domain;
@@ -271,13 +265,7 @@ void am_sleep_till_ticks(int domain, uint32_t ticks) {
     }
 }
 
-void am_sleep_ms(int ms) {
-    if (ms < 0) {
-        k_sleep(K_FOREVER);
-    } else {
-        k_sleep(K_MSEC(ms));
-    }
-}
+void am_sleep_ms(uint32_t ms) { k_sleep(K_MSEC(ms)); }
 
 void am_sleep_till_ms(uint32_t ms) {
     uint32_t now = k_uptime_get_32();

@@ -148,12 +148,12 @@ uint32_t am_time_get_tick_from_ms(int domain, uint32_t ms) {
     return AM_MAX(1, AM_DIV_CEIL(ms, portTICK_PERIOD_MS));
 }
 
-void am_sleep_ticks(int domain, int ticks) {
+void am_sleep_ticks(int domain, uint32_t ticks) {
     AM_ASSERT(AM_TICK_DOMAIN_DEFAULT == domain);
     vTaskDelay(ticks);
 }
 
-void am_sleep_ms(int ms) {
+void am_sleep_ms(uint32_t ms) {
     uint32_t ticks = am_time_get_tick_from_ms(AM_TICK_DOMAIN_DEFAULT, ms);
     vTaskDelay(ticks);
 }

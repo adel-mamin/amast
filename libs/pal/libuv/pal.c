@@ -315,10 +315,9 @@ uint32_t am_time_get_ms_from_tick(int domain, uint32_t tick) {
     return tick;
 }
 
-void am_sleep_ticks(int domain, int ticks) {
+void am_sleep_ticks(int domain, uint32_t ticks) {
     (void)domain;
-    AM_ASSERT(ticks >= 0);
-    AM_ASSERT(ticks <= INT_MAX);
+    AM_ASSERT(ticks <= UINT_MAX);
     uv_sleep((unsigned)ticks);
 }
 
@@ -326,22 +325,17 @@ void am_sleep_till_ticks(int domain, uint32_t ticks) {
     uint32_t now = am_time_get_tick(domain);
     if (ticks > now) {
         uint32_t diff = ticks - now;
-        AM_ASSERT(diff <= INT_MAX);
-        am_sleep_ticks(domain, (int)diff);
+        am_sleep_ticks(domain, diff);
     }
 }
 
-void am_sleep_ms(int ms) {
-    AM_ASSERT(ms >= 0);
-    uv_sleep((unsigned)ms);
-}
+void am_sleep_ms(uint32_t ms) { uv_sleep((unsigned)ms); }
 
 void am_sleep_till_ms(uint32_t ms) {
     uint32_t now = am_time_get_ms();
     if (ms > now) {
         uint32_t diff = ms - now;
-        AM_ASSERT(diff <= INT_MAX);
-        am_sleep_ms((int)diff);
+        am_sleep_ms(diff);
     }
 }
 
