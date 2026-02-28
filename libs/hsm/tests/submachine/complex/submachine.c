@@ -96,8 +96,6 @@ struct complex_sm {
 
 static struct complex_sm m_complex_sm;
 
-struct am_hsm *g_complex_sm = &m_complex_sm.hsm;
-
 #define SM_0 0
 #define SM_1 1
 #define SM_2 2
@@ -323,3 +321,5 @@ void complex_sm_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(complex_sm_init));
     me->log = log;
 }
+
+struct am_hsm *complex_get_obj(void) { return &m_complex_sm.hsm; }

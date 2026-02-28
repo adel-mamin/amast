@@ -41,11 +41,12 @@ static void calc_print(void) {
     static char buf_prev[256];
     static char buf[256];
 
-    struct am_blk d0 = calc_get_operand(g_calc, 0);
-    struct am_blk d1 = calc_get_operand(g_calc, 1);
-    char op = calc_get_operator(g_calc);
+    struct am_hsm *calc = calc_get_obj();
+    struct am_blk d0 = calc_get_operand(calc, 0);
+    struct am_blk d1 = calc_get_operand(calc, 1);
+    char op = calc_get_operator(calc);
     double res;
-    bool result_valid = calc_get_result(g_calc, &res);
+    bool result_valid = calc_get_result(calc, &res);
     if (result_valid) {
         snprintf(
             buf,
@@ -108,7 +109,8 @@ int main(void) {
     printf("Type [0-9 . / * + - c d =] (x to turn off)\n");
     printf(AM_COLOR_RESET);
 
-    am_hsm_init(g_calc, /*init_event=*/NULL);
+    struct am_hsm *calc = calc_get_obj();
+    am_hsm_init(calc, /*init_event=*/NULL);
     calc_print();
 
     static const char *blank = " ";
@@ -121,7 +123,7 @@ int main(void) {
         }
         int n = getchar();
         if (EOF == c) {
-            am_hsm_dispatch(g_calc, &(struct am_event){.id = EVT_OFF});
+            am_hsm_dispatch(calc, &(struct am_event){.id = EVT_OFF});
             goto end;
         }
         printf("\033[A\r"); /* move the cursor up one line */
@@ -132,7 +134,7 @@ int main(void) {
             printf("%s", blank);
             n = getchar();
             if (EOF == n) {
-                am_hsm_dispatch(g_calc, &(struct am_event){.id = EVT_OFF});
+                am_hsm_dispatch(calc, &(struct am_event){.id = EVT_OFF});
                 goto end;
             }
         }
@@ -140,7 +142,7 @@ int main(void) {
 
         c = tolower(c);
         if ('x' == c) {
-            am_hsm_dispatch(g_calc, &(struct am_event){.id = EVT_OFF});
+            am_hsm_dispatch(calc, &(struct am_event){.id = EVT_OFF});
             goto end;
         }
         struct calc_event e = {.data = (char)c};
@@ -148,12 +150,12 @@ int main(void) {
         if (!valid) {
             continue;
         }
-        am_hsm_dispatch(g_calc, &e.event);
+        am_hsm_dispatch(calc, &e.event);
         calc_print();
     }
 
 end:
-    am_hsm_dtor(g_calc);
+    am_hsm_dtor(calc);
     calc_print();
 
     return 0;

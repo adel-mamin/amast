@@ -75,13 +75,6 @@ typedef union events {
     struct job_done done; /* cppcheck-suppress unusedStructMember */
 } events_t;
 
-static struct am_ao_subscribe_list m_pubsub_list[EVT_PUB_MAX];
-static union events m_event_pool[AM_WORKERS_NUM_MAX];
-
-static const struct am_event *m_queue_balancer[AM_WORKERS_NUM_MAX];
-
-static const struct am_event *m_queue_worker[AM_WORKERS_NUM_MAX][2];
-
 struct worker {
     /*
      * Must be the first member of the structure.
@@ -91,8 +84,6 @@ struct worker {
     struct am_ao ao;
     int id;
 };
-
-static struct worker m_workers[AM_WORKERS_NUM_MAX];
 
 static const struct am_event m_evt_stop = {.id = EVT_STOP};
 static const struct am_event m_evt_stopped = {.id = EVT_STOPPED};
@@ -151,17 +142,17 @@ struct balancer {
     struct am_ao ao;
     struct am_timer *timer;
     int tix_timeout;
-    int nworkers;
+    int ncpus;
     int nstops;
     int stats[AM_WORKERS_NUM_MAX];
+    struct worker *workers;
+    int nworkers;
 };
-
-static struct balancer m_balancer;
 
 static void balancer_check_stats(const struct balancer *me) {
     int baseline = me->stats[0];
     AM_ASSERT(baseline > 0);
-    for (int i = 1; i < me->nworkers; ++i) {
+    for (int i = 1; i < me->ncpus; ++i) {
         int percent =
             AM_ABS((int)(100LL * (baseline - me->stats[i]) / baseline));
         AM_ASSERT(percent < 40);
@@ -178,8 +169,8 @@ static enum am_rc balancer_stopping(
 
     case EVT_STOPPED: {
         ++me->nstops;
-        if (me->nstops == me->nworkers) {
-            for (int i = 0; i < me->nworkers; ++i) {
+        if (me->nstops == me->ncpus) {
+            for (int i = 0; i < me->ncpus; ++i) {
                 am_printf("worker: %d jobs done: %d\n", i, me->stats[i]);
             }
             balancer_check_stats(me);
@@ -218,14 +209,14 @@ static enum am_rc balancer_proc(
     case EVT_JOB_DONE: {
         const struct job_done *done = (const struct job_done *)event;
         AM_ASSERT(done->worker >= 0);
-        AM_ASSERT(done->worker < AM_COUNTOF(m_workers));
+        AM_ASSERT(done->worker < me->nworkers);
         struct job_req *req = AM_CAST(
             struct job_req *,
             am_event_allocate(EVT_JOB_REQ, sizeof(struct job_req))
         );
         req->work = work;
         req->cycles = AM_WORKER_LOAD_CYCLES;
-        am_ao_post_fifo(&m_workers[done->worker].ao, &req->event);
+        am_ao_post_fifo(&me->workers[done->worker].ao, &req->event);
         ++me->stats[done->worker];
         return AM_HSM_HANDLED();
     }
@@ -244,12 +235,20 @@ static enum am_rc balancer_init(
     return AM_HSM_TRAN(balancer_proc);
 }
 
-static void balancer_ctor(int nworkers, struct am_timer *timer) {
-    struct balancer *me = &m_balancer;
+static void balancer_ctor(
+    struct balancer *me,
+    int ncpus,
+    struct am_timer *timer,
+    struct worker *workers,
+    int nworkers
+) {
     memset(me, 0, sizeof(*me));
-    me->nworkers = nworkers;
+    me->ncpus = ncpus;
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(balancer_init));
+
+    me->workers = workers;
+    me->nworkers = nworkers;
 
     me->timer = timer;
     me->tix_timeout = am_timer_allocate_x(me->timer, EVT_TIMEOUT, &me->ao);
@@ -298,14 +297,16 @@ int main(void) {
 
     am_ao_state_ctor(/*cfg=*/NULL);
 
+    union events event_pool[AM_WORKERS_NUM_MAX];
     am_event_pool_add(
-        m_event_pool,
-        sizeof(m_event_pool),
-        sizeof(m_event_pool[0]),
+        event_pool,
+        sizeof(event_pool),
+        sizeof(event_pool[0]),
         AM_ALIGNOF(events_t)
     );
 
-    am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
+    struct am_ao_subscribe_list pubsub_list[EVT_PUB_MAX];
+    am_ao_init_subscribe_list(pubsub_list, AM_COUNTOF(pubsub_list));
 
     int ncpus = am_get_cpu_count();
     am_printf("Number of CPUs: %d\n", ncpus);
@@ -313,29 +314,34 @@ int main(void) {
     ncpus = AM_MIN(ncpus, AM_WORKERS_NUM_MAX);
     ncpus = AM_MIN(ncpus, AM_AO_NUM_MAX);
 
-    balancer_ctor(/*nworkers=*/ncpus, &timer);
+    struct balancer balancer;
+    struct worker workers[AM_WORKERS_NUM_MAX];
+
+    balancer_ctor(&balancer, ncpus, &timer, workers, AM_COUNTOF(workers));
     for (int i = 0; i < ncpus; ++i) {
-        worker_ctor(&m_workers[i], /*id=*/i);
+        worker_ctor(&workers[i], /*id=*/i);
     }
 
+    const struct am_event *queue_balancer[AM_WORKERS_NUM_MAX];
     am_ao_start(
-        &m_balancer.ao,
+        &balancer.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/m_queue_balancer,
-        /*nqueue=*/AM_COUNTOF(m_queue_balancer),
+        /*queue=*/queue_balancer,
+        /*nqueue=*/AM_COUNTOF(queue_balancer),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"balancer",
         /*init_event=*/NULL
     );
 
+    const struct am_event *queue_worker[AM_WORKERS_NUM_MAX][2];
     for (int i = 0; i < ncpus; ++i) {
         unsigned char prio = (unsigned char)(AM_AO_PRIO_MIN + i);
         am_ao_start(
-            &m_workers[i].ao,
+            &workers[i].ao,
             (struct am_ao_prio){.ao = prio, .task = AM_AO_PRIO_LOW},
-            /*queue=*/m_queue_worker[i],
-            /*nqueue=*/AM_COUNTOF(m_queue_worker[i]),
+            /*queue=*/queue_worker[i],
+            /*nqueue=*/AM_COUNTOF(queue_worker[i]),
             /*stack=*/NULL,
             /*stack_size=*/0,
             /*name=*/"worker",

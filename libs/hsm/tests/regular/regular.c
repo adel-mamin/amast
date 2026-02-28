@@ -47,8 +47,6 @@ struct regular {
 
 static struct regular m_regular;
 
-struct am_hsm *g_regular = &m_regular.hsm;
-
 static enum am_rc r_s2(struct regular *me, const struct am_event *event);
 static enum am_rc r_s21(struct regular *me, const struct am_event *event);
 static enum am_rc r_s211(struct regular *me, const struct am_event *event);
@@ -378,3 +376,5 @@ void regular_ctor(void (*log)(const char *fmt, ...)) {
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(regular_init));
     me->log = log;
 }
+
+struct am_hsm *regular_get_obj(void) { return &m_regular.hsm; }

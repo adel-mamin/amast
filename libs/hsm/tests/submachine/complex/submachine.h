@@ -29,7 +29,7 @@
 
 #include "common/compiler.h"
 
-extern struct am_hsm *g_complex_sm;
 void complex_sm_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...));
+struct am_hsm *complex_get_obj(void);
 
 #endif /* SUBMACHINE_H_INCLUDED */

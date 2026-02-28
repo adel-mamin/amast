@@ -62,7 +62,9 @@ int main(void) {
     printf(AM_COLOR_RESET);
 
     m_regular_log_buf[0] = '\0';
-    am_hsm_init(g_regular, /*init_event=*/NULL);
+
+    struct am_hsm *regular = regular_get_obj();
+    am_hsm_init(regular, /*init_event=*/NULL);
     test_print('*');
 
     static const char *blank = "        ";
@@ -105,15 +107,15 @@ int main(void) {
         m_regular_log_buf[0] = '\0';
 
         if (terminate) {
-            am_hsm_dispatch(g_regular, &(struct am_event){.id = HSM_EVT_TERM});
+            am_hsm_dispatch(regular, &(struct am_event){.id = HSM_EVT_TERM});
             test_print(c);
             break;
         }
-        am_hsm_dispatch(g_regular, &(struct am_event){.id = e[index]});
+        am_hsm_dispatch(regular, &(struct am_event){.id = e[index]});
         test_print(c);
     }
     m_regular_log_buf[0] = '\0';
-    am_hsm_dtor(g_regular);
+    am_hsm_dtor(regular);
     test_print('*');
 
     return 0;

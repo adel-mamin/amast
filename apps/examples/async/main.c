@@ -103,9 +103,6 @@ struct async {
 
 static const struct am_event am_evt_start = {.id = ASYNC_EVT_START};
 
-static struct am_ao_subscribe_list m_pubsub_list[ASYNC_EVT_PUB_MAX];
-static const struct am_event *m_queue[2];
-
 static enum am_rc async_top(struct async *me, const struct am_event *event);
 static enum am_rc async_regular(struct async *me, const struct am_event *event);
 static enum am_rc async_off(struct async *me, const struct am_event *event);
@@ -338,17 +335,20 @@ int main(void) {
 
     am_ao_state_ctor(/*cfg=*/NULL);
 
-    am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
+    struct am_ao_subscribe_list pubsum_list[ASYNC_EVT_PUB_MAX];
+    am_ao_init_subscribe_list(pubsum_list, AM_COUNTOF(pubsum_list));
 
     struct async m;
     async_ctor(&m, &timer);
+
+    const struct am_event *queue[2];
 
     /* traffic lights controlling active object */
     am_ao_start(
         &m.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/m_queue,
-        /*nqueue=*/AM_COUNTOF(m_queue),
+        /*queue=*/queue,
+        /*nqueue=*/AM_COUNTOF(queue),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"async",

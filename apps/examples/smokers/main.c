@@ -84,14 +84,6 @@ static const struct am_event m_evt_start = {.id = EVT_START};
 static const struct am_event m_evt_stop = {.id = EVT_STOP};
 static const struct am_event m_evt_stopped = {.id = EVT_STOPPED};
 
-static union events m_event_pool[10];
-
-static struct am_ao_subscribe_list m_pubsub_list[EVT_PUB_MAX];
-
-static const struct am_event *m_queue_agent[2 * AM_SMOKERS_NUM_MAX];
-
-static const struct am_event *m_queue_smoker[AM_SMOKERS_NUM_MAX][5];
-
 struct smoker {
     /*
      * Must be the first member of the structure.
@@ -106,8 +98,6 @@ struct smoker {
     unsigned resource_acquired;
     unsigned resource_id;
 };
-
-static struct smoker m_smokers[AM_SMOKERS_NUM_MAX];
 
 static int rand_012(void) {
     static unsigned long next = 1;
@@ -238,8 +228,6 @@ struct agent {
     unsigned resource_id;
 };
 
-static struct agent m_agent;
-
 static void agent_check_stats(const struct agent *me) {
     int baseline = me->stats[0];
     AM_ASSERT(baseline > 0);
@@ -340,8 +328,7 @@ static enum am_rc agent_init(struct agent *me, const struct am_event *event) {
     return AM_HSM_TRAN(agent_proc);
 }
 
-static void agent_ctor(struct am_timer *timer) {
-    struct agent *me = &m_agent;
+static void agent_ctor(struct agent *me, struct am_timer *timer) {
     memset(me, 0, sizeof(*me));
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(agent_init));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
@@ -394,40 +381,50 @@ int main(void) {
 
     am_ao_state_ctor(/*cfg=*/NULL);
 
+    union events event_pool[10];
+
     am_event_pool_add(
-        m_event_pool,
-        sizeof(m_event_pool),
-        sizeof(m_event_pool[0]),
+        event_pool,
+        sizeof(event_pool),
+        sizeof(event_pool[0]),
         AM_ALIGNOF(events_t)
     );
 
-    am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
+    struct am_ao_subscribe_list pubsub_list[EVT_PUB_MAX];
+    am_ao_init_subscribe_list(pubsub_list, AM_COUNTOF(pubsub_list));
 
-    agent_ctor(&timer);
+    struct smoker smokers[AM_SMOKERS_NUM_MAX];
+    struct agent agent;
+
+    agent_ctor(&agent, &timer);
     static const unsigned resource[] = {PAPER, TOBACCO, FIRE};
     for (int i = 0; i < AM_COUNTOF(resource); ++i) {
-        smoker_ctor(&m_smokers[i], i, resource[i], &timer);
+        smoker_ctor(&smokers[i], i, resource[i], &timer);
     }
 
+    const struct am_event *queue_agent[2 * AM_SMOKERS_NUM_MAX];
+
     am_ao_start(
-        &m_agent.ao,
+        &agent.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/m_queue_agent,
-        /*nqueue=*/AM_COUNTOF(m_queue_agent),
+        /*queue=*/queue_agent,
+        /*nqueue=*/AM_COUNTOF(queue_agent),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"agent",
         /*init_event=*/NULL
     );
 
-    for (int i = 0; i < AM_COUNTOF(m_smokers); ++i) {
+    const struct am_event *queue_smoker[AM_SMOKERS_NUM_MAX][5];
+
+    for (int i = 0; i < AM_COUNTOF(smokers); ++i) {
         unsigned char prio = (unsigned char)(AM_AO_PRIO_MIN + i);
         am_ao_start(
-            &m_smokers[i].ao,
+            &smokers[i].ao,
             (struct am_ao_prio){.ao = (unsigned char)(prio + i),
                                 .task = AM_AO_PRIO_LOW},
-            /*queue=*/m_queue_smoker[i],
-            /*nqueue=*/AM_COUNTOF(m_queue_smoker[i]),
+            /*queue=*/queue_smoker[i],
+            /*nqueue=*/AM_COUNTOF(queue_smoker[i]),
             /*stack=*/NULL,
             /*stack_size=*/0,
             /*name=*/"smoker",

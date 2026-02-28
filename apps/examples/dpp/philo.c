@@ -36,7 +36,6 @@
 
 #include "events.h"
 #include "philo.h"
-#include "table.h"
 
 static struct philo {
     /*
@@ -47,6 +46,7 @@ static struct philo {
     struct am_ao ao;
     int id;
     int cnt;
+    struct am_ao *table;
     struct am_timer *timer;
     int tix;
 } m_philo[PHILO_NUM];
@@ -72,7 +72,7 @@ static enum am_rc philo_top(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case EVT_STOP:
         am_timer_disarm(me->timer, me->tix);
-        am_ao_post_fifo(g_ao_table, &event_stopped_);
+        am_ao_post_fifo(me->table, &event_stopped_);
         am_ao_stop(&me->ao);
         return AM_HSM_HANDLED();
     default:
@@ -96,7 +96,7 @@ static enum am_rc philo_thinking(
             EVT_HUNGRY, sizeof(struct hungry)
         );
         msg->philo = me->id;
-        am_ao_post_fifo(g_ao_table, &msg->event);
+        am_ao_post_fifo(me->table, &msg->event);
         return AM_HSM_TRAN(philo_hungry);
     }
     default:
@@ -152,7 +152,7 @@ static enum am_rc philo_init(struct philo *me, const struct am_event *event) {
     return AM_HSM_TRAN(philo_thinking);
 }
 
-void philo_ctor(int id, struct am_timer *timer) {
+void philo_ctor(int id, struct am_ao *table, struct am_timer *timer) {
     AM_ASSERT(id >= 0);
     AM_ASSERT(id < AM_COUNTOF(m_philo));
 
@@ -163,6 +163,13 @@ void philo_ctor(int id, struct am_timer *timer) {
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(philo_init));
 
+    me->table = table;
     me->timer = timer;
     me->tix = am_timer_allocate_x(timer, EVT_TIMEOUT, &me->ao);
+}
+
+struct am_ao *philo_get_obj(int id) {
+    AM_ASSERT(id >= 0);
+    AM_ASSERT(id < AM_COUNTOF(m_philo));
+    return &m_philo[id].ao;
 }

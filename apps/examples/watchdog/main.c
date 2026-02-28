@@ -62,6 +62,7 @@ struct watched {
     struct am_timer *timer;
     int tix_feed;
     int feeds_num;
+    struct am_ao *wdt;
 };
 
 struct wdt {
@@ -74,14 +75,6 @@ struct wdt {
     struct am_timer *timer;
     int tix_bark;
 };
-
-/* tasks */
-static struct watched m_watched;
-static struct wdt m_wdt;
-
-/* task event queues */
-static const struct am_event *m_queue_watched[1];
-static const struct am_event *m_queue_wdt[2];
 
 /* task events */
 static const struct am_event m_evt_wdt_feed = {.id = EVT_WDT_FEED};
@@ -101,7 +94,7 @@ static enum am_rc watched_proc(
     case EVT_WATCHED_TIMEOUT: {
         if (me->feeds_num < 3) {
             am_printff("EVT_WDT_FEED sent\n");
-            am_ao_post_fifo(&m_wdt.ao, &m_evt_wdt_feed);
+            am_ao_post_fifo(me->wdt, &m_evt_wdt_feed);
             ++me->feeds_num;
         }
         return AM_HSM_HANDLED();
@@ -119,7 +112,9 @@ static enum am_rc watched_init(
     return AM_HSM_TRAN(watched_proc);
 }
 
-static void watched_ctor(struct watched *me, struct am_timer *timer) {
+static void watched_ctor(
+    struct watched *me, struct am_timer *timer, struct am_ao *wdt
+) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(watched_init));
@@ -129,6 +124,7 @@ static void watched_ctor(struct watched *me, struct am_timer *timer) {
         EVT_WATCHED_TIMEOUT,
         /*owner=*/&me->ao
     );
+    me->wdt = wdt;
 }
 
 /* 'wdt' task */
@@ -215,25 +211,30 @@ int main(void) {
 
     am_ao_state_ctor(/*cfg=*/NULL);
 
-    watched_ctor(&m_watched, &timer);
-    wdt_ctor(&m_wdt, &timer);
+    struct wdt wdt;
+    wdt_ctor(&wdt, &timer);
 
+    struct watched watched;
+    watched_ctor(&watched, &timer, &wdt.ao);
+
+    const struct am_event *queue_watched[1];
     am_ao_start(
-        &m_watched.ao,
+        &watched.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/m_queue_watched,
-        /*nqueue=*/AM_COUNTOF(m_queue_watched),
+        /*queue=*/queue_watched,
+        /*nqueue=*/AM_COUNTOF(queue_watched),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"watched",
         /*init_event=*/NULL
     );
 
+    const struct am_event *queue_wdt[2];
     am_ao_start(
-        &m_wdt.ao,
+        &wdt.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MIN, .task = AM_AO_PRIO_MIN},
-        /*queue=*/m_queue_wdt,
-        /*nqueue=*/AM_COUNTOF(m_queue_wdt),
+        /*queue=*/queue_wdt,
+        /*nqueue=*/AM_COUNTOF(queue_wdt),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"wdt",

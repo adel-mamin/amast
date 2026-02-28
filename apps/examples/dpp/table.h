@@ -27,7 +27,7 @@
 #ifndef DPP_TABLE_H_INCLUDED
 #define DPP_TABLE_H_INCLUDED
 
-extern struct am_ao *g_ao_table;
+struct am_ao* table_get_obj(void);
 void table_ctor(int nsessions);
 
 #endif /* DPP_TABLE_H_INCLUDED */

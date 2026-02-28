@@ -71,12 +71,6 @@ enum fork_evt {
     EVT_MAX
 };
 
-/*
- * Event size is set to arbitrary value.
- */
-static char m_event_pool[EVT_MAX][128] AM_ALIGNED(AM_ALIGN_MAX);
-static struct am_ao_subscribe_list m_pubsub_list[EVT_PUB_MAX];
-
 struct progress {
     /*
      * Must be the first member of the structure.
@@ -249,13 +243,17 @@ int main(int argc, const char *argv[]) {
 
     am_ao_state_ctor(/*cfg=*/NULL);
 
-    am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
+    struct am_ao_subscribe_list pubsub_list[EVT_PUB_MAX];
+
+    am_ao_init_subscribe_list(pubsub_list, AM_COUNTOF(pubsub_list));
+
+    /*
+     * Event size is set to arbitrary value.
+     */
+    char event_pool[EVT_MAX][128] AM_ALIGNED(AM_ALIGN_MAX);
 
     am_event_pool_add(
-        m_event_pool,
-        sizeof(m_event_pool),
-        sizeof(m_event_pool[0]),
-        AM_ALIGN_MAX
+        event_pool, sizeof(event_pool), sizeof(event_pool[0]), AM_ALIGN_MAX
     );
 
     struct progress m;

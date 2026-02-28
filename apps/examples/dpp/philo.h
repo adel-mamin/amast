@@ -27,11 +27,12 @@
 #ifndef DPP_PHILO_H_INCLUDED
 #define DPP_PHILO_H_INCLUDED
 
+#include "ao/ao.h"
 #include "timer/timer.h"
 
 #define PHILO_NUM 5
 
-extern struct am_ao *g_ao_philo[];
-void philo_ctor(int id, struct am_timer *timer);
+struct am_ao* philo_get_obj(int id);
+void philo_ctor(int id, struct am_ao* table, struct am_timer* timer);
 
 #endif /* DPP_PHILO_H_INCLUDED */

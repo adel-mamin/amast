@@ -56,7 +56,7 @@ struct am_ao *g_ao_table = &m_table.ao;
 
 static struct am_event event_stop_ = {.id = EVT_STOP};
 
-static int philo_is_eating(int philo) {
+static int philo_is_eating(int philo) { /*  */
     AM_ASSERT(philo >= 0);
     AM_ASSERT(philo < AM_COUNTOF(m_table.philo));
     return PHILO_EATING == m_table.philo[philo];
@@ -197,3 +197,5 @@ void table_ctor(int nsessions) {
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(table_init));
     me->nsessions = nsessions;
 }
+
+struct am_ao *table_get_obj(void) { return &m_table.ao; }

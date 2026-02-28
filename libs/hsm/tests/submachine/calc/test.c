@@ -51,7 +51,9 @@ static AM_PRINTF(1, 0) void test_calc_log(const char *fmt, ...) {
 static void test_calc(void) {
     calc_ctor(test_calc_log);
 
-    am_hsm_init(g_calc, /*init_event=*/NULL);
+    struct am_hsm *calc = calc_get_obj();
+
+    am_hsm_init(calc, /*init_event=*/NULL);
 
     /* NOLINTBEGIN(clang-analyzer-optin.performance.Padding) */
     struct test {
@@ -102,28 +104,28 @@ static void test_calc(void) {
     for (int i = 0; i < AM_COUNTOF(in); ++i) {
         const struct test *test = &in[i];
         struct calc_event e = {{.id = test->event}, .data = test->event_data};
-        am_hsm_dispatch(g_calc, &e.event);
+        am_hsm_dispatch(calc, &e.event);
 
         AM_ASSERT(0 == strncmp(m_calc_log_buf, test->out, strlen(test->out)));
 
-        struct am_blk data0 = calc_get_operand(g_calc, /*index=*/0);
+        struct am_blk data0 = calc_get_operand(calc, /*index=*/0);
         size_t len0 = strlen(data0.ptr) + 1;
         AM_ASSERT(0 == memcmp(data0.ptr, test->data[0], len0));
 
-        struct am_blk data1 = calc_get_operand(g_calc, /*index=*/1);
+        struct am_blk data1 = calc_get_operand(calc, /*index=*/1);
         size_t len1 = strlen(data1.ptr) + 1;
         AM_ASSERT(0 == memcmp(data1.ptr, test->data[1], len1));
 
-        AM_ASSERT(test->op == calc_get_operator(g_calc));
+        AM_ASSERT(test->op == calc_get_operator(calc));
 
         m_calc_log_buf[0] = '\0';
     }
 
     double result;
-    bool result_valid = calc_get_result(g_calc, &result);
+    bool result_valid = calc_get_result(calc, &result);
     AM_ASSERT(result_valid && AM_DOUBLE_EQ(0.9, result, 1e-9));
 
-    am_hsm_dtor(g_calc);
+    am_hsm_dtor(calc);
 }
 
 int main(void) {

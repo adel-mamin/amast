@@ -54,7 +54,9 @@ static void test_submachine(void) {
 
     m_complex_sm_log_buf[0] = '\0';
 
-    am_hsm_init(g_complex_sm, /*init_event=*/NULL);
+    struct am_hsm *complex = complex_get_obj();
+
+    am_hsm_init(complex, /*init_event=*/NULL);
 
     {
         const char *out =
@@ -105,7 +107,7 @@ static void test_submachine(void) {
 
     for (int i = 0; i < AM_COUNTOF(in); ++i) {
         struct am_event e = {.id = in[i].event};
-        am_hsm_dispatch(g_complex_sm, &e);
+        am_hsm_dispatch(complex, &e);
         AM_ASSERT(
             0 == strncmp(m_complex_sm_log_buf, in[i].out, strlen(in[i].out))
         );
@@ -114,7 +116,7 @@ static void test_submachine(void) {
 
     {
         static const char *dest = "s111/2-EXIT;s11/2-EXIT;s1/2-EXIT;s/0-EXIT;";
-        am_hsm_dtor(g_complex_sm);
+        am_hsm_dtor(complex);
         AM_ASSERT(0 == strncmp(m_complex_sm_log_buf, dest, strlen(dest)));
         m_complex_sm_log_buf[0] = '\0';
     }

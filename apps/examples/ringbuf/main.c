@@ -41,14 +41,6 @@
 #include "pal/pal.h"
 #include "state.h"
 
-struct am_ringbuf g_ringbuf;
-
-const uint8_t g_ringbuf_data[] = {0, 1, 2, 3, 4, 5, 6, 7};
-int g_ringbuf_data_len = AM_COUNTOF(g_ringbuf_data);
-
-static const struct am_event *m_queue_ringbuf_reader[1];
-static const struct am_event *m_queue_ringbuf_writer[1];
-
 AM_NORETURN static void ticker_task(void *param) {
     struct am_timer *timer = param;
 
@@ -90,29 +82,35 @@ static void test_ringbuf_threading(void) {
 
     uint8_t buf[9];
 
-    am_ringbuf_ctor(&g_ringbuf, buf, AM_COUNTOF(buf));
+    struct am_ringbuf ringbuf;
+
+    const uint8_t data[] = {0, 1, 2, 3, 4, 5, 6, 7};
+
+    am_ringbuf_ctor(&ringbuf, buf, AM_COUNTOF(buf));
 
     am_ao_state_ctor(/*cfg=*/NULL);
 
-    ringbuf_reader_ctor(&timer);
-    ringbuf_writer_ctor(&timer);
+    ringbuf_reader_ctor(&ringbuf, &timer, data, (int)sizeof(data));
+    ringbuf_writer_ctor(&ringbuf, &timer, data, (int)sizeof(data));
 
+    const struct am_event *queue_reader[1];
     am_ao_start(
-        g_ringbuf_reader,
+        ringbuf_reader_get_obj(),
         (struct am_ao_prio){.ao = AM_AO_PRIO_MID, .task = AM_AO_PRIO_MID},
-        /*queue=*/m_queue_ringbuf_reader,
-        /*nqueue=*/AM_COUNTOF(m_queue_ringbuf_reader),
+        /*queue=*/queue_reader,
+        /*nqueue=*/AM_COUNTOF(queue_reader),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"ringbuf_reader",
         /*init_event=*/NULL
     );
 
+    const struct am_event *queue_writer[1];
     am_ao_start(
-        g_ringbuf_writer,
+        ringbuf_writer_get_obj(),
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/m_queue_ringbuf_writer,
-        /*nqueue=*/AM_COUNTOF(m_queue_ringbuf_writer),
+        /*queue=*/queue_writer,
+        /*nqueue=*/AM_COUNTOF(queue_writer),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"ringbuf_writer",

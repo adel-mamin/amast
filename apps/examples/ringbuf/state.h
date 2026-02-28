@@ -39,15 +39,20 @@
 #define AM_EVT_RINGBUF_WRITE (AM_EVT_USER + 1)
 #define AM_EVT_RINGBUF_WAIT (AM_EVT_USER + 2)
 
-extern struct am_ringbuf g_ringbuf;
+void ringbuf_reader_ctor(
+    struct am_ringbuf *ringbuf,
+    struct am_timer *timer,
+    const uint8_t *data,
+    int len
+);
+void ringbuf_writer_ctor(
+    struct am_ringbuf *ringbuf,
+    struct am_timer *timer,
+    const uint8_t *data,
+    int len
+);
 
-extern const uint8_t g_ringbuf_data[];
-extern int g_ringbuf_data_len;
-
-extern struct am_ao *g_ringbuf_reader;
-extern struct am_ao *g_ringbuf_writer;
-
-void ringbuf_reader_ctor(struct am_timer *timer);
-void ringbuf_writer_ctor(struct am_timer *timer);
+struct am_ao *ringbuf_reader_get_obj(void);
+struct am_ao *ringbuf_writer_get_obj(void);
 
 #endif /* RINGBUF_STATE_H_INCLUDED */

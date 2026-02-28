@@ -46,11 +46,6 @@
 #include "table.h"
 #include "events.h"
 
-static const struct am_event *m_queue_philo[PHILO_NUM][2 * PHILO_NUM];
-static const struct am_event *m_queue_table[2 * PHILO_NUM];
-static char m_event_pool[3 * PHILO_NUM][128] AM_ALIGNED(AM_ALIGN_MAX);
-static struct am_ao_subscribe_list m_pubsub_list[AM_AO_EVT_PUB_MAX];
-
 const char *event_to_str(int id) {
     if (EVT_DONE == id) return "DONE";
     if (EVT_EAT == id) return "EAT";
@@ -147,25 +142,27 @@ int main(void) {
 
     am_ao_state_ctor(/*cfg=*/NULL);
 
+    char event_pool[3 * PHILO_NUM][128] AM_ALIGNED(AM_ALIGN_MAX);
+
     am_event_pool_add(
-        m_event_pool,
-        sizeof(m_event_pool),
-        sizeof(m_event_pool[0]),
-        AM_ALIGN_MAX
+        event_pool, sizeof(event_pool), sizeof(event_pool[0]), AM_ALIGN_MAX
     );
 
-    am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
+    struct am_ao_subscribe_list pubsub_list[AM_AO_EVT_PUB_MAX];
+    am_ao_init_subscribe_list(pubsub_list, AM_COUNTOF(pubsub_list));
 
     for (int i = 0; i < PHILO_NUM; ++i) {
-        philo_ctor(i, &timer);
+        philo_ctor(i, table_get_obj(), &timer);
     }
     table_ctor(/*nsessions=*/100);
 
+    const struct am_event *queue_table[2 * PHILO_NUM];
+
     am_ao_start(
-        g_ao_table,
+        table_get_obj(),
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/m_queue_table,
-        /*nqueue=*/AM_COUNTOF(m_queue_table), /* NOLINT */
+        /*queue=*/queue_table,
+        /*nqueue=*/AM_COUNTOF(queue_table), /* NOLINT */
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"table",
@@ -176,13 +173,15 @@ int main(void) {
         "philo0", "philo1", "philo2", "philo3", "philo4"
     };
 
+    const struct am_event *queue_philo[PHILO_NUM][2 * PHILO_NUM];
+
     for (int i = 0; i < AM_COUNTOF(names); ++i) {
         unsigned char prio = (unsigned char)(AM_AO_PRIO_MIN + i);
         am_ao_start(
-            g_ao_philo[i],
+            philo_get_obj(i),
             (struct am_ao_prio){.ao = prio, .task = prio},
-            /*queue=*/m_queue_philo[i],
-            /*nqueue=*/AM_COUNTOF(m_queue_philo[i]),
+            /*queue=*/queue_philo[i],
+            /*nqueue=*/AM_COUNTOF(queue_philo[i]),
             /*stack=*/NULL,
             /*stack_size=*/0,
             /*name=*/names[i],

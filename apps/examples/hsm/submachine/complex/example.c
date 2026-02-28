@@ -62,7 +62,9 @@ int main(void) {
     printf(AM_COLOR_RESET);
 
     m_log_buf[0] = '\0';
-    am_hsm_init(g_complex_sm, /*init_event=*/NULL);
+
+    struct am_hsm *complex = complex_get_obj();
+    am_hsm_init(complex, /*init_event=*/NULL);
     test_print('*');
 
     static const char *blank = "        ";
@@ -104,17 +106,15 @@ int main(void) {
         m_log_buf[0] = '\0';
 
         if (terminate) {
-            am_hsm_dispatch(
-                g_complex_sm, &(struct am_event){.id = HSM_EVT_TERM}
-            );
+            am_hsm_dispatch(complex, &(struct am_event){.id = HSM_EVT_TERM});
             test_print(c);
             break;
         }
-        am_hsm_dispatch(g_complex_sm, &(struct am_event){.id = e[index]});
+        am_hsm_dispatch(complex, &(struct am_event){.id = e[index]});
         test_print(c);
     }
     m_log_buf[0] = '\0';
-    am_hsm_dtor(g_complex_sm);
+    am_hsm_dtor(complex);
     test_print('*');
 
     return 0;
