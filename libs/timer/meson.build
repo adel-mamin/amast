@@ -45,7 +45,6 @@ if unit_test
         ['timer.c', 'test.c', slist_src],
         dependencies : [
             libassert_dep,
-            libpal_dep,
             libonesize_dep,
             libevent_dep
         ],

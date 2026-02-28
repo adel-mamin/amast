@@ -199,13 +199,3 @@ uint32_t am_timer_get_ticks(const struct am_timer *timer, int tix) {
 
     return ticks;
 }
-
-uint32_t am_timer_get_interval(const struct am_timer *timer, int tix) {
-    AM_ASSERT(timer);
-
-    timer->crit_enter();
-    uint32_t interval = am_timer_from_tix(timer, tix)->interval_ticks;
-    timer->crit_exit();
-
-    return interval;
-}

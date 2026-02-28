@@ -238,17 +238,6 @@ bool am_timer_is_empty_unsafe(const struct am_timer *timer);
  */
 uint32_t am_timer_get_ticks(const struct am_timer *timer, int tix);
 
-/**
- * Get timer interval.
- *
- * @param timer  the timer handler
- * @param tix    the index of the timer event to check as returned by
- *               am_timer_allocate() or am_timer_allocate_x()
- *
- * @return the timer event is sent with this interval [ticks]
- */
-uint32_t am_timer_get_interval(const struct am_timer *timer, int tix);
-
 #ifdef __cplusplus
 }
 #endif

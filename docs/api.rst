@@ -330,8 +330,6 @@ The source code of the corresponding header file is in `timer.h <https://github.
 
 .. doxygenfunction:: am_timer_get_ticks
 
-.. doxygenfunction:: am_timer_get_interval
-
 .. _async_api:
 
 Async
