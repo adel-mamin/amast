@@ -480,7 +480,7 @@ hsm | 2.66 | 0.01
 onesize | 1.43 | 0.00
 ringbuf | 1.55 | 0.00
 slist | 1.21 | 0.00
-timer | 1.50 | 0.08
+timer | 1.37 | 0.08
 
 ## How To Compile For Amast Development
 <a name="how-to-compile"></a>
