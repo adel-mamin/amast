@@ -273,9 +273,6 @@ struct app {
     int ticks;
 };
 
-/* Timer state */
-struct am_timer m_timer;
-
 /* event publish/subscribe memory */
 static struct am_ao_subscribe_list m_pubsub_list[APP_EVT_PUB_MAX];
 
@@ -334,6 +331,8 @@ static void app_ctor(struct app *me, struct am_timer *timer) {
 }
 
 static void ticker_task(void *param) {
+    struct am_timer *timer = param;
+
     am_taks_wait_all();
 
     const int domain = AM_TICK_DOMAIN_DEFAULT;
@@ -342,12 +341,12 @@ static void ticker_task(void *param) {
     while (am_ao_get_cnt() > 0) {
         am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
         now_ticks += 1;
-        am_timer_tick(&m_timer, domain);
+        am_timer_tick(timer, domain);
 
-        uint32_t fired = am_timer_tick(&m_timer);
+        uint32_t fired = am_timer_tick(timer);
         while (fired) {
             int tix = AM_CTZL(fired);
-            struct am_timer_event *event = am_timer_from_tix(&m_timer, tix);
+            struct am_timer_event *event = am_timer_from_tix(timer, tix);
             fired &= (uint32_t)~(1UL << (unsigned)tix);
             void *owner = AM_CAST(struct am_timer_event_x *, event)->ctx;
             if (owner) {
@@ -372,10 +371,11 @@ static void input_task(void *param) {
 }
 
 int main(void) {
+    struct am_timer timer;
     struct am_timer_event_x timer_events[1];
 
     am_timer_ctor(
-        &m_timer,
+        &timer,
         timer_events,
         AM_COUNTOF(timer_events),
         sizeof(struct am_timer_event_x)
@@ -391,7 +391,7 @@ int main(void) {
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
 
     struct app m;
-    app_ctor(&m, &m_timer);
+    app_ctor(&m, &timer);
 
     am_ao_start(
         &m.ao,
@@ -411,7 +411,7 @@ int main(void) {
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*entry=*/ticker_task,
-        /*arg=*/NULL
+        /*arg=*/&timer
     );
 
     /* user input controlling thread */

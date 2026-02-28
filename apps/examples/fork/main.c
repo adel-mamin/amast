@@ -71,8 +71,6 @@ enum fork_evt {
     EVT_MAX
 };
 
-static struct am_timer m_timer;
-
 /*
  * Event size is set to arbitrary value.
  */
@@ -86,7 +84,8 @@ struct progress {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    int timer;
+    struct am_timer *timer;
+    int tix;
     int iprog;
     unsigned prog_ms;
     int rc;
@@ -111,15 +110,12 @@ static enum am_rc progress_top(
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_timer_arm(
-            &m_timer,
-            me->timer,
-            PROGRESS_UPDATE_RATE_MS,
-            PROGRESS_UPDATE_RATE_MS
+            me->timer, me->tix, PROGRESS_UPDATE_RATE_MS, PROGRESS_UPDATE_RATE_MS
         );
         return AM_HSM_HANDLED();
 
     case AM_EVT_EXIT:
-        am_timer_disarm(&m_timer, me->timer);
+        am_timer_disarm(me->timer, me->tix);
         am_printf("\r                  \r"); /* clean the terminal output*/
         return AM_HSM_HANDLED();
 
@@ -153,15 +149,16 @@ static enum am_rc progress_init(
     return AM_HSM_TRAN(progress_top);
 }
 
-static void progress_ctor(struct progress *me) {
+static void progress_ctor(struct progress *me, struct am_timer *timer) {
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(progress_init));
 
-    me->timer = am_timer_allocate_x(&m_timer, EVT_PROGRESS_TICK, &me->ao);
+    me->timer = timer;
+    me->tix = am_timer_allocate_x(timer, EVT_PROGRESS_TICK, &me->ao);
 }
 
 AM_NORETURN static void ticker_task(void *param) {
-    (void)param;
+    struct am_timer *timer = param;
 
     am_task_wait_all();
 
@@ -171,10 +168,10 @@ AM_NORETURN static void ticker_task(void *param) {
     for (;;) {
         am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
         now_ticks += 1;
-        uint32_t fired = am_timer_tick(&m_timer);
+        uint32_t fired = am_timer_tick(timer);
         while (fired) {
             int tix = AM_CTZL(fired);
-            struct am_timer_event *event = am_timer_from_tix(&m_timer, tix);
+            struct am_timer_event *event = am_timer_from_tix(timer, tix);
             fired &= (uint32_t)~(1UL << (unsigned)tix);
             void *owner = AM_CAST(struct am_timer_event_x *, event)->ctx;
             if (owner) {
@@ -238,16 +235,17 @@ int main(int argc, const char *argv[]) {
         return EXIT_FAILURE;
     }
 
+    struct am_timer timer;
     struct am_timer_event_x timer_events[4];
 
     am_timer_ctor(
-        &m_timer,
+        &timer,
         timer_events,
         AM_COUNTOF(timer_events),
         sizeof(struct am_timer_event_x)
     );
 
-    am_timer_register_cbs(&m_timer, am_crit_enter, am_crit_exit);
+    am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
     am_ao_state_ctor(/*cfg=*/NULL);
 
@@ -261,7 +259,7 @@ int main(int argc, const char *argv[]) {
     );
 
     struct progress m;
-    progress_ctor(&m);
+    progress_ctor(&m, &timer);
 
     static const struct am_event *m_queue[EVT_MAX];
 
@@ -282,7 +280,7 @@ int main(int argc, const char *argv[]) {
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*entry=*/ticker_task,
-        /*arg=*/NULL
+        /*arg=*/&timer
     );
 
     am_task_create(

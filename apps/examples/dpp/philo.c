@@ -35,7 +35,6 @@
 #include "ao/ao.h"
 
 #include "events.h"
-#include "timers.h"
 #include "philo.h"
 #include "table.h"
 
@@ -48,7 +47,8 @@ static struct philo {
     struct am_ao ao;
     int id;
     int cnt;
-    int timer;
+    struct am_timer *timer;
+    int tix;
 } m_philo[PHILO_NUM];
 
 struct am_ao *g_ao_philo[PHILO_NUM] = {
@@ -71,7 +71,7 @@ static enum am_rc philo_eating(struct philo *me, const struct am_event *event);
 static enum am_rc philo_top(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case EVT_STOP:
-        am_timer_disarm(g_timer, me->timer);
+        am_timer_disarm(me->timer, me->tix);
         am_ao_post_fifo(g_ao_table, &event_stopped_);
         am_ao_stop(&me->ao);
         return AM_HSM_HANDLED();
@@ -88,7 +88,7 @@ static enum am_rc philo_thinking(
     case AM_EVT_ENTRY:
         am_printf("philo %d is thinking\n", me->id);
         ++me->cnt;
-        am_timer_arm(g_timer, me->timer, /*ms=*/20, /*interval=*/0);
+        am_timer_arm(me->timer, me->tix, /*ms=*/20, /*interval=*/0);
         return AM_HSM_HANDLED();
 
     case EVT_TIMEOUT: {
@@ -128,7 +128,7 @@ static enum am_rc philo_eating(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("philo %d is eating\n", me->id);
-        am_timer_arm(g_timer, me->timer, /*ms=*/20, /*interval=*/0);
+        am_timer_arm(me->timer, me->tix, /*ms=*/20, /*interval=*/0);
         return AM_HSM_HANDLED();
 
     case EVT_TIMEOUT: {
@@ -152,7 +152,7 @@ static enum am_rc philo_init(struct philo *me, const struct am_event *event) {
     return AM_HSM_TRAN(philo_thinking);
 }
 
-void philo_ctor(int id) {
+void philo_ctor(int id, struct am_timer *timer) {
     AM_ASSERT(id >= 0);
     AM_ASSERT(id < AM_COUNTOF(m_philo));
 
@@ -163,5 +163,6 @@ void philo_ctor(int id) {
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(philo_init));
 
-    me->timer = am_timer_allocate_x(g_timer, EVT_TIMEOUT, &me->ao);
+    me->timer = timer;
+    me->tix = am_timer_allocate_x(timer, EVT_TIMEOUT, &me->ao);
 }

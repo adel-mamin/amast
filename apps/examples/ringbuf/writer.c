@@ -39,11 +39,11 @@
 #include "event/event.h"
 #include "ao/ao.h"
 #include "state.h"
-#include "timers.h"
 
 struct ringbuf_writer {
     struct am_ao ao;
-    int timer_wait;
+    struct am_timer *timer;
+    int tix_wait;
     int len;
 };
 
@@ -69,7 +69,7 @@ static void ringbuf_writer_event_handler(
         int size = me->len;
         (void)am_ringbuf_get_write_ptr(&g_ringbuf, &ptr, &size);
         if (size < me->len) {
-            am_timer_arm(g_timer, me->timer_wait, /*ticks=*/1, /*interval=*/0);
+            am_timer_arm(me->timer, me->tix_wait, /*ticks=*/1, /*interval=*/0);
             return;
         }
         AM_ASSERT(ptr);
@@ -87,7 +87,7 @@ static void ringbuf_writer_event_handler(
     }
 }
 
-void ringbuf_writer_ctor(void) {
+void ringbuf_writer_ctor(struct am_timer *timer) {
     struct ringbuf_writer *me = &m_ringbuf_writer;
     memset(me, 0, sizeof(*me));
     me->len = 1;
@@ -97,5 +97,6 @@ void ringbuf_writer_ctor(void) {
         (am_ao_fn)ringbuf_writer_event_handler,
         me
     );
-    me->timer_wait = am_timer_allocate_x(g_timer, AM_EVT_RINGBUF_WAIT, &me->ao);
+    me->timer = timer;
+    me->tix_wait = am_timer_allocate_x(timer, AM_EVT_RINGBUF_WAIT, &me->ao);
 }

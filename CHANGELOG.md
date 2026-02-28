@@ -20,7 +20,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
   Users always have an option to control
   the `am_fsm_dispatch()` and `am_hsm_dispatch()` calls.
 - Rework timer library.
-- Remove `am_timer_get_iterval()`.
+- Remove `am_timer_get_interval()`.
 - Rework timer API to use ticks only.
 
 ### Fixed

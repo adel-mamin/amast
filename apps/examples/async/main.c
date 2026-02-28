@@ -94,13 +94,12 @@ struct async {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    int timer;
+    struct am_timer *timer;
+    int tix;
     struct am_async async;
     struct am_async async_blinking_green;
     unsigned i;
 };
-
-static struct am_timer m_timer;
 
 static const struct am_event am_evt_start = {.id = ASYNC_EVT_START};
 
@@ -153,12 +152,12 @@ static enum am_rc async_blinking_green(struct async *me) {
     /* blinking green */
     for (me->i = 0; me->i < 4; ++me->i) {
         am_printff("\b");
-        am_timer_arm(&m_timer, me->timer, /*ms=*/700, /*interval=*/0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
+        am_timer_arm(me->timer, me->tix, /*ms=*/700, /*interval=*/0);
+        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, me->tix));
 
         am_printff(AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm(&m_timer, me->timer, /*ms=*/700, /*interval=*/0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
+        am_timer_arm(me->timer, me->tix, /*ms=*/700, /*interval=*/0);
+        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, me->tix));
     }
 
     AM_ASYNC_END();
@@ -172,18 +171,18 @@ static enum am_rc async_regular_(struct async *me) {
     for (;;) {
         /* red */
         am_printff(AM_COLOR_RED AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm(&m_timer, me->timer, /*ms=*/2000, /*interval=*/0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
+        am_timer_arm(me->timer, me->tix, /*ms=*/2000, /*interval=*/0);
+        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, me->tix));
 
         /* yellow */
         am_printff("\b" AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm(&m_timer, me->timer, /*ms=*/1000, /*interval=*/0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
+        am_timer_arm(me->timer, me->tix, /*ms=*/1000, /*interval=*/0);
+        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, me->tix));
 
         /* green */
         am_printff("\b" AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm(&m_timer, me->timer, /*ms=*/2000, /*interval=*/0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
+        am_timer_arm(me->timer, me->tix, /*ms=*/2000, /*interval=*/0);
+        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, me->tix));
 
         /* blinking green */
         AM_ASYNC_CHAIN(async_blinking_green(me));
@@ -206,7 +205,7 @@ static enum am_rc async_regular(
         return AM_HSM_HANDLED();
     }
     case AM_EVT_EXIT: {
-        am_timer_disarm(&m_timer, me->timer);
+        am_timer_disarm(me->timer, me->tix);
         return AM_HSM_HANDLED();
     }
     case ASYNC_EVT_START:
@@ -227,7 +226,7 @@ static enum am_rc async_off(struct async *me, const struct am_event *event) {
         return AM_HSM_HANDLED();
     }
     case AM_EVT_EXIT: {
-        am_timer_disarm(&m_timer, me->timer);
+        am_timer_disarm(me->timer, me->tix);
         return AM_HSM_HANDLED();
     }
     case ASYNC_EVT_START:
@@ -237,12 +236,12 @@ static enum am_rc async_off(struct async *me, const struct am_event *event) {
         for (;;) {
             am_printff("\b");
             am_printff(AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
-            am_timer_arm(&m_timer, me->timer, /*ms=*/1000, /*interval=*/0);
-            AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
+            am_timer_arm(me->timer, me->tix, /*ms=*/1000, /*interval=*/0);
+            AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, me->tix));
 
             am_printff("\b");
-            am_timer_arm(&m_timer, me->timer, /*ms=*/700, /*interval=*/0);
-            AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
+            am_timer_arm(me->timer, me->tix, /*ms=*/700, /*interval=*/0);
+            AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, me->tix));
         }
 
         AM_ASYNC_END();
@@ -262,17 +261,18 @@ static enum am_rc async_init(struct async *me, const struct am_event *event) {
     return AM_HSM_TRAN(async_top);
 }
 
-static void async_ctor(struct async *me) {
+static void async_ctor(struct async *me, struct am_timer *timer) {
     memset(me, 0, sizeof(*me));
 
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(async_init));
 
-    me->timer = am_timer_allocate_x(&m_timer, ASYNC_EVT_TIMER, &me->ao);
+    me->timer = timer;
+    me->tix = am_timer_allocate_x(me->timer, ASYNC_EVT_TIMER, &me->ao);
 }
 
 static void ticker_task(void *param) {
-    (void)param;
+    struct am_timer *timer = param;
 
     am_task_wait_all();
 
@@ -282,10 +282,10 @@ static void ticker_task(void *param) {
     while (am_ao_get_cnt() > 0) {
         am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
         now_ticks += ticks_per_ms;
-        uint32_t fired = am_timer_tick(&m_timer);
+        uint32_t fired = am_timer_tick(timer);
         while (fired) {
             int tix = AM_CTZL(fired);
-            struct am_timer_event *event = am_timer_from_tix(&m_timer, tix);
+            struct am_timer_event *event = am_timer_from_tix(timer, tix);
             fired &= (uint32_t)~(1UL << (unsigned)tix);
             void *owner = AM_CAST(struct am_timer_event_x *, event)->ctx;
             if (owner) {
@@ -324,23 +324,24 @@ static void input_task(void *param) {
 }
 
 int main(void) {
+    struct am_timer timer;
     struct am_timer_event_x timer_events[4];
 
     am_timer_ctor(
-        &m_timer,
+        &timer,
         timer_events,
         AM_COUNTOF(timer_events),
         sizeof(struct am_timer_event_x)
     );
 
-    am_timer_register_cbs(&m_timer, am_crit_enter, am_crit_exit);
+    am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
     am_ao_state_ctor(/*cfg=*/NULL);
 
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
 
     struct async m;
-    async_ctor(&m);
+    async_ctor(&m, &timer);
 
     /* traffic lights controlling active object */
     am_ao_start(
@@ -361,7 +362,7 @@ int main(void) {
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*entry=*/ticker_task,
-        /*arg=*/NULL
+        /*arg=*/&timer
     );
 
     /* user input controlling thread */

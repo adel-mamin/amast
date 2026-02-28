@@ -80,8 +80,6 @@ typedef union events {
     struct done_smoking done_smoking; /* cppcheck-suppress unusedStructMember */
 } events_t;
 
-static struct am_timer m_timer;
-
 static const struct am_event m_evt_start = {.id = EVT_START};
 static const struct am_event m_evt_stop = {.id = EVT_STOP};
 static const struct am_event m_evt_stopped = {.id = EVT_STOPPED};
@@ -101,7 +99,8 @@ struct smoker {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    int timer_done_smoking;
+    struct am_timer *timer;
+    int tix_done_smoking;
     int id;
     unsigned resource_own;
     unsigned resource_acquired;
@@ -178,12 +177,12 @@ static enum am_rc smoker_smoking(
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_timer_arm(
-            &m_timer, me->timer_done_smoking, /*ms=*/20, /*interval=*/0
+            me->timer, me->tix_done_smoking, /*ms=*/20, /*interval=*/0
         );
         return AM_HSM_HANDLED();
 
     case AM_EVT_EXIT:
-        am_timer_disarm(&m_timer, me->timer_done_smoking);
+        am_timer_disarm(me->timer, me->tix_done_smoking);
         return AM_HSM_HANDLED();
 
     case EVT_RESOURCE:
@@ -208,17 +207,21 @@ static enum am_rc smoker_init(struct smoker *me, const struct am_event *event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_RESOURCE);
     am_ao_subscribe(&me->ao, EVT_STOP);
-    me->timer_done_smoking =
-        am_timer_allocate_x(&m_timer, EVT_DONE_SMOKING_TIMER, &me->ao);
     return AM_HSM_TRAN(smoker_idle);
 }
 
-static void smoker_ctor(struct smoker *me, int id, unsigned resource) {
+static void smoker_ctor(
+    struct smoker *me, int id, unsigned resource, struct am_timer *timer
+) {
     memset(me, 0, sizeof(*me));
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(smoker_init));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     me->id = id;
     me->resource_own = me->resource_acquired = resource;
+
+    me->timer = timer;
+    me->tix_done_smoking =
+        am_timer_allocate_x(me->timer, EVT_DONE_SMOKING_TIMER, &me->ao);
 }
 
 struct agent {
@@ -228,7 +231,8 @@ struct agent {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    int timeout;
+    struct am_timer *timer;
+    int tix_timeout;
     int stats[AM_SMOKERS_NUM_MAX];
     int nstops;
     unsigned resource_id;
@@ -304,7 +308,7 @@ static void publish_resources(struct agent *me) {
 static enum am_rc agent_proc(struct agent *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_timer_arm(&m_timer, me->timeout, AM_TIMEOUT_MS, /*interval=*/0);
+        am_timer_arm(me->timer, me->tix_timeout, AM_TIMEOUT_MS, /*interval=*/0);
         am_ao_post_fifo(&me->ao, &m_evt_start);
         return AM_HSM_HANDLED();
     }
@@ -333,19 +337,21 @@ static enum am_rc agent_init(struct agent *me, const struct am_event *event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_DONE_SMOKING);
     am_ao_subscribe(&me->ao, EVT_STOPPED);
-    me->timeout = am_timer_allocate_x(&m_timer, EVT_TIMEOUT, &me->ao);
     return AM_HSM_TRAN(agent_proc);
 }
 
-static void agent_ctor(void) {
+static void agent_ctor(struct am_timer *timer) {
     struct agent *me = &m_agent;
     memset(me, 0, sizeof(*me));
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(agent_init));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+
+    me->timer = timer;
+    me->tix_timeout = am_timer_allocate_x(me->timer, EVT_TIMEOUT, &me->ao);
 }
 
 static void ticker_task(void *param) {
-    (void)param;
+    struct am_timer *timer = param;
 
     am_task_wait_all();
 
@@ -356,10 +362,10 @@ static void ticker_task(void *param) {
         am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
         now_ticks += 1;
 
-        uint32_t fired = am_timer_tick(&m_timer);
+        uint32_t fired = am_timer_tick(timer);
         while (fired) {
             int tix = AM_CTZL(fired);
-            struct am_timer_event *event = am_timer_from_tix(&m_timer, tix);
+            struct am_timer_event *event = am_timer_from_tix(timer, tix);
             fired &= (uint32_t)~(1UL << (unsigned)tix);
             void *owner = AM_CAST(struct am_timer_event_x *, event)->ctx;
             if (owner) {
@@ -374,16 +380,17 @@ static void ticker_task(void *param) {
 AM_ALIGNOF_DEFINE(events_t);
 
 int main(void) {
+    struct am_timer timer;
     struct am_timer_event_x timer_events[4];
 
     am_timer_ctor(
-        &m_timer,
+        &timer,
         timer_events,
         AM_COUNTOF(timer_events),
         sizeof(struct am_timer_event_x)
     );
 
-    am_timer_register_cbs(&m_timer, am_crit_enter, am_crit_exit);
+    am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
     am_ao_state_ctor(/*cfg=*/NULL);
 
@@ -396,10 +403,10 @@ int main(void) {
 
     am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
 
-    agent_ctor();
+    agent_ctor(&timer);
     static const unsigned resource[] = {PAPER, TOBACCO, FIRE};
     for (int i = 0; i < AM_COUNTOF(resource); ++i) {
-        smoker_ctor(&m_smokers[i], i, resource[i]);
+        smoker_ctor(&m_smokers[i], i, resource[i], &timer);
     }
 
     am_ao_start(
@@ -434,7 +441,7 @@ int main(void) {
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*entry=*/ticker_task,
-        /*arg=*/NULL
+        /*arg=*/&timer
     );
 
     while (am_ao_get_cnt() > 0) {

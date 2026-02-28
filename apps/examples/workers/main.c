@@ -75,8 +75,6 @@ typedef union events {
     struct job_done done; /* cppcheck-suppress unusedStructMember */
 } events_t;
 
-static struct am_timer m_timer;
-
 static struct am_ao_subscribe_list m_pubsub_list[EVT_PUB_MAX];
 static union events m_event_pool[AM_WORKERS_NUM_MAX];
 
@@ -151,7 +149,8 @@ struct balancer {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    int timeout;
+    struct am_timer *timer;
+    int tix_timeout;
     int nworkers;
     int nstops;
     int stats[AM_WORKERS_NUM_MAX];
@@ -199,7 +198,7 @@ static enum am_rc balancer_proc(
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_timer_arm(&m_timer, me->timeout, AM_TIMEOUT_MS, /*interval=*/0);
+        am_timer_arm(me->timer, me->tix_timeout, AM_TIMEOUT_MS, /*interval=*/0);
         am_ao_post_fifo(&me->ao, &m_evt_start);
         return AM_HSM_HANDLED();
     }
@@ -242,20 +241,22 @@ static enum am_rc balancer_init(
     (void)event;
     am_ao_subscribe(&me->ao, EVT_JOB_DONE);
     am_ao_subscribe(&me->ao, EVT_STOPPED);
-    me->timeout = am_timer_allocate_x(&m_timer, EVT_TIMEOUT, &me->ao);
     return AM_HSM_TRAN(balancer_proc);
 }
 
-static void balancer_ctor(int nworkers) {
+static void balancer_ctor(int nworkers, struct am_timer *timer) {
     struct balancer *me = &m_balancer;
     memset(me, 0, sizeof(*me));
     me->nworkers = nworkers;
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(balancer_init));
+
+    me->timer = timer;
+    me->tix_timeout = am_timer_allocate_x(me->timer, EVT_TIMEOUT, &me->ao);
 }
 
 static void ticker_task(void *param) {
-    (void)param;
+    struct am_timer *timer = param;
 
     am_task_wait_all();
 
@@ -265,10 +266,10 @@ static void ticker_task(void *param) {
     while (am_ao_get_cnt() > 0) {
         am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
         now_ticks += 1;
-        uint32_t fired = am_timer_tick(&m_timer);
+        uint32_t fired = am_timer_tick(timer);
         while (fired) {
             int tix = AM_CTZL(fired);
-            struct am_timer_event *event = am_timer_from_tix(&m_timer, tix);
+            struct am_timer_event *event = am_timer_from_tix(timer, tix);
             fired &= (uint32_t)~(1UL << (unsigned)tix);
             void *owner = AM_CAST(struct am_timer_event_x *, event)->ctx;
             if (owner) {
@@ -283,16 +284,17 @@ static void ticker_task(void *param) {
 AM_ALIGNOF_DEFINE(events_t);
 
 int main(void) {
+    struct am_timer timer;
     struct am_timer_event_x timer_events[4];
 
     am_timer_ctor(
-        &m_timer,
+        &timer,
         timer_events,
         AM_COUNTOF(timer_events),
         sizeof(struct am_timer_event_x)
     );
 
-    am_timer_register_cbs(&m_timer, am_crit_enter, am_crit_exit);
+    am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
     am_ao_state_ctor(/*cfg=*/NULL);
 
@@ -311,7 +313,7 @@ int main(void) {
     ncpus = AM_MIN(ncpus, AM_WORKERS_NUM_MAX);
     ncpus = AM_MIN(ncpus, AM_AO_NUM_MAX);
 
-    balancer_ctor(/*nworkers=*/ncpus);
+    balancer_ctor(/*nworkers=*/ncpus, &timer);
     for (int i = 0; i < ncpus; ++i) {
         worker_ctor(&m_workers[i], /*id=*/i);
     }
@@ -347,7 +349,7 @@ int main(void) {
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*entry=*/ticker_task,
-        /*arg=*/NULL
+        /*arg=*/&timer
     );
 
     while (am_ao_get_cnt() > 0) {

@@ -40,7 +40,6 @@
 #include "event/event.h"
 #include "ao/ao.h"
 #include "state.h"
-#include "timers.h"
 
 #define AM_TEST_RINGBUF_TOTAL 1000
 
@@ -48,7 +47,8 @@ struct ringbuf_reader {
     struct am_ao ao;
     int len;
     int total_len;
-    int timer_wait;
+    struct am_timer *timer;
+    int tix_wait;
 };
 
 static struct ringbuf_reader m_ringbuf_reader;
@@ -73,7 +73,7 @@ static void ringbuf_reader_event_handler(
         int size = 0;
         (void)am_ringbuf_get_read_ptr(&g_ringbuf, &ptr, &size);
         if (size < me->len) {
-            am_timer_arm(g_timer, me->timer_wait, /*ticks=*/1, /*interval=*/0);
+            am_timer_arm(me->timer, me->tix_wait, /*ticks=*/1, /*interval=*/0);
             return;
         }
         AM_ASSERT(ptr);
@@ -95,7 +95,7 @@ static void ringbuf_reader_event_handler(
     }
 }
 
-void ringbuf_reader_ctor(void) {
+void ringbuf_reader_ctor(struct am_timer *timer) {
     struct ringbuf_reader *me = &m_ringbuf_reader;
     memset(me, 0, sizeof(*me));
     me->len = 1;
@@ -105,5 +105,6 @@ void ringbuf_reader_ctor(void) {
         (am_ao_fn)ringbuf_reader_event_handler,
         me
     );
-    me->timer_wait = am_timer_allocate_x(g_timer, AM_EVT_RINGBUF_WAIT, &me->ao);
+    me->timer = timer;
+    me->tix_wait = am_timer_allocate_x(timer, AM_EVT_RINGBUF_WAIT, &me->ao);
 }

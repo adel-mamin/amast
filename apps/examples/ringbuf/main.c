@@ -41,9 +41,6 @@
 #include "pal/pal.h"
 #include "state.h"
 
-static struct am_timer m_timer;
-struct am_timer *g_timer = &m_timer;
-
 struct am_ringbuf g_ringbuf;
 
 const uint8_t g_ringbuf_data[] = {0, 1, 2, 3, 4, 5, 6, 7};
@@ -53,7 +50,7 @@ static const struct am_event *m_queue_ringbuf_reader[1];
 static const struct am_event *m_queue_ringbuf_writer[1];
 
 AM_NORETURN static void ticker_task(void *param) {
-    (void)param;
+    struct am_timer *timer = param;
 
     am_task_wait_all();
 
@@ -63,10 +60,10 @@ AM_NORETURN static void ticker_task(void *param) {
     for (;;) {
         am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
         now_ticks += 1;
-        uint32_t fired = am_timer_tick(g_timer);
+        uint32_t fired = am_timer_tick(timer);
         while (fired) {
             int tix = AM_CTZL(fired);
-            struct am_timer_event *event = am_timer_from_tix(g_timer, tix);
+            struct am_timer_event *event = am_timer_from_tix(timer, tix);
             fired &= (uint32_t)~(1UL << (unsigned)tix);
             void *owner = AM_CAST(struct am_timer_event_x *, event)->ctx;
             if (owner) {
@@ -79,16 +76,17 @@ AM_NORETURN static void ticker_task(void *param) {
 }
 
 static void test_ringbuf_threading(void) {
+    struct am_timer timer;
     struct am_timer_event_x timer_events[4];
 
     am_timer_ctor(
-        g_timer,
+        &timer,
         timer_events,
         AM_COUNTOF(timer_events),
         sizeof(struct am_timer_event_x)
     );
 
-    am_timer_register_cbs(g_timer, am_crit_enter, am_crit_exit);
+    am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
     uint8_t buf[9];
 
@@ -96,8 +94,8 @@ static void test_ringbuf_threading(void) {
 
     am_ao_state_ctor(/*cfg=*/NULL);
 
-    ringbuf_reader_ctor();
-    ringbuf_writer_ctor();
+    ringbuf_reader_ctor(&timer);
+    ringbuf_writer_ctor(&timer);
 
     am_ao_start(
         g_ringbuf_reader,
@@ -127,7 +125,7 @@ static void test_ringbuf_threading(void) {
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*entry=*/ticker_task,
-        /*arg=*/NULL
+        /*arg=*/&timer
     );
 
     while (am_ao_get_cnt() > 0) {

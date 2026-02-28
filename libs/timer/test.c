@@ -38,7 +38,6 @@
 
 static void test_arm(void) {
     struct am_timer timer;
-
     struct am_timer_event timer_events[2];
 
     am_timer_ctor(

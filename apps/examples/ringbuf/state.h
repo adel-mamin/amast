@@ -33,6 +33,8 @@
 #ifndef RINGBUF_STATE_H_INCLUDED
 #define RINGBUF_STATE_H_INCLUDED
 
+#include "timer/timer.h"
+
 #define AM_EVT_RINGBUF_READ AM_EVT_USER
 #define AM_EVT_RINGBUF_WRITE (AM_EVT_USER + 1)
 #define AM_EVT_RINGBUF_WAIT (AM_EVT_USER + 2)
@@ -45,7 +47,7 @@ extern int g_ringbuf_data_len;
 extern struct am_ao *g_ringbuf_reader;
 extern struct am_ao *g_ringbuf_writer;
 
-void ringbuf_reader_ctor(void);
-void ringbuf_writer_ctor(void);
+void ringbuf_reader_ctor(struct am_timer *timer);
+void ringbuf_writer_ctor(struct am_timer *timer);
 
 #endif /* RINGBUF_STATE_H_INCLUDED */
