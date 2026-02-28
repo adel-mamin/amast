@@ -73,9 +73,7 @@ static void ringbuf_reader_event_handler(
         int size = 0;
         (void)am_ringbuf_get_read_ptr(&g_ringbuf, &ptr, &size);
         if (size < me->len) {
-            am_timer_arm_ticks(
-                g_timer, me->timer_wait, /*ticks=*/1, /*interval=*/0
-            );
+            am_timer_arm(g_timer, me->timer_wait, /*ticks=*/1, /*interval=*/0);
             return;
         }
         AM_ASSERT(ptr);

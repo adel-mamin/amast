@@ -57,9 +57,11 @@ AM_NORETURN static void ticker_task(void *param) {
 
     am_task_wait_all();
 
-    uint32_t now_ticks = am_time_get_tick(AM_TICK_DOMAIN_DEFAULT);
+    const int domain = AM_TICK_DOMAIN_DEFAULT;
+    const uint32_t ticks_per_ms = am_time_get_tick_from_ms(domain, 1);
+    uint32_t now_ticks = am_time_get_tick(domain);
     for (;;) {
-        am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
         now_ticks += 1;
         uint32_t fired = am_timer_tick(g_timer);
         while (fired) {
@@ -81,7 +83,6 @@ static void test_ringbuf_threading(void) {
 
     am_timer_ctor(
         g_timer,
-        /*domain_id=*/0,
         timer_events,
         AM_COUNTOF(timer_events),
         sizeof(struct am_timer_event_x)

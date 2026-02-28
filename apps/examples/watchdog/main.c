@@ -93,7 +93,7 @@ static enum am_rc watched_proc(
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_timer_arm_ms(
+        am_timer_arm(
             &m_timer, me->timer_feed, AM_FEED_TIMEOUT_MS, AM_FEED_TIMEOUT_MS
         );
         return AM_HSM_HANDLED();
@@ -135,7 +135,7 @@ static void watched_ctor(struct watched *me) {
 static enum am_rc wdt_proc(struct wdt *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_timer_arm_ms(
+        am_timer_arm(
             &m_timer, me->timer_bark, AM_BARK_TIMEOUT_MS, /*interval=*/0
         );
         return AM_HSM_HANDLED();
@@ -143,7 +143,7 @@ static enum am_rc wdt_proc(struct wdt *me, const struct am_event *event) {
     case EVT_WDT_FEED: {
         am_printff("EVT_WDT_FEED received\n");
         /* re-arm bark timer */
-        am_timer_arm_ms(
+        am_timer_arm(
             &m_timer, me->timer_bark, AM_BARK_TIMEOUT_MS, /*interval=*/0
         );
         return AM_HSM_HANDLED();
@@ -177,9 +177,11 @@ static void ticker_task(void *param) {
 
     am_task_wait_all();
 
-    uint32_t now_ticks = am_time_get_tick(AM_TICK_DOMAIN_DEFAULT);
+    const int domain = AM_TICK_DOMAIN_DEFAULT;
+    const uint32_t ticks_per_ms = am_time_get_tick_from_ms(domain, 1);
+    uint32_t now_ticks = am_time_get_tick(domain);
     while (am_ao_get_cnt() > 0) {
-        am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
         now_ticks += 1;
         uint32_t fired = am_timer_tick(&m_timer);
         while (fired) {
@@ -201,7 +203,6 @@ int main(void) {
 
     am_timer_ctor(
         &m_timer,
-        /*domain_id=*/0,
         timer_events,
         AM_COUNTOF(timer_events),
         sizeof(struct am_timer_event_x)

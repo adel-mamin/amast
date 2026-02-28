@@ -301,7 +301,7 @@ static enum am_rc app_state_b(struct app *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("state B\n");
-        am_timer_arm_ticks(me->timer, me->tix, me->ticks, /*interval=*/0);
+        am_timer_arm(me->timer, me->tix, me->ticks, /*interval=*/0);
         return AM_HSM_HANDLED();
 
     case AM_EVT_EXIT:
@@ -313,7 +313,7 @@ static enum am_rc app_state_b(struct app *me, const struct am_event *event) {
 
     case APP_EVT_TIMER:
         am_printf("timer\n");
-        am_timer_arm_ticks(me->timer, me->tix, me->ticks, /*interval=*/0);
+        am_timer_arm(me->timer, me->tix, me->ticks, /*interval=*/0);
         return AM_HSM_HANDLED();
     }
     return AM_HSM_SUPER(am_hsm_top);
@@ -336,10 +336,11 @@ static void app_ctor(struct app *me, struct am_timer *timer) {
 static void ticker_task(void *param) {
     am_taks_wait_all();
 
-    const int domain = 0;
+    const int domain = AM_TICK_DOMAIN_DEFAULT;
+    const uint32_t ticks_per_ms = am_time_get_tick_from_ms(domain, 1);
     uint32_t now_ticks = am_time_get_tick(domain);
     while (am_ao_get_cnt() > 0) {
-        am_sleep_till_ticks(domain, now_ticks + 1);
+        am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
         now_ticks += 1;
         am_timer_tick(&m_timer, domain);
 
@@ -375,7 +376,6 @@ int main(void) {
 
     am_timer_ctor(
         &m_timer,
-        /*domain_id=*/0,
         timer_events,
         AM_COUNTOF(timer_events),
         sizeof(struct am_timer_event_x)

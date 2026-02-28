@@ -86,7 +86,6 @@ struct progress {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    uint32_t progress_ticks;
     int timer;
     int iprog;
     unsigned prog_ms;
@@ -111,8 +110,11 @@ static enum am_rc progress_top(
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
-        am_timer_arm_ticks(
-            &m_timer, me->timer, me->progress_ticks, me->progress_ticks
+        am_timer_arm(
+            &m_timer,
+            me->timer,
+            PROGRESS_UPDATE_RATE_MS,
+            PROGRESS_UPDATE_RATE_MS
         );
         return AM_HSM_HANDLED();
 
@@ -156,9 +158,6 @@ static void progress_ctor(struct progress *me) {
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(progress_init));
 
     me->timer = am_timer_allocate_x(&m_timer, EVT_PROGRESS_TICK, &me->ao);
-    me->progress_ticks = am_time_get_tick_from_ms(
-        /*domain=*/AM_TICK_DOMAIN_DEFAULT, /*ms=*/PROGRESS_UPDATE_RATE_MS
-    );
 }
 
 AM_NORETURN static void ticker_task(void *param) {
@@ -166,9 +165,11 @@ AM_NORETURN static void ticker_task(void *param) {
 
     am_task_wait_all();
 
-    uint32_t now_ticks = am_time_get_tick(AM_TICK_DOMAIN_DEFAULT);
+    const int domain = AM_TICK_DOMAIN_DEFAULT;
+    const uint32_t ticks_per_ms = am_time_get_tick_from_ms(domain, 1);
+    uint32_t now_ticks = am_time_get_tick(domain);
     for (;;) {
-        am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
+        am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
         now_ticks += 1;
         uint32_t fired = am_timer_tick(&m_timer);
         while (fired) {
@@ -241,7 +242,6 @@ int main(int argc, const char *argv[]) {
 
     am_timer_ctor(
         &m_timer,
-        /*domain_id=*/0,
         timer_events,
         AM_COUNTOF(timer_events),
         sizeof(struct am_timer_event_x)

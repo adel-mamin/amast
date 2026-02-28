@@ -35,18 +35,13 @@
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "timer/timer.h"
-#include "pal/pal.h"
 
 #define AM_TIX_IS_VALID(x) ((0 <= (x)) && ((x) < timer->events_num))
 
 static void timer_crit_stub(void) {}
 
 void am_timer_ctor(
-    struct am_timer *timer,
-    int domain_id,
-    void *events,
-    int events_num,
-    int event_size
+    struct am_timer *timer, void *events, int events_num, int event_size
 ) {
     AM_ASSERT(events);
     AM_ASSERT(AM_ALIGNOF_PTR(events) >= AM_ALIGNOF(am_timer_event_t));
@@ -57,7 +52,6 @@ void am_timer_ctor(
 
     memset(timer, 0, sizeof(*timer));
     timer->crit_enter = timer->crit_exit = timer_crit_stub;
-    timer->domain_id = domain_id;
     timer->events = events;
     timer->events_num = events_num;
     timer->event_size = event_size;
@@ -102,7 +96,7 @@ int am_timer_allocate_x(struct am_timer *timer, int event_id, void *ctx) {
     return tix;
 }
 
-void am_timer_arm_ticks(
+void am_timer_arm(
     struct am_timer *timer, int tix, uint32_t ticks, uint32_t interval
 ) {
     AM_ASSERT(timer);
@@ -119,17 +113,6 @@ void am_timer_arm_ticks(
     timer->timers_running |= (uint32_t)(1UL << (unsigned)tix);
 
     timer->crit_exit();
-}
-
-void am_timer_arm_ms(
-    struct am_timer *timer, int tix, uint32_t ms, uint32_t interval
-) {
-    AM_ASSERT(timer);
-    AM_ASSERT(ms > 0);
-    uint32_t ticks = am_time_get_tick_from_ms(timer->domain_id, ms);
-    uint32_t interval_ticks =
-        am_time_get_tick_from_ms(timer->domain_id, interval);
-    am_timer_arm_ticks(timer, tix, ticks, interval_ticks);
 }
 
 bool am_timer_disarm(struct am_timer *timer, int tix) {

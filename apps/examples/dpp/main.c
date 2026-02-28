@@ -114,10 +114,12 @@ static void ticker_task(void *param) {
 
     am_task_wait_all();
 
-    uint32_t now_ticks = am_time_get_tick(/*domain=*/0);
+    const int domain = AM_TICK_DOMAIN_DEFAULT;
+    const uint32_t ticks_per_ms = am_time_get_tick_from_ms(domain, 1);
+    uint32_t now_ticks = am_time_get_tick(domain);
     while (am_ao_get_cnt() > 0) {
-        am_sleep_till_ticks(/*domain=*/0, now_ticks + 1);
-        now_ticks += 1;
+        am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
+        now_ticks += ticks_per_ms;
         uint32_t fired = am_timer_tick(g_timer);
         while (fired) {
             int tix = AM_CTZL(fired);
@@ -138,7 +140,6 @@ int main(void) {
 
     am_timer_ctor(
         g_timer,
-        /*domain_id=*/0,
         timer_events,
         AM_COUNTOF(timer_events),
         sizeof(struct am_timer_event_x)

@@ -43,18 +43,17 @@ static void test_arm(void) {
 
     am_timer_ctor(
         &timer,
-        /*domain_id=*/0,
         timer_events,
         AM_COUNTOF(timer_events),
         sizeof(struct am_timer_event)
     );
 
     int tix = am_timer_allocate(&timer, EVT_TEST);
-    am_timer_arm_ticks(&timer, tix, /*ticks=*/1, /*interval=*/0);
+    am_timer_arm(&timer, tix, /*ticks=*/1, /*interval=*/0);
     AM_ASSERT(am_timer_is_armed(&timer, tix));
 
     int tix2 = am_timer_allocate(&timer, EVT_TEST2);
-    am_timer_arm_ticks(&timer, tix2, /*ticks=*/1, /*interval=*/0);
+    am_timer_arm(&timer, tix2, /*ticks=*/1, /*interval=*/0);
     AM_ASSERT(am_timer_is_armed(&timer, tix2));
 
     am_timer_disarm(&timer, tix2);
@@ -67,12 +66,12 @@ static void test_arm(void) {
 
     AM_ASSERT(0 == am_timer_tick(&timer));
 
-    am_timer_arm_ticks(&timer, tix, /*ticks=*/1, /*interval=*/0);
+    am_timer_arm(&timer, tix, /*ticks=*/1, /*interval=*/0);
     AM_ASSERT(am_timer_is_armed(&timer, tix));
 
     AM_ASSERT(am_timer_tick(&timer) & (1UL << (unsigned)tix));
 
-    am_timer_arm_ticks(&timer, tix2, /*ticks=*/1, /*interval=*/0);
+    am_timer_arm(&timer, tix2, /*ticks=*/1, /*interval=*/0);
     AM_ASSERT(am_timer_is_armed(&timer, tix2));
 
     AM_ASSERT(am_timer_tick(&timer) & (1UL << (unsigned)tix2));

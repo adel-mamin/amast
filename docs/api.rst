@@ -320,9 +320,7 @@ The source code of the corresponding header file is in `timer.h <https://github.
 
 .. doxygenfunction:: am_timer_tick
 
-.. doxygenfunction:: am_timer_arm_ticks
-
-.. doxygenfunction:: am_timer_arm_ms
+.. doxygenfunction:: am_timer_arm
 
 .. doxygenfunction:: am_timer_disarm
 

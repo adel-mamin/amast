@@ -88,7 +88,7 @@ static enum am_rc philo_thinking(
     case AM_EVT_ENTRY:
         am_printf("philo %d is thinking\n", me->id);
         ++me->cnt;
-        am_timer_arm_ms(g_timer, me->timer, /*ms=*/20, /*interval=*/0);
+        am_timer_arm(g_timer, me->timer, /*ms=*/20, /*interval=*/0);
         return AM_HSM_HANDLED();
 
     case EVT_TIMEOUT: {
@@ -128,7 +128,7 @@ static enum am_rc philo_eating(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("philo %d is eating\n", me->id);
-        am_timer_arm_ms(g_timer, me->timer, /*ms=*/20, /*interval=*/0);
+        am_timer_arm(g_timer, me->timer, /*ms=*/20, /*interval=*/0);
         return AM_HSM_HANDLED();
 
     case EVT_TIMEOUT: {

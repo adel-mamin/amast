@@ -39,7 +39,7 @@
 #include "common/alignment.h"
 #include "event/event.h"
 
-/** Timer domain configuration. */
+/** Timer configuration. */
 struct am_timer_cbs {
     /** Enter critical section. */
     void (*crit_enter)(void);
@@ -50,9 +50,6 @@ struct am_timer_cbs {
 
 /** Timer state. */
 struct am_timer {
-    /** timer tick domain ID */
-    int domain_id;
-
     /** Running timers. */
     uint32_t timers_running;
 
@@ -99,17 +96,12 @@ extern "C" {
  * Timer state constructor.
  *
  * @param timer       the timer state
- * @param domain_id   timer domain ID (used by PAL am_time_...() APIs)
  * @param events      the timer event pool
  * @param events_num  number of events in the timer event pool
  * @param event_size  the event size [bytes]
  */
 void am_timer_ctor(
-    struct am_timer *timer,
-    int domain_id,
-    void *events,
-    int events_num,
-    int event_size
+    struct am_timer *timer, void *events, int events_num, int event_size
 );
 
 /**
@@ -154,7 +146,7 @@ int am_timer_allocate_x(struct am_timer *timer, int event_id, void *ctx);
  * Update all armed timers in the given timer state
  * and fire expired timers.
  *
- * Must be called every tick in every used domain.
+ * Must be called every tick.
  *
  * @param timer  only tick timers in this timer state
  *
@@ -183,25 +175,8 @@ struct am_timer_event *am_timer_from_tix(const struct am_timer *timer, int tix);
  *                  after the event is sent for the fist time.
  *                  Can be 0, in which case the timer is one shot.
  */
-void am_timer_arm_ticks(
+void am_timer_arm(
     struct am_timer *timer, int tix, uint32_t ticks, uint32_t interval
-);
-
-/**
- * Arm timer.
- *
- * It is fine to arm an already armed timer. The timer is re-armed in this case.
- *
- * @param timer     the timer state
- * @param tix       the index of the timer event to arm as returned by
- *                  am_timer_allocate() or am_timer_allocate_x()
- * @param ms        the timer event is to be sent in these many milliseconds
- * @param interval  the timer event is to be re-sent in these many milliseconds
- *                  after the event is sent for the fist time.
- *                  Can be 0, in which case the timer is one shot.
- */
-void am_timer_arm_ms(
-    struct am_timer *timer, int tix, uint32_t ms, uint32_t interval
 );
 
 /**
@@ -247,8 +222,8 @@ bool am_timer_is_armed(const struct am_timer *timer, int tix);
  *
  * @param timer  the timer state
  *
- * @retval true   the timer domain is empty
- * @retval false  the timer domain has armed timers
+ * @retval true   the timer state has no armed timers
+ * @retval false  the timer state has armed timers
  */
 bool am_timer_is_empty_unsafe(const struct am_timer *timer);
 

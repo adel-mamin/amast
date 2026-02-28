@@ -153,11 +153,11 @@ static enum am_rc async_blinking_green(struct async *me) {
     /* blinking green */
     for (me->i = 0; me->i < 4; ++me->i) {
         am_printff("\b");
-        am_timer_arm_ms(&m_timer, me->timer, /*ms=*/700, /*interval=*/0);
+        am_timer_arm(&m_timer, me->timer, /*ms=*/700, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
 
         am_printff(AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm_ms(&m_timer, me->timer, /*ms=*/700, /*interval=*/0);
+        am_timer_arm(&m_timer, me->timer, /*ms=*/700, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
     }
 
@@ -172,17 +172,17 @@ static enum am_rc async_regular_(struct async *me) {
     for (;;) {
         /* red */
         am_printff(AM_COLOR_RED AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm_ms(&m_timer, me->timer, /*ms=*/2000, /*interval=*/0);
+        am_timer_arm(&m_timer, me->timer, /*ms=*/2000, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
 
         /* yellow */
         am_printff("\b" AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm_ms(&m_timer, me->timer, /*ms=*/1000, /*interval=*/0);
+        am_timer_arm(&m_timer, me->timer, /*ms=*/1000, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
 
         /* green */
         am_printff("\b" AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm_ms(&m_timer, me->timer, /*ms=*/2000, /*interval=*/0);
+        am_timer_arm(&m_timer, me->timer, /*ms=*/2000, /*interval=*/0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
 
         /* blinking green */
@@ -237,11 +237,11 @@ static enum am_rc async_off(struct async *me, const struct am_event *event) {
         for (;;) {
             am_printff("\b");
             am_printff(AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
-            am_timer_arm_ms(&m_timer, me->timer, /*ms=*/1000, /*interval=*/0);
+            am_timer_arm(&m_timer, me->timer, /*ms=*/1000, /*interval=*/0);
             AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
 
             am_printff("\b");
-            am_timer_arm_ms(&m_timer, me->timer, /*ms=*/700, /*interval=*/0);
+            am_timer_arm(&m_timer, me->timer, /*ms=*/700, /*interval=*/0);
             AM_ASYNC_AWAIT(!am_timer_is_armed(&m_timer, me->timer));
         }
 
@@ -276,10 +276,12 @@ static void ticker_task(void *param) {
 
     am_task_wait_all();
 
-    uint32_t now_ticks = am_time_get_tick(AM_TICK_DOMAIN_DEFAULT);
+    const int domain = AM_TICK_DOMAIN_DEFAULT;
+    const uint32_t ticks_per_ms = am_time_get_tick_from_ms(domain, 1);
+    uint32_t now_ticks = am_time_get_tick(domain);
     while (am_ao_get_cnt() > 0) {
-        am_sleep_till_ticks(AM_TICK_DOMAIN_DEFAULT, now_ticks + 1);
-        now_ticks += 1;
+        am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
+        now_ticks += ticks_per_ms;
         uint32_t fired = am_timer_tick(&m_timer);
         while (fired) {
             int tix = AM_CTZL(fired);
@@ -326,7 +328,6 @@ int main(void) {
 
     am_timer_ctor(
         &m_timer,
-        /*domain_id=*/0,
         timer_events,
         AM_COUNTOF(timer_events),
         sizeof(struct am_timer_event_x)
