@@ -147,7 +147,7 @@ static enum am_rc async_blinking_green(struct async *me) {
 
     /* blinking green */
     for (me->i = 0; me->i < 4; ++me->i) {
-        am_printff("\b");
+        am_printff("\b" AM_COLOR_BLACK AM_SOLID_BLOCK "\b");
         am_timer_arm(me->timer, &me->timeout.event, /*ms=*/700, 0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
@@ -235,7 +235,7 @@ static enum am_rc async_off(struct async *me, const struct am_event *event) {
             am_timer_arm(me->timer, &me->timeout.event, /*ms=*/1000, 0);
             AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
-            am_printff("\b");
+            am_printff("\b" AM_COLOR_BLACK AM_SOLID_BLOCK "\b");
             am_timer_arm(me->timer, &me->timeout.event, /*ms=*/700, 0);
             AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
         }

@@ -55,6 +55,8 @@
 #define AM_COLOR_WHITE "\x1b[37m"
 #define AM_COLOR_WHITE_BOLD "\x1b[1;37m"
 
+#define AM_COLOR_BLACK "\x1b[30m"
+
 #define AM_COLOR_RESET "\x1b[0m"
 
 #define AM_SOLID_BLOCK "\xE2\x96\x88"
