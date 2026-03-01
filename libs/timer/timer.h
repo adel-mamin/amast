@@ -38,48 +38,60 @@
 
 #include "common/alignment.h"
 #include "event/event.h"
-
-/** Timer configuration. */
-struct am_timer_cbs {
-    /** Enter critical section. */
-    void (*crit_enter)(void);
-
-    /** Exit critical section. */
-    void (*crit_exit)(void);
-};
+#include "slist/slist.h"
 
 /** Timer state. */
 struct am_timer {
-    /** Running timers. */
-    uint32_t timers_running;
+    /** A list of armed timer events. */
+    struct am_slist events;
+    /**
+     * List of armed pending timer events.
+     * Each armed timer is first placed into this list
+     * and then moved to the list of armed timers events
+     * in next am_timer_tick() call.
+     *
+     * This is done to limit the armed timer events list operations
+     * exclusively to am_timer_tick() call to avoid race conditions
+     * between timer owners the ticker task/ISR.
+     */
+    struct am_slist events_pend;
+    /** number of timer events */
+    struct {
+        int16_t pend;    /**< armed pending timer events count */
+        int16_t running; /**< armed timer events count */
+    } nevents;
 
-    /** Allocated timers. */
-    uint32_t timers_allocated;
+    /** Armed events iterator. */
+    struct am_slist_iterator it;
 
     void (*crit_enter)(void); /**< Enter critical section. */
     void (*crit_exit)(void);  /**< Exit critical section. */
-
-    void *events;   /**< Timer events */
-    int events_num; /**< The number of timer events */
-    int event_size; /**< Size of each event [bytes] */
 };
 
 /** Timer event. */
 struct am_timer_event {
     /** event descriptor */
-    struct am_event base;
+    struct am_event event;
+
+    /** to link timers together */
+    struct am_slist_item item;
 
     /** the timer event is sent after this many ticks */
     uint32_t oneshot_ticks;
 
     /** the timer event is re-sent after this many ticks */
-    uint32_t interval_ticks;
+    uint32_t interval_ticks : 31;
+
+    /** the timer was disarmed and pending removal from timer list */
+    unsigned disarm_pending : 1;
 };
 
-/** Timer event with context. */
+/** Time event with context. */
 struct am_timer_event_x {
-    struct am_timer_event base; /**< timer event */
-    void *ctx;                  /**< the context */
+    /** Base event structure. */
+    struct am_timer_event event;
+    /** Event specific context. */
+    void *ctx;
 };
 
 /** To use with AM_ALIGNOF() macro. */
@@ -95,14 +107,37 @@ extern "C" {
 /**
  * Timer state constructor.
  *
- * @param timer       the timer state
- * @param events      the timer event pool
- * @param events_num  number of events in the timer event pool
- * @param event_size  the event size [bytes]
+ * @param timer  the timer state
  */
-void am_timer_ctor(
-    struct am_timer *timer, void *events, int events_num, int event_size
-);
+void am_timer_ctor(struct am_timer *timer);
+
+/**
+ * Timer event constructor.
+ *
+ * @param id   the event ID
+ *
+ * @return the constructed event
+ */
+static inline struct am_timer_event am_timer_event_ctor(uint16_t id) {
+    return (struct am_timer_event){.event = {.id = id}};
+}
+
+/**
+ * Extended timer event constructor.
+ *
+ * @param id   the event ID
+ * @param ctx  the event context
+ *
+ * @return the constructed event
+ */
+static inline struct am_timer_event_x am_timer_event_ctor_x(
+    uint16_t id, void *ctx
+) {
+    struct am_timer_event_x e = {0};
+    e.event.event.id = id;
+    e.ctx = ctx;
+    return e;
+}
 
 /**
  * Register callbacks with timer state.
@@ -116,67 +151,43 @@ void am_timer_register_cbs(
 );
 
 /**
- * Allocate and construct timer.
+ * Initialize tick iterator.
  *
- * Cannot fail. Cannot be freed. Never garbage collected.
+ * Must be called exactly once every ticks and must precede
+ * am_timer_tick_iterator_next() calls.
  *
- * @param timer     the timer state
- * @param event_id  the timer event id
- *
- * @return timer index (tix)
+ * @param timer  timer state
  */
-int am_timer_allocate(struct am_timer *timer, int event_id);
+void am_timer_tick_iterator_init(struct am_timer *timer);
 
 /**
- * Allocate and construct timer with context.
+ * Iterate tick to next timer event.
  *
- * Cannot fail. Cannot be freed. Never garbage collected.
+ * Must follow am_timer_tick_iterator_init() call.
+ * Must be called every tick until it retuns a non-null value.
  *
- * @param timer     the timer state
- * @param event_id  the timer event id
- * @param ctx       the context
+ * @param timer  tick timers in this timer state
  *
- * @return timer index (tix)
+ * @return Fired timer event or NULL.
  */
-int am_timer_allocate_x(struct am_timer *timer, int event_id, void *ctx);
-
-/**
- * Tick timer state.
- *
- * Update all armed timers in the given timer state
- * and fire expired timers.
- *
- * Must be called every tick.
- *
- * @param timer  only tick timers in this timer state
- *
- * @return Bit map of timer indices
- */
-uint32_t am_timer_tick(struct am_timer *timer);
-
-/**
- * Get timer event reference from timer index.
- * @param timer  the timer state
- * @param tix    the timer event index as returned by
- *               am_timer_allocate() or am_timer_allocate_x()
- * @return the timer event reference
- */
-struct am_timer_event *am_timer_from_tix(const struct am_timer *timer, int tix);
+struct am_timer_event *am_timer_tick_iterator_next(struct am_timer *timer);
 
 /**
  * Arm timer.
  *
  * It is fine to arm an already armed timer. The timer is re-armed in this case.
  * @param timer     the timer to arm
- * @param tix       the timer event index as returned by
- *                  am_timer_allocate() or am_timer_allocate_x()
+ * @param event     the timer event
  * @param ticks     the timer event is to be sent in these many ticks
  * @param interval  the timer event is to be re-sent in these many ticks
  *                  after the event is sent for the fist time.
  *                  Can be 0, in which case the timer is one shot.
  */
 void am_timer_arm(
-    struct am_timer *timer, int tix, uint32_t ticks, uint32_t interval
+    struct am_timer *timer,
+    struct am_timer_event *event,
+    uint32_t ticks,
+    uint32_t interval
 );
 
 /**
@@ -185,25 +196,25 @@ void am_timer_arm(
  * It is fine to disarm an already disarmed timer.
  *
  * @param timer   the timer state
- * @param tix     the index of the timer event to disarm as returned by
- *                am_timer_allocate() or am_timer_allocate_x()
+ * @param event   the timer event
  *
  * @retval true   the timer was armed
  * @retval false  the timer was not armed
  */
-bool am_timer_disarm(struct am_timer *timer, int tix);
+bool am_timer_disarm(struct am_timer *timer, struct am_timer_event *event);
 
 /**
  * Check if timer is armed.
  *
  * @param timer  the timer state
- * @param tix    the index of the timer event to check as returned by
- *               am_timer_allocate() or am_timer_allocate_x()
+ * @param event  the timer event
  *
  * @retval true   the timer is armed
  * @retval false  the timer is not armed
  */
-bool am_timer_is_armed(const struct am_timer *timer, int tix);
+bool am_timer_is_armed(
+    const struct am_timer *timer, const struct am_timer_event *event
+);
 
 /**
  * Check if timer state has armed timers.
@@ -231,12 +242,13 @@ bool am_timer_is_empty_unsafe(const struct am_timer *timer);
  * Get number of ticks till timer event is sent.
  *
  * @param timer  the timer handler
- * @param tix    the index of the timer event to check as returned by
- *               am_timer_allocate() or am_timer_allocate_x()
+ * @param event  the timer event
  *
  * @return the timer event will be sent in this number of ticks
  */
-uint32_t am_timer_get_ticks(const struct am_timer *timer, int tix);
+uint32_t am_timer_get_ticks(
+    const struct am_timer *timer, const struct am_timer_event *event
+);
 
 #ifdef __cplusplus
 }

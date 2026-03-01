@@ -79,7 +79,7 @@ struct progress {
     struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer *timer;
-    int tix;
+    struct am_timer_event_x progress;
     int iprog;
     unsigned prog_ms;
     int rc;
@@ -104,12 +104,15 @@ static enum am_rc progress_top(
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_timer_arm(
-            me->timer, me->tix, PROGRESS_UPDATE_RATE_MS, PROGRESS_UPDATE_RATE_MS
+            me->timer,
+            &me->progress.event,
+            PROGRESS_UPDATE_RATE_MS,
+            PROGRESS_UPDATE_RATE_MS
         );
         return AM_HSM_HANDLED();
 
     case AM_EVT_EXIT:
-        am_timer_disarm(me->timer, me->tix);
+        am_timer_disarm(me->timer, &me->progress.event);
         am_printf("\r                  \r"); /* clean the terminal output*/
         return AM_HSM_HANDLED();
 
@@ -148,7 +151,7 @@ static void progress_ctor(struct progress *me, struct am_timer *timer) {
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(progress_init));
 
     me->timer = timer;
-    me->tix = am_timer_allocate_x(timer, EVT_PROGRESS_TICK, &me->ao);
+    me->progress = am_timer_event_ctor_x(EVT_PROGRESS_TICK, &me->ao);
 }
 
 AM_NORETURN static void ticker_task(void *param) {
@@ -162,16 +165,15 @@ AM_NORETURN static void ticker_task(void *param) {
     for (;;) {
         am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
         now_ticks += 1;
-        uint32_t fired = am_timer_tick(timer);
-        while (fired) {
-            int tix = AM_CTZL(fired);
-            struct am_timer_event *event = am_timer_from_tix(timer, tix);
-            fired &= (uint32_t)~(1UL << (unsigned)tix);
-            void *owner = AM_CAST(struct am_timer_event_x *, event)->ctx;
+
+        am_timer_tick_iterator_init(timer);
+        struct am_timer_event *fired = NULL;
+        while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
+            void *owner = AM_CAST(struct am_timer_event_x *, fired)->ctx;
             if (owner) {
-                am_ao_post_fifo(owner, &event->base);
+                am_ao_post_fifo(owner, &fired->event);
             } else {
-                am_ao_publish(&event->base);
+                am_ao_publish(&fired->event);
             }
         }
     }
@@ -230,14 +232,8 @@ int main(int argc, const char *argv[]) {
     }
 
     struct am_timer timer;
-    struct am_timer_event_x timer_events[4];
 
-    am_timer_ctor(
-        &timer,
-        timer_events,
-        AM_COUNTOF(timer_events),
-        sizeof(struct am_timer_event_x)
-    );
+    am_timer_ctor(&timer);
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 

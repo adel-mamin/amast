@@ -34,7 +34,6 @@
 #include <string.h>
 
 #include "common/alignment.h"
-#include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
 #include "event/event.h"
@@ -141,7 +140,7 @@ struct balancer {
     struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer *timer;
-    int tix_timeout;
+    struct am_timer_event_x timeout;
     int ncpus;
     int nstops;
     int stats[AM_WORKERS_NUM_MAX];
@@ -189,7 +188,7 @@ static enum am_rc balancer_proc(
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_timer_arm(me->timer, me->tix_timeout, AM_TIMEOUT_MS, /*interval=*/0);
+        am_timer_arm(me->timer, &me->timeout.event, AM_TIMEOUT_MS, 0);
         am_ao_post_fifo(&me->ao, &m_evt_start);
         return AM_HSM_HANDLED();
     }
@@ -251,7 +250,7 @@ static void balancer_ctor(
     me->nworkers = nworkers;
 
     me->timer = timer;
-    me->tix_timeout = am_timer_allocate_x(me->timer, EVT_TIMEOUT, &me->ao);
+    me->timeout = am_timer_event_ctor_x(EVT_TIMEOUT, &me->ao);
 }
 
 static void ticker_task(void *param) {
@@ -265,16 +264,15 @@ static void ticker_task(void *param) {
     while (am_ao_get_cnt() > 0) {
         am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
         now_ticks += 1;
-        uint32_t fired = am_timer_tick(timer);
-        while (fired) {
-            int tix = AM_CTZL(fired);
-            struct am_timer_event *event = am_timer_from_tix(timer, tix);
-            fired &= (uint32_t)~(1UL << (unsigned)tix);
-            void *owner = AM_CAST(struct am_timer_event_x *, event)->ctx;
+
+        am_timer_tick_iterator_init(timer);
+        struct am_timer_event *fired = NULL;
+        while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
+            void *owner = AM_CAST(struct am_timer_event_x *, fired)->ctx;
             if (owner) {
-                am_ao_post_fifo(owner, &event->base);
+                am_ao_post_fifo(owner, &fired->event);
             } else {
-                am_ao_publish(&event->base);
+                am_ao_publish(&fired->event);
             }
         }
     }
@@ -284,14 +282,8 @@ AM_ALIGNOF_DEFINE(events_t);
 
 int main(void) {
     struct am_timer timer;
-    struct am_timer_event_x timer_events[4];
 
-    am_timer_ctor(
-        &timer,
-        timer_events,
-        AM_COUNTOF(timer_events),
-        sizeof(struct am_timer_event_x)
-    );
+    am_timer_ctor(&timer);
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 

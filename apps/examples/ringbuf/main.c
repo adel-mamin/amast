@@ -52,16 +52,15 @@ AM_NORETURN static void ticker_task(void *param) {
     for (;;) {
         am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
         now_ticks += 1;
-        uint32_t fired = am_timer_tick(timer);
-        while (fired) {
-            int tix = AM_CTZL(fired);
-            struct am_timer_event *event = am_timer_from_tix(timer, tix);
-            fired &= (uint32_t)~(1UL << (unsigned)tix);
-            void *owner = AM_CAST(struct am_timer_event_x *, event)->ctx;
+
+        am_timer_tick_iterator_init(timer);
+        struct am_timer_event *fired = NULL;
+        while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
+            void *owner = AM_CAST(struct am_timer_event_x *, fired)->ctx;
             if (owner) {
-                am_ao_post_fifo(owner, &event->base);
+                am_ao_post_fifo(owner, &fired->event);
             } else {
-                am_ao_publish(&event->base);
+                am_ao_publish(&fired->event);
             }
         }
     }
@@ -69,14 +68,7 @@ AM_NORETURN static void ticker_task(void *param) {
 
 static void test_ringbuf_threading(void) {
     struct am_timer timer;
-    struct am_timer_event_x timer_events[4];
-
-    am_timer_ctor(
-        &timer,
-        timer_events,
-        AM_COUNTOF(timer_events),
-        sizeof(struct am_timer_event_x)
-    );
+    am_timer_ctor(&timer);
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 

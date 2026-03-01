@@ -32,32 +32,18 @@
 #include <string.h>
 #include <stdint.h>
 
-#include "common/compiler.h"
 #include "common/macros.h"
+#include "slist/slist.h"
 #include "timer/timer.h"
-
-#define AM_TIX_IS_VALID(x) ((0 <= (x)) && ((x) < timer->events_num))
 
 static void timer_crit_stub(void) {}
 
-void am_timer_ctor(
-    struct am_timer *timer, void *events, int events_num, int event_size
-) {
-    AM_ASSERT(events);
-    AM_ASSERT(AM_ALIGNOF_PTR(events) >= AM_ALIGNOF(am_timer_event_t));
-    AM_ASSERT(events_num > 0);
-    AM_ASSERT(
-        AM_ALIGN_SIZE(event_size, AM_ALIGNOF(am_timer_event_t)) == event_size
-    );
-
+void am_timer_ctor(struct am_timer *timer) {
     memset(timer, 0, sizeof(*timer));
     timer->crit_enter = timer->crit_exit = timer_crit_stub;
-    timer->events = events;
-    timer->events_num = events_num;
-    timer->event_size = event_size;
-    if (timer->events_num < 32) {
-        timer->timers_allocated = (uint32_t)-1 << (uint32_t)timer->events_num;
-    }
+
+    am_slist_ctor(&timer->events);
+    am_slist_ctor(&timer->events_pend);
 }
 
 void am_timer_register_cbs(
@@ -69,132 +55,138 @@ void am_timer_register_cbs(
     timer->crit_exit = crit_exit;
 }
 
-int am_timer_allocate(struct am_timer *timer, int event_id) {
-    AM_ASSERT(timer);
-    AM_ASSERT(event_id >= AM_EVT_USER);
-    AM_ASSERT(event_id <= UINT16_MAX);
-
-    uint32_t free_slots = ~timer->timers_allocated;
-    AM_ASSERT(free_slots); /* no free timer slots */
-    int tix = AM_CTZL(free_slots);
-    AM_ASSERT(tix < timer->events_num);
-    struct am_timer_event *event = am_timer_from_tix(timer, tix);
-
-    memset(event, 0, (size_t)timer->event_size);
-    event->base.id = (uint16_t)event_id;
-
-    timer->timers_allocated |= (uint32_t)(1UL << (unsigned)tix);
-
-    return tix;
-}
-
-int am_timer_allocate_x(struct am_timer *timer, int event_id, void *ctx) {
-    int tix = am_timer_allocate(timer, event_id);
-    AM_ASSERT(timer->event_size >= (int)sizeof(struct am_timer_event_x));
-    const struct am_timer_event *event = am_timer_from_tix(timer, tix);
-    AM_CAST(struct am_timer_event_x *, event)->ctx = ctx;
-    return tix;
-}
-
 void am_timer_arm(
-    struct am_timer *timer, int tix, uint32_t ticks, uint32_t interval
+    struct am_timer *timer,
+    struct am_timer_event *event,
+    uint32_t ticks,
+    uint32_t interval
 ) {
     AM_ASSERT(timer);
-    AM_ASSERT(AM_TIX_IS_VALID(tix));
+    AM_ASSERT(event);
     AM_ASSERT(ticks > 0);
-
-    struct am_timer_event *event = am_timer_from_tix(timer, tix);
+    AM_ASSERT(interval < UINT32_MAX / 2);
 
     timer->crit_enter();
 
     event->oneshot_ticks = AM_MAX(ticks, 1);
-    event->interval_ticks = interval;
+    event->interval_ticks = interval & 0x7FFFFFFF;
+    event->disarm_pending = 0;
 
-    timer->timers_running |= (uint32_t)(1UL << (unsigned)tix);
+    if (!am_slist_item_is_linked(&event->item)) {
+        am_slist_push_back(&timer->events_pend, &event->item);
+        ++timer->nevents.pend;
+    }
 
     timer->crit_exit();
 }
 
-bool am_timer_disarm(struct am_timer *timer, int tix) {
+bool am_timer_disarm(struct am_timer *timer, struct am_timer_event *event) {
     AM_ASSERT(timer);
-    AM_ASSERT(AM_TIX_IS_VALID(tix));
+    AM_ASSERT(event);
 
     timer->crit_enter();
 
-    struct am_timer_event *event = am_timer_from_tix(timer, tix);
-    bool was_armed = event->oneshot_ticks || event->interval_ticks;
+    bool was_armed = am_slist_item_is_linked(&event->item);
     event->oneshot_ticks = event->interval_ticks = 0;
-    timer->timers_running &= ~(uint32_t)(1UL << (unsigned)tix);
+    event->disarm_pending = 1;
 
     timer->crit_exit();
 
     return was_armed;
 }
 
-bool am_timer_is_armed(const struct am_timer *timer, int tix) {
+bool am_timer_is_armed(
+    const struct am_timer *timer, const struct am_timer_event *event
+) {
     AM_ASSERT(timer);
-    AM_ASSERT(AM_TIX_IS_VALID(tix));
+    AM_ASSERT(event);
 
     timer->crit_enter();
 
-    bool armed = (timer->timers_running & (1UL << tix)) != 0;
+    bool armed = am_slist_item_is_linked(&event->item);
+    bool disarm_pending = event->disarm_pending;
 
     timer->crit_exit();
 
-    return armed;
+    return armed && !disarm_pending;
 }
 
-uint32_t am_timer_tick(struct am_timer *timer) {
-    AM_ASSERT(timer);
-
-    uint32_t fired = 0;
+void am_timer_tick_iterator_init(struct am_timer *timer) {
+    am_slist_iterator_ctor(&timer->events, &timer->it);
 
     timer->crit_enter();
 
-    uint32_t running = timer->timers_running;
-    while (running) {
-        int tix = AM_CTZL(running);
-        struct am_timer_event *event = am_timer_from_tix(timer, tix);
+    if (!am_slist_is_empty(&timer->events_pend)) {
+        am_slist_append(&timer->events, &timer->events_pend);
+        timer->nevents.running += timer->nevents.pend;
+        timer->nevents.pend = 0;
+    }
+
+    timer->crit_exit();
+}
+
+struct am_timer_event *am_timer_tick_iterator_next(struct am_timer *timer) {
+    AM_ASSERT(timer);
+
+    timer->crit_enter();
+
+    int nevents = timer->nevents.running;
+
+    struct am_slist_item *p = NULL;
+    struct am_timer_event *event = NULL;
+    while ((p = am_slist_iterator_next(&timer->it)) != NULL) {
+        event = AM_CONTAINER_OF(p, struct am_timer_event, item);
+
+        AM_ASSERT(nevents > 0);
+        --nevents;
+
+        if (event->disarm_pending) {
+            am_slist_iterator_pop(&timer->it);
+            event->disarm_pending = 0;
+            AM_ASSERT(timer->nevents.running > 0);
+            --timer->nevents.running;
+            event = NULL;
+            continue;
+        }
+
         AM_ASSERT(event->oneshot_ticks);
         --event->oneshot_ticks;
-        uint32_t mask = (uint32_t)1 << (uint32_t)tix;
-        running &= ~mask;
         if (event->oneshot_ticks) {
+            event = NULL;
             continue;
         }
-        fired |= mask;
         if (event->interval_ticks) {
             event->oneshot_ticks = event->interval_ticks;
-            continue;
+        } else {
+            am_slist_iterator_pop(&timer->it);
+            AM_ASSERT(timer->nevents.running > 0);
+            --timer->nevents.running;
         }
-        timer->timers_running &= ~mask;
+        break;
     }
 
     timer->crit_exit();
 
-    return fired;
-}
-
-struct am_timer_event *am_timer_from_tix(
-    const struct am_timer *timer, int tix
-) {
-    AM_ASSERT(timer);
-    AM_ASSERT(AM_TIX_IS_VALID(tix));
-
-    const char *event = (char *)timer->events + timer->event_size * tix;
-    return AM_CAST(struct am_timer_event *, event);
+    return event;
 }
 
 bool am_timer_is_empty_unsafe(const struct am_timer *timer) {
     AM_ASSERT(timer);
-    return !timer->timers_running;
+
+    bool empty = am_slist_is_empty(&timer->events);
+    bool empty_pend = am_slist_is_empty(&timer->events_pend);
+
+    return empty && empty_pend;
 }
 
-uint32_t am_timer_get_ticks(const struct am_timer *timer, int tix) {
+uint32_t am_timer_get_ticks(
+    const struct am_timer *timer, const struct am_timer_event *event
+) {
     AM_ASSERT(timer);
+    AM_ASSERT(event);
 
     timer->crit_enter();
-    uint32_t ticks = am_timer_from_tix(timer, tix)->oneshot_ticks;
+    uint32_t ticks = event->oneshot_ticks;
     timer->crit_exit();
 
     return ticks;

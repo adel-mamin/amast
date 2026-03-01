@@ -44,9 +44,9 @@ struct ringbuf_writer {
     struct am_ao ao;
     struct am_ringbuf *ringbuf;
     struct am_timer *timer;
+    struct am_timer_event_x wait;
     const uint8_t *data;
     int datalen;
-    int tix_wait;
     int len;
 };
 
@@ -71,7 +71,9 @@ static void ringbuf_writer_event_handler(
         int size = me->len;
         (void)am_ringbuf_get_write_ptr(me->ringbuf, &ptr, &size);
         if (size < me->len) {
-            am_timer_arm(me->timer, me->tix_wait, /*ticks=*/1, /*interval=*/0);
+            am_timer_arm(
+                me->timer, &me->wait.event, /*ticks=*/1, /*interval=*/0
+            );
             return;
         }
         AM_ASSERT(ptr);
@@ -108,7 +110,7 @@ void ringbuf_writer_ctor(
     me->data = data;
     me->datalen = len;
     me->timer = timer;
-    me->tix_wait = am_timer_allocate_x(timer, AM_EVT_RINGBUF_WAIT, &me->ao);
+    me->wait = am_timer_event_ctor_x(AM_EVT_RINGBUF_WAIT, &me->ao);
 }
 
 struct am_ao *ringbuf_writer_get_obj(void) { return &m_ringbuf_writer.ao; }

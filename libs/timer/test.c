@@ -29,6 +29,8 @@
  * Timer unit tests.
  */
 
+#include <stddef.h>
+
 #include "common/macros.h"
 #include "event/event.h"
 #include "timer/timer.h"
@@ -38,42 +40,42 @@
 
 static void test_arm(void) {
     struct am_timer timer;
-    struct am_timer_event timer_events[2];
+    struct am_timer_event test = am_timer_event_ctor(EVT_TEST);
+    struct am_timer_event test2 = am_timer_event_ctor(EVT_TEST2);
 
-    am_timer_ctor(
-        &timer,
-        timer_events,
-        AM_COUNTOF(timer_events),
-        sizeof(struct am_timer_event)
-    );
+    am_timer_ctor(&timer);
 
-    int tix = am_timer_allocate(&timer, EVT_TEST);
-    am_timer_arm(&timer, tix, /*ticks=*/1, /*interval=*/0);
-    AM_ASSERT(am_timer_is_armed(&timer, tix));
+    am_timer_arm(&timer, &test, /*ticks=*/1, /*interval=*/0);
+    AM_ASSERT(am_timer_is_armed(&timer, &test));
 
-    int tix2 = am_timer_allocate(&timer, EVT_TEST2);
-    am_timer_arm(&timer, tix2, /*ticks=*/1, /*interval=*/0);
-    AM_ASSERT(am_timer_is_armed(&timer, tix2));
+    am_timer_arm(&timer, &test2, /*ticks=*/1, /*interval=*/0);
+    AM_ASSERT(am_timer_is_armed(&timer, &test2));
 
-    am_timer_disarm(&timer, tix2);
-    AM_ASSERT(!am_timer_is_armed(&timer, tix2));
+    am_timer_disarm(&timer, &test2);
+    AM_ASSERT(!am_timer_is_armed(&timer, &test2));
     AM_ASSERT(!am_timer_is_empty_unsafe(&timer));
 
-    AM_ASSERT(am_timer_tick(&timer) & (1UL << (unsigned)tix));
+    am_timer_tick_iterator_init(&timer);
+    struct am_timer_event *e = am_timer_tick_iterator_next(&timer);
+    AM_ASSERT(e && (test.event.id == e->event.id));
+
+    AM_ASSERT(NULL == am_timer_tick_iterator_next(&timer));
 
     AM_ASSERT(am_timer_is_empty_unsafe(&timer));
 
-    AM_ASSERT(0 == am_timer_tick(&timer));
+    am_timer_arm(&timer, &test, /*ticks=*/1, /*interval=*/0);
+    AM_ASSERT(am_timer_is_armed(&timer, &test));
 
-    am_timer_arm(&timer, tix, /*ticks=*/1, /*interval=*/0);
-    AM_ASSERT(am_timer_is_armed(&timer, tix));
+    am_timer_tick_iterator_init(&timer);
+    e = am_timer_tick_iterator_next(&timer);
+    AM_ASSERT(e && (test.event.id == e->event.id));
 
-    AM_ASSERT(am_timer_tick(&timer) & (1UL << (unsigned)tix));
+    am_timer_arm(&timer, &test2, /*ticks=*/1, /*interval=*/0);
+    AM_ASSERT(am_timer_is_armed(&timer, &test2));
 
-    am_timer_arm(&timer, tix2, /*ticks=*/1, /*interval=*/0);
-    AM_ASSERT(am_timer_is_armed(&timer, tix2));
-
-    AM_ASSERT(am_timer_tick(&timer) & (1UL << (unsigned)tix2));
+    am_timer_tick_iterator_init(&timer);
+    e = am_timer_tick_iterator_next(&timer);
+    AM_ASSERT(e && (test2.event.id == e->event.id));
 
     AM_ASSERT(am_timer_is_empty_unsafe(&timer));
 }

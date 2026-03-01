@@ -49,9 +49,9 @@ struct ringbuf_reader {
     int total_len;
     struct am_ringbuf *ringbuf;
     struct am_timer *timer;
+    struct am_timer_event_x wait;
     const uint8_t *data;
     int datalen;
-    int tix_wait;
 };
 
 static struct ringbuf_reader m_ringbuf_reader;
@@ -75,7 +75,9 @@ static void ringbuf_reader_event_handler(
         int size = 0;
         (void)am_ringbuf_get_read_ptr(me->ringbuf, &ptr, &size);
         if (size < me->len) {
-            am_timer_arm(me->timer, me->tix_wait, /*ticks=*/1, /*interval=*/0);
+            am_timer_arm(
+                me->timer, &me->wait.event, /*ticks=*/1, /*interval=*/0
+            );
             return;
         }
         AM_ASSERT(ptr);
@@ -116,7 +118,7 @@ void ringbuf_reader_ctor(
     me->timer = timer;
     me->data = data;
     me->datalen = len;
-    me->tix_wait = am_timer_allocate_x(timer, AM_EVT_RINGBUF_WAIT, &me->ao);
+    me->wait = am_timer_event_ctor_x(AM_EVT_RINGBUF_WAIT, &me->ao);
 }
 
 struct am_ao *ringbuf_reader_get_obj(void) { return &m_ringbuf_reader.ao; }

@@ -14,14 +14,17 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Require explicit event handler for active objects.
   Active objects can now be based on FSM, HSM or a simple event handler.
 - Prune debug callback mechanism in active objects.
-  This can now be modeled by callers by doing the logging by registering
-  a dedicated logging wrappers as event handlers to active objects.
+  This can now be modeled by callers by doing the logging with the help of
+  dedicated logging wrappers as event handlers to active objects.
 - Prune FSM and HSM spy callbacks mechanisms as redundant.
-  Users always have an option to control
-  the `am_fsm_dispatch()` and `am_hsm_dispatch()` calls.
+  Users always have an option to intercept
+  the `am_fsm_dispatch()` and `am_hsm_dispatch()` calls as they now call them
+  explicitly.
 - Rework timer library.
 - Remove `am_timer_get_interval()`.
 - Rework timer API to use ticks only.
+- Add `am_timer_tick_iterator_init()` and `am_timer_tick_iterator_next()`
+  API to handle the expired timer events explicitly.
 
 ### Fixed
 

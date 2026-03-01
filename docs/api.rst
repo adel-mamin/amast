@@ -310,15 +310,15 @@ The source code of the corresponding header file is in `timer.h <https://github.
 
 .. doxygenfunction:: am_timer_ctor
 
+.. doxygenfunction:: am_timer_event_ctor
+
+.. doxygenfunction:: am_timer_event_ctor_x
+
 .. doxygenfunction:: am_timer_register_cbs
 
-.. doxygenfunction:: am_timer_allocate
+.. doxygenfunction:: am_timer_tick_iterator_init
 
-.. doxygenfunction:: am_timer_allocate_x
-
-.. doxygenfunction:: am_timer_from_tix
-
-.. doxygenfunction:: am_timer_tick
+.. doxygenfunction:: am_timer_tick_iterator_next
 
 .. doxygenfunction:: am_timer_arm
 

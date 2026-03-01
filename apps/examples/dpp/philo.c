@@ -48,7 +48,7 @@ static struct philo {
     int cnt;
     struct am_ao *table;
     struct am_timer *timer;
-    int tix;
+    struct am_timer_event_x timeout;
 } m_philo[PHILO_NUM];
 
 struct am_ao *g_ao_philo[PHILO_NUM] = {
@@ -71,7 +71,7 @@ static enum am_rc philo_eating(struct philo *me, const struct am_event *event);
 static enum am_rc philo_top(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case EVT_STOP:
-        am_timer_disarm(me->timer, me->tix);
+        am_timer_disarm(me->timer, &me->timeout.event);
         am_ao_post_fifo(me->table, &event_stopped_);
         am_ao_stop(&me->ao);
         return AM_HSM_HANDLED();
@@ -88,7 +88,7 @@ static enum am_rc philo_thinking(
     case AM_EVT_ENTRY:
         am_printf("philo %d is thinking\n", me->id);
         ++me->cnt;
-        am_timer_arm(me->timer, me->tix, /*ms=*/20, /*interval=*/0);
+        am_timer_arm(me->timer, &me->timeout.event, /*ms=*/20, 0);
         return AM_HSM_HANDLED();
 
     case EVT_TIMEOUT: {
@@ -128,7 +128,7 @@ static enum am_rc philo_eating(struct philo *me, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("philo %d is eating\n", me->id);
-        am_timer_arm(me->timer, me->tix, /*ms=*/20, /*interval=*/0);
+        am_timer_arm(me->timer, &me->timeout.event, /*ms=*/20, 0);
         return AM_HSM_HANDLED();
 
     case EVT_TIMEOUT: {
@@ -165,7 +165,7 @@ void philo_ctor(int id, struct am_ao *table, struct am_timer *timer) {
 
     me->table = table;
     me->timer = timer;
-    me->tix = am_timer_allocate_x(timer, EVT_TIMEOUT, &me->ao);
+    me->timeout = am_timer_event_ctor_x(EVT_TIMEOUT, &me->ao);
 }
 
 struct am_ao *philo_get_obj(int id) {
