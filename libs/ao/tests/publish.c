@@ -96,6 +96,8 @@ static AM_PRINTF(1, 0) void publish_log(const char *fmt, ...) {
 }
 
 static void test_publish(void) {
+    am_pal_ctor(/*arg=*/NULL);
+
     struct am_ao_state_cfg cfg = {
         .crit_enter = am_crit_enter, .crit_exit = am_crit_exit
     };
@@ -140,6 +142,8 @@ static void test_publish(void) {
     AM_ASSERT('\0' == m_publish.log_buf[0]);
 
     am_ao_state_dtor();
+
+    am_pal_dtor();
 }
 
 int main(void) {

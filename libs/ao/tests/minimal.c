@@ -126,6 +126,8 @@ static int loopback_test_init(
 }
 
 int main(void) {
+    am_pal_ctor(/*arg=*/NULL);
+
     am_ao_state_ctor(/*cfg=*/NULL);
 
     am_ao_ctor(
@@ -171,6 +173,8 @@ int main(void) {
     }
 
     am_ao_state_dtor();
+
+    am_pal_dtor();
 
     return 0;
 }

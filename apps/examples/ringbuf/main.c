@@ -67,6 +67,8 @@ AM_NORETURN static void ticker_task(void *param) {
 }
 
 static void test_ringbuf_threading(void) {
+    am_pal_ctor(/*arg=*/NULL);
+
     struct am_timer timer;
     am_timer_ctor(&timer);
 
@@ -123,6 +125,8 @@ static void test_ringbuf_threading(void) {
     }
 
     am_ao_state_dtor();
+
+    am_pal_dtor();
 }
 
 int main(void) {

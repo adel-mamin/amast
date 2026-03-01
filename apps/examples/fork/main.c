@@ -226,6 +226,8 @@ static void job_task(void *param) {
 }
 
 int main(int argc, const char *argv[]) {
+    am_pal_ctor(/*arg=*/NULL);
+
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <program> [args...]\n", argv[0]);
         return EXIT_FAILURE;
@@ -291,6 +293,8 @@ int main(int argc, const char *argv[]) {
     }
 
     am_ao_state_dtor();
+
+    am_pal_dtor();
 
     return EXIT_SUCCESS;
 }

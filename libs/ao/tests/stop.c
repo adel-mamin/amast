@@ -85,6 +85,7 @@ static void start_ao(void) {
 }
 
 int main(void) {
+    am_pal_ctor(/*args=*/NULL);
     am_ao_state_ctor(/*cfg=*/NULL);
 
     struct test *me = &m_test;
@@ -105,6 +106,7 @@ int main(void) {
     }
 
     am_ao_state_dtor();
+    am_pal_dtor();
 
     return 0;
 }

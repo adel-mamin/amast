@@ -369,6 +369,8 @@ static void input_task(void *param) {
 }
 
 int main(void) {
+    am_pal_ctor(/*arg=*/NULL);
+
     struct am_timer timer;
     am_timer_ctor(&timer);
 
@@ -420,6 +422,8 @@ int main(void) {
     }
 
     am_ao_state_dtor();
+
+    am_pal_dtor();
 
     return 0;
 }

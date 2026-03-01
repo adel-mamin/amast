@@ -25,6 +25,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Rework timer API to use ticks only.
 - Add `am_timer_tick_iterator_init()` and `am_timer_tick_iterator_next()`
   API to handle the expired timer events explicitly.
+- Remove `am_pal_ctor()` and `am_pal_dtor()` calls from `am_ao_state_ctor()`
+  and `am_ao_state_dtor()` correspondingly.
 
 ### Fixed
 

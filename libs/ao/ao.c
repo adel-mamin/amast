@@ -247,8 +247,6 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     struct am_ao_state *me = &am_ao_state_;
     memset(me, 0, sizeof(*me));
 
-    am_pal_ctor(/*arg=*/NULL);
-
     am_ao_state_ctor_();
 
     AM_ATOMIC_STORE_N(&me->startup_complete, false);
@@ -266,7 +264,7 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
     am_event_state_ctor(&cfg_event);
 }
 
-void am_ao_state_dtor(void) { am_pal_dtor(); }
+void am_ao_state_dtor(void) {}
 
 void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub) {
     AM_ASSERT(sub);
