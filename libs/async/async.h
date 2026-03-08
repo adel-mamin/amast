@@ -99,7 +99,7 @@ struct am_async {
         /* FALLTHROUGH */                               \
     case __LINE__:                                      \
         if (!(cond)) {                                  \
-            return AM_RC_BUSY;                          \
+            return AM_RC_ASYNC_BUSY;                    \
         }                                               \
         am_async_->state = AM_ASYNC_STATE_INIT
 
@@ -107,13 +107,10 @@ struct am_async {
  * Chain an async function call and evaluate its return value.
  *
  * Returns, if the async function call returns
- * #AM_RC_BUSY,
- * #AM_RC_TRAN,
- * #AM_RC_TRAN_REDISPATCH,
- * #AM_RC_SUPER
+ * #AM_RC_ASYNC_BUSY,
  *
  * The function call is evaluated again on next invocation,
- * if #AM_RC_BUSY is returned. Otherwise the execution continues
+ * if #AM_RC_ASYNC_BUSY is returned. Otherwise the execution continues
  * on next invocation without the function call.
  *
  * @param call  the function call to check the return value of
@@ -124,16 +121,11 @@ struct am_async {
     case __LINE__:                                      \
         do {                                            \
             enum am_rc rc_ = (call);                    \
-            if (AM_RC_BUSY == rc_) {                    \
-                return rc_;                             \
+            if (AM_RC_ASYNC_BUSY == rc_) {              \
+                return AM_RC_ASYNC_BUSY;                \
             }                                           \
+            AM_ASSERT(AM_RC_ASYNC_DONE == rc_);         \
             am_async_->state = AM_ASYNC_STATE_INIT;     \
-            if ((AM_RC_TRAN == rc_) ||                  \
-               (AM_RC_TRAN_REDISPATCH == rc_) ||        \
-               (AM_RC_SUPER == rc_)) {                  \
-                return rc_;                             \
-            }                                           \
-            AM_ASSERT((AM_RC_DONE == rc_) || (AM_RC_HANDLED == rc_)); \
         } while (0)
 
 /**
@@ -145,7 +137,7 @@ struct am_async {
  */
 #define AM_ASYNC_YIELD()                                \
         am_async_->state = __LINE__;                    \
-        return AM_RC_BUSY;                              \
+        return AM_RC_ASYNC_BUSY;                        \
     case __LINE__:                                      \
         am_async_->state = AM_ASYNC_STATE_INIT
 

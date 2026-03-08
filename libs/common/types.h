@@ -41,9 +41,9 @@ enum am_rc {
     /** Success. */
     AM_RC_OK = 0,
     /** Async/await operation is ongoing. Event was handled. */
-    AM_RC_BUSY,
+    AM_RC_ASYNC_BUSY,
     /** Async/await operation is complete. Event was handled. */
-    AM_RC_DONE,
+    AM_RC_ASYNC_DONE,
     /** Event was handled. */
     AM_RC_HANDLED,
     /** Event caused state transition. */

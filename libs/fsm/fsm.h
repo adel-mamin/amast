@@ -47,10 +47,10 @@ struct am_fsm;
  *
  * @param fsm    the FSM
  * @param event  the event to handle
- * @retval AM_RC_BUSY    - event was handled (no propagation to superstate)
- * @retval AM_RC_DONE    - event was handled (no propagation to superstate)
- * @retval AM_RC_HANDLED - event was handled (no propagation to superstate)
- * @retval AM_RC_TRAN    - event caused state transition
+ * @retval AM_RC_ASYNC_BUSY  - event was handled (no propagation to superstate)
+ * @retval AM_RC_ASYNC_DONE  - event was handled (no propagation to superstate)
+ * @retval AM_RC_HANDLED     - event was handled (no propagation to superstate)
+ * @retval AM_RC_TRAN        - event caused state transition
  * @retval AM_RC_TRAN_REDISPATCH - event caused state transition and redispatch
  */
 typedef enum am_rc (*am_fsm_state_fn)(

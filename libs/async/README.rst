@@ -53,7 +53,7 @@ Macros
 - **AM_ASYNC_CHAIN(call)**
 
   Chain an async function call and evaluate its return value.
-  Returns, if the async function call return value is not ``AM_RC_DONE``,
+  Returns, if the async function call return value is not ``AM_RC_ASYNC_DONE``,
   in which case the function call is evaluated again on next invocation.
 
 - **AM_ASYNC_YIELD()**
