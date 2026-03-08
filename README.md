@@ -145,6 +145,10 @@ Here is the full implementation of the HSM:
 enum { APP_EVT_A = AM_EVT_USER, APP_EVT_B, APP_EVT_C };
 
 struct app {
+    /*
+     * Must be the first member of the structure.
+     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules
+     */
     struct am_hsm hsm;
     /* app data */
 } app;

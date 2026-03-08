@@ -27,6 +27,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
   API to handle the expired timer events explicitly.
 - Remove `am_pal_ctor()` and `am_pal_dtor()` calls from `am_ao_state_ctor()`
   and `am_ao_state_dtor()` correspondingly.
+- Return only `AM_RC_ASYNC_DONE` and `AM_RC_ASYNC_WAIT` values from
+  async functions.
 
 ### Fixed
 
