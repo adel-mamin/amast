@@ -46,13 +46,13 @@ struct am_timer {
     struct am_slist events;
     /**
      * List of armed pending timer events.
-     * Each armed timer is first placed into this list
+     * Each armed timer event is first placed into this list
      * and then moved to the list of armed timers events
      * in next am_timer_tick() call.
      *
      * This is done to limit the armed timer events list operations
-     * exclusively to am_timer_tick() call to avoid race conditions
-     * between timer owners the ticker task/ISR.
+     * exclusively to am_timer_tick_iterator_init() call to avoid race
+     * conditions between timer event owners the ticker task/ISR.
      */
     struct am_slist events_pend;
     /** number of timer events */
@@ -73,7 +73,7 @@ struct am_timer_event {
     /** event descriptor */
     struct am_event event;
 
-    /** to link timers together */
+    /** to link timer events together */
     struct am_slist_item item;
 
     /** the timer event is sent after this many ticks */
@@ -82,7 +82,9 @@ struct am_timer_event {
     /** the timer event is re-sent after this many ticks */
     uint32_t interval_ticks : 31;
 
-    /** the timer was disarmed and pending removal from timer list */
+    /**
+     * the timer event was disarmed and pending removal from timer event list
+     */
     unsigned disarm_pending : 1;
 };
 
@@ -166,22 +168,24 @@ void am_timer_tick_iterator_init(struct am_timer *timer);
  * Must follow am_timer_tick_iterator_init() call.
  * Must be called every tick until it retuns a non-null value.
  *
- * @param timer  tick timers in this timer state
+ * @param timer  tick timer events in this timer state
  *
  * @return Fired timer event or NULL.
  */
 struct am_timer_event *am_timer_tick_iterator_next(struct am_timer *timer);
 
 /**
- * Arm timer.
+ * Arm timer event.
  *
- * It is fine to arm an already armed timer. The timer is re-armed in this case.
- * @param timer     the timer to arm
+ * It is fine to arm an already armed timer event.
+ * The timer event is re-armed in this case.
+ *
+ * @param timer     the timer event to arm
  * @param event     the timer event
  * @param ticks     the timer event is to be sent in these many ticks
  * @param interval  the timer event is to be re-sent in these many ticks
  *                  after the event is sent for the fist time.
- *                  Can be 0, in which case the timer is one shot.
+ *                  Can be 0, in which case the timer event is one shot.
  */
 void am_timer_arm(
     struct am_timer *timer,
@@ -191,37 +195,37 @@ void am_timer_arm(
 );
 
 /**
- * Disarm timer.
+ * Disarm timer event.
  *
- * It is fine to disarm an already disarmed timer.
+ * It is fine to disarm an already disarmed timer event.
  *
  * @param timer   the timer state
  * @param event   the timer event
  *
- * @retval true   the timer was armed
- * @retval false  the timer was not armed
+ * @retval true   the timer event was armed
+ * @retval false  the timer event was not armed
  */
 bool am_timer_disarm(struct am_timer *timer, struct am_timer_event *event);
 
 /**
- * Check if timer is armed.
+ * Check if timer event is armed.
  *
  * @param timer  the timer state
  * @param event  the timer event
  *
- * @retval true   the timer is armed
- * @retval false  the timer is not armed
+ * @retval true   the timer event is armed
+ * @retval false  the timer event is not armed
  */
 bool am_timer_is_armed(
     const struct am_timer *timer, const struct am_timer_event *event
 );
 
 /**
- * Check if timer state has armed timers.
+ * Check if timer state has armed timer events.
  *
  * The function is to be called from a critical section.
  *
- * Can be used to check if there are any pending timers
+ * Can be used to check if there are any pending timer events
  * just before going to sleep mode while in critical section.
  * As it does not enter critical section internally there is no
  * risk of recursive critical section entry.
@@ -233,8 +237,8 @@ bool am_timer_is_armed(
  *
  * @param timer  the timer state
  *
- * @retval true   the timer state has no armed timers
- * @retval false  the timer state has armed timers
+ * @retval true   the timer state has no armed timer events
+ * @retval false  the timer state has armed timer events
  */
 bool am_timer_is_empty_unsafe(const struct am_timer *timer);
 
