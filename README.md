@@ -344,7 +344,7 @@ static void ticker_task(void *param) {
     uint32_t now_ticks = am_time_get_tick(domain);
     while (am_ao_get_cnt() > 0) {
         am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
-        now_ticks += 1;
+        now_ticks += ticks_per_ms;
         am_timer_tick(timer, domain);
 
         am_timer_tick_iterator_init(timer);
