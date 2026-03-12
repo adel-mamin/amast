@@ -57,7 +57,7 @@ static void am_ao_task(void *param) {
 
     ao->task_id = am_task_get_own_id();
 
-    while (AM_LIKELY(!ao->stopped)) {
+    while (AM_LIKELY(ao->running)) {
         while (am_event_queue_is_empty(&ao->event_queue)) {
             am_task_wait(ao->task_id);
         }
@@ -110,6 +110,8 @@ void am_ao_start(
     ++me->aos_cnt;
     me->crit_exit();
 
+    AM_ATOMIC_STORE_N(&ao->running, true);
+
     if (ao->init_handler) {
         ao->init_handler(ao->ctx, init_event);
     }
@@ -151,7 +153,7 @@ void am_ao_stop(struct am_ao *ao) {
 
     ao->ctor_called = false;
 
-    ao->stopped = true;
+    AM_ATOMIC_STORE_N(&ao->running, false);
 
     me->crit_exit();
 

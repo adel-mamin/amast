@@ -29,6 +29,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
   and `am_ao_state_dtor()` correspondingly.
 - Return only `AM_RC_ASYNC_DONE` and `AM_RC_ASYNC_WAIT` values from
   async functions.
+- Add `struct am_ao::running` as a safety guard against using an uninitialized
+  active object
 
 ### Fixed
 

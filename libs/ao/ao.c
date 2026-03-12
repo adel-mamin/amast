@@ -93,6 +93,7 @@ bool am_ao_publish_exclude_x(
             if (ao_ == ao) {
                 continue;
             }
+            AM_ASSERT(AM_ATOMIC_LOAD_N(&ao_->running));
             enum am_rc rc =
                 am_event_queue_push_back_x(&ao_->event_queue, event, margin);
             if (AM_RC_ERR == rc) {
@@ -135,6 +136,8 @@ bool am_ao_post_fifo_x(
     struct am_ao *ao, const struct am_event *event, int margin
 ) {
     AM_ASSERT(ao);
+    AM_ASSERT(AM_ATOMIC_LOAD_N(&ao->ctor_called));
+    AM_ASSERT(AM_ATOMIC_LOAD_N(&ao->running));
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
 
@@ -154,6 +157,8 @@ bool am_ao_post_lifo_x(
     struct am_ao *ao, const struct am_event *event, int margin
 ) {
     AM_ASSERT(ao);
+    AM_ASSERT(AM_ATOMIC_LOAD_N(&ao->ctor_called));
+    AM_ASSERT(AM_ATOMIC_LOAD_N(&ao->running));
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
 

@@ -132,6 +132,8 @@ void am_ao_start(
     me->aos[prio.ao] = ao;
     ++me->aos_cnt;
 
+    AM_ATOMIC_STORE_N(&ao->running, true);
+
     me->running_ao_prio = prio;
     if (ao->init_handler) {
         ao->init_handler(ao->ctx, init_event);
@@ -164,7 +166,8 @@ void am_ao_stop(struct am_ao *ao) {
     me->aos[ao->prio.ao] = NULL;
     --me->aos_cnt;
     ao->ctor_called = false;
-    ao->stopped = true;
+
+    AM_ATOMIC_STORE_N(&ao->running, false);
 
     me->crit_exit();
 }

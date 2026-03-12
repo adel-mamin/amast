@@ -110,9 +110,9 @@ struct am_ao {
     /** AO priority */
     struct am_ao_prio prio;
     /** safety net to catch missing am_ao_ctor() call */
-    unsigned ctor_called : 1;
-    /** am_ao_stop() call was made for the AO */
-    unsigned stopped : 1;
+    bool ctor_called;
+    /** am_ao_start() call was made for the AO */
+    bool running;
 };
 
 /** Active object library state configuration. */
