@@ -44,13 +44,22 @@ Design Considerations
 
 1. **Timer Events**:
 
-   Timer events (``am_event_timer``) encapsulate the details of scheduled
+   Timer events ``am_event_timer`` encapsulate the details of scheduled
    operations. Each timer event includes:
 
    - Shot time: Number of ticks after which the event is fired.
    - Interval: Period between successive event firings (0 for one-shot events).
 
+   The extended timer events ``am_event_timer_x`` inherit from ``am_event_timer``
+   and add event specific context pointer.
+
 3. **Critical Section Management**:
 
    User-defined ``crit_enter`` and ``crit_exit`` callbacks protect shared resources
    during timer updates and event handling.
+
+Usage Examples
+==============
+
+The usage examples can be seen in timer unit tests `test.c` file.
+The usage of the timer library in the application can be found in `apps/examples/async/main.c`.
