@@ -470,8 +470,8 @@ LTO is disabled.
 
 Library name | Code size [kB] | Data size [kB]
 -------------|----------------|---------------
-ao_cooperative | 3.62 | 0.57
-ao_preemptive | 3.56 | 0.56
+ao_cooperative | 3.61 | 0.57
+ao_preemptive | 3.55 | 0.56
 dlist | 1.29 | 0.00
 event | 4.00 | 0.23
 fsm | 0.88 | 0.00
@@ -479,7 +479,7 @@ hsm | 2.66 | 0.01
 onesize | 1.43 | 0.00
 ringbuf | 1.55 | 0.00
 slist | 1.21 | 0.00
-timer | 1.37 | 0.08
+timer | 1.03 | 0.08
 
 ## How To Compile For Amast Development
 <a name="how-to-compile"></a>
