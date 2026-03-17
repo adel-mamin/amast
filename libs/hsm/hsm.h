@@ -179,7 +179,7 @@ struct am_hsm {
 /** Helper macro. Not to be used directly. */
 #define AM_HSM_SET_(s, i)                                    \
     (((struct am_hsm *)me)->state = AM_HSM_STATE_CTOR(s, i), \
-     ((struct am_hsm *)me)->smi = (uint8_t)i)
+     ((struct am_hsm *)me)->smi = (uint8_t)(i))
 
 /** Helper macro. Not to be used directly. */
 #define AM_TRAN1_(s) (AM_HSM_SET_(s, 0), AM_RC_TRAN)

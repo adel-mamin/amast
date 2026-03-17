@@ -52,7 +52,7 @@ static const struct am_event m_hsm_evt_empty = {.id = AM_EVT_EMPTY};
 
 static void hsm_set_state(struct am_hsm *hsm, struct am_hsm_state s) {
     hsm->state = s;
-    hsm->smi = (uint8_t)s.smi;
+    hsm->smi = s.smi;
 }
 
 /**
@@ -112,7 +112,7 @@ static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
         hsm_set_state(hsm, path->state[i - 1]);
     }
     hsm->hierarchy_level = (unsigned)(hsm->hierarchy_level + path->len) &
-                           AM_HSM_HIERARCHY_LEVEL_MASK;
+                           (unsigned)AM_HSM_HIERARCHY_LEVEL_MASK;
     AM_ASSERT(hsm->hierarchy_level <= AM_COUNTOF(path->state));
 }
 
