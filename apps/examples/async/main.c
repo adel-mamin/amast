@@ -181,7 +181,7 @@ static enum am_rc async_regular_(struct async *me) {
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
         /* blinking green */
-        AM_ASYNC_CHAIN(async_blinking_green(me));
+        AM_ASYNC_CALL(async_blinking_green(me));
         am_printff("\b");
     }
 

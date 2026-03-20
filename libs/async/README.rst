@@ -50,9 +50,9 @@ Macros
   If the condition is not met, the function/block returns and can be re-entered later.
   This allows the async function/block to wait for external conditions without blocking.
 
-- **AM_ASYNC_CHAIN(call)**
+- **AM_ASYNC_CALL(func)**
 
-  Chain an async function call and evaluate its return value.
+  Call an async function and evaluate its return value.
   Returns, if the async function call return value is not ``AM_RC_ASYNC_DONE``,
   in which case the function call is evaluated again on next invocation.
 

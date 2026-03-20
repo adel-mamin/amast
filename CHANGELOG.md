@@ -9,6 +9,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ### Changed
 
+- Rename `AM_ASYNC_CHAIN()` to `AM_ASYNC_CALL()`
+
 ### Fixed
 
 ## v0.15.0 - 13-March-2026
@@ -40,7 +42,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ### Fixed
 
-- `AM_ASYNC_CHAIN()` now handles all possible state machine event handler
+- `AM_ASYNC_CALL()` now handles all possible state machine event handler
   return values.
 
 ## v0.14.5 - 25-January-2026
@@ -221,7 +223,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - `lib/async`, `lib/hsm` and `lib/fsm` APIs are all now return `enum am_rc`.
   This allows for seamless integration of async/await code with HSM and FSM code.
   See `apps/examples/async` for example usage.
-- New API `AM_ASYNC_CHAIN()` to chain multiple async functions together.
+- New API `AM_ASYNC_CALL()` to chain multiple async functions together.
 - `AM_UNIQUE(name)` macro.
 - Unit tests for `AM_DO_ONCE()`, `AM_DO_EVERY()`, `AM_DO_EACH_MS()` macros.
 - Extra event value invariant assert to `am_ao_publish_exclude_x()`.
