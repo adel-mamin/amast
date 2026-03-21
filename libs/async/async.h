@@ -113,14 +113,14 @@ struct am_async {
  * if #AM_RC_ASYNC_BUSY is returned. Otherwise the execution continues
  * on next invocation without the function call.
  *
- * @param call  the function call to check the return value of
+ * @param func  the function to check the return value of
  */
-#define AM_ASYNC_CALL(call)                            \
+#define AM_ASYNC_CALL(func)                            \
         am_async_->state = __LINE__;                    \
         /* FALLTHROUGH */                               \
     case __LINE__:                                      \
         do {                                            \
-            enum am_rc rc_ = (call);                    \
+            enum am_rc rc_ = (func);                    \
             if (AM_RC_ASYNC_BUSY == rc_) {              \
                 return AM_RC_ASYNC_BUSY;                \
             }                                           \
