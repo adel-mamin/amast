@@ -76,7 +76,7 @@ static void dtor_hsm(void) {
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(dtor_sinit));
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
     am_hsm_dtor(&me->hsm);
-    AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(NULL)));
+    AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(am_hsm_top)));
 }
 
 int main(void) {

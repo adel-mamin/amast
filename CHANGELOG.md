@@ -10,6 +10,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Changed
 
 - Rename `AM_ASYNC_CHAIN()` to `AM_ASYNC_CALL()`
+- `am_hsm_is_in()` and `am_hsm_state_is_eq()` only accept non-NULL input
 
 ### Fixed
 

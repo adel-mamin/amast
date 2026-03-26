@@ -311,10 +311,8 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event) {
 
 bool am_hsm_is_in(struct am_hsm *hsm, struct am_hsm_state state) {
     AM_ASSERT(hsm);
-
-    if (NULL == state.fn) {
-        return NULL == hsm->state.fn;
-    }
+    AM_ASSERT(hsm->state.fn);
+    AM_ASSERT(state.fn);
 
     struct am_hsm hsm_ = *hsm;
 
@@ -337,9 +335,9 @@ bool am_hsm_is_in(struct am_hsm *hsm, struct am_hsm_state state) {
 
 bool am_hsm_state_is_eq(const struct am_hsm *hsm, struct am_hsm_state state) {
     AM_ASSERT(hsm);
-    if (NULL == state.fn) {
-        return NULL == hsm->state.fn;
-    }
+    AM_ASSERT(hsm->state.fn);
+    AM_ASSERT(state.fn);
+
     return (hsm->state.fn == state.fn) && (hsm->state.smi == state.smi);
 }
 
@@ -367,7 +365,7 @@ void am_hsm_dtor(struct am_hsm *hsm) {
     AM_ASSERT(hsm->state.fn);
 
     hsm_exit(hsm, /*until=*/AM_HSM_STATE_CTOR(am_hsm_top));
-    hsm_set_state(hsm, AM_HSM_STATE_CTOR(NULL));
+    hsm_set_state(hsm, AM_HSM_STATE_CTOR(am_hsm_top));
     hsm->ctor_called = hsm->init_called = false;
 }
 
