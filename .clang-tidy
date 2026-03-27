@@ -1,0 +1,45 @@
+Checks: >
+    -*,
+    bugprone-*,
+    -bugprone-easily-swappable-parameters,
+    -bugprone-implicit-widening-of-multiplication-result,
+    -bugprone-unchecked-optional-access,
+    -bugprone-casting-through-void,
+    -bugprone-assignment-in-if-condition,
+    -bugprone-branch-clone,
+    clang-diagnostic-*,
+    cppcoreguidelines-*,
+    -cppcoreguidelines-avoid-magic-numbers,
+    -cppcoreguidelines-avoid-non-const-global-variables,
+    -cppcoreguidelines-macro-usage,
+    -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+    -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+    -cppcoreguidelines-macro-to-enum,
+    hicpp-*,
+    -hicpp-no-array-decay,
+    -hicpp-multiway-paths-covered,
+    llvm-*,
+    -llvm-header-guard,
+    -llvm-include-order,
+    modernize-*,
+    -modernize-macro-to-enum,
+    readability-*,
+    -readability-identifier-length,
+    -readability-magic-numbers,
+    -readability-identifier-naming,
+    -readability-implicit-bool-conversion,
+    -readability-misplaced-array-index,
+
+CheckOptions:
+    - key:   readability-identifier-naming.FunctionCase
+      value: lower_case
+    - key:   readability-identifier-naming.GlobalConstantCase
+      value: UPPER_CASE
+    - key:   readability-identifier-naming.MacroDefinitionCase
+      value: UPPER_CASE
+    - key:   readability-identifier-naming.TypedefSuffix
+      value: _t
+    - key:   readability-function-cognitive-complexity.IgnoreMacros
+      value: true
+
+WarningsAsErrors:       "*"
