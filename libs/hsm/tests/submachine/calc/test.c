@@ -41,7 +41,7 @@
 
 static char m_calc_log_buf[256];
 
-static AM_PRINTF(1, 0) void test_calc_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void test_calc_log(const char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(m_calc_log_buf, (int)sizeof(m_calc_log_buf), fmt, ap);
@@ -51,7 +51,7 @@ static AM_PRINTF(1, 0) void test_calc_log(const char *fmt, ...) {
 static void test_calc(void) {
     calc_ctor(test_calc_log);
 
-    struct am_hsm *calc = calc_get_obj();
+    struct am_hsm* calc = calc_get_obj();
 
     am_hsm_init(calc, /*init_event=*/NULL);
 
@@ -59,8 +59,8 @@ static void test_calc(void) {
     struct test {
         uint16_t event;
         char event_data;
-        const char *out;
-        const char *data[2];
+        const char* out;
+        const char* data[2];
         char op;
     };
     /* NOLINTEND(clang-analyzer-optin.performance.Padding) */
@@ -102,7 +102,7 @@ static void test_calc(void) {
     };
 
     for (int i = 0; i < AM_COUNTOF(in); ++i) {
-        const struct test *test = &in[i];
+        const struct test* test = &in[i];
         struct calc_event e = {{.id = test->event}, .data = test->event_data};
         am_hsm_dispatch(calc, &e.event);
 

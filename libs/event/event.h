@@ -100,7 +100,7 @@
  * @retval false  the event does not have valid user event ID
  */
 #define AM_EVENT_HAS_USER_ID(event) \
-    (((const struct am_event *)(event))->id >= AM_EVT_USER)
+    (((const struct am_event*)(event))->id >= AM_EVT_USER)
 
 /** Number of bits reserved for event reference counter. */
 #define AM_EVENT_REF_COUNTER_BITS 7
@@ -134,7 +134,7 @@ struct am_event_queue {
     int nfree;     /**< number of free slots */
     int nfree_min; /**< minimum number of free slots observed so far */
     int capacity;  /**< queue capacity [number of items of isize] */
-    const struct am_event **events; /**< event queue */
+    const struct am_event** events; /**< event queue */
     unsigned full : 1;              /**< queue is full */
     /** safety net to catch missing am_event_queue_ctor() call */
     unsigned ctor_called : 1;
@@ -144,7 +144,7 @@ struct am_event_queue {
 typedef struct am_event am_event_t;
 
 /** To use with AM_ALIGNOF() macro. */
-typedef struct am_event *am_event_ptr_t;
+typedef struct am_event* am_event_ptr_t;
 
 /** To use AM_ALIGNOF(am_event_t) in application code. */
 AM_ALIGNOF_DEFINE(am_event_t);
@@ -175,7 +175,7 @@ extern "C" {
  *             The event library makes an internal copy of the configuration.
  *             Can be NULL.
  */
-void am_event_state_ctor(const struct am_event_state_cfg *cfg);
+void am_event_state_ctor(const struct am_event_state_cfg* cfg);
 
 /**
  * Add event memory pool.
@@ -191,7 +191,7 @@ void am_event_state_ctor(const struct am_event_state_cfg *cfg);
  * @param block_size  the maximum size of allocated memory block [bytes]
  * @param alignment   the required alignment of allocated memory blocks [bytes]
  */
-void am_event_pool_add(void *pool, int size, int block_size, int alignment);
+void am_event_pool_add(void* pool, int size, int block_size, int alignment);
 
 /**
  * Get minimum number of free memory blocks observed so far.
@@ -251,7 +251,7 @@ int am_event_pool_get_num(void);
  * @param size         the event size [bytes]
  */
 typedef void (*am_event_log_fn)(
-    int pool_index, int event_index, const struct am_event *event, int size
+    int pool_index, int event_index, const struct am_event* event, int size
 );
 
 /**
@@ -288,7 +288,7 @@ void am_event_pool_log_unsafe(int num, am_event_log_fn cb);
  *
  * @return the newly allocated event
  */
-struct am_event *am_event_allocate_x(int id, int size, int margin);
+struct am_event* am_event_allocate_x(int id, int size, int margin);
 
 /**
  * Allocate event.
@@ -310,7 +310,7 @@ struct am_event *am_event_allocate_x(int id, int size, int margin);
  *
  * @return the newly allocated event
  */
-struct am_event *am_event_allocate(int id, int size);
+struct am_event* am_event_allocate(int id, int size);
 
 /**
  * Try to free the event.
@@ -328,7 +328,7 @@ struct am_event *am_event_allocate(int id, int size);
  *
  * @param event  the event to free
  */
-void am_event_free(const struct am_event *event);
+void am_event_free(const struct am_event* event);
 
 /**
  * Duplicate an event (eXtended version).
@@ -352,8 +352,8 @@ void am_event_free(const struct am_event *event);
  *
  * @return the newly allocated copy of \p event
  */
-struct am_event *am_event_dup_x(
-    const struct am_event *event, int size, int margin
+struct am_event* am_event_dup_x(
+    const struct am_event* event, int size, int margin
 );
 
 /**
@@ -375,7 +375,7 @@ struct am_event *am_event_dup_x(
  *
  * @return the newly allocated copy of \p event
  */
-struct am_event *am_event_dup(const struct am_event *event, int size);
+struct am_event* am_event_dup(const struct am_event* event, int size);
 
 /**
  * Check if event is static.
@@ -387,7 +387,7 @@ struct am_event *am_event_dup(const struct am_event *event, int size);
  * @retval true   the event is static
  * @retval false  the event is not static
  */
-bool am_event_is_static(const struct am_event *event);
+bool am_event_is_static(const struct am_event* event);
 
 /**
  * Increment event reference counter by one.
@@ -406,7 +406,7 @@ bool am_event_is_static(const struct am_event *event);
  *
  * @param event  the event
  */
-void am_event_inc_ref_cnt(const struct am_event *event);
+void am_event_inc_ref_cnt(const struct am_event* event);
 
 /**
  * Decrement event reference counter by one.
@@ -425,7 +425,7 @@ void am_event_inc_ref_cnt(const struct am_event *event);
  *
  * @param event  the event
  */
-void am_event_dec_ref_cnt(const struct am_event *event);
+void am_event_dec_ref_cnt(const struct am_event* event);
 
 /**
  * Return event reference counter.
@@ -438,7 +438,7 @@ void am_event_dec_ref_cnt(const struct am_event *event);
  *
  * @return the event reference counter
  */
-int am_event_get_ref_cnt(const struct am_event *event);
+int am_event_get_ref_cnt(const struct am_event* event);
 
 /**
  * Construct event queue with a array of event pointers.
@@ -448,7 +448,7 @@ int am_event_get_ref_cnt(const struct am_event *event);
  * @param nevents  the number of event pointers in \a events
  */
 void am_event_queue_ctor(
-    struct am_event_queue *queue, const struct am_event *events[], int nevents
+    struct am_event_queue* queue, const struct am_event* events[], int nevents
 );
 
 /**
@@ -456,7 +456,7 @@ void am_event_queue_ctor(
  *
  * @param queue  the queue
  */
-void am_event_queue_dtor(struct am_event_queue *queue);
+void am_event_queue_dtor(struct am_event_queue* queue);
 
 /**
  * Push event to the back of event queue (eXtended version).
@@ -488,7 +488,7 @@ void am_event_queue_dtor(struct am_event_queue *queue);
  * @retval #AM_RC_ERR              the event was not pushed
  */
 enum am_rc am_event_queue_push_back_x(
-    struct am_event_queue *queue, const struct am_event *event, int margin
+    struct am_event_queue* queue, const struct am_event* event, int margin
 );
 
 /**
@@ -511,7 +511,7 @@ enum am_rc am_event_queue_push_back_x(
  *                                 queue was empty
  */
 enum am_rc am_event_queue_push_back(
-    struct am_event_queue *queue, const struct am_event *event
+    struct am_event_queue* queue, const struct am_event* event
 );
 
 /**
@@ -538,7 +538,7 @@ enum am_rc am_event_queue_push_back(
  *                                 queue was empty
  */
 enum am_rc am_event_queue_push_back_unsafe(
-    struct am_event_queue *queue, const struct am_event *event
+    struct am_event_queue* queue, const struct am_event* event
 );
 
 /**
@@ -571,7 +571,7 @@ enum am_rc am_event_queue_push_back_unsafe(
  * @retval #AM_RC_ERR              the event was not pushed
  */
 enum am_rc am_event_queue_push_front_x(
-    struct am_event_queue *queue, const struct am_event *event, int margin
+    struct am_event_queue* queue, const struct am_event* event, int margin
 );
 
 /**
@@ -594,7 +594,7 @@ enum am_rc am_event_queue_push_front_x(
  *                                 queue was empty
  */
 enum am_rc am_event_queue_push_front(
-    struct am_event_queue *queue, const struct am_event *event
+    struct am_event_queue* queue, const struct am_event* event
 );
 
 /**
@@ -605,7 +605,7 @@ enum am_rc am_event_queue_push_front(
  * @param ctx    the callback context
  * @param event  the popped event
  */
-typedef void (*am_event_handle_fn)(void *ctx, const struct am_event *event);
+typedef void (*am_event_handle_fn)(void* ctx, const struct am_event* event);
 
 /**
  * Pop event from the front of event queue.
@@ -637,7 +637,7 @@ typedef void (*am_event_handle_fn)(void *ctx, const struct am_event *event);
  * @retval #AM_RC_ERR  the event was not popped
  */
 enum am_rc am_event_queue_pop_front_with_cb(
-    struct am_event_queue *queue, am_event_handle_fn cb, void *ctx
+    struct am_event_queue* queue, am_event_handle_fn cb, void* ctx
 );
 
 /**
@@ -650,7 +650,7 @@ enum am_rc am_event_queue_pop_front_with_cb(
  * @retval true   the queue is valid
  * @retval false  the queue is invalid
  */
-bool am_event_queue_is_valid(const struct am_event_queue *queue);
+bool am_event_queue_is_valid(const struct am_event_queue* queue);
 
 /**
  * Check if event queue is empty.
@@ -662,7 +662,7 @@ bool am_event_queue_is_valid(const struct am_event_queue *queue);
  * @retval true   queue is empty
  * @retval false  queue is not empty
  */
-bool am_event_queue_is_empty(const struct am_event_queue *queue);
+bool am_event_queue_is_empty(const struct am_event_queue* queue);
 
 /**
  * Check if event queue is empty.
@@ -674,7 +674,7 @@ bool am_event_queue_is_empty(const struct am_event_queue *queue);
  * @retval true   queue is empty
  * @retval false  queue is not empty
  */
-bool am_event_queue_is_empty_unsafe(const struct am_event_queue *queue);
+bool am_event_queue_is_empty_unsafe(const struct am_event_queue* queue);
 
 /**
  * Return how many items are in event queue.
@@ -685,7 +685,7 @@ bool am_event_queue_is_empty_unsafe(const struct am_event_queue *queue);
  *
  * @return number of queued events
  */
-int am_event_queue_get_nbusy_unsafe(const struct am_event_queue *queue);
+int am_event_queue_get_nbusy_unsafe(const struct am_event_queue* queue);
 
 /**
  * Return event queue capacity.
@@ -696,7 +696,7 @@ int am_event_queue_get_nbusy_unsafe(const struct am_event_queue *queue);
  *
  * @return the event queue capacity in number of items (slots)
  */
-int am_event_queue_get_capacity(const struct am_event_queue *queue);
+int am_event_queue_get_capacity(const struct am_event_queue* queue);
 
 /**
  * Pop an item from the front (head) of event queue.
@@ -709,8 +709,8 @@ int am_event_queue_get_capacity(const struct am_event_queue *queue);
  *
  * @return The popped item or NULL, if event queue was empty.
  */
-const struct am_event *am_event_queue_pop_front_unsafe(
-    struct am_event_queue *queue
+const struct am_event* am_event_queue_pop_front_unsafe(
+    struct am_event_queue* queue
 );
 
 /**
@@ -724,7 +724,7 @@ const struct am_event *am_event_queue_pop_front_unsafe(
  *
  * @return The popped item or NULL, if event queue was empty.
  */
-const struct am_event *am_event_queue_pop_front(struct am_event_queue *queue);
+const struct am_event* am_event_queue_pop_front(struct am_event_queue* queue);
 
 /**
  * Get minimum number of free slots ever observed in event queue.
@@ -737,7 +737,7 @@ const struct am_event *am_event_queue_pop_front(struct am_event_queue *queue);
  *
  * @return the minimum number of slots observed so far
  */
-int am_event_queue_get_nfree_min(const struct am_event_queue *queue);
+int am_event_queue_get_nfree_min(const struct am_event_queue* queue);
 
 /**
  * Flush all events from event queue.
@@ -750,7 +750,7 @@ int am_event_queue_get_nfree_min(const struct am_event_queue *queue);
  *
  * @return the number of events flushed
  */
-int am_event_queue_flush(struct am_event_queue *queue);
+int am_event_queue_flush(struct am_event_queue* queue);
 
 #ifdef __cplusplus
 }

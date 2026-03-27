@@ -93,7 +93,7 @@ struct am_timer_event_x {
     /** Base event structure. */
     struct am_timer_event event;
     /** Event specific context. */
-    void *ctx;
+    void* ctx;
 };
 
 /** To use with AM_ALIGNOF() macro. */
@@ -111,7 +111,7 @@ extern "C" {
  *
  * @param timer  the timer state
  */
-void am_timer_ctor(struct am_timer *timer);
+void am_timer_ctor(struct am_timer* timer);
 
 /**
  * Timer event constructor.
@@ -133,7 +133,7 @@ static inline struct am_timer_event am_timer_event_ctor(uint16_t id) {
  * @return the constructed event
  */
 static inline struct am_timer_event_x am_timer_event_ctor_x(
-    uint16_t id, void *ctx
+    uint16_t id, void* ctx
 ) {
     struct am_timer_event_x e = {0};
     e.event.event.id = id;
@@ -149,7 +149,7 @@ static inline struct am_timer_event_x am_timer_event_ctor_x(
  * @param crit_exit  exit critical section
  */
 void am_timer_register_cbs(
-    struct am_timer *timer, void (*crit_enter)(void), void (*crit_exit)(void)
+    struct am_timer* timer, void (*crit_enter)(void), void (*crit_exit)(void)
 );
 
 /**
@@ -160,7 +160,7 @@ void am_timer_register_cbs(
  *
  * @param timer  timer state
  */
-void am_timer_tick_iterator_init(struct am_timer *timer);
+void am_timer_tick_iterator_init(struct am_timer* timer);
 
 /**
  * Iterate tick to next timer event.
@@ -172,7 +172,7 @@ void am_timer_tick_iterator_init(struct am_timer *timer);
  *
  * @return Fired timer event or NULL.
  */
-struct am_timer_event *am_timer_tick_iterator_next(struct am_timer *timer);
+struct am_timer_event* am_timer_tick_iterator_next(struct am_timer* timer);
 
 /**
  * Arm timer event.
@@ -191,8 +191,8 @@ struct am_timer_event *am_timer_tick_iterator_next(struct am_timer *timer);
  *                  Can be 0, in which case the timer event is one shot.
  */
 void am_timer_arm(
-    struct am_timer *timer,
-    struct am_timer_event *event,
+    struct am_timer* timer,
+    struct am_timer_event* event,
     uint32_t ticks,
     uint32_t interval
 );
@@ -208,7 +208,7 @@ void am_timer_arm(
  * @retval true   the timer event was armed
  * @retval false  the timer event was not armed
  */
-bool am_timer_disarm(struct am_timer *timer, struct am_timer_event *event);
+bool am_timer_disarm(struct am_timer* timer, struct am_timer_event* event);
 
 /**
  * Check if timer event is armed.
@@ -220,7 +220,7 @@ bool am_timer_disarm(struct am_timer *timer, struct am_timer_event *event);
  * @retval false  the timer event is not armed
  */
 bool am_timer_is_armed(
-    const struct am_timer *timer, const struct am_timer_event *event
+    const struct am_timer* timer, const struct am_timer_event* event
 );
 
 /**
@@ -243,7 +243,7 @@ bool am_timer_is_armed(
  * @retval true   the timer state has no armed timer events
  * @retval false  the timer state has armed timer events
  */
-bool am_timer_is_empty_unsafe(const struct am_timer *timer);
+bool am_timer_is_empty_unsafe(const struct am_timer* timer);
 
 /**
  * Get number of ticks till timer event is sent.
@@ -254,7 +254,7 @@ bool am_timer_is_empty_unsafe(const struct am_timer *timer);
  * @return the timer event will be sent in this number of ticks
  */
 uint32_t am_timer_get_ticks(
-    const struct am_timer *timer, const struct am_timer_event *event
+    const struct am_timer* timer, const struct am_timer_event* event
 );
 
 #ifdef __cplusplus

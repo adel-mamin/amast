@@ -49,7 +49,7 @@ struct am_hsm_path {
 /** canned event */
 static const struct am_event m_hsm_evt_empty = {.id = AM_EVT_EMPTY};
 
-static void hsm_set_state(struct am_hsm *hsm, struct am_hsm_state s) {
+static void hsm_set_state(struct am_hsm* hsm, struct am_hsm_state s) {
     hsm->state = s;
     hsm->smi = s.smi;
 }
@@ -68,11 +68,11 @@ static void hsm_set_state(struct am_hsm *hsm, struct am_hsm_state s) {
  *               Can be NULL.
  */
 static void hsm_build(
-    struct am_hsm *hsm,
-    struct am_hsm_path *path,
-    const struct am_hsm_state *from,
-    const struct am_hsm_state *until,
-    const struct am_hsm_state *till
+    struct am_hsm* hsm,
+    struct am_hsm_path* path,
+    const struct am_hsm_state* from,
+    const struct am_hsm_state* until,
+    const struct am_hsm_state* till
 ) {
     path->state[0] = *from;
     path->len = 1;
@@ -102,7 +102,7 @@ static void hsm_build(
  * @param hsm   HSM handler
  * @param path  the path to enter
  */
-static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
+static void hsm_enter(struct am_hsm* hsm, const struct am_hsm_path* path) {
     struct am_event entry = {.id = AM_EVT_ENTRY};
     for (int i = path->len; i > 0; --i) {
         hsm_set_state(hsm, path->state[i - 1]);
@@ -120,7 +120,7 @@ static void hsm_enter(struct am_hsm *hsm, const struct am_hsm_path *path) {
  *
  * @param hsm  HSM handler
  */
-static void hsm_exit_state(struct am_hsm *hsm) {
+static void hsm_exit_state(struct am_hsm* hsm) {
     struct am_event exit = {.id = AM_EVT_EXIT};
     enum am_rc rc = hsm->state.fn(hsm, &exit);
     if (AM_RC_HANDLED == rc) {
@@ -139,7 +139,7 @@ static void hsm_exit_state(struct am_hsm *hsm) {
  * @param hsm    HSM handler
  * @param until  stop the exit when reaching this state without exiting it
  */
-static void hsm_exit(struct am_hsm *hsm, struct am_hsm_state until) {
+static void hsm_exit(struct am_hsm* hsm, struct am_hsm_state until) {
     int cnt = AM_HSM_HIERARCHY_DEPTH_MAX;
     while (!am_hsm_state_is_eq(hsm, until)) {
         hsm_exit_state(hsm);
@@ -162,7 +162,7 @@ static void hsm_exit(struct am_hsm *hsm, struct am_hsm_state until) {
  *              Initially it is path from least common ancestor (LCA) substate
  *              to destination state (both inclusive), then reused.
  */
-static void hsm_enter_and_init(struct am_hsm *hsm, struct am_hsm_path *path) {
+static void hsm_enter_and_init(struct am_hsm* hsm, struct am_hsm_path* path) {
     hsm_enter(hsm, path);
     hsm_set_state(hsm, path->state[0]);
     enum am_rc rc;
@@ -185,7 +185,7 @@ static void hsm_enter_and_init(struct am_hsm *hsm, struct am_hsm_path *path) {
  * @param dst  the destination state
  */
 static void hsm_transition(
-    struct am_hsm *hsm, struct am_hsm_state src, struct am_hsm_state dst
+    struct am_hsm* hsm, struct am_hsm_state src, struct am_hsm_state dst
 ) {
     if (!am_hsm_state_is_eq(hsm, src)) {
         hsm_exit(hsm, /*until=*/src);
@@ -205,7 +205,7 @@ static void hsm_transition(
 
     struct am_hsm_state until = AM_HSM_STATE_CTOR(am_hsm_top);
     hsm_build(hsm, &path, /*from=*/&dst, &until, /*till=*/&src);
-    const struct am_hsm_state *end = &path.state[path.len - 1];
+    const struct am_hsm_state* end = &path.state[path.len - 1];
     if ((end->fn == src.fn) && (end->smi == src.smi)) {
         /* src is LCA */
         --path.len;
@@ -243,7 +243,7 @@ static void hsm_transition(
 }
 
 static enum am_rc hsm_dispatch(
-    struct am_hsm *hsm, const struct am_event *event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
     struct am_hsm_state src = {.fn = NULL, .smi = 0};
     struct am_hsm_state state = hsm->state;
@@ -284,7 +284,7 @@ static enum am_rc hsm_dispatch(
     return rc;
 }
 
-void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event) {
+void am_hsm_dispatch(struct am_hsm* hsm, const struct am_event* event) {
     AM_ASSERT(hsm);
     AM_ASSERT(hsm->state.fn);
     AM_ASSERT(hsm->init_called);
@@ -309,7 +309,7 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event) {
     AM_ASSERT(id == event->id); /* cppcheck-suppress knownArgument */
 }
 
-bool am_hsm_is_in(struct am_hsm *hsm, struct am_hsm_state state) {
+bool am_hsm_is_in(struct am_hsm* hsm, struct am_hsm_state state) {
     AM_ASSERT(hsm);
     AM_ASSERT(hsm->state.fn);
     AM_ASSERT(state.fn);
@@ -333,7 +333,7 @@ bool am_hsm_is_in(struct am_hsm *hsm, struct am_hsm_state state) {
     return in;
 }
 
-bool am_hsm_state_is_eq(const struct am_hsm *hsm, struct am_hsm_state state) {
+bool am_hsm_state_is_eq(const struct am_hsm* hsm, struct am_hsm_state state) {
     AM_ASSERT(hsm);
     AM_ASSERT(hsm->state.fn);
     AM_ASSERT(state.fn);
@@ -341,17 +341,17 @@ bool am_hsm_state_is_eq(const struct am_hsm *hsm, struct am_hsm_state state) {
     return (hsm->state.fn == state.fn) && (hsm->state.smi == state.smi);
 }
 
-int am_hsm_get_instance(const struct am_hsm *hsm) {
+int am_hsm_get_instance(const struct am_hsm* hsm) {
     AM_ASSERT(hsm);
     return (int)hsm->smi;
 }
 
-struct am_hsm_state am_hsm_get_state(const struct am_hsm *hsm) {
+struct am_hsm_state am_hsm_get_state(const struct am_hsm* hsm) {
     AM_ASSERT(hsm);
     return hsm->state;
 }
 
-void am_hsm_ctor(struct am_hsm *hsm, struct am_hsm_state state) {
+void am_hsm_ctor(struct am_hsm* hsm, struct am_hsm_state state) {
     AM_ASSERT(hsm);
     AM_ASSERT(state.fn);
     memset(hsm, 0, sizeof(*hsm));
@@ -359,7 +359,7 @@ void am_hsm_ctor(struct am_hsm *hsm, struct am_hsm_state state) {
     hsm->ctor_called = true;
 }
 
-void am_hsm_dtor(struct am_hsm *hsm) {
+void am_hsm_dtor(struct am_hsm* hsm) {
     AM_ASSERT(hsm);
     AM_ASSERT(hsm->ctor_called); /* was am_hsm_ctor() called? */
     AM_ASSERT(hsm->state.fn);
@@ -369,7 +369,7 @@ void am_hsm_dtor(struct am_hsm *hsm) {
     hsm->ctor_called = hsm->init_called = false;
 }
 
-void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event) {
+void am_hsm_init(struct am_hsm* hsm, const struct am_event* init_event) {
     AM_ASSERT(hsm);
     AM_ASSERT(hsm->ctor_called); /* was am_hsm_ctor() called? */
 
@@ -386,7 +386,7 @@ void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event) {
     hsm->init_called = true;
 }
 
-enum am_rc am_hsm_top(struct am_hsm *hsm, const struct am_event *event) {
+enum am_rc am_hsm_top(struct am_hsm* hsm, const struct am_event* event) {
     (void)hsm;
     (void)event;
     return AM_RC_HANDLED;

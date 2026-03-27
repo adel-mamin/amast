@@ -38,10 +38,10 @@
 #include "common/macros.h"
 #include "strlib/strlib.h"
 
-int str_lcpy(char *dst, const char *src, int lim) {
-    char *d = dst;
-    const char *e = &dst[lim];
-    const char *s = src;
+int str_lcpy(char* dst, const char* src, int lim) {
+    char* d = dst;
+    const char* e = &dst[lim];
+    const char* s = src;
 
     if (d < e) {
         do {
@@ -59,13 +59,13 @@ int str_lcpy(char *dst, const char *src, int lim) {
     return (int)(s - src - 1);
 }
 
-int str_lcat(char *dst, const char *src, int lim) {
+int str_lcat(char* dst, const char* src, int lim) {
     AM_ASSERT(lim > 0);
 
-    char *d = memchr(dst, '\0', (size_t)lim);
-    const char *e = &dst[lim];
-    const char *s = src;
-    const char *p;
+    char* d = memchr(dst, '\0', (size_t)lim);
+    const char* e = &dst[lim];
+    const char* s = src;
+    const char* p;
 
     if (d && (d < e)) {
         do {
@@ -85,7 +85,7 @@ int str_lcat(char *dst, const char *src, int lim) {
     return (int)(lim + (s - p - 1));
 }
 
-int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap) {
+int str_vlcatf(char* dst, int lim, const char* fmt, va_list ap) {
     AM_ASSERT(dst);
     AM_ASSERT(lim > 0);
     AM_ASSERT(fmt);

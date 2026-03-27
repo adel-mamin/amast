@@ -43,14 +43,14 @@ static struct test_redisp m_test_redisp;
 /* test AM_HSM_TRAN_REDISPATCH() */
 
 static enum am_rc redisp_s1(
-    struct test_redisp *me, const struct am_event *event
+    struct test_redisp* me, const struct am_event* event
 );
 static enum am_rc redisp_s2(
-    struct test_redisp *me, const struct am_event *event
+    struct test_redisp* me, const struct am_event* event
 );
 
 static enum am_rc redisp_s1(
-    struct test_redisp *me, const struct am_event *event
+    struct test_redisp* me, const struct am_event* event
 ) {
     switch (event->id) {
     case HSM_EVT_A:
@@ -65,7 +65,7 @@ static enum am_rc redisp_s1(
 }
 
 static enum am_rc redisp_s2(
-    struct test_redisp *me, const struct am_event *event
+    struct test_redisp* me, const struct am_event* event
 ) {
     switch (event->id) {
     case HSM_EVT_A:
@@ -80,7 +80,7 @@ static enum am_rc redisp_s2(
 }
 
 static enum am_rc redisp_sinit(
-    struct test_redisp *me, const struct am_event *event
+    struct test_redisp* me, const struct am_event* event
 ) {
     (void)event;
     me->foo = 0;
@@ -89,7 +89,7 @@ static enum am_rc redisp_sinit(
 }
 
 static void test_redispatch(void) {
-    struct test_redisp *me = &m_test_redisp;
+    struct test_redisp* me = &m_test_redisp;
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(redisp_sinit));
 
     am_hsm_init(&me->hsm, /*init_event=*/NULL);

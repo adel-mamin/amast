@@ -46,18 +46,18 @@
 /** Active object (AO) library internal state instance. */
 struct am_ao_state am_ao_state_;
 
-bool am_ao_event_queue_is_empty(struct am_ao *ao) {
+bool am_ao_event_queue_is_empty(struct am_ao* ao) {
     return am_event_queue_is_empty(&ao->event_queue);
 }
 
 bool am_ao_publish_exclude_x(
-    const struct am_event *event, const struct am_ao *ao, int margin
+    const struct am_event* event, const struct am_ao* ao, int margin
 ) {
     AM_ASSERT(event);
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
     AM_ASSERT(AM_EVENT_HAS_PUBSUB_ID(event));
     AM_ASSERT(margin >= 0);
-    struct am_ao_state *me = &am_ao_state_;
+    struct am_ao_state* me = &am_ao_state_;
     AM_ASSERT(AM_ATOMIC_LOAD_N(&me->subscribe_list_set));
     AM_ASSERT(AM_ATOMIC_LOAD_N(&me->startup_complete));
     AM_ASSERT(me->sub);
@@ -78,7 +78,7 @@ bool am_ao_publish_exclude_x(
      * The event publishing is done for higher priority
      * active objects first to avoid priority inversion.
      */
-    struct am_ao_subscribe_list *sub = &me->sub[event->id];
+    struct am_ao_subscribe_list* sub = &me->sub[event->id];
     for (int i = AM_COUNTOF(sub->list) - 1; i >= 0; --i) {
         me->crit_enter();
         unsigned list = sub->list[i];
@@ -88,7 +88,7 @@ bool am_ao_publish_exclude_x(
             list &= ~(1U << (unsigned)msb);
 
             int ind = 8 * i + msb;
-            struct am_ao *ao_ = me->aos[ind];
+            struct am_ao* ao_ = me->aos[ind];
             AM_ASSERT(ao_);
             if (ao_ == ao) {
                 continue;
@@ -119,21 +119,21 @@ bool am_ao_publish_exclude_x(
 }
 
 void am_ao_publish_exclude(
-    const struct am_event *event, const struct am_ao *ao
+    const struct am_event* event, const struct am_ao* ao
 ) {
     am_ao_publish_exclude_x(event, ao, /*margin=*/0);
 }
 
-bool am_ao_publish_x(const struct am_event *event, int margin) {
+bool am_ao_publish_x(const struct am_event* event, int margin) {
     return am_ao_publish_exclude_x(event, /*ao=*/NULL, margin);
 }
 
-void am_ao_publish(const struct am_event *event) {
+void am_ao_publish(const struct am_event* event) {
     am_ao_publish_exclude_x(event, /*ao=*/NULL, /*margin=*/0);
 }
 
 bool am_ao_post_fifo_x(
-    struct am_ao *ao, const struct am_event *event, int margin
+    struct am_ao* ao, const struct am_event* event, int margin
 ) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_ATOMIC_LOAD_N(&ao->ctor_called));
@@ -148,13 +148,13 @@ bool am_ao_post_fifo_x(
     return (AM_RC_OK == rc) || (AM_RC_QUEUE_WAS_EMPTY == rc);
 }
 
-void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event) {
+void am_ao_post_fifo(struct am_ao* ao, const struct am_event* event) {
     bool posted = am_ao_post_fifo_x(ao, event, /*margin=*/0);
     AM_ASSERT(posted);
 }
 
 bool am_ao_post_lifo_x(
-    struct am_ao *ao, const struct am_event *event, int margin
+    struct am_ao* ao, const struct am_event* event, int margin
 ) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_ATOMIC_LOAD_N(&ao->ctor_called));
@@ -170,16 +170,16 @@ bool am_ao_post_lifo_x(
     return (AM_RC_OK == rc) || (AM_RC_QUEUE_WAS_EMPTY == rc);
 }
 
-void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event) {
+void am_ao_post_lifo(struct am_ao* ao, const struct am_event* event) {
     bool posted = am_ao_post_lifo_x(ao, event, /*margin=*/0);
     AM_ASSERT(posted);
 }
 
-void am_ao_subscribe(const struct am_ao *ao, int event) {
+void am_ao_subscribe(const struct am_ao* ao, int event) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
     AM_ASSERT(event >= AM_EVT_USER);
-    struct am_ao_state *me = &am_ao_state_;
+    struct am_ao_state* me = &am_ao_state_;
     AM_ASSERT(AM_ATOMIC_LOAD_N(&me->subscribe_list_set));
     AM_ASSERT(event < me->nsub);
     AM_ASSERT(me->aos[ao->prio.ao] == ao);
@@ -194,11 +194,11 @@ void am_ao_subscribe(const struct am_ao *ao, int event) {
     me->crit_exit();
 }
 
-void am_ao_unsubscribe(const struct am_ao *ao, int event) {
+void am_ao_unsubscribe(const struct am_ao* ao, int event) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
     AM_ASSERT(event >= AM_EVT_USER);
-    struct am_ao_state *me = &am_ao_state_;
+    struct am_ao_state* me = &am_ao_state_;
     AM_ASSERT(AM_ATOMIC_LOAD_N(&me->subscribe_list_set));
     AM_ASSERT(event < me->nsub);
     AM_ASSERT(me->aos[ao->prio.ao] == ao);
@@ -215,11 +215,11 @@ void am_ao_unsubscribe(const struct am_ao *ao, int event) {
     me->crit_exit();
 }
 
-void am_ao_unsubscribe_all(const struct am_ao *ao) {
+void am_ao_unsubscribe_all(const struct am_ao* ao) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
 
-    struct am_ao_state *me = &am_ao_state_;
+    struct am_ao_state* me = &am_ao_state_;
     AM_ASSERT(AM_ATOMIC_LOAD_N(&me->subscribe_list_set));
     AM_ASSERT(me->sub);
     AM_ASSERT(me->aos[ao->prio.ao] == ao);
@@ -235,7 +235,7 @@ void am_ao_unsubscribe_all(const struct am_ao *ao) {
 }
 
 void am_ao_ctor(
-    struct am_ao *ao, am_ao_fn init_handler, am_ao_fn event_handler, void *ctx
+    struct am_ao* ao, am_ao_fn init_handler, am_ao_fn event_handler, void* ctx
 ) {
     AM_ASSERT(ao);
     AM_ASSERT(event_handler);
@@ -248,8 +248,8 @@ void am_ao_ctor(
     ao->ctor_called = true;
 }
 
-void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
-    struct am_ao_state *me = &am_ao_state_;
+void am_ao_state_ctor(const struct am_ao_state_cfg* cfg) {
+    struct am_ao_state* me = &am_ao_state_;
     memset(me, 0, sizeof(*me));
 
     am_ao_state_ctor_();
@@ -271,11 +271,11 @@ void am_ao_state_ctor(const struct am_ao_state_cfg *cfg) {
 
 void am_ao_state_dtor(void) {}
 
-void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub) {
+void am_ao_init_subscribe_list(struct am_ao_subscribe_list* sub, int nsub) {
     AM_ASSERT(sub);
     AM_ASSERT(nsub >= AM_EVT_USER);
 
-    struct am_ao_state *me = &am_ao_state_;
+    struct am_ao_state* me = &am_ao_state_;
     me->sub = sub;
     me->nsub = nsub;
     memset(sub, 0, sizeof(*sub) * (size_t)nsub);
@@ -285,7 +285,7 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub) {
 void am_ao_log_event_queues_unsafe(
     int num,
     void (*log)(
-        const char *name, int i, int len, int cap, const struct am_event *event
+        const char* name, int i, int len, int cap, const struct am_event* event
     )
 ) {
     AM_ASSERT(num != 0);
@@ -295,13 +295,13 @@ void am_ao_log_event_queues_unsafe(
         num = INT_MAX;
     }
 
-    struct am_ao_state *me = &am_ao_state_;
+    struct am_ao_state* me = &am_ao_state_;
     for (int i = 0; i < AM_COUNTOF(me->aos); ++i) {
-        struct am_ao *ao = me->aos[i];
+        struct am_ao* ao = me->aos[i];
         if (!ao) {
             continue;
         }
-        struct am_event_queue *q = &ao->event_queue;
+        struct am_event_queue* q = &ao->event_queue;
         if (!am_event_queue_is_valid(q)) {
             continue;
         }
@@ -313,19 +313,19 @@ void am_ao_log_event_queues_unsafe(
             continue;
         }
         for (int j = 0; j < tnum; ++j) {
-            const struct am_event *e = am_event_queue_pop_front_unsafe(q);
+            const struct am_event* e = am_event_queue_pop_front_unsafe(q);
             AM_ASSERT(e);
             log(ao->name, j, nbusy, cap, e);
         }
     }
 }
 
-void am_ao_log_last_events(void (*log)(const char *name, int event)) {
+void am_ao_log_last_events(void (*log)(const char* name, int event)) {
     AM_ASSERT(log);
 
-    struct am_ao_state *me = &am_ao_state_;
+    struct am_ao_state* me = &am_ao_state_;
     for (int i = 0; i < AM_COUNTOF(me->aos); ++i) {
-        struct am_ao *ao = me->aos[i];
+        struct am_ao* ao = me->aos[i];
         if (!ao) {
             continue;
         }
@@ -334,7 +334,7 @@ void am_ao_log_last_events(void (*log)(const char *name, int event)) {
 }
 
 int am_ao_get_cnt(void) {
-    struct am_ao_state *me = &am_ao_state_;
+    struct am_ao_state* me = &am_ao_state_;
     me->crit_enter();
     int cnt = me->aos_cnt;
     me->crit_exit();

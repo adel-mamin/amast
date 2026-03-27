@@ -38,7 +38,7 @@
 
 struct reenter_hsm {
     struct am_hsm hsm;
-    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
+    AM_PRINTF(1, 0) void (*log)(const char* fmt, ...);
     char log_buf[256];
 };
 
@@ -47,11 +47,11 @@ static struct reenter_hsm m_reenter_hsm;
 /* test HSM state re-enter operation */
 
 static enum am_rc reenter_hsm_s1(
-    struct reenter_hsm *me, const struct am_event *event
+    struct reenter_hsm* me, const struct am_event* event
 );
 
 static enum am_rc reenter_hsm_s(
-    struct reenter_hsm *me, const struct am_event *event
+    struct reenter_hsm* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -72,7 +72,7 @@ static enum am_rc reenter_hsm_s(
 }
 
 static enum am_rc reenter_hsm_s1(
-    struct reenter_hsm *me, const struct am_event *event
+    struct reenter_hsm* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -95,22 +95,22 @@ static enum am_rc reenter_hsm_s1(
 }
 
 static enum am_rc reenter_hsm_init(
-    struct reenter_hsm *me, const struct am_event *event
+    struct reenter_hsm* me, const struct am_event* event
 ) {
     (void)event;
     return AM_HSM_TRAN(reenter_hsm_s);
 }
 
 static void reenter_hsm_ctor(
-    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)
+    AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)
 ) {
-    struct reenter_hsm *me = &m_reenter_hsm;
+    struct reenter_hsm* me = &m_reenter_hsm;
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(reenter_hsm_init));
     me->log = log;
     me->log_buf[0] = '\0';
 }
 
-static AM_PRINTF(1, 0) void reenter_hsm_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void reenter_hsm_log(const char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(
@@ -122,19 +122,19 @@ static AM_PRINTF(1, 0) void reenter_hsm_log(const char *fmt, ...) {
 static void test_reenter_hsm(void) {
     reenter_hsm_ctor(reenter_hsm_log);
 
-    struct reenter_hsm *me = &m_reenter_hsm;
+    struct reenter_hsm* me = &m_reenter_hsm;
 
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
 
     {
-        const char *out = "s-ENTRY;s1-ENTRY;";
+        const char* out = "s-ENTRY;s1-ENTRY;";
         AM_ASSERT(0 == strncmp(m_reenter_hsm.log_buf, out, strlen(out)));
         m_reenter_hsm.log_buf[0] = '\0';
     }
 
     struct test {
         uint16_t event;
-        const char *out;
+        const char* out;
     };
     static const struct test in[] = {
         /* clang-format off */

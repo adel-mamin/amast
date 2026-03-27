@@ -59,12 +59,12 @@ struct db {
     struct files src_preemptive;
     struct files hdr;
     struct files hdr_test;
-    const char *odir; /* amast(-test).h and amast(-test).c are placed here */
+    const char* odir; /* amast(-test).h and amast(-test).c are placed here */
 };
 
 static struct db m_db = {.src.len = 0, .hdr.len = 0};
 
-static bool is_pragma(const char *str, const char *pragma) {
+static bool is_pragma(const char* str, const char* pragma) {
     if (NULL == strstr(str, "amast-pragma")) {
         return false;
     }
@@ -74,7 +74,7 @@ static bool is_pragma(const char *str, const char *pragma) {
 /* check if the include already exists in the array */
 /* cppcheck-suppress-begin constParameter */
 static bool include_is_unique(
-    char arr[MAX_INCLUDES_NUM][PATH_MAX], int arr_size, const char *inc_file
+    char arr[MAX_INCLUDES_NUM][PATH_MAX], int arr_size, const char* inc_file
 ) {
     for (int i = 0; i < arr_size; ++i) {
         if (strcmp(arr[i], inc_file) == 0) {
@@ -87,7 +87,7 @@ static bool include_is_unique(
 
 /* add unique include to the array */
 static void include_add_unique(
-    char arr[MAX_INCLUDES_NUM][PATH_MAX], int *arr_size, const char *inc_file
+    char arr[MAX_INCLUDES_NUM][PATH_MAX], int* arr_size, const char* inc_file
 ) {
     if (include_is_unique(arr, *arr_size, inc_file)) {
         str_lcpy(arr[*arr_size], inc_file, sizeof(arr[*arr_size]));
@@ -97,7 +97,7 @@ static void include_add_unique(
 
 /* process a line and detect #include directives */
 static void process_content(
-    struct files *db, const char *ln, bool verbatim_include_std
+    struct files* db, const char* ln, bool verbatim_include_std
 ) {
     char inc_file[PATH_MAX + 1];
 #define AM_LIM AM_STRINGIFY(PATH_MAX)
@@ -113,8 +113,8 @@ static void process_content(
 }
 
 /* read the content of a file and process it */
-static void read_file(struct files *db, const char *fname) {
-    FILE *file = fopen(fname, "r");
+static void read_file(struct files* db, const char* fname) {
+    FILE* file = fopen(fname, "r");
     if (!file) {
         fprintf(stderr, "Error: Could not open file %s\n", fname);
         exit(EXIT_FAILURE);
@@ -141,12 +141,12 @@ static void read_file(struct files *db, const char *fname) {
 }
 
 /* comparator for qsort to sort includes alphabetically */
-static int compare_includes(const void *a, const void *b) {
-    return strcmp((const char *)a, (const char *)b);
+static int compare_includes(const void* a, const void* b) {
+    return strcmp((const char*)a, (const char*)b);
 }
 
-static void db_init(struct db *db, const char *db_fname, const char *odir) {
-    FILE *file = fopen(db_fname, "r");
+static void db_init(struct db* db, const char* db_fname, const char* odir) {
+    FILE* file = fopen(db_fname, "r");
     if (!file) {
         fprintf(stderr, "Error: failed to open %s\n", db_fname);
         exit(EXIT_FAILURE);
@@ -158,7 +158,7 @@ static void db_init(struct db *db, const char *db_fname, const char *odir) {
         fname[strcspn(fname, "\n")] = 0;
 
         if (strstr(fname, ".c") != NULL) {
-            struct files *files = &db->src;
+            struct files* files = &db->src;
             if (strstr(fname, "test") != NULL) {
                 files = &db->src_test;
             } else if (strstr(fname, "/libs/pal/freertos/") != NULL) {
@@ -230,10 +230,10 @@ static void db_init(struct db *db, const char *db_fname, const char *odir) {
 
 /* generate a function name fn_name from file name */
 static void convert_fname_to_fn_name(
-    const char *fname, char fn_name[static PATH_MAX]
+    const char* fname, char fn_name[static PATH_MAX]
 ) {
-    const char *src = fname;
-    char *dst = fn_name;
+    const char* src = fname;
+    char* dst = fn_name;
 
     /* Skip the leading part until after "/amast/" */
     src = strstr(src, "/amast/");
@@ -260,18 +260,18 @@ static void convert_fname_to_fn_name(
 }
 
 static void file_append(
-    char *src,
-    const char *src_fname,
-    FILE *dst,
-    int *ntests,
+    char* src,
+    const char* src_fname,
+    FILE* dst,
+    int* ntests,
     char (*tests)[PATH_MAX]
 ) {
     /*
      * There must be only one main() in the resulting file.
      * So, replace main() with a unique function name
      */
-    const char *main_fn = "int main(void) {";
-    char *pos = strstr(src, main_fn);
+    const char* main_fn = "int main(void) {";
+    char* pos = strstr(src, main_fn);
     if (!pos || !ntests || !tests) {
         fputs(src, dst);
         return;
@@ -289,14 +289,14 @@ static void file_append(
     fputs(pos, dst);
 }
 
-static const char *get_repo_fname(const char *fname) {
-    const char *src = strstr(fname, "/amast/");
+static const char* get_repo_fname(const char* fname) {
+    const char* src = strstr(fname, "/amast/");
     AM_ASSERT(src);
     return src + 1;
 }
 
 static void add_amast_description(
-    FILE *f, const char *note, const struct files *db
+    FILE* f, const char* note, const struct files* db
 ) {
     fprintf(f, "/*\n");
     fprintf(f, " * This file was auto-generated as a copy-paste\n");
@@ -316,7 +316,7 @@ static void add_amast_description(
     fprintf(f, "\n");
 }
 
-static void add_amast_includes_std(FILE *f, const struct files *db) {
+static void add_amast_includes_std(FILE* f, const struct files* db) {
     for (int i = 0; i < db->includes_std_num; ++i) {
         if (strstr(db->includes_std[i], "#include") ||
             /* verbatim inclusion */
@@ -332,11 +332,11 @@ static void add_amast_includes_std(FILE *f, const struct files *db) {
 }
 
 static void create_amast_h_file(
-    struct db *db, int *ntests, char (*tests)[PATH_MAX]
+    struct db* db, int* ntests, char (*tests)[PATH_MAX]
 ) {
     char fname[PATH_MAX];
     snprintf(fname, sizeof(fname), "%s/amast.h", db->odir);
-    FILE *hdr_file = fopen(fname, "w");
+    FILE* hdr_file = fopen(fname, "w");
     if (!hdr_file) {
         fprintf(stderr, "Failed to create %s\n", fname);
         exit(EXIT_FAILURE);
@@ -368,11 +368,11 @@ static void create_amast_h_file(
 }
 
 static void create_amast_test_h_file(
-    struct db *db, int *ntests, char (*tests)[PATH_MAX]
+    struct db* db, int* ntests, char (*tests)[PATH_MAX]
 ) {
     char fname[PATH_MAX];
     snprintf(fname, sizeof(fname), "%s/amast_test.h", db->odir);
-    FILE *hdr_file = fopen(fname, "w");
+    FILE* hdr_file = fopen(fname, "w");
     if (!hdr_file) {
         fprintf(stderr, "Failed to create %s\n", fname);
         exit(EXIT_FAILURE);
@@ -410,22 +410,22 @@ static void create_amast_test_h_file(
 }
 
 struct amast_file_cfg {
-    struct db *db;
-    int *ntests;
+    struct db* db;
+    int* ntests;
     char (*tests)[PATH_MAX];
     int tests_max;
-    struct files *files;
+    struct files* files;
     const char (*inc)[PATH_MAX];
     int ninc;
-    const char *amast_fname;
-    const char *note;
+    const char* amast_fname;
+    const char* note;
     bool keep_open;
 };
 
-static FILE *create_amast_file(struct amast_file_cfg *cfg) {
+static FILE* create_amast_file(struct amast_file_cfg* cfg) {
     char fname[PATH_MAX];
     snprintf(fname, sizeof(fname), "%s/%s", cfg->db->odir, cfg->amast_fname);
-    FILE *src_file = fopen(fname, "w");
+    FILE* src_file = fopen(fname, "w");
     if (!src_file) {
         fprintf(stderr, "Failed to create %s\n", fname);
         exit(EXIT_FAILURE);
@@ -463,7 +463,7 @@ static FILE *create_amast_file(struct amast_file_cfg *cfg) {
 }
 
 static void create_amast_c_file(
-    struct db *db, int *ntests, char (*tests)[PATH_MAX], int tests_max
+    struct db* db, int* ntests, char (*tests)[PATH_MAX], int tests_max
 ) {
     static const char inc[][PATH_MAX] = {
         "#include \"amast_config.h\"", "#include \"amast.h\""
@@ -483,7 +483,7 @@ static void create_amast_c_file(
 }
 
 static void create_amast_freertos_c_file(
-    struct db *db, int *ntests, char (*tests)[PATH_MAX], int tests_max
+    struct db* db, int* ntests, char (*tests)[PATH_MAX], int tests_max
 ) {
     static const char inc[][PATH_MAX] = {
         "#include \"amast_config.h\"", "#include \"amast.h\""
@@ -503,7 +503,7 @@ static void create_amast_freertos_c_file(
 }
 
 static void create_amast_posix_c_file(
-    struct db *db, int *ntests, char (*tests)[PATH_MAX], int tests_max
+    struct db* db, int* ntests, char (*tests)[PATH_MAX], int tests_max
 ) {
     static const char inc[][PATH_MAX] = {
         "#include \"amast_config.h\"", "#include \"amast.h\""
@@ -523,7 +523,7 @@ static void create_amast_posix_c_file(
 }
 
 static void create_amast_libuv_c_file(
-    struct db *db, int *ntests, char (*tests)[PATH_MAX], int tests_max
+    struct db* db, int* ntests, char (*tests)[PATH_MAX], int tests_max
 ) {
     static const char inc[][PATH_MAX] = {
         "#include \"amast_config.h\"", "#include \"amast.h\""
@@ -543,7 +543,7 @@ static void create_amast_libuv_c_file(
 }
 
 static void create_amast_zephyr_c_file(
-    struct db *db, int *ntests, char (*tests)[PATH_MAX], int tests_max
+    struct db* db, int* ntests, char (*tests)[PATH_MAX], int tests_max
 ) {
     static const char inc[][PATH_MAX] = {
         "#include \"amast_config.h\"", "#include \"amast.h\""
@@ -563,7 +563,7 @@ static void create_amast_zephyr_c_file(
 }
 
 static void create_amast_cooperative_c_file(
-    struct db *db, int *ntests, char (*tests)[PATH_MAX], int tests_max
+    struct db* db, int* ntests, char (*tests)[PATH_MAX], int tests_max
 ) {
     static const char inc[][PATH_MAX] = {
         "#include \"amast_config.h\"", "#include \"amast.h\""
@@ -583,7 +583,7 @@ static void create_amast_cooperative_c_file(
 }
 
 static void create_amast_preemptive_c_file(
-    struct db *db, int *ntests, char (*tests)[PATH_MAX], int tests_max
+    struct db* db, int* ntests, char (*tests)[PATH_MAX], int tests_max
 ) {
     static const char inc[][PATH_MAX] = {
         "#include \"amast_config.h\"", "#include \"amast.h\""
@@ -603,7 +603,7 @@ static void create_amast_preemptive_c_file(
 }
 
 static void create_amast_test_c_file(
-    struct db *db, int *ntests, char (*tests)[PATH_MAX], int tests_max
+    struct db* db, int* ntests, char (*tests)[PATH_MAX], int tests_max
 ) {
     static const char inc[][PATH_MAX] = {
         "#include \"amast_config.h\"",
@@ -622,7 +622,7 @@ static void create_amast_test_c_file(
         .note = "source",
         .keep_open = true
     };
-    FILE *src_file = create_amast_file(&cfg);
+    FILE* src_file = create_amast_file(&cfg);
 
     /* Add the final main function to amast_test.c */
     fprintf(src_file, "\nint main(void) {\n");
@@ -639,7 +639,7 @@ static void create_amast_test_c_file(
     fclose(src_file);
 }
 
-static void create_amast_files(struct db *db) {
+static void create_amast_files(struct db* db) {
     char tests[32][PATH_MAX];
     int ntests = 0;
 
@@ -657,7 +657,7 @@ static void create_amast_files(struct db *db) {
     create_amast_test_c_file(db, &ntests, tests, AM_COUNTOF(tests));
 }
 
-static void print_help(const char *cmd) {
+static void print_help(const char* cmd) {
     printf("Usage: %s -f <file name> -o <output directory>\n", cmd);
     printf(
         "Creates amast(-test).h and amast(-test).c files from the list "
@@ -666,14 +666,14 @@ static void print_help(const char *cmd) {
     printf("The files are created in the <output directory>\n");
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 5) {
         print_help(argv[0]);
         exit(EXIT_FAILURE);
     }
 
-    const char *fname = NULL;
-    const char *odir = NULL;
+    const char* fname = NULL;
+    const char* odir = NULL;
     int opt = 0;
 
     /* Parse command line arguments */

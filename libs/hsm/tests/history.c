@@ -47,22 +47,22 @@ static struct oven_hsm m_oven_hsm;
 /* test transition to HSM history */
 
 static enum am_rc oven_hsm_open(
-    struct oven_hsm *me, const struct am_event *event
+    struct oven_hsm* me, const struct am_event* event
 );
 static enum am_rc oven_hsm_closed(
-    struct oven_hsm *me, const struct am_event *event
+    struct oven_hsm* me, const struct am_event* event
 );
 static enum am_rc oven_hsm_on(
-    struct oven_hsm *me, const struct am_event *event
+    struct oven_hsm* me, const struct am_event* event
 );
 static enum am_rc oven_hsm_off(
-    struct oven_hsm *me, const struct am_event *event
+    struct oven_hsm* me, const struct am_event* event
 );
 
 static bool oven_hsm_is_open(void) { return false; }
 
 static enum am_rc oven_hsm_open(
-    struct oven_hsm *me, const struct am_event *event
+    struct oven_hsm* me, const struct am_event* event
 ) {
     switch (event->id) {
     case HSM_EVT_OFF:
@@ -79,7 +79,7 @@ static enum am_rc oven_hsm_open(
 }
 
 static enum am_rc oven_hsm_closed(
-    struct oven_hsm *me, const struct am_event *event
+    struct oven_hsm* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_INIT:
@@ -95,7 +95,7 @@ static enum am_rc oven_hsm_closed(
 }
 
 static enum am_rc oven_hsm_on(
-    struct oven_hsm *me, const struct am_event *event
+    struct oven_hsm* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -112,7 +112,7 @@ static enum am_rc oven_hsm_on(
 }
 
 static enum am_rc oven_hsm_off(
-    struct oven_hsm *me, const struct am_event *event
+    struct oven_hsm* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -129,7 +129,7 @@ static enum am_rc oven_hsm_off(
 }
 
 static enum am_rc oven_hsm_init(
-    struct oven_hsm *me, const struct am_event *event
+    struct oven_hsm* me, const struct am_event* event
 ) {
     (void)event;
     me->history = AM_HSM_STATE_CTOR(oven_hsm_off);
@@ -137,7 +137,7 @@ static enum am_rc oven_hsm_init(
 }
 
 static void test_oven_hsm(void) {
-    struct oven_hsm *me = &m_oven_hsm;
+    struct oven_hsm* me = &m_oven_hsm;
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(oven_hsm_init));
 
     am_hsm_init(&me->hsm, /*init_event=*/NULL);

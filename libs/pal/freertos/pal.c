@@ -40,9 +40,9 @@ struct am_task {
     /* the task is valid */
     bool valid;
     /* entry function */
-    void (*entry)(void *arg);
+    void (*entry)(void* arg);
     /* entry function argument */
-    void *arg;
+    void* arg;
 };
 
 static struct am_task task_main_ = {0};
@@ -66,13 +66,13 @@ void am_crit_exit(void) {
 
 int am_task_get_own_id(void) { TaskHandle_t h = xTaskGetCurrentTaskHandle(); }
 
-void *am_task_create(
-    const char *name,
+void* am_task_create(
+    const char* name,
     int prio,
-    void *stack,
+    void* stack,
     int stack_size,
-    void (*entry)(void *arg),
-    void *arg
+    void (*entry)(void* arg),
+    void* arg
 ) {
     AM_ASSERT(AM_ALIGNOF_PTR(stack) >= AM_ALIGNOF(StackType_t));
     AM_ASSERT(stack_size > 0);
@@ -80,7 +80,7 @@ void *am_task_create(
     AM_ASSERT(prio >= 0);
 
     int index = -1;
-    struct am_task *task = NULL;
+    struct am_task* task = NULL;
     for (int i = 0; i < AM_COUNTOF(task_arr_); ++i) {
         if (!task_arr_[i].valid) {
             index = i;
@@ -95,9 +95,9 @@ void *am_task_create(
         entry,
         name,
         (uint32_t)((unsigned)stack_size / sizeof(StackType_t)),
-        (void *)&tcb[ntcb],
+        (void*)&tcb[ntcb],
         (unsigned)prio + tskIDLE_PRIORITY,
-        (StackType_t *)stack,
+        (StackType_t*)stack,
         &tcb[ntcb]
     );
     AM_ASSERT(h);
@@ -106,7 +106,7 @@ void *am_task_create(
     return h;
 }
 
-void am_task_notify(void *task) {
+void am_task_notify(void* task) {
     if (xPortIsInsideInterrupt()) {
         xTaskNotifyGiveFromIsr((TaskHandle_t)task);
     } else {
@@ -114,7 +114,7 @@ void am_task_notify(void *task) {
     }
 }
 
-void am_task_wait(void *task) {
+void am_task_wait(void* task) {
     (void)task;
     if (xPortIsInsideInterrupt()) {
         ulTaskNotifyTakeFromIsr(

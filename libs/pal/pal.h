@@ -59,7 +59,7 @@ extern "C" {
  *
  * @return Platform specific handler. Can be NULL.
  */
-void *am_pal_ctor(void *arg);
+void* am_pal_ctor(void* arg);
 
 /** PAL destructor. */
 void am_pal_dtor(void);
@@ -140,12 +140,12 @@ void am_mutex_destroy(int mutex);
  * @return unique task ID
  */
 int am_task_create(
-    const char *name,
+    const char* name,
     int prio,
-    void *stack,
+    void* stack,
     int stack_size,
-    void (*entry)(void *arg),
-    void *arg
+    void (*entry)(void* arg),
+    void* arg
 );
 
 /**
@@ -269,7 +269,7 @@ void am_sleep_till_ms(uint32_t ms);
  *
  * @return printf-like return value
  */
-AM_PRINTF(1, 2) int am_printf(const char *fmt, ...);
+AM_PRINTF(1, 2) int am_printf(const char* fmt, ...);
 
 /**
  * printf-like logging.
@@ -280,7 +280,7 @@ AM_PRINTF(1, 2) int am_printf(const char *fmt, ...);
  *
  * @return printf-like return value
  */
-AM_PRINTF(1, 2) int am_printf_unsafe(const char *fmt, ...);
+AM_PRINTF(1, 2) int am_printf_unsafe(const char* fmt, ...);
 
 /**
  * printf-like logging + flushing.
@@ -291,7 +291,7 @@ AM_PRINTF(1, 2) int am_printf_unsafe(const char *fmt, ...);
  *
  * @return printf-like return value
  */
-AM_PRINTF(1, 2) int am_printff(const char *fmt, ...);
+AM_PRINTF(1, 2) int am_printff(const char* fmt, ...);
 
 /**
  * vprintf-like logging.
@@ -303,7 +303,7 @@ AM_PRINTF(1, 2) int am_printff(const char *fmt, ...);
  *
  * @return vprintf-like return value
  */
-AM_PRINTF(1, 0) int am_vprintf(const char *fmt, va_list args);
+AM_PRINTF(1, 0) int am_vprintf(const char* fmt, va_list args);
 
 /**
  * vprintf-like logging + flushing.
@@ -315,7 +315,7 @@ AM_PRINTF(1, 0) int am_vprintf(const char *fmt, va_list args);
  *
  * @return vprintf-like return value
  */
-AM_PRINTF(1, 0) int am_vprintff(const char *fmt, va_list args);
+AM_PRINTF(1, 0) int am_vprintff(const char* fmt, va_list args);
 
 /** Flush am_printf() intermediate buffer. */
 void am_pal_flush(void);

@@ -74,20 +74,20 @@
  * @endcode
  */
 struct am_slist_item {
-    struct am_slist_item *next; /**< next item in the list */
+    struct am_slist_item* next; /**< next item in the list */
 };
 
 /** Singly linked list handler. */
 struct am_slist {
     struct am_slist_item sentinel; /**< beginning of the list */
-    struct am_slist_item *back;    /**< end of the list */
+    struct am_slist_item* back;    /**< end of the list */
 };
 
 /** Singly linked list iterator handler. */
 struct am_slist_iterator {
-    struct am_slist *list;      /**< the list */
-    struct am_slist_item *cur;  /**< current item of the list */
-    struct am_slist_item *prev; /**< previous item of the list */
+    struct am_slist* list;      /**< the list */
+    struct am_slist_item* cur;  /**< current item of the list */
+    struct am_slist_item* prev; /**< previous item of the list */
 };
 
 /** To use with AM_ALIGNOF() macro. */
@@ -113,7 +113,7 @@ extern "C" {
  *
  * @param list  the list
  */
-void am_slist_ctor(struct am_slist *list);
+void am_slist_ctor(struct am_slist* list);
 
 /**
  * Check if list is empty.
@@ -123,7 +123,7 @@ void am_slist_ctor(struct am_slist *list);
  * @retval true   the list is empty
  * @retval false  the list is not empty
  */
-bool am_slist_is_empty(const struct am_slist *list);
+bool am_slist_is_empty(const struct am_slist* list);
 
 /**
  * Check if given list item is part of ANY list.
@@ -133,7 +133,7 @@ bool am_slist_is_empty(const struct am_slist *list);
  * @retval true   item IS part of SOME list
  * @retval false  item IS NOT part of ANY list
  */
-bool am_slist_item_is_linked(const struct am_slist_item *item);
+bool am_slist_item_is_linked(const struct am_slist_item* item);
 
 /**
  * Construct list item.
@@ -142,7 +142,7 @@ bool am_slist_item_is_linked(const struct am_slist_item *item);
  *
  * @param item  the list item to construct.
  */
-void am_slist_item_ctor(struct am_slist_item *item);
+void am_slist_item_ctor(struct am_slist_item* item);
 
 /**
  * Push new item after the item, which is already in list.
@@ -152,9 +152,9 @@ void am_slist_item_ctor(struct am_slist_item *item);
  * @param newitem  the new item to be pushed to the list
  */
 void am_slist_push_after(
-    struct am_slist *list,
-    struct am_slist_item *item,
-    struct am_slist_item *newitem
+    struct am_slist* list,
+    struct am_slist_item* item,
+    struct am_slist_item* newitem
 );
 
 /**
@@ -168,8 +168,8 @@ void am_slist_push_after(
  *
  * @return the popped item or NULL, if nothing to pop
  */
-struct am_slist_item *am_slist_pop_after(
-    struct am_slist *list, struct am_slist_item *item
+struct am_slist_item* am_slist_pop_after(
+    struct am_slist* list, struct am_slist_item* item
 );
 
 /**
@@ -184,7 +184,7 @@ struct am_slist_item *am_slist_pop_after(
  * @retval false   the item was not found
  */
 typedef bool (*am_slist_item_found_fn)(
-    void *context, struct am_slist_item *item
+    void* context, struct am_slist_item* item
 );
 
 /**
@@ -200,8 +200,8 @@ typedef bool (*am_slist_item_found_fn)(
  * @return the item, found by the predicate callback function or
  *         NULL, if nothing was found.
  */
-struct am_slist_item *am_slist_find(
-    const struct am_slist *list, am_slist_item_found_fn is_found, void *context
+struct am_slist_item* am_slist_find(
+    const struct am_slist* list, am_slist_item_found_fn is_found, void* context
 );
 
 /**
@@ -213,7 +213,7 @@ struct am_slist_item *am_slist_find(
  *
  * @return the item at the front of the list or NULL, if the list is empty
  */
-struct am_slist_item *am_slist_peek_front(const struct am_slist *list);
+struct am_slist_item* am_slist_peek_front(const struct am_slist* list);
 
 /**
  * Return list item at back (tail) of list.
@@ -224,7 +224,7 @@ struct am_slist_item *am_slist_peek_front(const struct am_slist *list);
  *
  * @return the item at the back of the list or NULL, if list is empty
  */
-struct am_slist_item *am_slist_peek_back(const struct am_slist *list);
+struct am_slist_item* am_slist_peek_back(const struct am_slist* list);
 
 /**
  * Push item to front (head) of list.
@@ -232,7 +232,7 @@ struct am_slist_item *am_slist_peek_back(const struct am_slist *list);
  * @param list  the list
  * @param item  the item to be pushed
  */
-void am_slist_push_front(struct am_slist *list, struct am_slist_item *item);
+void am_slist_push_front(struct am_slist* list, struct am_slist_item* item);
 
 /**
  * Pop item in front (head) of list.
@@ -241,7 +241,7 @@ void am_slist_push_front(struct am_slist *list, struct am_slist_item *item);
  *
  * @return the popped item or NULL, if the list is empty
  */
-struct am_slist_item *am_slist_pop_front(struct am_slist *list);
+struct am_slist_item* am_slist_pop_front(struct am_slist* list);
 
 /**
  * Add new item at back (tail) of list.
@@ -249,7 +249,7 @@ struct am_slist_item *am_slist_pop_front(struct am_slist *list);
  * @param list  the list
  * @param item  the item to be added
  */
-void am_slist_push_back(struct am_slist *list, struct am_slist_item *item);
+void am_slist_push_back(struct am_slist* list, struct am_slist_item* item);
 
 /**
  * Check if given item is part of list.
@@ -263,7 +263,7 @@ void am_slist_push_back(struct am_slist *list, struct am_slist_item *item);
  * @retval false  the given item is not part of the list
  */
 bool am_slist_owns(
-    const struct am_slist *list, const struct am_slist_item *item
+    const struct am_slist* list, const struct am_slist_item* item
 );
 
 /**
@@ -274,8 +274,8 @@ bool am_slist_owns(
  *
  * @return the next list item or NULL
  */
-struct am_slist_item *am_slist_next_item(
-    const struct am_slist *list, const struct am_slist_item *item
+struct am_slist_item* am_slist_next_item(
+    const struct am_slist* list, const struct am_slist_item* item
 );
 
 /**
@@ -286,7 +286,7 @@ struct am_slist_item *am_slist_next_item(
  *              The handler is initialized after the list is appended.
  *              So this list becomes empty after it gets appended to \p to list.
  */
-void am_slist_append(struct am_slist *to, struct am_slist *from);
+void am_slist_append(struct am_slist* to, struct am_slist* from);
 
 /**
  * Construct new iterator.
@@ -305,7 +305,7 @@ void am_slist_append(struct am_slist *to, struct am_slist *from);
  * @param it    the iterator to be constructed
  */
 void am_slist_iterator_ctor(
-    struct am_slist *list, struct am_slist_iterator *it
+    struct am_slist* list, struct am_slist_iterator* it
 );
 
 /**
@@ -322,7 +322,7 @@ void am_slist_iterator_ctor(
  * @return the visited item or NULL, if the iteration is over.
  *         The item is not popped from the list.
  */
-struct am_slist_item *am_slist_iterator_next(struct am_slist_iterator *it);
+struct am_slist_item* am_slist_iterator_next(struct am_slist_iterator* it);
 
 /**
  * Pop item pointed by iterator.
@@ -340,7 +340,7 @@ struct am_slist_item *am_slist_iterator_next(struct am_slist_iterator *it);
  *
  * @return the popped item
  */
-struct am_slist_item *am_slist_iterator_pop(struct am_slist_iterator *it);
+struct am_slist_item* am_slist_iterator_pop(struct am_slist_iterator* it);
 
 #ifdef __cplusplus
 }

@@ -46,7 +46,7 @@
 #include "table.h"
 #include "events.h"
 
-const char *event_to_str(int id) {
+const char* event_to_str(int id) {
     if (EVT_DONE == id) return "DONE";
     if (EVT_EAT == id) return "EAT";
     if (EVT_TIMEOUT == id) return "TIMEOUT";
@@ -55,7 +55,7 @@ const char *event_to_str(int id) {
 }
 
 static void log_pool(
-    int pool_index, int event_index, const struct am_event *event, int size
+    int pool_index, int event_index, const struct am_event* event, int size
 ) {
     (void)size;
     am_printf(
@@ -63,12 +63,12 @@ static void log_pool(
         pool_index,
         event_index,
         event_to_str(event->id),
-        (const void *)event
+        (const void*)event
     );
 }
 
 static void log_queue(
-    const char *name, int i, int len, int cap, const struct am_event *event
+    const char* name, int i, int len, int cap, const struct am_event* event
 ) {
     am_printf(
         "name %s, index %d, len %d cap %d event %s\n",
@@ -81,7 +81,7 @@ static void log_queue(
 }
 
 AM_NORETURN void am_assert_failure(
-    const char *assertion, const char *file, int line
+    const char* assertion, const char* file, int line
 ) {
     static int nasserts = 0;
     if (AM_ATOMIC_LOAD_N(&nasserts)) {
@@ -101,8 +101,8 @@ AM_NORETURN void am_assert_failure(
     __builtin_trap();
 }
 
-static void ticker_task(void *param) {
-    struct am_timer *timer = param;
+static void ticker_task(void* param) {
+    struct am_timer* timer = param;
 
     am_task_wait_all();
 
@@ -114,9 +114,9 @@ static void ticker_task(void *param) {
         now_ticks += ticks_per_ms;
 
         am_timer_tick_iterator_init(timer);
-        struct am_timer_event *fired = NULL;
+        struct am_timer_event* fired = NULL;
         while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
-            void *owner = AM_CAST(struct am_timer_event_x *, fired)->ctx;
+            void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
             if (owner) {
                 am_ao_post_fifo(owner, &fired->event);
             } else {
@@ -151,7 +151,7 @@ int main(void) {
     }
     table_ctor(/*nsessions=*/100);
 
-    const struct am_event *queue_table[2 * PHILO_NUM];
+    const struct am_event* queue_table[2 * PHILO_NUM];
 
     am_ao_start(
         table_get_obj(),
@@ -164,11 +164,11 @@ int main(void) {
         /*init_event=*/NULL
     );
 
-    static const char *names[PHILO_NUM] = {
+    static const char* names[PHILO_NUM] = {
         "philo0", "philo1", "philo2", "philo3", "philo4"
     };
 
-    const struct am_event *queue_philo[PHILO_NUM][2 * PHILO_NUM];
+    const struct am_event* queue_philo[PHILO_NUM][2 * PHILO_NUM];
 
     for (int i = 0; i < AM_COUNTOF(names); ++i) {
         unsigned char prio = (unsigned char)(AM_AO_PRIO_MIN + i);

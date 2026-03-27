@@ -151,7 +151,7 @@ static const unsigned long crc32_lookup[] = {
     0xBCB4666D, 0xB8757BDA, 0xB5365D03, 0xB1F740B4
 };
 
-unsigned int crc16(const unsigned char *data, int size, unsigned int crc) {
+unsigned int crc16(const unsigned char* data, int size, unsigned int crc) {
     AM_ASSERT(data);
     AM_ASSERT(size > 0);
 
@@ -163,7 +163,7 @@ unsigned int crc16(const unsigned char *data, int size, unsigned int crc) {
     return crc & 0xFFFFu;
 }
 
-unsigned long crc24(const unsigned char *data, int size, unsigned long crc) {
+unsigned long crc24(const unsigned char* data, int size, unsigned long crc) {
     AM_ASSERT(data);
     AM_ASSERT(size > 0);
 
@@ -175,7 +175,7 @@ unsigned long crc24(const unsigned char *data, int size, unsigned long crc) {
     return crc & 0xFFFFFFUL;
 }
 
-unsigned long crc32(const unsigned char *data, int size, unsigned long crc) {
+unsigned long crc32(const unsigned char* data, int size, unsigned long crc) {
     AM_ASSERT(data);
     AM_ASSERT(size > 0);
 

@@ -58,10 +58,10 @@ struct watched {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    struct am_timer *timer;
+    struct am_timer* timer;
     struct am_timer_event_x feed;
     int feeds_num;
-    struct am_ao *wdt;
+    struct am_ao* wdt;
 };
 
 struct wdt {
@@ -71,7 +71,7 @@ struct wdt {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    struct am_timer *timer;
+    struct am_timer* timer;
     struct am_timer_event_x bark;
 };
 
@@ -81,7 +81,7 @@ static const struct am_event m_evt_wdt_feed = {.id = EVT_WDT_FEED};
 /* 'watched' task */
 
 static enum am_rc watched_proc(
-    struct watched *me, const struct am_event *event
+    struct watched* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
@@ -105,14 +105,14 @@ static enum am_rc watched_proc(
 }
 
 static enum am_rc watched_init(
-    struct watched *me, const struct am_event *event
+    struct watched* me, const struct am_event* event
 ) {
     (void)event;
     return AM_HSM_TRAN(watched_proc);
 }
 
 static void watched_ctor(
-    struct watched *me, struct am_timer *timer, struct am_ao *wdt
+    struct watched* me, struct am_timer* timer, struct am_ao* wdt
 ) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
@@ -124,7 +124,7 @@ static void watched_ctor(
 
 /* 'wdt' task */
 
-static enum am_rc wdt_proc(struct wdt *me, const struct am_event *event) {
+static enum am_rc wdt_proc(struct wdt* me, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_timer_arm(me->timer, &me->bark.event, AM_BARK_TIMEOUT_MS, 0);
@@ -146,12 +146,12 @@ static enum am_rc wdt_proc(struct wdt *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_rc wdt_init(struct wdt *me, const struct am_event *event) {
+static enum am_rc wdt_init(struct wdt* me, const struct am_event* event) {
     (void)event;
     return AM_HSM_TRAN(wdt_proc);
 }
 
-static void wdt_ctor(struct wdt *me, struct am_timer *timer) {
+static void wdt_ctor(struct wdt* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(wdt_init));
@@ -161,8 +161,8 @@ static void wdt_ctor(struct wdt *me, struct am_timer *timer) {
 
 /* timer task to drive timers  */
 
-static void ticker_task(void *param) {
-    struct am_timer *timer = param;
+static void ticker_task(void* param) {
+    struct am_timer* timer = param;
 
     am_task_wait_all();
 
@@ -174,9 +174,9 @@ static void ticker_task(void *param) {
         now_ticks += ticks_per_ms;
 
         am_timer_tick_iterator_init(timer);
-        struct am_timer_event *fired = NULL;
+        struct am_timer_event* fired = NULL;
         while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
-            void *owner = AM_CAST(struct am_timer_event_x *, fired)->ctx;
+            void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
             if (owner) {
                 am_ao_post_fifo(owner, &fired->event);
             } else {
@@ -203,7 +203,7 @@ int main(void) {
     struct watched watched;
     watched_ctor(&watched, &timer, &wdt.ao);
 
-    const struct am_event *queue_watched[1];
+    const struct am_event* queue_watched[1];
     am_ao_start(
         &watched.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
@@ -215,7 +215,7 @@ int main(void) {
         /*init_event=*/NULL
     );
 
-    const struct am_event *queue_wdt[2];
+    const struct am_event* queue_wdt[2];
     am_ao_start(
         &wdt.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MIN, .task = AM_AO_PRIO_MIN},

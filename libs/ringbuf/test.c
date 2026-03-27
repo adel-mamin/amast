@@ -48,7 +48,7 @@ static void test_ringbuf_1(void) {
             AM_ASSERT(0 == size);
         }
         {
-            uint8_t *ptr = NULL;
+            uint8_t* ptr = NULL;
             int size = i;
             (void)am_ringbuf_get_write_ptr(&rb, &ptr, &size);
             AM_ASSERT(size >= i);
@@ -60,7 +60,7 @@ static void test_ringbuf_1(void) {
             AM_ASSERT(i == size);
         }
         {
-            uint8_t *ptr = NULL;
+            uint8_t* ptr = NULL;
             int size = 0;
             (void)am_ringbuf_get_read_ptr(&rb, &ptr, &size);
             AM_ASSERT(i == size);

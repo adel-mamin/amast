@@ -54,7 +54,7 @@ static struct dtor_hsm m_dtor_hsm;
 
 /* test am_hsm_dtor() */
 
-static enum am_rc dtor_s(struct dtor_hsm *me, const struct am_event *event) {
+static enum am_rc dtor_s(struct dtor_hsm* me, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_EXIT:
         return AM_HSM_HANDLED();
@@ -65,14 +65,14 @@ static enum am_rc dtor_s(struct dtor_hsm *me, const struct am_event *event) {
 }
 
 static enum am_rc dtor_sinit(
-    struct dtor_hsm *me, const struct am_event *event
+    struct dtor_hsm* me, const struct am_event* event
 ) {
     (void)event;
     return AM_HSM_TRAN(dtor_s);
 }
 
 static void dtor_hsm(void) {
-    struct dtor_hsm *me = &m_dtor_hsm;
+    struct dtor_hsm* me = &m_dtor_hsm;
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(dtor_sinit));
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
     am_hsm_dtor(&me->hsm);

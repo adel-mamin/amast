@@ -41,8 +41,8 @@
 #include "pal/pal.h"
 #include "state.h"
 
-AM_NORETURN static void ticker_task(void *param) {
-    struct am_timer *timer = param;
+AM_NORETURN static void ticker_task(void* param) {
+    struct am_timer* timer = param;
 
     am_task_wait_all();
 
@@ -54,9 +54,9 @@ AM_NORETURN static void ticker_task(void *param) {
         now_ticks += ticks_per_ms;
 
         am_timer_tick_iterator_init(timer);
-        struct am_timer_event *fired = NULL;
+        struct am_timer_event* fired = NULL;
         while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
-            void *owner = AM_CAST(struct am_timer_event_x *, fired)->ctx;
+            void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
             if (owner) {
                 am_ao_post_fifo(owner, &fired->event);
             } else {
@@ -87,7 +87,7 @@ static void test_ringbuf_threading(void) {
     ringbuf_reader_ctor(&ringbuf, &timer, data, (int)sizeof(data));
     ringbuf_writer_ctor(&ringbuf, &timer, data, (int)sizeof(data));
 
-    const struct am_event *queue_reader[1];
+    const struct am_event* queue_reader[1];
     am_ao_start(
         ringbuf_reader_get_obj(),
         (struct am_ao_prio){.ao = AM_AO_PRIO_MID, .task = AM_AO_PRIO_MID},
@@ -99,7 +99,7 @@ static void test_ringbuf_threading(void) {
         /*init_event=*/NULL
     );
 
-    const struct am_event *queue_writer[1];
+    const struct am_event* queue_writer[1];
     am_ao_start(
         ringbuf_writer_get_obj(),
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},

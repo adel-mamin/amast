@@ -38,7 +38,7 @@
 
 static void timer_crit_stub(void) {}
 
-void am_timer_ctor(struct am_timer *timer) {
+void am_timer_ctor(struct am_timer* timer) {
     memset(timer, 0, sizeof(*timer));
     timer->crit_enter = timer->crit_exit = timer_crit_stub;
 
@@ -47,7 +47,7 @@ void am_timer_ctor(struct am_timer *timer) {
 }
 
 void am_timer_register_cbs(
-    struct am_timer *timer, void (*crit_enter)(void), void (*crit_exit)(void)
+    struct am_timer* timer, void (*crit_enter)(void), void (*crit_exit)(void)
 ) {
     AM_ASSERT(crit_enter);
     AM_ASSERT(crit_exit);
@@ -56,8 +56,8 @@ void am_timer_register_cbs(
 }
 
 void am_timer_arm(
-    struct am_timer *timer,
-    struct am_timer_event *event,
+    struct am_timer* timer,
+    struct am_timer_event* event,
     uint32_t ticks,
     uint32_t interval
 ) {
@@ -80,7 +80,7 @@ void am_timer_arm(
     timer->crit_exit();
 }
 
-bool am_timer_disarm(struct am_timer *timer, struct am_timer_event *event) {
+bool am_timer_disarm(struct am_timer* timer, struct am_timer_event* event) {
     AM_ASSERT(timer);
     AM_ASSERT(event);
 
@@ -96,7 +96,7 @@ bool am_timer_disarm(struct am_timer *timer, struct am_timer_event *event) {
 }
 
 bool am_timer_is_armed(
-    const struct am_timer *timer, const struct am_timer_event *event
+    const struct am_timer* timer, const struct am_timer_event* event
 ) {
     AM_ASSERT(timer);
     AM_ASSERT(event);
@@ -111,7 +111,7 @@ bool am_timer_is_armed(
     return armed && !disarm_pending;
 }
 
-void am_timer_tick_iterator_init(struct am_timer *timer) {
+void am_timer_tick_iterator_init(struct am_timer* timer) {
     am_slist_iterator_ctor(&timer->events, &timer->it);
 
     timer->crit_enter();
@@ -125,15 +125,15 @@ void am_timer_tick_iterator_init(struct am_timer *timer) {
     timer->crit_exit();
 }
 
-struct am_timer_event *am_timer_tick_iterator_next(struct am_timer *timer) {
+struct am_timer_event* am_timer_tick_iterator_next(struct am_timer* timer) {
     AM_ASSERT(timer);
 
     timer->crit_enter();
 
     int nevents = timer->nevents.running;
 
-    struct am_slist_item *p = NULL;
-    struct am_timer_event *event = NULL;
+    struct am_slist_item* p = NULL;
+    struct am_timer_event* event = NULL;
     while ((p = am_slist_iterator_next(&timer->it)) != NULL) {
         event = AM_CONTAINER_OF(p, struct am_timer_event, item);
 
@@ -170,7 +170,7 @@ struct am_timer_event *am_timer_tick_iterator_next(struct am_timer *timer) {
     return event;
 }
 
-bool am_timer_is_empty_unsafe(const struct am_timer *timer) {
+bool am_timer_is_empty_unsafe(const struct am_timer* timer) {
     AM_ASSERT(timer);
 
     bool empty = am_slist_is_empty(&timer->events);
@@ -180,7 +180,7 @@ bool am_timer_is_empty_unsafe(const struct am_timer *timer) {
 }
 
 uint32_t am_timer_get_ticks(
-    const struct am_timer *timer, const struct am_timer_event *event
+    const struct am_timer* timer, const struct am_timer_event* event
 ) {
     AM_ASSERT(timer);
     AM_ASSERT(event);

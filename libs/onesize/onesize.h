@@ -42,8 +42,8 @@
 
 /** Onesize memory allocator descriptor. */
 struct am_onesize {
-    void *pool_beg;     /**< the pool memory begin  */
-    void *pool_end;     /**< the pool memory end */
+    void* pool_beg;     /**< the pool memory begin  */
+    void* pool_end;     /**< the pool memory end */
     int block_size;     /**< maximum size of allocated block [bytes] */
     struct am_slist fl; /**< list of non-allocated memory blocks (free list) */
     int nfree;          /**< current number of blocks in free list */
@@ -91,7 +91,7 @@ extern "C" {
  * @param hnd  the allocator
  * @param cfg  configuration
  */
-void am_onesize_ctor(struct am_onesize *hnd, const struct am_onesize_cfg *cfg);
+void am_onesize_ctor(struct am_onesize* hnd, const struct am_onesize_cfg* cfg);
 
 /**
  * Allocate memory block of configured block size (eXtended version).
@@ -104,7 +104,7 @@ void am_onesize_ctor(struct am_onesize *hnd, const struct am_onesize_cfg *cfg);
  *
  * @return the allocated memory or NULL, if allocation failed
  */
-void *am_onesize_allocate_x(struct am_onesize *hnd, int margin);
+void* am_onesize_allocate_x(struct am_onesize* hnd, int margin);
 
 /**
  * Allocate one memory block of configured block size.
@@ -115,7 +115,7 @@ void *am_onesize_allocate_x(struct am_onesize *hnd, int margin);
  *
  * @return the allocated memory
  */
-void *am_onesize_allocate(struct am_onesize *hnd);
+void* am_onesize_allocate(struct am_onesize* hnd);
 
 /**
  * Free a memory block.
@@ -123,14 +123,14 @@ void *am_onesize_allocate(struct am_onesize *hnd);
  * @param hnd  the allocator
  * @param ptr  memory block to free
  */
-void am_onesize_free(struct am_onesize *hnd, const void *ptr);
+void am_onesize_free(struct am_onesize* hnd, const void* ptr);
 
 /**
  * Free all memory allocated so far.
  *
  * @param hnd  the allocator
  */
-void am_onesize_free_all(struct am_onesize *hnd);
+void am_onesize_free_all(struct am_onesize* hnd);
 
 /**
  * The type of callback to be used with am_onesize_iterate_over_allocated().
@@ -141,7 +141,7 @@ void am_onesize_free_all(struct am_onesize *hnd);
  * @param size   the buffer size [bytes]
  */
 typedef void (*am_onesize_iterate_fn)(
-    void *ctx, int index, const char *buf, int size
+    void* ctx, int index, const char* buf, int size
 );
 
 /**
@@ -157,7 +157,7 @@ typedef void (*am_onesize_iterate_fn)(
  * @param ctx  the caller's specific context to be used with the callback
  */
 void am_onesize_iterate_over_allocated_unsafe(
-    struct am_onesize *hnd, int num, am_onesize_iterate_fn cb, void *ctx
+    struct am_onesize* hnd, int num, am_onesize_iterate_fn cb, void* ctx
 );
 
 /**
@@ -167,7 +167,7 @@ void am_onesize_iterate_over_allocated_unsafe(
  *
  * @return the number of free blocks
  */
-int am_onesize_get_nfree(const struct am_onesize *hnd);
+int am_onesize_get_nfree(const struct am_onesize* hnd);
 
 /**
  * The minimum number of free memory blocks observed so far.
@@ -178,7 +178,7 @@ int am_onesize_get_nfree(const struct am_onesize *hnd);
  *
  * @return the minimum number of free memory blocks observed so far
  */
-int am_onesize_get_nfree_min(const struct am_onesize *hnd);
+int am_onesize_get_nfree_min(const struct am_onesize* hnd);
 
 /**
  * Return the memory block size.
@@ -187,7 +187,7 @@ int am_onesize_get_nfree_min(const struct am_onesize *hnd);
  *
  * @return the block size [bytes]
  */
-int am_onesize_get_block_size(const struct am_onesize *hnd);
+int am_onesize_get_block_size(const struct am_onesize* hnd);
 
 /**
  * Get total number of memory blocks - the total capacity of the allocator.
@@ -196,7 +196,7 @@ int am_onesize_get_block_size(const struct am_onesize *hnd);
  *
  * @return the total number of memory blocks
  */
-int am_onesize_get_nblocks(const struct am_onesize *hnd);
+int am_onesize_get_nblocks(const struct am_onesize* hnd);
 
 #ifdef __cplusplus
 }

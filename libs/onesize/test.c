@@ -38,7 +38,7 @@ int main(void) {
     struct test {
         int a;
         float b;
-        unsigned *c;
+        unsigned* c;
     } test_arr[2];
 
     struct am_onesize_cfg cfg = {
@@ -50,15 +50,15 @@ int main(void) {
 
     AM_ASSERT(am_onesize_get_nfree(&ma) == 2);
 
-    const void *ptr1 = am_onesize_allocate(&ma);
+    const void* ptr1 = am_onesize_allocate(&ma);
     AM_ASSERT(ptr1);
     AM_ASSERT(am_onesize_get_nfree(&ma) == 1);
 
-    const void *ptr2 = am_onesize_allocate(&ma);
+    const void* ptr2 = am_onesize_allocate(&ma);
     AM_ASSERT(ptr2);
     AM_ASSERT(am_onesize_get_nfree(&ma) == 0);
 
-    const void *ptr3 = am_onesize_allocate_x(&ma, /*margin=*/0);
+    const void* ptr3 = am_onesize_allocate_x(&ma, /*margin=*/0);
     AM_ASSERT(!ptr3);
     AM_ASSERT(am_onesize_get_nfree(&ma) == 0);
 

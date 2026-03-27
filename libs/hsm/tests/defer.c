@@ -60,25 +60,25 @@ struct test_defer {
     struct am_hsm hsm;
     struct am_event_queue event_queue;
     struct am_event_queue defer_queue;
-    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
+    AM_PRINTF(1, 0) void (*log)(const char* fmt, ...);
     char log_buf[256];
 };
 
 static struct test_defer m_test_defer;
 
-static enum am_rc defer_s1(struct test_defer *me, const struct am_event *event);
-static enum am_rc defer_s2(struct test_defer *me, const struct am_event *event);
+static enum am_rc defer_s1(struct test_defer* me, const struct am_event* event);
+static enum am_rc defer_s2(struct test_defer* me, const struct am_event* event);
 
-static void defer_push_front(void *ctx, const struct am_event *event) {
+static void defer_push_front(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
-    struct test_defer *me = (struct test_defer *)ctx;
+    struct test_defer* me = (struct test_defer*)ctx;
     am_event_queue_push_front(&me->event_queue, event);
 }
 
 static enum am_rc defer_s1(
-    struct test_defer *me, const struct am_event *event
+    struct test_defer* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_EXIT:
@@ -100,7 +100,7 @@ static enum am_rc defer_s1(
 }
 
 static enum am_rc defer_s2(
-    struct test_defer *me, const struct am_event *event
+    struct test_defer* me, const struct am_event* event
 ) {
     switch (event->id) {
     case HSM_EVT_A:
@@ -113,48 +113,48 @@ static enum am_rc defer_s2(
 }
 
 static enum am_rc defer_sinit(
-    struct test_defer *me, const struct am_event *event
+    struct test_defer* me, const struct am_event* event
 ) {
     (void)event;
     return AM_HSM_TRAN(defer_s1);
 }
 
-static void defer_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
-    struct test_defer *me = &m_test_defer;
+static void defer_ctor(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
+    struct test_defer* me = &m_test_defer;
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(defer_sinit));
     me->log = log;
 
     /* setup HSM event queue */
     {
-        static const struct am_event *pool[2];
+        static const struct am_event* pool[2];
         am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool));
     }
 
     /* setup HSM defer queue */
     {
-        static const struct am_event *pool[2];
+        static const struct am_event* pool[2];
         am_event_queue_ctor(&me->defer_queue, pool, AM_COUNTOF(pool));
     }
 }
 
-static AM_PRINTF(1, 0) void defer_hsm_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void defer_hsm_log(const char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
-    struct test_defer *me = &m_test_defer;
+    struct test_defer* me = &m_test_defer;
     str_vlcatf(me->log_buf, (int)sizeof(me->log_buf), fmt, ap);
     va_end(ap);
 }
 
-static void defer_dispatch(void *ctx, const struct am_event *event) {
+static void defer_dispatch(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
-    struct test_defer *me = (struct test_defer *)ctx;
+    struct test_defer* me = (struct test_defer*)ctx;
     am_hsm_dispatch(&me->hsm, event);
 }
 
 static void defer_commit(void) {
-    struct test_defer *me = &m_test_defer;
+    struct test_defer* me = &m_test_defer;
     while (!am_event_queue_is_empty(&me->event_queue)) {
         enum am_rc rc = am_event_queue_pop_front_with_cb(
             &me->event_queue, defer_dispatch, me
@@ -182,19 +182,19 @@ static void test_defer(void) {
 
     defer_ctor(defer_hsm_log);
 
-    struct test_defer *me = &m_test_defer;
+    struct test_defer* me = &m_test_defer;
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
 
     static const struct test {
         int event;
-        const char *out;
+        const char* out;
     } in[] = {
         {.event = HSM_EVT_A, .out = "s1-A;"},
         {.event = HSM_EVT_B, .out = "s1-B;s2-A;"},
     };
 
     for (int i = 0; i < AM_COUNTOF(in); ++i) {
-        const struct am_event *e =
+        const struct am_event* e =
             am_event_allocate(in[i].event, (int)sizeof(struct am_event));
         am_event_inc_ref_cnt(e);
         am_hsm_dispatch(&me->hsm, e);

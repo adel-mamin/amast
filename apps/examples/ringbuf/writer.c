@@ -42,10 +42,10 @@
 
 struct ringbuf_writer {
     struct am_ao ao;
-    struct am_ringbuf *ringbuf;
-    struct am_timer *timer;
+    struct am_ringbuf* ringbuf;
+    struct am_timer* timer;
     struct am_timer_event_x wait;
-    const uint8_t *data;
+    const uint8_t* data;
     int datalen;
     int len;
 };
@@ -55,19 +55,19 @@ static struct ringbuf_writer m_ringbuf_writer;
 static const struct am_event m_evt_ringbuf_write = {.id = AM_EVT_RINGBUF_WRITE};
 
 static void ringbuf_writer_init_handler(
-    struct ringbuf_writer *me, const struct am_event *event
+    struct ringbuf_writer* me, const struct am_event* event
 ) {
     (void)event;
     am_ao_post_fifo(&me->ao, &m_evt_ringbuf_write);
 }
 
 static void ringbuf_writer_event_handler(
-    struct ringbuf_writer *me, const struct am_event *event
+    struct ringbuf_writer* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_RINGBUF_WAIT:
     case AM_EVT_RINGBUF_WRITE: {
-        uint8_t *ptr = NULL;
+        uint8_t* ptr = NULL;
         int size = me->len;
         (void)am_ringbuf_get_write_ptr(me->ringbuf, &ptr, &size);
         if (size < me->len) {
@@ -92,12 +92,12 @@ static void ringbuf_writer_event_handler(
 }
 
 void ringbuf_writer_ctor(
-    struct am_ringbuf *ringbuf,
-    struct am_timer *timer,
-    const uint8_t *data,
+    struct am_ringbuf* ringbuf,
+    struct am_timer* timer,
+    const uint8_t* data,
     int len
 ) {
-    struct ringbuf_writer *me = &m_ringbuf_writer;
+    struct ringbuf_writer* me = &m_ringbuf_writer;
     memset(me, 0, sizeof(*me));
     me->len = 1;
     am_ao_ctor(
@@ -113,4 +113,4 @@ void ringbuf_writer_ctor(
     me->wait = am_timer_event_ctor_x(AM_EVT_RINGBUF_WAIT, &me->ao);
 }
 
-struct am_ao *ringbuf_writer_get_obj(void) { return &m_ringbuf_writer.ao; }
+struct am_ao* ringbuf_writer_get_obj(void) { return &m_ringbuf_writer.ao; }

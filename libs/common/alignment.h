@@ -85,9 +85,9 @@ AM_ALIGNOF_DEFINE(max_align_t);
  *
  * @return the aligned pointer
  */
-#define AM_ALIGN_PTR_UP(ptr, align)                           \
-    ((void *)(((uintptr_t)(ptr) + (uintptr_t)((align) - 1)) & \
-              ~(uintptr_t)((align) - 1)))
+#define AM_ALIGN_PTR_UP(ptr, align)                          \
+    ((void*)(((uintptr_t)(ptr) + (uintptr_t)((align) - 1)) & \
+             ~(uintptr_t)((align) - 1)))
 
 /**
  * Align pointer to the smaller value, which has \p align alignment.
@@ -98,7 +98,7 @@ AM_ALIGNOF_DEFINE(max_align_t);
  * @return the aligned pointer
  */
 #define AM_ALIGN_PTR_DOWN(ptr, align) \
-    ((void *)((uintptr_t)(ptr) & ~(uintptr_t)((align) - 1)))
+    ((void*)((uintptr_t)(ptr) & ~(uintptr_t)((align) - 1)))
 
 /**
  * Return \p size + the byte difference between aligned and unaligned \p size.

@@ -54,25 +54,25 @@ static void test_align(void) {
 
     {
         uintptr_t ptr = 0x10;
-        AM_ASSERT(0x10 == AM_CAST(uintptr_t, AM_ALIGN_PTR_UP((void *)ptr, 16)));
+        AM_ASSERT(0x10 == AM_CAST(uintptr_t, AM_ALIGN_PTR_UP((void*)ptr, 16)));
     }
 
     {
         uintptr_t ptr = 0x1F;
-        AM_ASSERT(0x20 == AM_CAST(uintptr_t, AM_ALIGN_PTR_UP((void *)ptr, 16)));
+        AM_ASSERT(0x20 == AM_CAST(uintptr_t, AM_ALIGN_PTR_UP((void*)ptr, 16)));
     }
 
     {
         uintptr_t ptr = 0x10;
         AM_ASSERT(
-            0x10 == AM_CAST(uintptr_t, AM_ALIGN_PTR_DOWN((void *)ptr, 16))
+            0x10 == AM_CAST(uintptr_t, AM_ALIGN_PTR_DOWN((void*)ptr, 16))
         );
     }
 
     {
         uintptr_t ptr = 0x1F;
         AM_ASSERT(
-            0x10 == AM_CAST(uintptr_t, AM_ALIGN_PTR_DOWN((void *)ptr, 16))
+            0x10 == AM_CAST(uintptr_t, AM_ALIGN_PTR_DOWN((void*)ptr, 16))
         );
     }
     {
@@ -88,11 +88,11 @@ static void test_container_of(void) {
         int b;
     };
     struct foo foo = {.a = 1, .b = 2};
-    int *bp = &foo.b;
+    int* bp = &foo.b;
     AM_ASSERT(1 == AM_CONTAINER_OF(bp, struct foo, b)->a);
 }
 
-static void do_each_ms(int *i, struct am_do_ctx *ctx, uint32_t now_ms) {
+static void do_each_ms(int* i, struct am_do_ctx* ctx, uint32_t now_ms) {
     AM_DO_EACH_MS(1, ctx, now_ms) { ++(*i); }
 }
 
@@ -112,7 +112,7 @@ static void test_do_each_ms(void) {
     AM_ASSERT(2 == i);
 }
 
-static void do_once(struct am_do_ctx *ctx, int *i) {
+static void do_once(struct am_do_ctx* ctx, int* i) {
     AM_DO_ONCE(ctx) { ++(*i); }
 }
 
@@ -126,7 +126,7 @@ static void test_do_once(void) {
     AM_ASSERT(1 == i);
 }
 
-static void do_every(struct am_do_ctx *ctx, int *i) {
+static void do_every(struct am_do_ctx* ctx, int* i) {
     AM_DO_EVERY(2, ctx) { ++(*i); }
 }
 

@@ -45,14 +45,14 @@ static struct redisp_fsm m_redisp_fsm;
 /* test AM_FSM_TRAN_REDISPATCH() */
 
 static enum am_rc redisp_fsm_s1(
-    struct redisp_fsm *me, const struct am_event *event
+    struct redisp_fsm* me, const struct am_event* event
 );
 static enum am_rc redisp_fsm_s2(
-    struct redisp_fsm *me, const struct am_event *event
+    struct redisp_fsm* me, const struct am_event* event
 );
 
 static enum am_rc redisp_fsm_s1(
-    struct redisp_fsm *me, const struct am_event *event
+    struct redisp_fsm* me, const struct am_event* event
 ) {
     switch (event->id) {
     case FSM_EVT_A:
@@ -67,7 +67,7 @@ static enum am_rc redisp_fsm_s1(
 }
 
 static enum am_rc redisp_fsm_s2(
-    struct redisp_fsm *me, const struct am_event *event
+    struct redisp_fsm* me, const struct am_event* event
 ) {
     switch (event->id) {
     case FSM_EVT_A:
@@ -82,7 +82,7 @@ static enum am_rc redisp_fsm_s2(
 }
 
 static enum am_rc redisp_fsm_sinit(
-    struct redisp_fsm *me, const struct am_event *event
+    struct redisp_fsm* me, const struct am_event* event
 ) {
     (void)event;
     me->a_handled = 0;
@@ -91,7 +91,7 @@ static enum am_rc redisp_fsm_sinit(
 }
 
 static void redispatch_fsm(void) {
-    struct redisp_fsm *me = &m_redisp_fsm;
+    struct redisp_fsm* me = &m_redisp_fsm;
     am_fsm_ctor(&me->fsm, AM_FSM_STATE_CTOR(redisp_fsm_sinit));
 
     am_fsm_init(&me->fsm, /*init_event=*/NULL);

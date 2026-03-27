@@ -78,7 +78,7 @@ struct progress {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    struct am_timer *timer;
+    struct am_timer* timer;
     struct am_timer_event_x progress;
     int iprog;
     unsigned prog_ms;
@@ -86,7 +86,7 @@ struct progress {
 };
 
 static enum am_rc progress_done(
-    struct progress *me, const struct am_event *event
+    struct progress* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -99,7 +99,7 @@ static enum am_rc progress_done(
 }
 
 static enum am_rc progress_top(
-    struct progress *me, const struct am_event *event
+    struct progress* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -138,7 +138,7 @@ static enum am_rc progress_top(
 }
 
 static enum am_rc progress_init(
-    struct progress *me, const struct am_event *event
+    struct progress* me, const struct am_event* event
 ) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_FORK_SUCCESS);
@@ -146,7 +146,7 @@ static enum am_rc progress_init(
     return AM_HSM_TRAN(progress_top);
 }
 
-static void progress_ctor(struct progress *me, struct am_timer *timer) {
+static void progress_ctor(struct progress* me, struct am_timer* timer) {
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(progress_init));
 
@@ -154,8 +154,8 @@ static void progress_ctor(struct progress *me, struct am_timer *timer) {
     me->progress = am_timer_event_ctor_x(EVT_PROGRESS_TICK, &me->ao);
 }
 
-AM_NORETURN static void ticker_task(void *param) {
-    struct am_timer *timer = param;
+AM_NORETURN static void ticker_task(void* param) {
+    struct am_timer* timer = param;
 
     am_task_wait_all();
 
@@ -167,9 +167,9 @@ AM_NORETURN static void ticker_task(void *param) {
         now_ticks += ticks_per_ms;
 
         am_timer_tick_iterator_init(timer);
-        struct am_timer_event *fired = NULL;
+        struct am_timer_event* fired = NULL;
         while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
-            void *owner = AM_CAST(struct am_timer_event_x *, fired)->ctx;
+            void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
             if (owner) {
                 am_ao_post_fifo(owner, &fired->event);
             } else {
@@ -179,7 +179,7 @@ AM_NORETURN static void ticker_task(void *param) {
     }
 }
 
-static void job_task(void *param) {
+static void job_task(void* param) {
     am_task_wait_all();
 
     static struct am_event success = {.id = EVT_FORK_SUCCESS};
@@ -191,7 +191,7 @@ static void job_task(void *param) {
         return;
     }
     if (pid == 0) { /* Child process */
-        char **argv = param;
+        char** argv = param;
         /* int execvp(const char *file, char *const argv[]); */
         execvp(argv[1], argv + 1);
         am_ao_publish(&failure);
@@ -225,7 +225,7 @@ static void job_task(void *param) {
     am_ao_publish(&success);
 }
 
-int main(int argc, const char *argv[]) {
+int main(int argc, const char* argv[]) {
     am_pal_ctor(/*arg=*/NULL);
 
     if (argc < 2) {
@@ -257,7 +257,7 @@ int main(int argc, const char *argv[]) {
     struct progress m;
     progress_ctor(&m, &timer);
 
-    static const struct am_event *m_queue[EVT_MAX];
+    static const struct am_event* m_queue[EVT_MAX];
 
     am_ao_start(
         &m.ao,
@@ -285,7 +285,7 @@ int main(int argc, const char *argv[]) {
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*entry=*/job_task,
-        /*arg=*/AM_CAST(void *, argv)
+        /*arg=*/AM_CAST(void*, argv)
     );
 
     while (am_ao_get_cnt() > 0) {

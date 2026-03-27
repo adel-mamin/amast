@@ -47,8 +47,8 @@
 static const struct am_event m_min_event = {.id = AM_EVT_MIN};
 static const struct am_event m_start_test_event = {.id = AM_EVT_START_TEST};
 
-static const struct am_event *m_queue_loopback[1];
-static const struct am_event *m_queue_loopback_test[1];
+static const struct am_event* m_queue_loopback[1];
+static const struct am_event* m_queue_loopback_test[1];
 
 static struct loopback {
     /*
@@ -71,7 +71,7 @@ static struct loopback_test {
 
 static struct am_event event_shutdown_ = {.id = AM_EVT_SHUTDOWN};
 
-static int loopback_proc(struct loopback *me, const struct am_event *event) {
+static int loopback_proc(struct loopback* me, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_MIN:
         AM_ASSERT(am_ao_get_own_prio() == AM_AO_PRIO_HIGH);
@@ -88,13 +88,13 @@ static int loopback_proc(struct loopback *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static int loopback_init(struct loopback *me, const struct am_event *event) {
+static int loopback_init(struct loopback* me, const struct am_event* event) {
     (void)event;
     return AM_HSM_TRAN(loopback_proc);
 }
 
 static int loopback_test_proc(
-    struct loopback_test *me, const struct am_event *event
+    struct loopback_test* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_START_TEST:
@@ -118,7 +118,7 @@ static int loopback_test_proc(
 }
 
 static int loopback_test_init(
-    struct loopback_test *me, const struct am_event *event
+    struct loopback_test* me, const struct am_event* event
 ) {
     (void)event;
     am_ao_post_fifo(&me->ao, &m_start_test_event);

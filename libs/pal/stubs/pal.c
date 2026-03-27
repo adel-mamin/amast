@@ -33,7 +33,7 @@
 #include "common/compiler.h" /* IWYU pragma: keep */
 #include "pal/pal.h"
 
-void *am_pal_ctor(void *arg) {
+void* am_pal_ctor(void* arg) {
     (void)arg;
     return NULL;
 }
@@ -47,12 +47,12 @@ void am_crit_enter(void) {}
 void am_crit_exit(void) {}
 
 int am_task_create(
-    const char *name,
+    const char* name,
     int prio,
-    void *stack,
+    void* stack,
     int stack_size,
-    void (*entry)(void *arg),
-    void *arg
+    void (*entry)(void* arg),
+    void* arg
 ) {
     (void)name;
     (void)prio;
@@ -115,7 +115,7 @@ void am_sleep_ms(uint32_t ms) { (void)ms; }
 
 int am_task_get_own_id(void) { return -1; }
 
-int am_printf(const char *fmt, ...) {
+int am_printf(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
     int rc = vprintf(fmt, args);
@@ -123,7 +123,7 @@ int am_printf(const char *fmt, ...) {
     return rc;
 }
 
-int am_printf_unsafe(const char *fmt, ...) {
+int am_printf_unsafe(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
     int rc = vprintf(fmt, args);
@@ -131,7 +131,7 @@ int am_printf_unsafe(const char *fmt, ...) {
     return rc;
 }
 
-int am_printff(const char *fmt, ...) {
+int am_printff(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
     int rc = vprintf(fmt, args);
@@ -140,9 +140,9 @@ int am_printff(const char *fmt, ...) {
     return rc;
 }
 
-int am_vprintf(const char *fmt, va_list args) { return vprintf(fmt, args); }
+int am_vprintf(const char* fmt, va_list args) { return vprintf(fmt, args); }
 
-int am_vprintff(const char *fmt, va_list args) {
+int am_vprintff(const char* fmt, va_list args) {
     int rc = vprintf(fmt, args);
     am_pal_flush();
     return rc;

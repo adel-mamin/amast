@@ -94,13 +94,13 @@ static void work(int cycles) {
     }
 }
 
-static enum am_rc worker_proc(struct worker *me, const struct am_event *event) {
+static enum am_rc worker_proc(struct worker* me, const struct am_event* event) {
     switch (event->id) {
     case EVT_JOB_REQ: {
-        const struct job_req *req = AM_CAST(const struct job_req *, event);
+        const struct job_req* req = AM_CAST(const struct job_req*, event);
         AM_ASSERT(req->work);
         req->work(req->cycles);
-        struct job_done *done = (struct job_done *)am_event_allocate(
+        struct job_done* done = (struct job_done*)am_event_allocate(
             EVT_JOB_DONE, sizeof(struct job_done)
         );
         done->worker = me->id;
@@ -118,14 +118,14 @@ static enum am_rc worker_proc(struct worker *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_rc worker_init(struct worker *me, const struct am_event *event) {
+static enum am_rc worker_init(struct worker* me, const struct am_event* event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_JOB_REQ);
     am_ao_subscribe(&me->ao, EVT_STOP);
     return AM_HSM_TRAN(worker_proc);
 }
 
-static void worker_ctor(struct worker *me, int id) {
+static void worker_ctor(struct worker* me, int id) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(worker_init));
@@ -139,16 +139,16 @@ struct balancer {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    struct am_timer *timer;
+    struct am_timer* timer;
     struct am_timer_event_x timeout;
     int ncpus;
     int nstops;
     int stats[AM_WORKERS_NUM_MAX];
-    struct worker *workers;
+    struct worker* workers;
     int nworkers;
 };
 
-static void balancer_check_stats(const struct balancer *me) {
+static void balancer_check_stats(const struct balancer* me) {
     int baseline = me->stats[0];
     AM_ASSERT(baseline > 0);
     for (int i = 1; i < me->ncpus; ++i) {
@@ -159,7 +159,7 @@ static void balancer_check_stats(const struct balancer *me) {
 }
 
 static enum am_rc balancer_stopping(
-    struct balancer *me, const struct am_event *event
+    struct balancer* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -184,7 +184,7 @@ static enum am_rc balancer_stopping(
 }
 
 static enum am_rc balancer_proc(
-    struct balancer *me, const struct am_event *event
+    struct balancer* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
@@ -193,8 +193,8 @@ static enum am_rc balancer_proc(
         return AM_HSM_HANDLED();
     }
     case EVT_START: {
-        struct job_req *req = AM_CAST(
-            struct job_req *,
+        struct job_req* req = AM_CAST(
+            struct job_req*,
             am_event_allocate(EVT_JOB_REQ, sizeof(struct job_req))
         );
         req->work = work;
@@ -206,11 +206,11 @@ static enum am_rc balancer_proc(
         return AM_HSM_TRAN(balancer_stopping);
 
     case EVT_JOB_DONE: {
-        const struct job_done *done = (const struct job_done *)event;
+        const struct job_done* done = (const struct job_done*)event;
         AM_ASSERT(done->worker >= 0);
         AM_ASSERT(done->worker < me->nworkers);
-        struct job_req *req = AM_CAST(
-            struct job_req *,
+        struct job_req* req = AM_CAST(
+            struct job_req*,
             am_event_allocate(EVT_JOB_REQ, sizeof(struct job_req))
         );
         req->work = work;
@@ -226,7 +226,7 @@ static enum am_rc balancer_proc(
 }
 
 static enum am_rc balancer_init(
-    struct balancer *me, const struct am_event *event
+    struct balancer* me, const struct am_event* event
 ) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_JOB_DONE);
@@ -235,10 +235,10 @@ static enum am_rc balancer_init(
 }
 
 static void balancer_ctor(
-    struct balancer *me,
+    struct balancer* me,
     int ncpus,
-    struct am_timer *timer,
-    struct worker *workers,
+    struct am_timer* timer,
+    struct worker* workers,
     int nworkers
 ) {
     memset(me, 0, sizeof(*me));
@@ -253,8 +253,8 @@ static void balancer_ctor(
     me->timeout = am_timer_event_ctor_x(EVT_TIMEOUT, &me->ao);
 }
 
-static void ticker_task(void *param) {
-    struct am_timer *timer = param;
+static void ticker_task(void* param) {
+    struct am_timer* timer = param;
 
     am_task_wait_all();
 
@@ -266,9 +266,9 @@ static void ticker_task(void *param) {
         now_ticks += ticks_per_ms;
 
         am_timer_tick_iterator_init(timer);
-        struct am_timer_event *fired = NULL;
+        struct am_timer_event* fired = NULL;
         while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
-            void *owner = AM_CAST(struct am_timer_event_x *, fired)->ctx;
+            void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
             if (owner) {
                 am_ao_post_fifo(owner, &fired->event);
             } else {
@@ -316,7 +316,7 @@ int main(void) {
         worker_ctor(&workers[i], /*id=*/i);
     }
 
-    const struct am_event *queue_balancer[AM_WORKERS_NUM_MAX];
+    const struct am_event* queue_balancer[AM_WORKERS_NUM_MAX];
     am_ao_start(
         &balancer.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
@@ -328,7 +328,7 @@ int main(void) {
         /*init_event=*/NULL
     );
 
-    const struct am_event *queue_worker[AM_WORKERS_NUM_MAX][2];
+    const struct am_event* queue_worker[AM_WORKERS_NUM_MAX][2];
     for (int i = 0; i < ncpus; ++i) {
         unsigned char prio = (unsigned char)(AM_AO_PRIO_MIN + i);
         am_ao_start(

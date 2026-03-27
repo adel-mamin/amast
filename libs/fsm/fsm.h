@@ -54,7 +54,7 @@ struct am_fsm;
  * @retval AM_RC_TRAN_REDISPATCH - event caused state transition and redispatch
  */
 typedef enum am_rc (*am_fsm_state_fn)(
-    struct am_fsm *fsm, const struct am_event *event
+    struct am_fsm* fsm, const struct am_event* event
 );
 
 /**
@@ -95,7 +95,7 @@ struct am_fsm {
  *
  * Not to be used directly.
  */
-#define AM_FSM_SET_(s) (((struct am_fsm *)me)->state = (am_fsm_state_fn)(s))
+#define AM_FSM_SET_(s) (((struct am_fsm*)me)->state = (am_fsm_state_fn)(s))
 
 /**
  * Event processing is over. Transition is taken.
@@ -141,7 +141,7 @@ extern "C" {
  * @param fsm    the FSM
  * @param event  the event to dispatch
  */
-void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event);
+void am_fsm_dispatch(struct am_fsm* fsm, const struct am_event* event);
 
 /**
  * Check whether FSM is in a given state.
@@ -155,7 +155,7 @@ void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event);
  * @retval false  not in the state
  * @retval true   in the state
  */
-bool am_fsm_is_in(const struct am_fsm *fsm, am_fsm_state_fn state);
+bool am_fsm_is_in(const struct am_fsm* fsm, am_fsm_state_fn state);
 
 /**
  * Get FSM's active state.
@@ -164,7 +164,7 @@ bool am_fsm_is_in(const struct am_fsm *fsm, am_fsm_state_fn state);
  *
  * @return the active state
  */
-am_fsm_state_fn am_fsm_get_state(const struct am_fsm *fsm);
+am_fsm_state_fn am_fsm_get_state(const struct am_fsm* fsm);
 
 /**
  * FSM constructor.
@@ -174,7 +174,7 @@ am_fsm_state_fn am_fsm_get_state(const struct am_fsm *fsm);
  * @param state  the initial state of the FSM object.
  *               The initial state must return AM_FSM_TRAN(s).
  */
-void am_fsm_ctor(struct am_fsm *fsm, am_fsm_state_fn state);
+void am_fsm_ctor(struct am_fsm* fsm, am_fsm_state_fn state);
 
 /**
  * FSM destructor.
@@ -186,7 +186,7 @@ void am_fsm_ctor(struct am_fsm *fsm, am_fsm_state_fn state);
  *
  * @param fsm  the FSM to destruct
  */
-void am_fsm_dtor(struct am_fsm *fsm);
+void am_fsm_dtor(struct am_fsm* fsm);
 
 /**
  * Perform FSM initial transition.
@@ -197,7 +197,7 @@ void am_fsm_dtor(struct am_fsm *fsm);
  * @param fsm         the FSM to init
  * @param init_event  the init event. Can be NULL.
  */
-void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event);
+void am_fsm_init(struct am_fsm* fsm, const struct am_event* init_event);
 
 #ifdef __cplusplus
 }

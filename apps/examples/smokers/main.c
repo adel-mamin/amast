@@ -90,7 +90,7 @@ struct smoker {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    struct am_timer *timer;
+    struct am_timer* timer;
     struct am_timer_event_x done;
     int id;
     unsigned resource_own;
@@ -105,17 +105,17 @@ static int rand_012(void) {
     return (int)((unsigned)(next / 65536) % 3);
 }
 
-static enum am_rc smoker_top(struct smoker *me, const struct am_event *event);
-static enum am_rc smoker_idle(struct smoker *me, const struct am_event *event);
+static enum am_rc smoker_top(struct smoker* me, const struct am_event* event);
+static enum am_rc smoker_idle(struct smoker* me, const struct am_event* event);
 static enum am_rc smoker_smoking(
-    struct smoker *me, const struct am_event *event
+    struct smoker* me, const struct am_event* event
 );
 static enum am_rc smoker_stopping(
-    struct smoker *me, const struct am_event *event
+    struct smoker* me, const struct am_event* event
 );
 
 static enum am_rc smoker_stopping(
-    struct smoker *me, const struct am_event *event
+    struct smoker* me, const struct am_event* event
 ) {
     switch (event->id) {
     case EVT_STOP: {
@@ -129,7 +129,7 @@ static enum am_rc smoker_stopping(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_rc smoker_top(struct smoker *me, const struct am_event *event) {
+static enum am_rc smoker_top(struct smoker* me, const struct am_event* event) {
     switch (event->id) {
     case EVT_STOP: {
         return AM_HSM_TRAN_REDISPATCH(smoker_stopping);
@@ -140,10 +140,10 @@ static enum am_rc smoker_top(struct smoker *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_rc smoker_idle(struct smoker *me, const struct am_event *event) {
+static enum am_rc smoker_idle(struct smoker* me, const struct am_event* event) {
     switch (event->id) {
     case EVT_RESOURCE: {
-        const struct resource *e = (const struct resource *)event;
+        const struct resource* e = (const struct resource*)event;
         if (e->resource_id != me->resource_id) {
             me->resource_acquired = me->resource_own;
             me->resource_id = e->resource_id;
@@ -161,7 +161,7 @@ static enum am_rc smoker_idle(struct smoker *me, const struct am_event *event) {
 }
 
 static enum am_rc smoker_smoking(
-    struct smoker *me, const struct am_event *event
+    struct smoker* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -177,7 +177,7 @@ static enum am_rc smoker_smoking(
         return AM_HSM_HANDLED();
 
     case EVT_DONE_SMOKING_TIMER: {
-        struct done_smoking *e = (struct done_smoking *)am_event_allocate(
+        struct done_smoking* e = (struct done_smoking*)am_event_allocate(
             EVT_DONE_SMOKING, sizeof(*e)
         );
         e->smoker_id = me->id;
@@ -190,7 +190,7 @@ static enum am_rc smoker_smoking(
     return AM_HSM_SUPER(smoker_top);
 }
 
-static enum am_rc smoker_init(struct smoker *me, const struct am_event *event) {
+static enum am_rc smoker_init(struct smoker* me, const struct am_event* event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_RESOURCE);
     am_ao_subscribe(&me->ao, EVT_STOP);
@@ -198,7 +198,7 @@ static enum am_rc smoker_init(struct smoker *me, const struct am_event *event) {
 }
 
 static void smoker_ctor(
-    struct smoker *me, int id, unsigned resource, struct am_timer *timer
+    struct smoker* me, int id, unsigned resource, struct am_timer* timer
 ) {
     memset(me, 0, sizeof(*me));
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(smoker_init));
@@ -217,14 +217,14 @@ struct agent {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    struct am_timer *timer;
+    struct am_timer* timer;
     struct am_timer_event_x timeout;
     int stats[AM_SMOKERS_NUM_MAX];
     int nstops;
     unsigned resource_id;
 };
 
-static void agent_check_stats(const struct agent *me) {
+static void agent_check_stats(const struct agent* me) {
     int baseline = me->stats[0];
     AM_ASSERT(baseline > 0);
     for (int i = 1; i < AM_COUNTOF(me->stats); ++i) {
@@ -235,7 +235,7 @@ static void agent_check_stats(const struct agent *me) {
 }
 
 static enum am_rc agent_stopping(
-    struct agent *me, const struct am_event *event
+    struct agent* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -259,15 +259,15 @@ static enum am_rc agent_stopping(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static void publish_resource(const struct agent *me, unsigned resource) {
-    struct resource *e =
-        (struct resource *)am_event_allocate(EVT_RESOURCE, sizeof(*e));
+static void publish_resource(const struct agent* me, unsigned resource) {
+    struct resource* e =
+        (struct resource*)am_event_allocate(EVT_RESOURCE, sizeof(*e));
     e->resource = resource;
     e->resource_id = me->resource_id;
     am_ao_publish(&e->event);
 }
 
-static void publish_resources(struct agent *me) {
+static void publish_resources(struct agent* me) {
     int r = rand_012();
     switch (r) {
     case 0:
@@ -289,7 +289,7 @@ static void publish_resources(struct agent *me) {
     me->resource_id++;
 }
 
-static enum am_rc agent_proc(struct agent *me, const struct am_event *event) {
+static enum am_rc agent_proc(struct agent* me, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_timer_arm(me->timer, &me->timeout.event, AM_TIMEOUT_MS, 0);
@@ -297,7 +297,7 @@ static enum am_rc agent_proc(struct agent *me, const struct am_event *event) {
         return AM_HSM_HANDLED();
     }
     case EVT_DONE_SMOKING: {
-        const struct done_smoking *done = (const struct done_smoking *)event;
+        const struct done_smoking* done = (const struct done_smoking*)event;
         AM_ASSERT(done->smoker_id >= 0);
         AM_ASSERT(done->smoker_id < AM_COUNTOF(me->stats));
         ++me->stats[done->smoker_id];
@@ -317,14 +317,14 @@ static enum am_rc agent_proc(struct agent *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_rc agent_init(struct agent *me, const struct am_event *event) {
+static enum am_rc agent_init(struct agent* me, const struct am_event* event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_DONE_SMOKING);
     am_ao_subscribe(&me->ao, EVT_STOPPED);
     return AM_HSM_TRAN(agent_proc);
 }
 
-static void agent_ctor(struct agent *me, struct am_timer *timer) {
+static void agent_ctor(struct agent* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(agent_init));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
@@ -333,8 +333,8 @@ static void agent_ctor(struct agent *me, struct am_timer *timer) {
     me->timeout = am_timer_event_ctor_x(EVT_TIMEOUT, &me->ao);
 }
 
-static void ticker_task(void *param) {
-    struct am_timer *timer = param;
+static void ticker_task(void* param) {
+    struct am_timer* timer = param;
 
     am_task_wait_all();
 
@@ -346,9 +346,9 @@ static void ticker_task(void *param) {
         now_ticks += ticks_per_ms;
 
         am_timer_tick_iterator_init(timer);
-        struct am_timer_event *fired = NULL;
+        struct am_timer_event* fired = NULL;
         while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
-            void *owner = AM_CAST(struct am_timer_event_x *, fired)->ctx;
+            void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
             if (owner) {
                 am_ao_post_fifo(owner, &fired->event);
             } else {
@@ -392,7 +392,7 @@ int main(void) {
         smoker_ctor(&smokers[i], i, resource[i], &timer);
     }
 
-    const struct am_event *queue_agent[2 * AM_SMOKERS_NUM_MAX];
+    const struct am_event* queue_agent[2 * AM_SMOKERS_NUM_MAX];
 
     am_ao_start(
         &agent.ao,
@@ -405,14 +405,15 @@ int main(void) {
         /*init_event=*/NULL
     );
 
-    const struct am_event *queue_smoker[AM_SMOKERS_NUM_MAX][5];
+    const struct am_event* queue_smoker[AM_SMOKERS_NUM_MAX][5];
 
     for (int i = 0; i < AM_COUNTOF(smokers); ++i) {
         unsigned char prio = (unsigned char)(AM_AO_PRIO_MIN + i);
         am_ao_start(
             &smokers[i].ao,
-            (struct am_ao_prio){.ao = (unsigned char)(prio + i),
-                                .task = AM_AO_PRIO_LOW},
+            (struct am_ao_prio){
+                .ao = (unsigned char)(prio + i), .task = AM_AO_PRIO_LOW
+            },
             /*queue=*/queue_smoker[i],
             /*nqueue=*/AM_COUNTOF(queue_smoker[i]),
             /*stack=*/NULL,

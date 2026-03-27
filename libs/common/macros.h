@@ -73,7 +73,7 @@
 
 /** defined in libs/pal */
 AM_NORETURN void am_assert_failure(
-    const char *assertion, const char *file, int line
+    const char* assertion, const char* file, int line
 );
 
 /** Assert macro. */
@@ -88,7 +88,7 @@ AM_NORETURN void am_assert_failure(
 
 /** Taken from http://nullprogram.com/blog/2015/02/17/ */
 #define AM_CONTAINER_OF(ptr, type, member) \
-    (AM_CAST(type *, ((char *)(ptr) - offsetof(type, member)))) /* NOLINT */
+    (AM_CAST(type*, ((char*)(ptr) - offsetof(type, member)))) /* NOLINT */
 
 /*
  * Taken from
@@ -274,9 +274,9 @@ struct am_do_ctx {
  * @param ctx      the context
  * @param now_ms   the current ms time reading
  */
-#define AM_DO_EACH_MS(/*uint32_t*/ each_ms,                             \
-                      /*struct am_do_ctx*/ ctx,                         \
-                      /*uint32_t*/ now_ms)                              \
+#define AM_DO_EACH_MS(                                                  \
+    /*uint32_t*/ each_ms, /*struct am_do_ctx*/ ctx, /*uint32_t*/ now_ms \
+)                                                                       \
     if (!ctx->init_done) {                                              \
         ctx->init_done = 1;                                             \
         /* make sure to do the first time around */                     \
@@ -314,7 +314,7 @@ struct am_do_ctx {
  * @param TYPE  the type
  * @param PTR   the pointer
  */
-#define AM_CAST(TYPE, PTR) (((TYPE)(uintptr_t)(const void *)(PTR)))
+#define AM_CAST(TYPE, PTR) (((TYPE)(uintptr_t)(const void*)(PTR)))
 
 /**
  * Cast volatile pointer to type.
@@ -322,7 +322,7 @@ struct am_do_ctx {
  * @param TYPE  the type
  * @param PTR   the volatile pointer
  */
-#define AM_VCAST(TYPE, PTR) (((TYPE)(uintptr_t)(const volatile void *)(PTR)))
+#define AM_VCAST(TYPE, PTR) (((TYPE)(uintptr_t)(const volatile void*)(PTR)))
 
 /**
  * Choose one of two macros.

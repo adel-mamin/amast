@@ -35,9 +35,9 @@
 #include "cobszpe/cobszpe.h"
 
 static void test_cobszpe_encode_run(
-    const unsigned char *src,
+    const unsigned char* src,
     int src_size,
-    const unsigned char *val,
+    const unsigned char* val,
     int val_size
 ) {
     unsigned char dst[AM_COBSZPE_ENCODED_SIZE_FOR(src_size)];

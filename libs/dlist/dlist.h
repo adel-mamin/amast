@@ -86,9 +86,9 @@ enum am_dlist_direction {
  */
 struct am_dlist_item {
     /** next item in list */
-    struct am_dlist_item *next;
+    struct am_dlist_item* next;
     /** previous item in list */
-    struct am_dlist_item *prev;
+    struct am_dlist_item* prev;
 };
 
 /** Doubly linked list handler */
@@ -99,8 +99,8 @@ struct am_dlist {
 
 /** Doubly linked list iterator handler */
 struct am_dlist_iterator {
-    struct am_dlist *list;       /**< list handler */
-    struct am_dlist_item *cur;   /**< current item of the list */
+    struct am_dlist* list;       /**< list handler */
+    struct am_dlist_item* cur;   /**< current item of the list */
     enum am_dlist_direction dir; /**< direction of traverse */
 };
 
@@ -115,7 +115,7 @@ extern "C" {
  *
  * @param list  the list
  */
-void am_dlist_ctor(struct am_dlist *list);
+void am_dlist_ctor(struct am_dlist* list);
 
 /**
  * Check if list is empty.
@@ -125,7 +125,7 @@ void am_dlist_ctor(struct am_dlist *list);
  * @retval true   the list is empty
  * @retval false  the list is not empty
  */
-bool am_dlist_is_empty(const struct am_dlist *list);
+bool am_dlist_is_empty(const struct am_dlist* list);
 
 /**
  * Check if given list item is part of ANY list.
@@ -135,7 +135,7 @@ bool am_dlist_is_empty(const struct am_dlist *list);
  * @retval true   item IS part of SOME list
  * @retval false  item IS NOT part of ANY list
  */
-bool am_dlist_item_is_linked(const struct am_dlist_item *item);
+bool am_dlist_item_is_linked(const struct am_dlist_item* item);
 
 /**
  * Construct list item.
@@ -144,7 +144,7 @@ bool am_dlist_item_is_linked(const struct am_dlist_item *item);
  *
  * @param item  list item to construct
  */
-void am_dlist_item_ctor(struct am_dlist_item *item);
+void am_dlist_item_ctor(struct am_dlist_item* item);
 
 /**
  * Give next item after the given one.
@@ -157,8 +157,8 @@ void am_dlist_item_ctor(struct am_dlist_item *item);
  *
  * @return the next item or NULL, if \a item is the last one in the list
  */
-struct am_dlist_item *am_dlist_next(
-    const struct am_dlist *list, const struct am_dlist_item *item
+struct am_dlist_item* am_dlist_next(
+    const struct am_dlist* list, const struct am_dlist_item* item
 );
 
 /**
@@ -172,8 +172,8 @@ struct am_dlist_item *am_dlist_next(
  *
  * @return the previous item or NULL, if \a item is the first one in the list
  */
-struct am_dlist_item *am_dlist_prev(
-    const struct am_dlist *list, const struct am_dlist_item *item
+struct am_dlist_item* am_dlist_prev(
+    const struct am_dlist* list, const struct am_dlist_item* item
 );
 
 /**
@@ -183,7 +183,7 @@ struct am_dlist_item *am_dlist_prev(
  * @param new_item  the new item to be pushed to the list
  */
 void am_dlist_push_before(
-    struct am_dlist_item *item, struct am_dlist_item *new_item
+    struct am_dlist_item* item, struct am_dlist_item* new_item
 );
 
 /**
@@ -193,7 +193,7 @@ void am_dlist_push_before(
  * @param new_item  the new item to be pushed to the list
  */
 void am_dlist_push_after(
-    struct am_dlist_item *item, struct am_dlist_item *new_item
+    struct am_dlist_item* item, struct am_dlist_item* new_item
 );
 
 /**
@@ -202,7 +202,7 @@ void am_dlist_push_after(
  * @param list  the list
  * @param item  the item to be added
  */
-void am_dlist_push_front(struct am_dlist *list, struct am_dlist_item *item);
+void am_dlist_push_front(struct am_dlist* list, struct am_dlist_item* item);
 
 /**
  * Add new item at back (tail) of list.
@@ -210,7 +210,7 @@ void am_dlist_push_front(struct am_dlist *list, struct am_dlist_item *item);
  * @param list  the list
  * @param item  the item to be added
  */
-void am_dlist_push_back(struct am_dlist *list, struct am_dlist_item *item);
+void am_dlist_push_back(struct am_dlist* list, struct am_dlist_item* item);
 
 /**
  * Pop given item from list.
@@ -220,7 +220,7 @@ void am_dlist_push_back(struct am_dlist *list, struct am_dlist_item *item);
  *
  * @param item  the item to pop
  */
-void am_dlist_pop(struct am_dlist_item *item);
+void am_dlist_pop(struct am_dlist_item* item);
 
 /**
  * Pop an item in front (head) of list.
@@ -229,7 +229,7 @@ void am_dlist_pop(struct am_dlist_item *item);
  *
  * @return the popped item or NULL, if the list was empty
  */
-struct am_dlist_item *am_dlist_pop_front(struct am_dlist *list);
+struct am_dlist_item* am_dlist_pop_front(struct am_dlist* list);
 
 /**
  * Pop an item from back (tail) of list.
@@ -238,7 +238,7 @@ struct am_dlist_item *am_dlist_pop_front(struct am_dlist *list);
  *
  * @return the popped item or NULL, if the list was empty
  */
-struct am_dlist_item *am_dlist_pop_back(struct am_dlist *list);
+struct am_dlist_item* am_dlist_pop_back(struct am_dlist* list);
 
 /**
  * Return list item at front (head) of list.
@@ -249,7 +249,7 @@ struct am_dlist_item *am_dlist_pop_back(struct am_dlist *list);
  *
  * @return The pointer to the front (head) item or NULL, if the list is empty
  */
-struct am_dlist_item *am_dlist_peek_front(struct am_dlist *list);
+struct am_dlist_item* am_dlist_peek_front(struct am_dlist* list);
 
 /**
  * Return list item at back (tail) of list.
@@ -260,7 +260,7 @@ struct am_dlist_item *am_dlist_peek_front(struct am_dlist *list);
  *
  * @return the pointer to the back (tail) item or NULL, if the list is empty
  */
-struct am_dlist_item *am_dlist_peek_back(struct am_dlist *list);
+struct am_dlist_item* am_dlist_peek_back(struct am_dlist* list);
 
 /**
  * Predicate callback type that tells if item is found.
@@ -274,7 +274,7 @@ struct am_dlist_item *am_dlist_peek_back(struct am_dlist *list);
  * @retval false   item was not found
  */
 typedef bool (*am_dlist_item_found_fn)(
-    void *context, struct am_dlist_item *item
+    void* context, struct am_dlist_item* item
 );
 
 /**
@@ -290,8 +290,8 @@ typedef bool (*am_dlist_item_found_fn)(
  *         NULL, if nothing was found. The found item is not popped
  *         from the list.
  */
-struct am_dlist_item *am_dlist_find(
-    const struct am_dlist *list, am_dlist_item_found_fn is_found, void *context
+struct am_dlist_item* am_dlist_find(
+    const struct am_dlist* list, am_dlist_item_found_fn is_found, void* context
 );
 
 /**
@@ -310,8 +310,8 @@ struct am_dlist_item *am_dlist_find(
  *              when am_dlist_iterator_next() is used.
  */
 void am_dlist_iterator_ctor(
-    struct am_dlist *list,
-    struct am_dlist_iterator *it,
+    struct am_dlist* list,
+    struct am_dlist_iterator* it,
     enum am_dlist_direction dir
 );
 
@@ -328,7 +328,7 @@ void am_dlist_iterator_ctor(
  * @return the visited item or NULL, if the iteration is over
  *         The item is not popped from the list.
  */
-struct am_dlist_item *am_dlist_iterator_next(struct am_dlist_iterator *it);
+struct am_dlist_item* am_dlist_iterator_next(struct am_dlist_iterator* it);
 
 /**
  * Pop item pointed by iterator from list.
@@ -343,7 +343,7 @@ struct am_dlist_item *am_dlist_iterator_next(struct am_dlist_iterator *it);
  *
  * @return the popped item
  */
-struct am_dlist_item *am_dlist_iterator_pop(struct am_dlist_iterator *it);
+struct am_dlist_item* am_dlist_iterator_pop(struct am_dlist_iterator* it);
 
 /**
  * Check if given item is part of list.
@@ -355,7 +355,7 @@ struct am_dlist_item *am_dlist_iterator_pop(struct am_dlist_iterator *it);
  * @retval false  the given item is not part of the list
  */
 bool am_dlist_owns(
-    const struct am_dlist *list, const struct am_dlist_item *item
+    const struct am_dlist* list, const struct am_dlist_item* item
 );
 
 #if defined __cplusplus

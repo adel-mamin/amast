@@ -43,16 +43,16 @@ extern "C" {
  * @retval false  the event does not have pubsub event ID
  */
 #define AM_EVENT_HAS_PUBSUB_ID(event) \
-    (((const struct am_event *)(event))->id < am_ao_state_.nsub)
+    (((const struct am_event*)(event))->id < am_ao_state_.nsub)
 
 /** Active object library internal state. */
 struct am_ao_state {
     /** User defined pubsub list. */
-    struct am_ao_subscribe_list *sub;
+    struct am_ao_subscribe_list* sub;
     /** User defined pubsub list length. */
     int nsub;
     /** User defined active objects, or NULL, if not defined. */
-    struct am_ao *aos[AM_AO_NUM_MAX];
+    struct am_ao* aos[AM_AO_NUM_MAX];
     /** Number of runnings AOs */
     int aos_cnt;
     /** Ensure simultaneous start of all active objects. */
@@ -86,7 +86,7 @@ extern struct am_ao_state am_ao_state_;
  *
  * @param ao  the active object to notify
  */
-void am_ao_notify(const struct am_ao *ao);
+void am_ao_notify(const struct am_ao* ao);
 
 /**
  * Notify active object about availability of new event(s).
@@ -95,7 +95,7 @@ void am_ao_notify(const struct am_ao *ao);
  *
  * @param ao  the active object to notify
  */
-void am_ao_notify_unsafe(const struct am_ao *ao);
+void am_ao_notify_unsafe(const struct am_ao* ao);
 
 /**
  * Internal active object library state constructor.

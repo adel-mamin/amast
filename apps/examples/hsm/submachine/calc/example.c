@@ -41,7 +41,7 @@ static void calc_print(void) {
     static char buf_prev[256];
     static char buf[256];
 
-    struct am_hsm *calc = calc_get_obj();
+    struct am_hsm* calc = calc_get_obj();
     struct am_blk d0 = calc_get_operand(calc, 0);
     struct am_blk d1 = calc_get_operand(calc, 1);
     char op = calc_get_operator(calc);
@@ -53,10 +53,10 @@ static void calc_print(void) {
             sizeof(buf),
             "%.*s%c%.*s=%f",
             d0.size,
-            (char *)d0.ptr,
+            (char*)d0.ptr,
             op,
             d1.size,
-            (char *)d1.ptr,
+            (char*)d1.ptr,
             res
         );
     } else {
@@ -65,10 +65,10 @@ static void calc_print(void) {
             sizeof(buf),
             "%.*s%c%.*s",
             d0.size,
-            (char *)d0.ptr,
+            (char*)d0.ptr,
             op,
             d1.size,
-            (char *)d1.ptr
+            (char*)d1.ptr
         );
     }
     if (0 == strcmp(buf, buf_prev)) {
@@ -78,7 +78,7 @@ static void calc_print(void) {
     memcpy(buf_prev, buf, sizeof(buf_prev));
 }
 
-static bool calc_set_event_id(struct calc_event *e, char c) {
+static bool calc_set_event_id(struct calc_event* e, char c) {
     if ('0' == c) {
         e->event.id = EVT_DIGIT_0;
     } else if (('1' <= c) && (c <= '9')) {
@@ -99,7 +99,7 @@ static bool calc_set_event_id(struct calc_event *e, char c) {
     return true;
 }
 
-static void calc_log(const char *fmt, ...) { (void)fmt; }
+static void calc_log(const char* fmt, ...) { (void)fmt; }
 
 int main(void) {
     calc_ctor(calc_log);
@@ -109,11 +109,11 @@ int main(void) {
     printf("Type [0-9 . / * + - c d =] (x to turn off)\n");
     printf(AM_COLOR_RESET);
 
-    struct am_hsm *calc = calc_get_obj();
+    struct am_hsm* calc = calc_get_obj();
     am_hsm_init(calc, /*init_event=*/NULL);
     calc_print();
 
-    static const char *blank = " ";
+    static const char* blank = " ";
 
     for (;;) {
         int c = getchar();

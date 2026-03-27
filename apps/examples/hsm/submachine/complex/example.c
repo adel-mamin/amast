@@ -40,7 +40,7 @@
 
 static char m_log_buf[256];
 
-static AM_PRINTF(1, 0) void test_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void test_log(const char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(m_log_buf, (int)sizeof(m_log_buf), fmt, ap);
@@ -63,11 +63,11 @@ int main(void) {
 
     m_log_buf[0] = '\0';
 
-    struct am_hsm *complex = complex_get_obj();
+    struct am_hsm* complex = complex_get_obj();
     am_hsm_init(complex, /*init_event=*/NULL);
     test_print('*');
 
-    static const char *blank = "        ";
+    static const char* blank = "        ";
     static const uint16_t e[] = {
         HSM_EVT_A,
         HSM_EVT_B,

@@ -56,7 +56,7 @@ static void test_arm(void) {
     AM_ASSERT(!am_timer_is_empty_unsafe(&timer));
 
     am_timer_tick_iterator_init(&timer);
-    struct am_timer_event *e = am_timer_tick_iterator_next(&timer);
+    struct am_timer_event* e = am_timer_tick_iterator_next(&timer);
     AM_ASSERT(e && (test.event.id == e->event.id));
 
     AM_ASSERT(NULL == am_timer_tick_iterator_next(&timer));

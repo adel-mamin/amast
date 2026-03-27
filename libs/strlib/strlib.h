@@ -66,7 +66,7 @@ extern "C" {
  * @return the total length of the string it tried to create, i.e.
  *         the length of src
  */
-int str_lcpy(char *dst, const char *src, int lim);
+int str_lcpy(char* dst, const char* src, int lim);
 
 /**
  * Concatenate strings.
@@ -98,7 +98,7 @@ int str_lcpy(char *dst, const char *src, int lim);
  * @return the total length of the string it tried to create
  *         It means the initial length of dst plus the length of src.
  */
-int str_lcat(char *dst, const char *src, int lim);
+int str_lcat(char* dst, const char* src, int lim);
 
 /**
  * Same as str_lcat(), but the source buffer is replaced with format string.
@@ -111,7 +111,7 @@ int str_lcat(char *dst, const char *src, int lim);
  * @return Returns the total length of the string they tried to create.
  *         It means the initial length of dst plus the length of src.
  */
-AM_PRINTF(3, 0) int str_vlcatf(char *dst, int lim, const char *fmt, va_list ap);
+AM_PRINTF(3, 0) int str_vlcatf(char* dst, int lim, const char* fmt, va_list ap);
 
 #ifdef __cplusplus
 }

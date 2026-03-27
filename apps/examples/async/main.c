@@ -93,7 +93,7 @@ struct async {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    struct am_timer *timer;
+    struct am_timer* timer;
     struct am_timer_event_x timeout;
     struct am_async async;
     struct am_async async_blinking_green;
@@ -102,12 +102,12 @@ struct async {
 
 static const struct am_event am_evt_start = {.id = ASYNC_EVT_START};
 
-static enum am_rc async_top(struct async *me, const struct am_event *event);
-static enum am_rc async_regular(struct async *me, const struct am_event *event);
-static enum am_rc async_off(struct async *me, const struct am_event *event);
-static enum am_rc async_exiting(struct async *me, const struct am_event *event);
+static enum am_rc async_top(struct async* me, const struct am_event* event);
+static enum am_rc async_regular(struct async* me, const struct am_event* event);
+static enum am_rc async_off(struct async* me, const struct am_event* event);
+static enum am_rc async_exiting(struct async* me, const struct am_event* event);
 
-static enum am_rc async_top(struct async *me, const struct am_event *event) {
+static enum am_rc async_top(struct async* me, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_INIT: {
         return AM_HSM_TRAN(async_regular);
@@ -129,7 +129,7 @@ static enum am_rc async_top(struct async *me, const struct am_event *event) {
 }
 
 static enum am_rc async_exiting(
-    struct async *me, const struct am_event *event
+    struct async* me, const struct am_event* event
 ) {
     switch (event->id) {
     case ASYNC_EVT_EXIT: {
@@ -142,7 +142,7 @@ static enum am_rc async_exiting(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_rc async_blinking_green(struct async *me) {
+static enum am_rc async_blinking_green(struct async* me) {
     AM_ASYNC_BEGIN(&me->async_blinking_green);
 
     /* blinking green */
@@ -161,7 +161,7 @@ static enum am_rc async_blinking_green(struct async *me) {
     return AM_RC_ASYNC_DONE;
 }
 
-static enum am_rc async_regular_(struct async *me) {
+static enum am_rc async_regular_(struct async* me) {
     AM_ASYNC_BEGIN(&me->async);
 
     for (;;) {
@@ -191,7 +191,7 @@ static enum am_rc async_regular_(struct async *me) {
 }
 
 static enum am_rc async_regular(
-    struct async *me, const struct am_event *event
+    struct async* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
@@ -214,7 +214,7 @@ static enum am_rc async_regular(
     return AM_HSM_SUPER(async_top);
 }
 
-static enum am_rc async_off(struct async *me, const struct am_event *event) {
+static enum am_rc async_off(struct async* me, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_async_ctor(&me->async);
@@ -250,14 +250,14 @@ static enum am_rc async_off(struct async *me, const struct am_event *event) {
     return AM_HSM_SUPER(async_top);
 }
 
-static enum am_rc async_init(struct async *me, const struct am_event *event) {
+static enum am_rc async_init(struct async* me, const struct am_event* event) {
     (void)event;
     am_ao_subscribe(&me->ao, ASYNC_EVT_SWITCH_MODE);
     am_ao_subscribe(&me->ao, ASYNC_EVT_EXIT);
     return AM_HSM_TRAN(async_top);
 }
 
-static void async_ctor(struct async *me, struct am_timer *timer) {
+static void async_ctor(struct async* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
 
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
@@ -267,8 +267,8 @@ static void async_ctor(struct async *me, struct am_timer *timer) {
     me->timeout = am_timer_event_ctor_x(ASYNC_EVT_TIMER, &me->ao);
 }
 
-static void ticker_task(void *param) {
-    struct am_timer *timer = param;
+static void ticker_task(void* param) {
+    struct am_timer* timer = param;
 
     am_task_wait_all();
 
@@ -280,9 +280,9 @@ static void ticker_task(void *param) {
         now_ticks += ticks_per_ms;
 
         am_timer_tick_iterator_init(timer);
-        struct am_timer_event *fired = NULL;
+        struct am_timer_event* fired = NULL;
         while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
-            void *owner = AM_CAST(struct am_timer_event_x *, fired)->ctx;
+            void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
             if (owner) {
                 am_ao_post_fifo(owner, &fired->event);
             } else {
@@ -292,7 +292,7 @@ static void ticker_task(void *param) {
     }
 }
 
-static void input_task(void *param) {
+static void input_task(void* param) {
     (void)param;
 
     am_task_wait_all();
@@ -334,7 +334,7 @@ int main(void) {
     struct async m;
     async_ctor(&m, &timer);
 
-    const struct am_event *queue[2];
+    const struct am_event* queue[2];
 
     /* traffic lights controlling active object */
     am_ao_start(

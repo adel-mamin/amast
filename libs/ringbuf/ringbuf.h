@@ -53,7 +53,7 @@ struct am_ringbuf {
     int write_offset;
 
     /** ring buffer */
-    uint8_t *buf;
+    uint8_t* buf;
     /** ring buffer size [bytes] */
     int buf_size;
 };
@@ -71,7 +71,7 @@ extern "C" {
  * @param buf       the ring buffer's memory
  * @param buf_size  the ring buffer's memory size [bytes]
  */
-void am_ringbuf_ctor(struct am_ringbuf *rb, void *buf, int buf_size);
+void am_ringbuf_ctor(struct am_ringbuf* rb, void* buf, int buf_size);
 
 /**
  * Return ring buffer read data pointer.
@@ -88,7 +88,7 @@ void am_ringbuf_ctor(struct am_ringbuf *rb, void *buf, int buf_size);
  *
  * @return true if the ring buffer state was updated and false otherwise
  */
-bool am_ringbuf_get_read_ptr(struct am_ringbuf *rb, uint8_t **ptr, int *size);
+bool am_ringbuf_get_read_ptr(struct am_ringbuf* rb, uint8_t** ptr, int* size);
 
 /**
  * Return ring buffer write data pointer.
@@ -107,7 +107,7 @@ bool am_ringbuf_get_read_ptr(struct am_ringbuf *rb, uint8_t **ptr, int *size);
  *
  * @return true if the ring buffer state was updated and false otherwise
  */
-bool am_ringbuf_get_write_ptr(struct am_ringbuf *rb, uint8_t **ptr, int *size);
+bool am_ringbuf_get_write_ptr(struct am_ringbuf* rb, uint8_t** ptr, int* size);
 
 /**
  * Increase by offset bytes the amount of written data available to reader.
@@ -120,7 +120,7 @@ bool am_ringbuf_get_write_ptr(struct am_ringbuf *rb, uint8_t **ptr, int *size);
  * @param rb      the ring buffer
  * @param offset  the number of bytes of write data available to reader
  */
-void am_ringbuf_flush(struct am_ringbuf *rb, int offset);
+void am_ringbuf_flush(struct am_ringbuf* rb, int offset);
 
 /**
  * Increase by offset bytes the amount of data available to writer.
@@ -133,7 +133,7 @@ void am_ringbuf_flush(struct am_ringbuf *rb, int offset);
  * @param rb      the ring buffer
  * @param offset  the number of bytes of memory available to writer
  */
-void am_ringbuf_seek(struct am_ringbuf *rb, int offset);
+void am_ringbuf_seek(struct am_ringbuf* rb, int offset);
 
 /**
  * Return total number of data bytes available for reading.
@@ -142,7 +142,7 @@ void am_ringbuf_seek(struct am_ringbuf *rb, int offset);
  *
  * @return the number of data bytes available for reading
  */
-int am_ringbuf_get_data_size(const struct am_ringbuf *rb);
+int am_ringbuf_get_data_size(const struct am_ringbuf* rb);
 
 /**
  * Return total number of free memory bytes available for writing.
@@ -151,7 +151,7 @@ int am_ringbuf_get_data_size(const struct am_ringbuf *rb);
  *
  * @return the number of memory bytes available for writing
  */
-int am_ringbuf_get_free_size(const struct am_ringbuf *rb);
+int am_ringbuf_get_free_size(const struct am_ringbuf* rb);
 
 /**
  * Add to the number of dropped bytes.
@@ -159,7 +159,7 @@ int am_ringbuf_get_free_size(const struct am_ringbuf *rb);
  * @param rb       the ring buffer
  * @param dropped  add this many dropped bytes
  */
-void am_ringbuf_add_dropped(struct am_ringbuf *rb, int dropped);
+void am_ringbuf_add_dropped(struct am_ringbuf* rb, int dropped);
 
 /**
  * Get the number of dropped bytes.
@@ -168,14 +168,14 @@ void am_ringbuf_add_dropped(struct am_ringbuf *rb, int dropped);
  *
  * @return the number of dropped bytes
  */
-unsigned am_ringbuf_get_dropped(const struct am_ringbuf *rb);
+unsigned am_ringbuf_get_dropped(const struct am_ringbuf* rb);
 
 /**
  * Clear the number of dropped bytes.
  *
  * @param rb  the ring buffer
  */
-void am_ringbuf_clear_dropped(struct am_ringbuf *rb);
+void am_ringbuf_clear_dropped(struct am_ringbuf* rb);
 
 #ifdef __cplusplus
 }

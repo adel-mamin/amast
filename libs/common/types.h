@@ -62,7 +62,7 @@ enum am_rc {
 
 /** Memory block descriptor. */
 struct am_blk {
-    void *ptr; /**< memory pointer */
+    void* ptr; /**< memory pointer */
     int size;  /**< memory size [bytes] */
 };
 

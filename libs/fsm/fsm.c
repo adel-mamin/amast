@@ -35,7 +35,7 @@
 #include "common/types.h"
 #include "fsm/fsm.h"
 
-am_fsm_state_fn am_fsm_get_state(const struct am_fsm *fsm) {
+am_fsm_state_fn am_fsm_get_state(const struct am_fsm* fsm) {
     AM_ASSERT(fsm);
     return AM_FSM_STATE_CTOR(fsm->state);
 }
@@ -46,7 +46,7 @@ am_fsm_state_fn am_fsm_get_state(const struct am_fsm *fsm) {
  * @param fsm    FSM handler
  * @param state  the state to enter
  */
-static void fsm_enter(struct am_fsm *fsm, const am_fsm_state_fn state) {
+static void fsm_enter(struct am_fsm* fsm, const am_fsm_state_fn state) {
     fsm->state = state;
     struct am_event entry = {.id = AM_EVT_ENTRY};
     enum am_rc rc = fsm->state(fsm, &entry);
@@ -58,14 +58,14 @@ static void fsm_enter(struct am_fsm *fsm, const am_fsm_state_fn state) {
  *
  * @param fsm  FSM handler
  */
-static void fsm_exit(struct am_fsm *fsm) {
+static void fsm_exit(struct am_fsm* fsm) {
     struct am_event exit = {.id = AM_EVT_EXIT};
     enum am_rc rc = fsm->state(fsm, &exit);
     AM_ASSERT(AM_RC_HANDLED == rc);
 }
 
 static enum am_rc fsm_dispatch(
-    struct am_fsm *fsm, const struct am_event *event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
     AM_ASSERT(fsm->state);
 
@@ -85,7 +85,7 @@ static enum am_rc fsm_dispatch(
     return rc;
 }
 
-void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event) {
+void am_fsm_dispatch(struct am_fsm* fsm, const struct am_event* event) {
     AM_ASSERT(fsm);
     AM_ASSERT(fsm->state);
     AM_ASSERT(fsm->init_called);
@@ -120,19 +120,19 @@ void am_fsm_dispatch(struct am_fsm *fsm, const struct am_event *event) {
     AM_ASSERT(id == event->id); /* cppcheck-suppress knownArgument */
 }
 
-bool am_fsm_is_in(const struct am_fsm *fsm, const am_fsm_state_fn state) {
+bool am_fsm_is_in(const struct am_fsm* fsm, const am_fsm_state_fn state) {
     AM_ASSERT(fsm);
     return fsm->state == state;
 }
 
-void am_fsm_ctor(struct am_fsm *fsm, const am_fsm_state_fn state) {
+void am_fsm_ctor(struct am_fsm* fsm, const am_fsm_state_fn state) {
     AM_ASSERT(fsm);
     AM_ASSERT(state);
     memset(fsm, 0, sizeof(*fsm));
     fsm->state = state;
 }
 
-void am_fsm_dtor(struct am_fsm *fsm) {
+void am_fsm_dtor(struct am_fsm* fsm) {
     AM_ASSERT(fsm);
     AM_ASSERT(fsm->state); /* was am_fsm_ctor() called? */
     fsm_exit(fsm);
@@ -140,7 +140,7 @@ void am_fsm_dtor(struct am_fsm *fsm) {
     fsm->init_called = false;
 }
 
-void am_fsm_init(struct am_fsm *fsm, const struct am_event *init_event) {
+void am_fsm_init(struct am_fsm* fsm, const struct am_event* init_event) {
     AM_ASSERT(fsm);
     AM_ASSERT(fsm->state); /* was am_fsm_ctor() called? */
 

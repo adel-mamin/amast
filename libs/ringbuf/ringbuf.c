@@ -35,7 +35,7 @@
 #include "common/macros.h"
 #include "ringbuf/ringbuf.h"
 
-void am_ringbuf_ctor(struct am_ringbuf *rb, void *buf, int buf_size) {
+void am_ringbuf_ctor(struct am_ringbuf* rb, void* buf, int buf_size) {
     AM_ASSERT(rb);
     AM_ASSERT(buf);
     AM_ASSERT(buf_size > 0);
@@ -45,7 +45,7 @@ void am_ringbuf_ctor(struct am_ringbuf *rb, void *buf, int buf_size) {
     rb->buf_size = buf_size;
 }
 
-bool am_ringbuf_get_read_ptr(struct am_ringbuf *rb, uint8_t **ptr, int *size) {
+bool am_ringbuf_get_read_ptr(struct am_ringbuf* rb, uint8_t** ptr, int* size) {
     AM_ASSERT(rb);
     AM_ASSERT(rb->buf);
     AM_ASSERT(ptr);
@@ -82,7 +82,7 @@ bool am_ringbuf_get_read_ptr(struct am_ringbuf *rb, uint8_t **ptr, int *size) {
     return true;
 }
 
-bool am_ringbuf_get_write_ptr(struct am_ringbuf *rb, uint8_t **ptr, int *size) {
+bool am_ringbuf_get_write_ptr(struct am_ringbuf* rb, uint8_t** ptr, int* size) {
     AM_ASSERT(rb);
     AM_ASSERT(rb->buf);
     AM_ASSERT(ptr);
@@ -125,7 +125,7 @@ bool am_ringbuf_get_write_ptr(struct am_ringbuf *rb, uint8_t **ptr, int *size) {
     return rc;
 }
 
-void am_ringbuf_flush(struct am_ringbuf *rb, int offset) {
+void am_ringbuf_flush(struct am_ringbuf* rb, int offset) {
     AM_ASSERT(rb);
     AM_ASSERT(rb->buf);
     AM_ASSERT(offset >= 0);
@@ -148,7 +148,7 @@ void am_ringbuf_flush(struct am_ringbuf *rb, int offset) {
     AM_ATOMIC_STORE_N(&rb->write_offset, wr);
 }
 
-void am_ringbuf_seek(struct am_ringbuf *rb, int offset) {
+void am_ringbuf_seek(struct am_ringbuf* rb, int offset) {
     AM_ASSERT(rb);
     AM_ASSERT(rb->buf);
     AM_ASSERT(offset >= 0);
@@ -177,7 +177,7 @@ void am_ringbuf_seek(struct am_ringbuf *rb, int offset) {
     AM_ATOMIC_STORE_N(&rb->read_offset, rd);
 }
 
-int am_ringbuf_get_data_size(const struct am_ringbuf *rb) {
+int am_ringbuf_get_data_size(const struct am_ringbuf* rb) {
     AM_ASSERT(rb);
     AM_ASSERT(rb->buf);
 
@@ -192,7 +192,7 @@ int am_ringbuf_get_data_size(const struct am_ringbuf *rb) {
     return rb->buf_size - rd - rds + wr;
 }
 
-int am_ringbuf_get_free_size(const struct am_ringbuf *rb) {
+int am_ringbuf_get_free_size(const struct am_ringbuf* rb) {
     AM_ASSERT(rb);
     AM_ASSERT(rb->buf);
 
@@ -209,7 +209,7 @@ int am_ringbuf_get_free_size(const struct am_ringbuf *rb) {
     return rd - wr - 1;
 }
 
-void am_ringbuf_add_dropped(struct am_ringbuf *rb, int dropped) {
+void am_ringbuf_add_dropped(struct am_ringbuf* rb, int dropped) {
     AM_ASSERT(rb);
     AM_ASSERT(rb->buf);
     AM_ASSERT(dropped >= 0);
@@ -219,14 +219,14 @@ void am_ringbuf_add_dropped(struct am_ringbuf *rb, int dropped) {
     AM_ATOMIC_STORE_N(&rb->dropped, d);
 }
 
-unsigned am_ringbuf_get_dropped(const struct am_ringbuf *rb) {
+unsigned am_ringbuf_get_dropped(const struct am_ringbuf* rb) {
     AM_ASSERT(rb);
     AM_ASSERT(rb->buf);
 
     return AM_ATOMIC_LOAD_N(&rb->dropped);
 }
 
-void am_ringbuf_clear_dropped(struct am_ringbuf *rb) {
+void am_ringbuf_clear_dropped(struct am_ringbuf* rb) {
     AM_ASSERT(rb);
     AM_ASSERT(rb->buf);
 

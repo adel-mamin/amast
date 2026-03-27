@@ -47,19 +47,19 @@ static struct oven_fsm m_oven_fsm;
 /* test transition to FSM history */
 
 static enum am_rc oven_fsm_open(
-    struct oven_fsm *me, const struct am_event *event
+    struct oven_fsm* me, const struct am_event* event
 );
 static enum am_rc oven_fsm_on(
-    struct oven_fsm *me, const struct am_event *event
+    struct oven_fsm* me, const struct am_event* event
 );
 static enum am_rc oven_fsm_off(
-    struct oven_fsm *me, const struct am_event *event
+    struct oven_fsm* me, const struct am_event* event
 );
 
 static bool oven_fsm_is_open(void) { return false; }
 
 static enum am_rc oven_fsm_open(
-    struct oven_fsm *me, const struct am_event *event
+    struct oven_fsm* me, const struct am_event* event
 ) {
     switch (event->id) {
     case FSM_EVT_ON:
@@ -80,7 +80,7 @@ static enum am_rc oven_fsm_open(
 }
 
 static enum am_rc oven_fsm_on(
-    struct oven_fsm *me, const struct am_event *event
+    struct oven_fsm* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -100,7 +100,7 @@ static enum am_rc oven_fsm_on(
 }
 
 static enum am_rc oven_fsm_off(
-    struct oven_fsm *me, const struct am_event *event
+    struct oven_fsm* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -120,7 +120,7 @@ static enum am_rc oven_fsm_off(
 }
 
 static enum am_rc oven_fsm_init(
-    struct oven_fsm *me, const struct am_event *event
+    struct oven_fsm* me, const struct am_event* event
 ) {
     (void)event;
     me->history = AM_FSM_STATE_CTOR(oven_fsm_off);
@@ -128,7 +128,7 @@ static enum am_rc oven_fsm_init(
 }
 
 static void test_oven_fsm(void) {
-    struct oven_fsm *me = &m_oven_fsm;
+    struct oven_fsm* me = &m_oven_fsm;
     am_fsm_ctor(&me->fsm, AM_FSM_STATE_CTOR(oven_fsm_init));
 
     am_fsm_init(&me->fsm, /*init_event=*/NULL);

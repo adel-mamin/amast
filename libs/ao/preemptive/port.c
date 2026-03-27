@@ -37,23 +37,23 @@
 
 void am_ao_state_ctor_(void) { am_task_lock_all(); }
 
-static void am_ao_handle(void *ctx, const struct am_event *event) {
+static void am_ao_handle(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
-    struct am_ao *ao = ctx;
+    struct am_ao* ao = ctx;
 
     AM_ATOMIC_STORE_N(&ao->last_event, event->id);
     ao->event_handler(ao->ctx, event);
     AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_EMPTY);
 }
 
-static void am_ao_task(void *param) {
+static void am_ao_task(void* param) {
     AM_ASSERT(param);
 
     am_task_wait_all();
 
-    struct am_ao *ao = (struct am_ao *)param;
+    struct am_ao* ao = (struct am_ao*)param;
 
     ao->task_id = am_task_get_own_id();
 
@@ -69,7 +69,7 @@ static void am_ao_task(void *param) {
 }
 
 bool am_ao_run_all(void) {
-    struct am_ao_state *me = &am_ao_state_;
+    struct am_ao_state* me = &am_ao_state_;
 
     if (!AM_ATOMIC_LOAD_N(&me->startup_complete)) {
         /* start all AOs */
@@ -82,14 +82,14 @@ bool am_ao_run_all(void) {
 }
 
 void am_ao_start(
-    struct am_ao *ao,
+    struct am_ao* ao,
     struct am_ao_prio prio,
-    const struct am_event *queue[],
+    const struct am_event* queue[],
     int queue_size,
-    void *stack,
+    void* stack,
     int stack_size,
-    const char *name,
-    const struct am_event *init_event
+    const char* name,
+    const struct am_event* init_event
 ) {
     AM_ASSERT(ao);
     AM_ASSERT(ao->ctor_called);
@@ -102,7 +102,7 @@ void am_ao_start(
     ao->prio = prio;
     ao->name = name;
 
-    struct am_ao_state *me = &am_ao_state_;
+    struct am_ao_state* me = &am_ao_state_;
     AM_ASSERT(NULL == me->aos[prio.ao]);
     me->aos[prio.ao] = ao;
 
@@ -126,19 +126,19 @@ void am_ao_start(
     );
 }
 
-void am_ao_stop(struct am_ao *ao) {
+void am_ao_stop(struct am_ao* ao) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
     int task_id = am_task_get_own_id();
     AM_ASSERT(task_id == ao->task_id); /* check API description */
-    struct am_ao_state *me = &am_ao_state_;
+    struct am_ao_state* me = &am_ao_state_;
     AM_ASSERT(me->aos_cnt);
 
     if (me->subscribe_list_set) {
         am_ao_unsubscribe_all(ao);
     }
 
-    const struct am_event *e = NULL;
+    const struct am_event* e = NULL;
     while ((e = am_event_queue_pop_front(&ao->event_queue)) != NULL) {
         am_event_free(e);
     }
@@ -162,7 +162,7 @@ void am_ao_stop(struct am_ao *ao) {
     }
 }
 
-void am_ao_notify(const struct am_ao *ao) {
+void am_ao_notify(const struct am_ao* ao) {
     AM_ASSERT(ao);
     if (AM_TASK_ID_NONE == ao->task_id) {
         return;
@@ -170,14 +170,14 @@ void am_ao_notify(const struct am_ao *ao) {
     am_task_notify(ao->task_id);
 }
 
-void am_ao_notify_unsafe(const struct am_ao *ao) { am_ao_notify(ao); }
+void am_ao_notify_unsafe(const struct am_ao* ao) { am_ao_notify(ao); }
 
 int am_ao_get_own_prio(void) {
     int task_id = am_task_get_own_id();
     AM_ASSERT(AM_TASK_ID_MAIN != task_id);
-    struct am_ao_state *me = &am_ao_state_;
+    struct am_ao_state* me = &am_ao_state_;
     for (int i = 0; i < AM_COUNTOF(me->aos); ++i) {
-        struct am_ao *ao = me->aos[i];
+        struct am_ao* ao = me->aos[i];
         if (ao && ao->task_id == task_id) {
             return ao->prio.ao;
         }

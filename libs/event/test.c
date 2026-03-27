@@ -64,13 +64,13 @@ struct buf5 {
 } buf5;
 
 static void test_allocate(int size, int pool_index_plus_one) {
-    const struct am_event *e = am_event_allocate(AM_EVT_USER, size);
+    const struct am_event* e = am_event_allocate(AM_EVT_USER, size);
     AM_ASSERT(e->pool_index_plus_one == pool_index_plus_one);
     am_event_free(e);
 }
 
 static void test_am_event_queue(const int capacity, const int rdwr_num) {
-    const struct am_event *pool[capacity];
+    const struct am_event* pool[capacity];
 
     struct am_event_queue q;
     am_event_queue_ctor(&q, pool, capacity);
@@ -90,7 +90,7 @@ static void test_am_event_queue(const int capacity, const int rdwr_num) {
     }
 
     for (int i = 1; i <= rdwr_num; ++i) {
-        const struct am_event *event = am_event_queue_pop_front(&q);
+        const struct am_event* event = am_event_queue_pop_front(&q);
         AM_ASSERT(event == &events[i]);
     }
 
@@ -103,7 +103,7 @@ static void test_am_event_queue(const int capacity, const int rdwr_num) {
     }
 
     for (int i = rdwr_num; i > 0; --i) {
-        const struct am_event *event = am_event_queue_pop_front(&q);
+        const struct am_event* event = am_event_queue_pop_front(&q);
         AM_ASSERT(&events[i] == event);
     }
 

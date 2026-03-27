@@ -62,7 +62,7 @@ extern "C" {
  *              is the CRC value of the previous data chunk.
  * @return the calculated CRC value.
  */
-unsigned int crc16(const unsigned char *data, int size, unsigned int crc);
+unsigned int crc16(const unsigned char* data, int size, unsigned int crc);
 
 /**
  * Compute CRC24.
@@ -90,7 +90,7 @@ unsigned int crc16(const unsigned char *data, int size, unsigned int crc);
  *              is the CRC value of the previous data chunk.
  * @return the calculated CRC value.
  */
-unsigned long crc24(const unsigned char *data, int size, unsigned long crc);
+unsigned long crc24(const unsigned char* data, int size, unsigned long crc);
 
 /**
  * Compute CRC32.
@@ -119,7 +119,7 @@ unsigned long crc24(const unsigned char *data, int size, unsigned long crc);
  *              is the CRC value of the previous data chunk.
  * @return the calculated CRC value
  */
-unsigned long crc32(const unsigned char *data, int size, unsigned long crc);
+unsigned long crc32(const unsigned char* data, int size, unsigned long crc);
 
 #ifdef __cplusplus
 }

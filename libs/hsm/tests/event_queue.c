@@ -68,7 +68,7 @@
 
 static char m_hsmq_log_buf[256];
 
-static AM_PRINTF(1, 0) void hsmq_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void hsmq_log(const char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(m_hsmq_log_buf, (int)sizeof(m_hsmq_log_buf), fmt, ap);
@@ -78,26 +78,26 @@ static AM_PRINTF(1, 0) void hsmq_log(const char *fmt, ...) {
 struct am_hsmq {
     struct am_hsm hsm;
     struct am_event_queue event_queue;
-    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
+    AM_PRINTF(1, 0) void (*log)(const char* fmt, ...);
 };
 
 static struct am_hsmq am_hsmq_;
 
-static struct am_hsm *am_hsmq = &am_hsmq_.hsm;
+static struct am_hsm* am_hsmq = &am_hsmq_.hsm;
 
-static enum am_rc hsmq_s1(struct am_hsmq *me, const struct am_event *event);
-static enum am_rc hsmq_s2(struct am_hsmq *me, const struct am_event *event);
+static enum am_rc hsmq_s1(struct am_hsmq* me, const struct am_event* event);
+static enum am_rc hsmq_s2(struct am_hsmq* me, const struct am_event* event);
 
-static void hsmq_dispatch(void *ctx, const struct am_event *event) {
+static void hsmq_dispatch(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
-    struct am_hsm *me = ctx;
+    struct am_hsm* me = ctx;
     am_hsm_dispatch(me, event);
 }
 
 static void hsmq_commit(void) {
-    struct am_hsmq *me = &am_hsmq_;
+    struct am_hsmq* me = &am_hsmq_;
     while (!am_event_queue_is_empty(&me->event_queue)) {
         enum am_rc rc = am_event_queue_pop_front_with_cb(
             &me->event_queue, hsmq_dispatch, me
@@ -106,26 +106,26 @@ static void hsmq_commit(void) {
     }
 }
 
-static enum am_rc hsmq_sinit(struct am_hsmq *me, const struct am_event *event) {
+static enum am_rc hsmq_sinit(struct am_hsmq* me, const struct am_event* event) {
     (void)event;
     return AM_HSM_TRAN(hsmq_s1);
 }
 
-static void hsmq_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
-    struct am_hsmq *me = &am_hsmq_;
+static void hsmq_ctor(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
+    struct am_hsmq* me = &am_hsmq_;
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(hsmq_sinit));
     me->log = log;
 
     /* setup HSM event queue */
-    static const struct am_event *pool[2];
+    static const struct am_event* pool[2];
     am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool));
 }
 
-static enum am_rc hsmq_s1(struct am_hsmq *me, const struct am_event *event) {
+static enum am_rc hsmq_s1(struct am_hsmq* me, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_A: {
         me->log("a-A;");
-        const struct am_event *e =
+        const struct am_event* e =
             am_event_allocate(/*id=*/AM_EVT_B, sizeof(*e));
         am_event_queue_push_back(&me->event_queue, e);
         return AM_HSM_TRAN(hsmq_s2);
@@ -136,7 +136,7 @@ static enum am_rc hsmq_s1(struct am_hsmq *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_rc hsmq_s2(struct am_hsmq *me, const struct am_event *event) {
+static enum am_rc hsmq_s2(struct am_hsmq* me, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_B: {
         me->log("b-B;");
@@ -176,7 +176,7 @@ int main(void) {
 
     static const struct hsmq_test {
         uint16_t event;
-        const char *out;
+        const char* out;
     } in[] = {
         {.event = AM_EVT_A, .out = "a-A;b-B;"},
         {.event = AM_EVT_C, .out = "b-C;"}

@@ -40,19 +40,19 @@
 #define AM_EVT_RINGBUF_WAIT (AM_EVT_USER + 2)
 
 void ringbuf_reader_ctor(
-    struct am_ringbuf *ringbuf,
-    struct am_timer *timer,
-    const uint8_t *data,
+    struct am_ringbuf* ringbuf,
+    struct am_timer* timer,
+    const uint8_t* data,
     int len
 );
 void ringbuf_writer_ctor(
-    struct am_ringbuf *ringbuf,
-    struct am_timer *timer,
-    const uint8_t *data,
+    struct am_ringbuf* ringbuf,
+    struct am_timer* timer,
+    const uint8_t* data,
     int len
 );
 
-struct am_ao *ringbuf_reader_get_obj(void);
-struct am_ao *ringbuf_writer_get_obj(void);
+struct am_ao* ringbuf_reader_get_obj(void);
+struct am_ao* ringbuf_writer_get_obj(void);
 
 #endif /* RINGBUF_STATE_H_INCLUDED */

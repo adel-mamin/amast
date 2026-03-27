@@ -47,20 +47,20 @@ struct test_publish {
      */
     struct am_hsm hsm;
     struct am_ao ao;
-    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
+    AM_PRINTF(1, 0) void (*log)(const char* fmt, ...);
     char log_buf[256];
 };
 
 static struct test_publish m_publish;
-static struct am_ao *m_me = &m_publish.ao;
+static struct am_ao* m_me = &m_publish.ao;
 
 static struct am_ao_subscribe_list m_pubsub_list[AM_AO_EVT_PUB_MAX];
-static const struct am_event *m_queue_publish[1];
+static const struct am_event* m_queue_publish[1];
 
 static char m_event_pool[1][16] AM_ALIGNED(AM_ALIGN_MAX);
 
 static enum am_rc publish_s(
-    struct test_publish *me, const struct am_event *event
+    struct test_publish* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_PUB:
@@ -73,24 +73,24 @@ static enum am_rc publish_s(
 }
 
 static enum am_rc publish_sinit(
-    struct test_publish *me, const struct am_event *event
+    struct test_publish* me, const struct am_event* event
 ) {
     (void)event;
     am_ao_subscribe(&me->ao, AM_EVT_PUB);
     return AM_HSM_TRAN(publish_s);
 }
 
-static void publish_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
-    struct test_publish *me = &m_publish;
+static void publish_ctor(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
+    struct test_publish* me = &m_publish;
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(publish_sinit));
     me->log = log;
 }
 
-static AM_PRINTF(1, 0) void publish_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void publish_log(const char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
-    struct test_publish *me = &m_publish;
+    struct test_publish* me = &m_publish;
     str_vlcatf(me->log_buf, (int)sizeof(me->log_buf), fmt, ap);
     va_end(ap);
 }
@@ -131,7 +131,7 @@ static void test_publish(void) {
     am_ao_publish(&event);
     am_ao_run_all();
 
-    const char *expected = "s-PUB";
+    const char* expected = "s-PUB";
     AM_ASSERT(0 == strncmp(m_publish.log_buf, expected, strlen(expected)));
     m_publish.log_buf[0] = '\0';
 

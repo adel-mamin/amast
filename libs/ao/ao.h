@@ -96,14 +96,14 @@ struct am_ao_prio {
 struct am_ao;
 
 /** Active object event handler */
-typedef void (*am_ao_fn)(struct am_ao *ao, const struct am_event *event);
+typedef void (*am_ao_fn)(struct am_ao* ao, const struct am_event* event);
 
 /** The active object. */
 struct am_ao {
     am_ao_fn init_handler;             /**< init event handler */
     am_ao_fn event_handler;            /**< event handler */
-    void *ctx;                         /**< the event handler context */
-    const char *name;                  /**< human readable name of AO */
+    void* ctx;                         /**< the event handler context */
+    const char* name;                  /**< human readable name of AO */
     struct am_event_queue event_queue; /**< event queue */
     int last_event;                    /**< last processed event */
     int task_id;                       /**< task handle */
@@ -213,7 +213,7 @@ extern "C" {
  * @retval false  at least one delivery of the event has failed
  */
 bool am_ao_publish_exclude_x(
-    const struct am_event *event, const struct am_ao *ao, int margin
+    const struct am_event* event, const struct am_ao* ao, int margin
 );
 
 /**
@@ -235,7 +235,7 @@ bool am_ao_publish_exclude_x(
  *               am_ao_publish().
  */
 void am_ao_publish_exclude(
-    const struct am_event *event, const struct am_ao *ao
+    const struct am_event* event, const struct am_ao* ao
 );
 
 /**
@@ -293,7 +293,7 @@ void am_ao_publish_exclude(
  * @retval true   the event was delivered to all subscribed active objects
  * @retval false  at least one delivery has failed
  */
-bool am_ao_publish_x(const struct am_event *event, int margin);
+bool am_ao_publish_x(const struct am_event* event, int margin);
 
 /**
  * Publish \p event to all subscribed active objects.
@@ -309,7 +309,7 @@ bool am_ao_publish_x(const struct am_event *event, int margin);
  *
  * @param event  the event to publish
  */
-void am_ao_publish(const struct am_event *event);
+void am_ao_publish(const struct am_event* event);
 
 /**
  * Post \p event to the back of active object's event queue (eXtended version).
@@ -345,7 +345,7 @@ void am_ao_publish(const struct am_event *event);
  * @retval false  the event was not posted
  */
 bool am_ao_post_fifo_x(
-    struct am_ao *ao, const struct am_event *event, int margin
+    struct am_ao* ao, const struct am_event* event, int margin
 );
 
 /**
@@ -363,7 +363,7 @@ bool am_ao_post_fifo_x(
  * @param ao     the event is posted to this active object
  * @param event  the event to post
  */
-void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
+void am_ao_post_fifo(struct am_ao* ao, const struct am_event* event);
 
 /**
  * Post \p event to the front of AO event queue (eXtended version).
@@ -396,7 +396,7 @@ void am_ao_post_fifo(struct am_ao *ao, const struct am_event *event);
  * @retval false  the event was not posted
  */
 bool am_ao_post_lifo_x(
-    struct am_ao *ao, const struct am_event *event, int margin
+    struct am_ao* ao, const struct am_event* event, int margin
 );
 
 /**
@@ -414,7 +414,7 @@ bool am_ao_post_lifo_x(
  * @param ao     the event is posted to this active object
  * @param event  the event to post
  */
-void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
+void am_ao_post_lifo(struct am_ao* ao, const struct am_event* event);
 
 /**
  * Active object constructor.
@@ -433,7 +433,7 @@ void am_ao_post_lifo(struct am_ao *ao, const struct am_event *event);
  * @param ctx            the event handler context
  */
 void am_ao_ctor(
-    struct am_ao *ao, am_ao_fn init_handler, am_ao_fn event_handler, void *ctx
+    struct am_ao* ao, am_ao_fn init_handler, am_ao_fn event_handler, void* ctx
 );
 
 /**
@@ -459,14 +459,14 @@ void am_ao_ctor(
  *                    for freeing the event after the call.
  */
 void am_ao_start(
-    struct am_ao *ao,
+    struct am_ao* ao,
     struct am_ao_prio prio,
-    const struct am_event *queue[],
+    const struct am_event* queue[],
     int queue_size,
-    void *stack,
+    void* stack,
     int stack_size,
-    const char *name,
-    const struct am_event *init_event
+    const char* name,
+    const struct am_event* init_event
 );
 
 /**
@@ -478,7 +478,7 @@ void am_ao_start(
  *
  * @param ao  the active object to stop
  */
-void am_ao_stop(struct am_ao *ao);
+void am_ao_stop(struct am_ao* ao);
 
 /**
  * Active object library state constructor.
@@ -487,7 +487,7 @@ void am_ao_stop(struct am_ao *ao);
  *             The active object library makes an internal copy of
  *             the configuration. Can be NULL.
  */
-void am_ao_state_ctor(const struct am_ao_state_cfg *cfg);
+void am_ao_state_ctor(const struct am_ao_state_cfg* cfg);
 
 /**
  * Active object library state destructor.
@@ -504,7 +504,7 @@ void am_ao_state_dtor(void);
  * @param ao     active object to subscribe
  * @param event  the event ID to subscribe to
  */
-void am_ao_subscribe(const struct am_ao *ao, int event);
+void am_ao_subscribe(const struct am_ao* ao, int event);
 
 /**
  * Unsubscribe active object from \p event ID.
@@ -516,14 +516,14 @@ void am_ao_subscribe(const struct am_ao *ao, int event);
  * @param ao     active object to unsubscribe
  * @param event  the event ID to unsubscribe from
  */
-void am_ao_unsubscribe(const struct am_ao *ao, int event);
+void am_ao_unsubscribe(const struct am_ao* ao, int event);
 
 /**
  * Unsubscribe active object from all events.
  *
  * @param ao  active object to unsubscribe
  */
-void am_ao_unsubscribe_all(const struct am_ao *ao);
+void am_ao_unsubscribe_all(const struct am_ao* ao);
 
 /**
  * Initialize active object global subscribe list.
@@ -537,7 +537,7 @@ void am_ao_unsubscribe_all(const struct am_ao *ao);
  * @param sub   the array of active object subscribe lists
  * @param nsub  the number of elements in sub array
  */
-void am_ao_init_subscribe_list(struct am_ao_subscribe_list *sub, int nsub);
+void am_ao_init_subscribe_list(struct am_ao_subscribe_list* sub, int nsub);
 
 /**
  * Run all active objects.
@@ -574,7 +574,7 @@ bool am_ao_run_all(void);
  * @retval true   the queue is empty
  * @retval false  the queue is not empty
  */
-bool am_ao_event_queue_is_empty(struct am_ao *ao);
+bool am_ao_event_queue_is_empty(struct am_ao* ao);
 
 /**
  * Log the content of the first \p num events in each event queue of every AO.
@@ -589,7 +589,7 @@ bool am_ao_event_queue_is_empty(struct am_ao *ao);
 void am_ao_log_event_queues_unsafe(
     int num,
     void (*log)(
-        const char *name, int i, int len, int cap, const struct am_event *event
+        const char* name, int i, int len, int cap, const struct am_event* event
     )
 );
 
@@ -600,7 +600,7 @@ void am_ao_log_event_queues_unsafe(
  *
  * @param log  the logging callback
  */
-void am_ao_log_last_events(void (*log)(const char *name, int event));
+void am_ao_log_last_events(void (*log)(const char* name, int event));
 
 /**
  * Block until all active objects are ready to run.

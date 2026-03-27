@@ -91,7 +91,7 @@
 
 struct complex_sm {
     struct am_hsm hsm;
-    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
+    AM_PRINTF(1, 0) void (*log)(const char* fmt, ...);
 };
 
 static struct complex_sm m_complex_sm;
@@ -100,14 +100,14 @@ static struct complex_sm m_complex_sm;
 #define SM_1 1
 #define SM_2 2
 
-static enum am_rc cs_s(struct complex_sm *me, const struct am_event *event);
-static enum am_rc cs_s1(struct complex_sm *me, const struct am_event *event);
-static enum am_rc cs_s11(struct complex_sm *me, const struct am_event *event);
-static enum am_rc cs_s111(struct complex_sm *me, const struct am_event *event);
-static enum am_rc cs_s12(struct complex_sm *me, const struct am_event *event);
-static enum am_rc cs_s121(struct complex_sm *me, const struct am_event *event);
+static enum am_rc cs_s(struct complex_sm* me, const struct am_event* event);
+static enum am_rc cs_s1(struct complex_sm* me, const struct am_event* event);
+static enum am_rc cs_s11(struct complex_sm* me, const struct am_event* event);
+static enum am_rc cs_s111(struct complex_sm* me, const struct am_event* event);
+static enum am_rc cs_s12(struct complex_sm* me, const struct am_event* event);
+static enum am_rc cs_s121(struct complex_sm* me, const struct am_event* event);
 
-static enum am_rc cs_s(struct complex_sm *me, const struct am_event *event) {
+static enum am_rc cs_s(struct complex_sm* me, const struct am_event* event) {
     const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -131,7 +131,7 @@ static enum am_rc cs_s(struct complex_sm *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_rc cs_s1(struct complex_sm *me, const struct am_event *event) {
+static enum am_rc cs_s1(struct complex_sm* me, const struct am_event* event) {
     const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -174,11 +174,11 @@ static enum am_rc cs_s1(struct complex_sm *me, const struct am_event *event) {
         [SM_2] = {.fn = (am_hsm_state_fn)cs_s}
     };
     AM_ASSERT(instance < AM_COUNTOF(ss));
-    const struct am_hsm_state *super = &ss[instance];
+    const struct am_hsm_state* super = &ss[instance];
     return AM_HSM_SUPER(super->fn, super->smi);
 }
 
-static enum am_rc cs_s11(struct complex_sm *me, const struct am_event *event) {
+static enum am_rc cs_s11(struct complex_sm* me, const struct am_event* event) {
     const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -204,7 +204,7 @@ static enum am_rc cs_s11(struct complex_sm *me, const struct am_event *event) {
             [SM_2] = {.fn = (am_hsm_state_fn)cs_s1, .smi = SM_0}
         };
         AM_ASSERT(instance < AM_COUNTOF(tt));
-        const struct am_hsm_state *tran = &tt[instance];
+        const struct am_hsm_state* tran = &tt[instance];
 
         return AM_HSM_TRAN(tran->fn, tran->smi);
 
@@ -214,7 +214,7 @@ static enum am_rc cs_s11(struct complex_sm *me, const struct am_event *event) {
     return AM_HSM_SUPER(cs_s1, instance);
 }
 
-static enum am_rc cs_s111(struct complex_sm *me, const struct am_event *event) {
+static enum am_rc cs_s111(struct complex_sm* me, const struct am_event* event) {
     const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -242,7 +242,7 @@ static enum am_rc cs_s111(struct complex_sm *me, const struct am_event *event) {
     return AM_HSM_SUPER(cs_s11, instance);
 }
 
-static enum am_rc cs_s12(struct complex_sm *me, const struct am_event *event) {
+static enum am_rc cs_s12(struct complex_sm* me, const struct am_event* event) {
     const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -268,7 +268,7 @@ static enum am_rc cs_s12(struct complex_sm *me, const struct am_event *event) {
             [SM_2] = {.fn = (am_hsm_state_fn)cs_s12, .smi = SM_0}
         };
         AM_ASSERT(instance < AM_COUNTOF(tt));
-        const struct am_hsm_state *tran = &tt[instance];
+        const struct am_hsm_state* tran = &tt[instance];
 
         return AM_HSM_TRAN(tran->fn, tran->smi);
 
@@ -278,7 +278,7 @@ static enum am_rc cs_s12(struct complex_sm *me, const struct am_event *event) {
     return AM_HSM_SUPER(cs_s1, instance);
 }
 
-static enum am_rc cs_s121(struct complex_sm *me, const struct am_event *event) {
+static enum am_rc cs_s121(struct complex_sm* me, const struct am_event* event) {
     const int instance = am_hsm_get_instance(&me->hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -307,7 +307,7 @@ static enum am_rc cs_s121(struct complex_sm *me, const struct am_event *event) {
 }
 
 static enum am_rc complex_sm_init(
-    struct complex_sm *me, const struct am_event *event
+    struct complex_sm* me, const struct am_event* event
 ) {
     (void)event;
 
@@ -316,10 +316,10 @@ static enum am_rc complex_sm_init(
     return AM_HSM_TRAN(cs_s1, SM_1);
 }
 
-void complex_sm_ctor(AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)) {
-    struct complex_sm *me = &m_complex_sm;
+void complex_sm_ctor(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
+    struct complex_sm* me = &m_complex_sm;
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(complex_sm_init));
     me->log = log;
 }
 
-struct am_hsm *complex_get_obj(void) { return &m_complex_sm.hsm; }
+struct am_hsm* complex_get_obj(void) { return &m_complex_sm.hsm; }

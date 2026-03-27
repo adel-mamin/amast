@@ -67,7 +67,7 @@ struct am_event_state {
 static struct am_event_state am_event_state_;
 
 void am_event_queue_ctor(
-    struct am_event_queue *queue, const struct am_event *events[], int nevents
+    struct am_event_queue* queue, const struct am_event* events[], int nevents
 ) {
     AM_ASSERT(queue);
     AM_ASSERT(events);
@@ -81,45 +81,45 @@ void am_event_queue_ctor(
     queue->ctor_called = true;
 }
 
-void am_event_queue_dtor(struct am_event_queue *queue) {
+void am_event_queue_dtor(struct am_event_queue* queue) {
     AM_ASSERT(queue);
     memset(queue, 0, sizeof(*queue));
 }
 
-bool am_event_queue_is_valid(const struct am_event_queue *queue) {
+bool am_event_queue_is_valid(const struct am_event_queue* queue) {
     return queue->ctor_called;
 }
 
-bool am_event_queue_is_empty_unsafe(const struct am_event_queue *queue) {
+bool am_event_queue_is_empty_unsafe(const struct am_event_queue* queue) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
     return (queue->rd == queue->wr) && !queue->full;
 }
 
-bool am_event_queue_is_empty(const struct am_event_queue *queue) {
+bool am_event_queue_is_empty(const struct am_event_queue* queue) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
-    struct am_event_state *me = &am_event_state_;
+    struct am_event_state* me = &am_event_state_;
     me->crit_enter();
     bool empty = am_event_queue_is_empty_unsafe(queue);
     me->crit_exit();
     return empty;
 }
 
-int am_event_queue_get_nbusy_unsafe(const struct am_event_queue *queue) {
+int am_event_queue_get_nbusy_unsafe(const struct am_event_queue* queue) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
     return queue->capacity - queue->nfree;
 }
 
-int am_event_queue_get_capacity(const struct am_event_queue *queue) {
+int am_event_queue_get_capacity(const struct am_event_queue* queue) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
     return queue->capacity;
 }
 
-const struct am_event *am_event_queue_pop_front_unsafe(
-    struct am_event_queue *queue
+const struct am_event* am_event_queue_pop_front_unsafe(
+    struct am_event_queue* queue
 ) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
@@ -127,7 +127,7 @@ const struct am_event *am_event_queue_pop_front_unsafe(
     if (am_event_queue_is_empty_unsafe(queue)) {
         return NULL;
     }
-    const struct am_event *event = queue->events[queue->rd];
+    const struct am_event* event = queue->events[queue->rd];
     queue->rd = (queue->rd + 1) % queue->capacity;
     queue->full = 0;
     ++queue->nfree;
@@ -135,13 +135,13 @@ const struct am_event *am_event_queue_pop_front_unsafe(
     return event;
 }
 
-const struct am_event *am_event_queue_pop_front(struct am_event_queue *queue) {
+const struct am_event* am_event_queue_pop_front(struct am_event_queue* queue) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
 
-    struct am_event_state *me = &am_event_state_;
+    struct am_event_state* me = &am_event_state_;
     me->crit_enter();
-    const struct am_event *event = am_event_queue_pop_front_unsafe(queue);
+    const struct am_event* event = am_event_queue_pop_front_unsafe(queue);
     me->crit_exit();
 
     return event;
@@ -159,7 +159,7 @@ const struct am_event *am_event_queue_pop_front(struct am_event_queue *queue) {
  * @retval false  failure
  */
 static bool event_queue_push_back(
-    struct am_event_queue *queue, const struct am_event *event
+    struct am_event_queue* queue, const struct am_event* event
 ) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
@@ -191,7 +191,7 @@ static bool event_queue_push_back(
  * @retval false  failure
  */
 static bool event_queue_push_front(
-    struct am_event_queue *queue, const struct am_event *event
+    struct am_event_queue* queue, const struct am_event* event
 ) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
@@ -211,11 +211,11 @@ static bool event_queue_push_front(
     return true;
 }
 
-int am_event_queue_get_nfree_min(const struct am_event_queue *queue) {
+int am_event_queue_get_nfree_min(const struct am_event_queue* queue) {
     AM_ASSERT(queue);
     AM_ASSERT(queue->ctor_called);
 
-    struct am_event_state *me = &am_event_state_;
+    struct am_event_state* me = &am_event_state_;
     me->crit_enter();
     int min = queue->nfree_min;
     me->crit_exit();
@@ -224,16 +224,16 @@ int am_event_queue_get_nfree_min(const struct am_event_queue *queue) {
 
 static void event_crit_stub(void) {}
 
-void am_event_state_ctor(const struct am_event_state_cfg *cfg) {
-    struct am_event_state *me = &am_event_state_;
+void am_event_state_ctor(const struct am_event_state_cfg* cfg) {
+    struct am_event_state* me = &am_event_state_;
     memset(me, 0, sizeof(*me));
 
     me->crit_enter = cfg ? cfg->crit_enter : event_crit_stub;
     me->crit_exit = cfg ? cfg->crit_exit : event_crit_stub;
 }
 
-void am_event_pool_add(void *pool, int size, int block_size, int alignment) {
-    struct am_event_state *me = &am_event_state_;
+void am_event_pool_add(void* pool, int size, int block_size, int alignment) {
+    struct am_event_state* me = &am_event_state_;
     AM_ASSERT(me->npools < AM_EVENT_POOLS_NUM_MAX);
     if (me->npools > 0) {
         int prev_size = am_onesize_get_block_size(&me->pools[me->npools - 1]);
@@ -250,8 +250,8 @@ void am_event_pool_add(void *pool, int size, int block_size, int alignment) {
     ++me->npools;
 }
 
-struct am_event *am_event_allocate_x(int id, int size, int margin) {
-    struct am_event_state *me = &am_event_state_;
+struct am_event* am_event_allocate_x(int id, int size, int margin) {
+    struct am_event_state* me = &am_event_state_;
     AM_ASSERT(size > 0);
     AM_ASSERT(me->npools > 0);
     AM_ASSERT(me->npools <= AM_EVENT_POOL_INDEX_MAX);
@@ -276,7 +276,7 @@ struct am_event *am_event_allocate_x(int id, int size, int margin) {
         }
     }
     me->crit_enter();
-    struct am_event *event = am_onesize_allocate_x(&me->pools[left], margin);
+    struct am_event* event = am_onesize_allocate_x(&me->pools[left], margin);
     me->crit_exit();
 
     if (!event) { /* cppcheck-suppress knownConditionTrueFalse */
@@ -292,19 +292,19 @@ struct am_event *am_event_allocate_x(int id, int size, int margin) {
     return event;
 }
 
-struct am_event *am_event_allocate(int id, int size) {
-    struct am_event *event = am_event_allocate_x(id, size, /*margin=*/0);
+struct am_event* am_event_allocate(int id, int size) {
+    struct am_event* event = am_event_allocate_x(id, size, /*margin=*/0);
     AM_ASSERT(event);
 
     return event;
 }
 
-static void am_event_free_unsafe(const struct am_event *event) {
+static void am_event_free_unsafe(const struct am_event* event) {
     if (am_event_is_static(event)) {
         return; /* the event is statically allocated */
     }
 
-    struct am_event *e = AM_CAST(struct am_event *, event);
+    struct am_event* e = AM_CAST(struct am_event*, event);
     AM_ASSERT(e->pool_index_plus_one <= AM_EVENT_POOLS_NUM_MAX);
     /*
      * Check if event is valid.
@@ -321,17 +321,17 @@ static void am_event_free_unsafe(const struct am_event *event) {
     am_onesize_free(&am_event_state_.pools[e->pool_index_plus_one - 1], e);
 }
 
-void am_event_free(const struct am_event *event) {
+void am_event_free(const struct am_event* event) {
     AM_ASSERT(event);
 
-    struct am_event_state *me = &am_event_state_;
+    struct am_event_state* me = &am_event_state_;
     me->crit_enter();
     am_event_free_unsafe(event);
     me->crit_exit();
 }
 
 int am_event_pool_get_nfree_min(int index) {
-    struct am_event_state *me = &am_event_state_;
+    struct am_event_state* me = &am_event_state_;
     AM_ASSERT(index >= 0);
     AM_ASSERT(index < me->npools);
 
@@ -342,7 +342,7 @@ int am_event_pool_get_nfree_min(int index) {
 }
 
 int am_event_pool_get_nfree(int index) {
-    struct am_event_state *me = &am_event_state_;
+    struct am_event_state* me = &am_event_state_;
     AM_ASSERT(index >= 0);
     AM_ASSERT(index < me->npools);
 
@@ -353,7 +353,7 @@ int am_event_pool_get_nfree(int index) {
 }
 
 int am_event_pool_get_nblocks(int index) {
-    struct am_event_state *me = &am_event_state_;
+    struct am_event_state* me = &am_event_state_;
     AM_ASSERT(index >= 0);
     AM_ASSERT(index < me->npools);
 
@@ -362,12 +362,12 @@ int am_event_pool_get_nblocks(int index) {
 
 int am_event_pool_get_num(void) { return am_event_state_.npools; }
 
-struct am_event *am_event_dup_x(
-    const struct am_event *event, int size, int margin
+struct am_event* am_event_dup_x(
+    const struct am_event* event, int size, int margin
 ) {
     AM_ASSERT(event);
     AM_ASSERT(size >= (int)sizeof(struct am_event));
-    const struct am_event_state *me = &am_event_state_;
+    const struct am_event_state* me = &am_event_state_;
     AM_ASSERT(me->npools > 0);
     AM_ASSERT(event->id >= AM_EVT_USER);
     if (!am_event_is_static(event)) {
@@ -382,10 +382,10 @@ struct am_event *am_event_dup_x(
     }
     AM_ASSERT(margin >= 0);
 
-    struct am_event *dup = am_event_allocate_x(event->id, size, margin);
+    struct am_event* dup = am_event_allocate_x(event->id, size, margin);
     if (dup && (size > (int)sizeof(struct am_event))) {
-        char *dst = (char *)&dup[1];
-        const char *src = (const char *)&event[1];
+        char* dst = (char*)&dup[1];
+        const char* src = (const char*)&event[1];
         size_t sz = (size_t)size - sizeof(struct am_event);
         memcpy(dst, src, sz);
     }
@@ -393,8 +393,8 @@ struct am_event *am_event_dup_x(
     return dup;
 }
 
-struct am_event *am_event_dup(const struct am_event *event, int size) {
-    struct am_event *dup = am_event_dup_x(event, size, /*margin=*/0);
+struct am_event* am_event_dup(const struct am_event* event, int size) {
+    struct am_event* dup = am_event_dup_x(event, size, /*margin=*/0);
     AM_ASSERT(dup);
 
     return dup;
@@ -416,17 +416,17 @@ struct am_event_log_ctx {
  * @param buf    the event buffer to log
  * @param size   the size of event buffer to log [bytes]
  */
-static void am_event_log_cb(void *ctx, int index, const char *buf, int size) {
+static void am_event_log_cb(void* ctx, int index, const char* buf, int size) {
     AM_ASSERT(ctx);
     AM_ASSERT(buf);
     AM_ASSERT(AM_ALIGNOF_PTR(buf) >= AM_ALIGNOF(am_event_t));
     AM_ASSERT(size >= (int)sizeof(struct am_event));
 
-    struct am_event_log_ctx *log = (struct am_event_log_ctx *)ctx;
+    struct am_event_log_ctx* log = (struct am_event_log_ctx*)ctx;
     AM_ASSERT(log->cb);
     AM_ASSERT(log->pool_ind >= 0);
 
-    const struct am_event *event = AM_CAST(const struct am_event *, buf);
+    const struct am_event* event = AM_CAST(const struct am_event*, buf);
     log->cb(log->pool_ind, index, event, size);
 }
 
@@ -434,7 +434,7 @@ void am_event_pool_log_unsafe(int num, am_event_log_fn cb) {
     AM_ASSERT(num != 0);
     AM_ASSERT(cb);
 
-    struct am_event_state *me = &am_event_state_;
+    struct am_event_state* me = &am_event_state_;
     struct am_event_log_ctx ctx = {.cb = cb};
     for (int i = 0; i < me->npools; ++i) {
         ctx.pool_ind = i;
@@ -444,13 +444,13 @@ void am_event_pool_log_unsafe(int num, am_event_log_fn cb) {
     }
 }
 
-bool am_event_is_static(const struct am_event *event) {
+bool am_event_is_static(const struct am_event* event) {
     AM_ASSERT(event);
 
     return (0 == (event->pool_index_plus_one & AM_EVENT_POOL_INDEX_MASK));
 }
 
-void am_event_inc_ref_cnt(const struct am_event *event) {
+void am_event_inc_ref_cnt(const struct am_event* event) {
     AM_ASSERT(event);
 
     if (am_event_is_static(event)) {
@@ -464,23 +464,23 @@ void am_event_inc_ref_cnt(const struct am_event *event) {
      */
     AM_ASSERT(((uint32_t)event->id & AM_EVENT_ID_LSW_MASK) == event->id_lsw);
 
-    struct am_event *e = AM_CAST(struct am_event *, event);
-    struct am_event_state *me = &am_event_state_;
+    struct am_event* e = AM_CAST(struct am_event*, event);
+    struct am_event_state* me = &am_event_state_;
     me->crit_enter();
     AM_ASSERT(event->ref_counter < AM_EVENT_REF_COUNTER_MAX);
     ++e->ref_counter;
     me->crit_exit();
 }
 
-void am_event_dec_ref_cnt(const struct am_event *event) {
+void am_event_dec_ref_cnt(const struct am_event* event) {
     AM_ASSERT(event);
     am_event_free(event);
 }
 
-int am_event_get_ref_cnt(const struct am_event *event) {
+int am_event_get_ref_cnt(const struct am_event* event) {
     AM_ASSERT(event);
 
-    struct am_event_state *me = &am_event_state_;
+    struct am_event_state* me = &am_event_state_;
     me->crit_enter();
     int cnt = event->ref_counter;
     me->crit_exit();
@@ -497,12 +497,12 @@ int am_event_get_ref_cnt(const struct am_event *event) {
  * @retval false  the data push failed
  */
 typedef bool (*am_push_fn)(
-    struct am_event_queue *queue, const struct am_event *event
+    struct am_event_queue* queue, const struct am_event* event
 );
 
 static enum am_rc event_queue_push_x(
-    struct am_event_queue *queue,
-    const struct am_event *event,
+    struct am_event_queue* queue,
+    const struct am_event* event,
     int margin,
     bool safe,
     am_push_fn push
@@ -523,8 +523,8 @@ static enum am_rc event_queue_push_x(
         );
     }
 
-    struct am_event *e = AM_CAST(struct am_event *, event);
-    struct am_event_state *me = &am_event_state_;
+    struct am_event* e = AM_CAST(struct am_event*, event);
+    struct am_event_state* me = &am_event_state_;
 
     if (safe) {
         me->crit_enter();
@@ -562,7 +562,7 @@ static enum am_rc event_queue_push_x(
 }
 
 enum am_rc am_event_queue_push_back_x(
-    struct am_event_queue *queue, const struct am_event *event, int margin
+    struct am_event_queue* queue, const struct am_event* event, int margin
 ) {
     return event_queue_push_x(
         queue, event, margin, /*safe=*/true, event_queue_push_back
@@ -570,7 +570,7 @@ enum am_rc am_event_queue_push_back_x(
 }
 
 enum am_rc am_event_queue_push_back(
-    struct am_event_queue *queue, const struct am_event *event
+    struct am_event_queue* queue, const struct am_event* event
 ) {
     enum am_rc rc = am_event_queue_push_back_x(queue, event, /*margin=*/0);
     AM_ASSERT(AM_RC_ERR != rc);
@@ -578,7 +578,7 @@ enum am_rc am_event_queue_push_back(
 }
 
 enum am_rc am_event_queue_push_back_unsafe(
-    struct am_event_queue *queue, const struct am_event *event
+    struct am_event_queue* queue, const struct am_event* event
 ) {
     enum am_rc rc = event_queue_push_x(
         queue, event, /*margin=*/0, /*safe=*/false, event_queue_push_back
@@ -588,7 +588,7 @@ enum am_rc am_event_queue_push_back_unsafe(
 }
 
 enum am_rc am_event_queue_push_front_x(
-    struct am_event_queue *queue, const struct am_event *event, int margin
+    struct am_event_queue* queue, const struct am_event* event, int margin
 ) {
     return event_queue_push_x(
         queue, event, margin, /*safe=*/true, event_queue_push_front
@@ -596,7 +596,7 @@ enum am_rc am_event_queue_push_front_x(
 }
 
 enum am_rc am_event_queue_push_front(
-    struct am_event_queue *queue, const struct am_event *event
+    struct am_event_queue* queue, const struct am_event* event
 ) {
     enum am_rc rc = am_event_queue_push_front_x(queue, event, /*margin=*/0);
     AM_ASSERT(AM_RC_ERR != rc);
@@ -604,11 +604,11 @@ enum am_rc am_event_queue_push_front(
 }
 
 enum am_rc am_event_queue_pop_front_with_cb(
-    struct am_event_queue *queue, am_event_handle_fn cb, void *ctx
+    struct am_event_queue* queue, am_event_handle_fn cb, void* ctx
 ) {
     AM_ASSERT(queue);
 
-    const struct am_event *event = am_event_queue_pop_front(queue);
+    const struct am_event* event = am_event_queue_pop_front(queue);
     if (!event) {
         return AM_RC_ERR;
     }
@@ -642,9 +642,9 @@ enum am_rc am_event_queue_pop_front_with_cb(
     return AM_RC_OK;
 }
 
-int am_event_queue_flush(struct am_event_queue *queue) {
+int am_event_queue_flush(struct am_event_queue* queue) {
     int cnt = 0;
-    const struct am_event *e = NULL;
+    const struct am_event* e = NULL;
     while ((e = am_event_queue_pop_front(queue)) != NULL) {
         ++cnt;
         AM_ASSERT(cnt <= queue->capacity);

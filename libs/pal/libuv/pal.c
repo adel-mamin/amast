@@ -47,9 +47,9 @@ struct am_task {
     /** libuv semaphore */
     uv_sem_t semaphore;
     /** libuv thread entry */
-    void (*entry)(void *);
+    void (*entry)(void*);
     /** libuv thread argument */
-    void *arg;
+    void* arg;
     /** libuv thread ID */
     int id;
     /** priority */
@@ -66,7 +66,7 @@ struct am_mutex {
     bool valid;
 };
 
-static uv_loop_t *loop_;
+static uv_loop_t* loop_;
 static uv_mutex_t crit_section_;
 
 /** Maximum number of mutexes */
@@ -92,16 +92,16 @@ static int am_pal_id_from_index(int index) {
     return index + 1;
 }
 
-void *am_pal_ctor(void *arg) {
+void* am_pal_ctor(void* arg) {
     if (arg) {
-        loop_ = (uv_loop_t *)arg;
+        loop_ = (uv_loop_t*)arg;
     } else {
         loop_ = malloc(sizeof(uv_loop_t));
         uv_loop_init(loop_);
     }
     uv_mutex_init(&crit_section_);
 
-    struct am_task *task = &task_main_;
+    struct am_task* task = &task_main_;
 
     memset(task, 0, sizeof(*task));
 
@@ -115,7 +115,7 @@ void *am_pal_ctor(void *arg) {
 }
 
 /* callback to close handles */
-static void close_cb(uv_handle_t *handle, void *arg) {
+static void close_cb(uv_handle_t* handle, void* arg) {
     (void)arg;
     uv_close(handle, NULL);
 }
@@ -128,14 +128,14 @@ void am_pal_dtor(void) {
         }
     }
     for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
-        struct am_mutex *mutex = &mutexes_[i];
+        struct am_mutex* mutex = &mutexes_[i];
         if (mutex->valid) {
             uv_mutex_destroy(&mutex->mutex);
             mutex->valid = false;
         }
     }
     for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
-        struct am_task *task = &tasks_[i];
+        struct am_task* task = &tasks_[i];
         if (task->valid) {
             uv_sem_destroy(&task->semaphore);
             task->valid = false;
@@ -161,7 +161,7 @@ void am_crit_exit(void) { uv_mutex_unlock(&crit_section_); }
 
 int am_mutex_create(void) {
     int mutex = -1;
-    uv_mutex_t *me = NULL;
+    uv_mutex_t* me = NULL;
     for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
         if (!mutexes_[i].valid) {
             mutex = i;
@@ -196,8 +196,8 @@ void am_mutex_destroy(int mutex) {
     mutexes_[index].valid = false;
 }
 
-static void task_entry_wrapper(void *arg) {
-    struct am_task *task = (struct am_task *)arg;
+static void task_entry_wrapper(void* arg) {
+    struct am_task* task = (struct am_task*)arg;
 
     int policy = SCHED_OTHER;
     int min_prio = sched_get_priority_min(policy);
@@ -216,12 +216,12 @@ static void task_entry_wrapper(void *arg) {
 }
 
 int am_task_create(
-    const char *name,
+    const char* name,
     int prio,
-    void *stack,
+    void* stack,
     int stack_size,
-    void (*entry)(void *),
-    void *arg
+    void (*entry)(void*),
+    void* arg
 ) {
     (void)name;
     (void)stack;
@@ -229,7 +229,7 @@ int am_task_create(
     AM_ASSERT(ntasks_ < AM_TASK_NUM_MAX);
 
     int index = -1;
-    struct am_task *task = NULL;
+    struct am_task* task = NULL;
     for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
         if (!tasks_[i].valid) {
             index = i;
@@ -256,7 +256,7 @@ int am_task_create(
 void am_task_notify(int task) {
     AM_ASSERT(task != AM_TASK_ID_NONE);
 
-    struct am_task *t = NULL;
+    struct am_task* t = NULL;
     if (AM_TASK_ID_MAIN == task) {
         t = &task_main_;
     } else {
@@ -271,7 +271,7 @@ void am_task_wait(int task) {
     }
     AM_ASSERT(task != AM_TASK_ID_NONE);
 
-    struct am_task *t = NULL;
+    struct am_task* t = NULL;
     if (AM_TASK_ID_MAIN == task) {
         t = &task_main_;
     } else {
@@ -339,14 +339,14 @@ void am_sleep_till_ms(uint32_t ms) {
     }
 }
 
-int am_vprintf(const char *fmt, va_list args) {
+int am_vprintf(const char* fmt, va_list args) {
     am_crit_enter();
     int rc = vprintf(fmt, args);
     am_crit_exit();
     return rc;
 }
 
-int am_vprintff(const char *fmt, va_list args) {
+int am_vprintff(const char* fmt, va_list args) {
     am_crit_enter();
     int rc = vprintf(fmt, args);
     am_pal_flush();
@@ -354,7 +354,7 @@ int am_vprintff(const char *fmt, va_list args) {
     return rc;
 }
 
-int am_printf(const char *fmt, ...) {
+int am_printf(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
     am_crit_enter();
@@ -364,7 +364,7 @@ int am_printf(const char *fmt, ...) {
     return rc;
 }
 
-int am_printf_unsafe(const char *fmt, ...) {
+int am_printf_unsafe(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
     int rc = vprintf(fmt, args);
@@ -372,7 +372,7 @@ int am_printf_unsafe(const char *fmt, ...) {
     return rc;
 }
 
-int am_printff(const char *fmt, ...) {
+int am_printff(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
     am_crit_enter();
@@ -393,7 +393,7 @@ void am_on_idle(void) {
 
 int am_get_cpu_count(void) {
     int count;
-    uv_cpu_info_t *info;
+    uv_cpu_info_t* info;
 
     if (uv_cpu_info(&info, &count) == 0) {
         uv_free_cpu_info(info, count);

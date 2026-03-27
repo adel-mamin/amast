@@ -37,18 +37,18 @@
      zero_cnt = 0,                   \
      block_finished = true)
 
-int am_cobszpe_encode(void *to, int to_size, const void *from, int from_size) {
+int am_cobszpe_encode(void* to, int to_size, const void* from, int from_size) {
     AM_ASSERT(to);
     AM_ASSERT(to_size > 0);
     AM_ASSERT(from);
     AM_ASSERT(from_size > 0);
     AM_ASSERT(to_size > AM_COBSZPE_ENCODED_SIZE_FOR(from_size) - 1);
 
-    const unsigned char *src = from;
-    const unsigned char *end = src + from_size;
-    unsigned char *dst = to;
-    unsigned char *dst_orig = dst;
-    unsigned char *code_ptr = dst++;
+    const unsigned char* src = from;
+    const unsigned char* end = src + from_size;
+    unsigned char* dst = to;
+    unsigned char* dst_orig = dst;
+    unsigned char* code_ptr = dst++;
     unsigned char code = 1;
     int zero_cnt = 0;
     bool block_finished = false;
@@ -87,12 +87,12 @@ int am_cobszpe_encode(void *to, int to_size, const void *from, int from_size) {
     return (int)(dst - dst_orig);
 }
 
-int am_cobszpe_decode(void *dst, int dst_size, const void *src, int src_size) {
+int am_cobszpe_decode(void* dst, int dst_size, const void* src, int src_size) {
     AM_ASSERT(dst);
     AM_ASSERT(dst_size > 0);
     AM_ASSERT(src);
     AM_ASSERT(src_size > 0);
     AM_ASSERT(AM_COBSZPE_DECODED_SIZE_FOR(src_size) <= dst_size);
-    ((uint8_t *)dst)[0] = 0;
+    ((uint8_t*)dst)[0] = 0;
     return 0;
 }

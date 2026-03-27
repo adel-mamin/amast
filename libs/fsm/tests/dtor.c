@@ -41,7 +41,7 @@ static struct dtor_fsm m_dtor_fsm;
 /* test am_fsm_dtor() */
 
 static enum am_rc dtor_fsm_s(
-    struct dtor_fsm *me, const struct am_event *event
+    struct dtor_fsm* me, const struct am_event* event
 ) {
     (void)me;
     (void)event;
@@ -49,14 +49,14 @@ static enum am_rc dtor_fsm_s(
 }
 
 static enum am_rc dtor_fsm_sinit(
-    struct dtor_fsm *me, const struct am_event *event
+    struct dtor_fsm* me, const struct am_event* event
 ) {
     (void)event;
     return AM_FSM_TRAN(dtor_fsm_s);
 }
 
 static void dtor_fsm(void) {
-    struct dtor_fsm *me = &m_dtor_fsm;
+    struct dtor_fsm* me = &m_dtor_fsm;
     am_fsm_ctor(&me->fsm, AM_FSM_STATE_CTOR(dtor_fsm_sinit));
     am_fsm_init(&me->fsm, /*init_event=*/NULL);
     am_fsm_dtor(&me->fsm);

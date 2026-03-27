@@ -63,15 +63,15 @@ struct am_task {
     /** the task is valid */
     bool valid;
     /** entry function */
-    void (*entry)(void *arg);
+    void (*entry)(void* arg);
     /** entry function argument */
-    void *arg;
+    void* arg;
 };
 
 static struct am_task am_task_main_ = {0};
 static struct am_task am_tasks_[AM_TASK_NUM_MAX] = {0};
 
-void *am_pal_ctor(void *arg) {
+void* am_pal_ctor(void* arg) {
     (void)arg;
     am_pal_spinlock_ = (struct k_spinlock){};
     startup_complete_mutex_ = am_mutex_create();
@@ -80,7 +80,7 @@ void *am_pal_ctor(void *arg) {
 
 void am_pal_dtor(void) {
     for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
-        struct am_mutex *mutex = &mutexes_[i];
+        struct am_mutex* mutex = &mutexes_[i];
         if (mutex->valid) {
             uv_mutex_destroy(&mutex->mutex);
             mutex->valid = false;
@@ -103,7 +103,7 @@ void am_crit_exit(void) {
 int am_mutex_create(void) {
     int mutex = -1;
     for (int i = 0; i < AM_COUNTOF(am_mutexes_); ++i) {
-        struct am_mutex *me = &am_mutexes_[i];
+        struct am_mutex* me = &am_mutexes_[i];
         if (!me->valid) {
             mutex = i;
             me->valid = true;
@@ -123,7 +123,7 @@ void am_mutex_lock(int mutex) {
     int index = am_pal_index_from_id(mutex);
     AM_ASSERT(index < AM_COUNTOF(am_mutexes_));
 
-    struct am_mutex *me = &am_mutexes_[index];
+    struct am_mutex* me = &am_mutexes_[index];
     AM_ASSERT(me->valid);
 
     int rc = k_mutex_lock(&me->mutex, K_FOREVER);
@@ -136,7 +136,7 @@ void am_mutex_unlock(int mutex) {
     int index = am_pal_index_from_id(mutex);
     AM_ASSERT(index < AM_COUNTOF(am_mutexes_));
 
-    struct am_mutex *me = &am_mutexes_[index];
+    struct am_mutex* me = &am_mutexes_[index];
     AM_ASSERT(me->valid);
 
     int rc = k_mutex_lock(&me->mutex);
@@ -147,29 +147,29 @@ void am_mutex_destroy(int mutex) {
     int index = am_pal_index_from_id(mutex);
     AM_ASSERT(index < AM_COUNTOF(am_mutexes_));
 
-    struct am_mutex *me = &am_mutexes_[index];
+    struct am_mutex* me = &am_mutexes_[index];
     AM_ASSERT(me->valid);
 
     me->valid = false;
 }
 
-static void am_pal_thread_entry(void *p1, void *p2, void *p3) {
+static void am_pal_thread_entry(void* p1, void* p2, void* p3) {
     (void)p2;
     (void)p3;
 
-    struct am_task *task = (struct am_task *)p1;
+    struct am_task* task = (struct am_task*)p1;
 
     AM_ASSERT(task->entry);
     task->entry(task->arg);
 }
 
 int am_task_create(
-    const char *name,
+    const char* name,
     int prio,
-    void *stack,
+    void* stack,
     int stack_size,
-    void (*entry)(void *arg),
-    void *arg
+    void (*entry)(void* arg),
+    void* arg
 ) {
     AM_ASSERT(entry);
     AM_ASSERT(prio >= 0);
@@ -178,7 +178,7 @@ int am_task_create(
     AM_ASSERT(stack_size > K_THREAD_STACK_RESERVED);
 
     int index = -1;
-    struct am_task *me = NULL;
+    struct am_task* me = NULL;
     for (int i = 0; i < AM_COUNTOF(am_tasks_); ++i) {
         me = &am_tasks_[i];
         if (!me->valid) {
@@ -196,10 +196,10 @@ int am_task_create(
 
     me->tid = k_thread_create(
         /*new_thread=*/&me->thread,
-        /*stack=*/(k_thread_stack_t *)stack,
+        /*stack=*/(k_thread_stack_t*)stack,
         /*stack_size=*/(size_t)(stack_size - K_THREAD_STACK_RESERVED),
         /*entry=*/am_pal_thread_entry,
-        /*p1=*/(void *)me,
+        /*p1=*/(void*)me,
         /*p2=*/NULL,
         /*p3=*/NULL,
         /*prio=*/zephyr_prio,
@@ -216,7 +216,7 @@ int am_task_create(
 void am_task_notify(int task) {
     AM_ASSERT(task != AM_TASK_ID_NONE);
 
-    struct am_task *t = NULL;
+    struct am_task* t = NULL;
     if (AM_TASK_ID_MAIN == task) {
         t = &task_main_;
     } else {
@@ -233,7 +233,7 @@ int am_task_get_own_id(void) {
         return AM_TASK_ID_MAIN;
     }
     for (int i = 0; i < AM_COUNTOF(am_tasks_); ++i) {
-        struct am_task *me = &am_tasks_[i];
+        struct am_task* me = &am_tasks_[i];
         if (me->valid && (me->tid == tid)) {
             return am_pal_id_from_index(i);
         }
@@ -275,7 +275,7 @@ void am_sleep_till_ms(uint32_t ms) {
     }
 }
 
-int am_printf(const char *fmt, ...) {
+int am_printf(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
     int rc = am_vprintf(fmt, args);
@@ -283,7 +283,7 @@ int am_printf(const char *fmt, ...) {
     return rc;
 }
 
-int am_printf_unsafe(const char *fmt, ...) {
+int am_printf_unsafe(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
     int rc = vprintk(fmt, args);
@@ -291,7 +291,7 @@ int am_printf_unsafe(const char *fmt, ...) {
     return rc;
 }
 
-int am_printff(const char *fmt, ...) {
+int am_printff(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
     int rc = am_vprintf(fmt, args);
@@ -299,14 +299,14 @@ int am_printff(const char *fmt, ...) {
     return rc;
 }
 
-int am_vprintf(const char *fmt, va_list args) {
+int am_vprintf(const char* fmt, va_list args) {
     am_crit_enter();
     int rc = vprintk(fmt, args);
     am_crit_exit();
     return rc;
 }
 
-int am_vprintff(const char *fmt, va_list args) { return am_vprintf(fmt, args); }
+int am_vprintff(const char* fmt, va_list args) { return am_vprintf(fmt, args); }
 
 /* Zephyr does not require an explicit flush for printk. */
 void am_pal_flush(void) {}

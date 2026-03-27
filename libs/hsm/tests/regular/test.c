@@ -38,7 +38,7 @@
 
 static char m_regular_log_buf[256];
 
-static AM_PRINTF(1, 0) void test_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void test_log(const char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(m_regular_log_buf, (int)sizeof(m_regular_log_buf), fmt, ap);
@@ -56,11 +56,11 @@ static AM_PRINTF(1, 0) void test_log(const char *fmt, ...) {
 static void test_regular(void) {
     regular_ctor(test_log);
 
-    struct am_hsm *hsm = regular_get_obj();
+    struct am_hsm* hsm = regular_get_obj();
     am_hsm_init(hsm, /*init_event=*/NULL);
 
     {
-        const char *out =
+        const char* out =
             "top-INIT;s-ENTRY;s2-ENTRY;s2-INIT;s21-ENTRY;s211-ENTRY;";
         AM_ASSERT(0 == strncmp(m_regular_log_buf, out, strlen(out)));
         m_regular_log_buf[0] = '\0';
@@ -68,7 +68,7 @@ static void test_regular(void) {
 
     struct test2 {
         uint16_t event;
-        const char *out;
+        const char* out;
     };
     /* clang-format off */
     static const struct test2 in[] = {
@@ -112,7 +112,7 @@ static void test_regular(void) {
     am_hsm_dtor(regular_get_obj());
 
     {
-        static const char *out = "s211-EXIT;s21-EXIT;s2-EXIT;s-EXIT;";
+        static const char* out = "s211-EXIT;s21-EXIT;s2-EXIT;s-EXIT;";
         AM_ASSERT(0 == strncmp(m_regular_log_buf, out, strlen(out)));
         m_regular_log_buf[0] = '\0';
     }

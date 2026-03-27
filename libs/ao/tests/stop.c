@@ -39,7 +39,7 @@
 
 #define AM_EVT_SELF_STOP AM_EVT_USER
 
-static const struct am_event *m_queue_test[1];
+static const struct am_event* m_queue_test[1];
 
 static struct test {
     /*
@@ -50,7 +50,7 @@ static struct test {
     struct am_ao ao;
 } m_test;
 
-static int test_proc(struct test *me, const struct am_event *event) {
+static int test_proc(struct test* me, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
         static const struct am_event stop = {.id = AM_EVT_SELF_STOP};
@@ -66,7 +66,7 @@ static int test_proc(struct test *me, const struct am_event *event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static int test_init(struct test *me, const struct am_event *event) {
+static int test_init(struct test* me, const struct am_event* event) {
     (void)event;
     return AM_HSM_TRAN(test_proc);
 }
@@ -88,7 +88,7 @@ int main(void) {
     am_pal_ctor(/*args=*/NULL);
     am_ao_state_ctor(/*cfg=*/NULL);
 
-    struct test *me = &m_test;
+    struct test* me = &m_test;
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(test_init));
     start_ao();

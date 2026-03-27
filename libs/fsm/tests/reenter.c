@@ -36,7 +36,7 @@
 
 struct reenter_fsm {
     struct am_fsm fsm;
-    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...);
+    AM_PRINTF(1, 0) void (*log)(const char* fmt, ...);
     char log_buf[256];
 };
 
@@ -45,7 +45,7 @@ static struct reenter_fsm m_reenter_fsm;
 /* test FSM state re-enter operation */
 
 static enum am_rc reenter_fsm_s(
-    struct reenter_fsm *me, const struct am_event *event
+    struct reenter_fsm* me, const struct am_event* event
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
@@ -64,21 +64,21 @@ static enum am_rc reenter_fsm_s(
 }
 
 static enum am_rc reenter_fsm_init(
-    struct reenter_fsm *me, const struct am_event *event
+    struct reenter_fsm* me, const struct am_event* event
 ) {
     (void)event;
     return AM_FSM_TRAN(reenter_fsm_s);
 }
 
 static void reenter_fsm_ctor(
-    AM_PRINTF(1, 0) void (*log)(const char *fmt, ...)
+    AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)
 ) {
-    struct reenter_fsm *me = &m_reenter_fsm;
+    struct reenter_fsm* me = &m_reenter_fsm;
     am_fsm_ctor(&me->fsm, AM_FSM_STATE_CTOR(reenter_fsm_init));
     me->log = log;
 }
 
-static AM_PRINTF(1, 0) void reenter_fsm_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void reenter_fsm_log(const char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(
@@ -90,12 +90,12 @@ static AM_PRINTF(1, 0) void reenter_fsm_log(const char *fmt, ...) {
 static void test_reenter_fsm(void) {
     reenter_fsm_ctor(reenter_fsm_log);
 
-    struct reenter_fsm *me = &m_reenter_fsm;
+    struct reenter_fsm* me = &m_reenter_fsm;
 
     am_fsm_init(&me->fsm, /*init_event=*/NULL);
     am_fsm_dispatch(&me->fsm, &(struct am_event){.id = AM_EVT_USER});
 
-    const char *out =
+    const char* out =
         "s-AM_EVT_ENTRY;s-AM_EVT_USER;s-AM_EVT_EXIT;"
         "s-AM_EVT_ENTRY;";
     AM_ASSERT(0 == strncmp(m_reenter_fsm.log_buf, out, strlen(out)));

@@ -66,7 +66,7 @@ struct am_hsm;
  * @retval AM_RC_TRAN_REDISPATCH - event caused state transition and redispatch
  */
 typedef enum am_rc (*am_hsm_state_fn)(
-    struct am_hsm *hsm, const struct am_event *event
+    struct am_hsm* hsm, const struct am_event* event
 );
 
 /** HSM state. */
@@ -177,9 +177,9 @@ struct am_hsm {
 #define AM_HSM_HANDLED() AM_RC_HANDLED
 
 /** Helper macro. Not to be used directly. */
-#define AM_HSM_SET_(s, i)                                    \
-    (((struct am_hsm *)me)->state = AM_HSM_STATE_CTOR(s, i), \
-     ((struct am_hsm *)me)->smi = (uint8_t)(i))
+#define AM_HSM_SET_(s, i)                                   \
+    (((struct am_hsm*)me)->state = AM_HSM_STATE_CTOR(s, i), \
+     ((struct am_hsm*)me)->smi = (uint8_t)(i))
 
 /** Helper macro. Not to be used directly. */
 #define AM_TRAN1_(s) (AM_HSM_SET_(s, 0), AM_RC_TRAN)
@@ -316,7 +316,7 @@ extern "C" {
  * @param hsm    the HSM
  * @param event  the event to dispatch
  */
-void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event);
+void am_hsm_dispatch(struct am_hsm* hsm, const struct am_event* event);
 
 /**
  * Check whether HSM is in a given state.
@@ -333,7 +333,7 @@ void am_hsm_dispatch(struct am_hsm *hsm, const struct am_event *event);
  * @retval false  not in the state in the hierarchical sense
  * @retval true   in the state
  */
-bool am_hsm_is_in(struct am_hsm *hsm, struct am_hsm_state state);
+bool am_hsm_is_in(struct am_hsm* hsm, struct am_hsm_state state);
 
 /**
  * Check if HSM's active state equals to \p state (not in hierarchical sense).
@@ -348,7 +348,7 @@ bool am_hsm_is_in(struct am_hsm *hsm, struct am_hsm_state state);
  * @retval true   the active HSM state equals \p state
  * @retval false  the active HSM state DOES NOT equal \p state
  */
-bool am_hsm_state_is_eq(const struct am_hsm *hsm, struct am_hsm_state state);
+bool am_hsm_state_is_eq(const struct am_hsm* hsm, struct am_hsm_state state);
 
 /**
  * Get HSM submachine instance.
@@ -363,7 +363,7 @@ bool am_hsm_state_is_eq(const struct am_hsm *hsm, struct am_hsm_state state);
  *
  * @return the submachine instance
  */
-int am_hsm_get_instance(const struct am_hsm *hsm);
+int am_hsm_get_instance(const struct am_hsm* hsm);
 
 /**
  * Get HSM's active state.
@@ -376,7 +376,7 @@ int am_hsm_get_instance(const struct am_hsm *hsm);
  *
  * @return the active state
  */
-struct am_hsm_state am_hsm_get_state(const struct am_hsm *hsm);
+struct am_hsm_state am_hsm_get_state(const struct am_hsm* hsm);
 
 /**
  * HSM constructor.
@@ -387,7 +387,7 @@ struct am_hsm_state am_hsm_get_state(const struct am_hsm *hsm);
  *               The initial state must return
  *               AM_HSM_TRAN(s) or AM_HSM_TRAN(s, i)
  */
-void am_hsm_ctor(struct am_hsm *hsm, struct am_hsm_state state);
+void am_hsm_ctor(struct am_hsm* hsm, struct am_hsm_state state);
 
 /**
  * HSM destructor.
@@ -399,7 +399,7 @@ void am_hsm_ctor(struct am_hsm *hsm, struct am_hsm_state state);
  *
  * @param hsm  the HSM to destruct
  */
-void am_hsm_dtor(struct am_hsm *hsm);
+void am_hsm_dtor(struct am_hsm* hsm);
 
 /**
  * Perform HSM initial transition.
@@ -411,7 +411,7 @@ void am_hsm_dtor(struct am_hsm *hsm);
  * @param hsm         the HSM to init
  * @param init_event  the initial event. Can be NULL.
  */
-void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event);
+void am_hsm_init(struct am_hsm* hsm, const struct am_event* init_event);
 
 /**
  * Ultimate top superstate of any HSM.
@@ -423,7 +423,7 @@ void am_hsm_init(struct am_hsm *hsm, const struct am_event *init_event);
  *
  * Has the same signature as #am_hsm_state_fn.
  */
-enum am_rc am_hsm_top(struct am_hsm *hsm, const struct am_event *event);
+enum am_rc am_hsm_top(struct am_hsm* hsm, const struct am_event* event);
 
 #ifdef __cplusplus
 }

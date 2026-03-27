@@ -52,7 +52,7 @@ static struct table {
     int nstops;
 } m_table;
 
-struct am_ao *g_ao_table = &m_table.ao;
+struct am_ao* g_ao_table = &m_table.ao;
 
 static struct am_event event_stop_ = {.id = EVT_STOP};
 
@@ -100,11 +100,11 @@ static int table_can_serve(int philo) {
 }
 
 static void table_serve(int philo) {
-    struct eat *eat =
-        (struct eat *)am_event_allocate(EVT_EAT, sizeof(struct eat));
+    struct eat* eat =
+        (struct eat*)am_event_allocate(EVT_EAT, sizeof(struct eat));
     eat->philo = philo;
     am_printf("table serving philo %d\n", philo);
-    am_ao_publish(AM_CAST(const struct am_event *, eat));
+    am_ao_publish(AM_CAST(const struct am_event*, eat));
     philo_mark_eating(philo);
 
     if (m_table.nsessions) {
@@ -114,7 +114,7 @@ static void table_serve(int philo) {
 }
 
 static enum am_rc table_stopping(
-    struct table *me, const struct am_event *event
+    struct table* me, const struct am_event* event
 ) {
     switch (event->id) {
     case EVT_STOPPED: {
@@ -130,16 +130,16 @@ static enum am_rc table_stopping(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static bool table_sessions_are_over(const struct table *me) {
+static bool table_sessions_are_over(const struct table* me) {
     return me->nsessions == 0;
 }
 
 static enum am_rc table_serving(
-    struct table *me, const struct am_event *event
+    struct table* me, const struct am_event* event
 ) {
     switch (event->id) {
     case EVT_HUNGRY: {
-        const struct hungry *hungry = (const struct hungry *)event;
+        const struct hungry* hungry = (const struct hungry*)event;
         AM_ASSERT(!philo_is_hungry(hungry->philo));
         if (table_can_serve(hungry->philo)) {
             table_serve(hungry->philo);
@@ -153,7 +153,7 @@ static enum am_rc table_serving(
         return AM_HSM_HANDLED();
     }
     case EVT_DONE: {
-        const struct done *done = (const struct done *)event;
+        const struct done* done = (const struct done*)event;
         AM_ASSERT(philo_is_eating(done->philo));
         am_printf("table: philo %d is done\n", done->philo);
         philo_mark_done(done->philo);
@@ -181,14 +181,14 @@ static enum am_rc table_serving(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_rc table_init(struct table *me, const struct am_event *event) {
+static enum am_rc table_init(struct table* me, const struct am_event* event) {
     (void)event;
     am_ao_subscribe(&me->ao, EVT_DONE);
     return AM_HSM_TRAN(table_serving);
 }
 
 void table_ctor(int nsessions) {
-    struct table *me = &m_table;
+    struct table* me = &m_table;
     memset(me, 0, sizeof(*me));
     for (int i = 0; i < AM_COUNTOF(me->philo); ++i) {
         me->philo[i] = PHILO_DONE;
@@ -198,4 +198,4 @@ void table_ctor(int nsessions) {
     me->nsessions = nsessions;
 }
 
-struct am_ao *table_get_obj(void) { return &m_table.ao; }
+struct am_ao* table_get_obj(void) { return &m_table.ao; }

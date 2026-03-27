@@ -38,7 +38,7 @@
 
 static char m_complex_sm_log_buf[256];
 
-static AM_PRINTF(1, 0) void cpl_test_log(const char *fmt, ...) {
+static AM_PRINTF(1, 0) void cpl_test_log(const char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     str_vlcatf(
@@ -54,12 +54,12 @@ static void test_submachine(void) {
 
     m_complex_sm_log_buf[0] = '\0';
 
-    struct am_hsm *complex = complex_get_obj();
+    struct am_hsm* complex = complex_get_obj();
 
     am_hsm_init(complex, /*init_event=*/NULL);
 
     {
-        const char *out =
+        const char* out =
             "top/0-INIT;s/0-ENTRY;s1/0-ENTRY;s1/1-ENTRY;s1/1-INIT;s11/"
             "1-ENTRY;s111/1-ENTRY;s111/1-INIT;";
         AM_ASSERT(0 == strncmp(m_complex_sm_log_buf, out, strlen(out)));
@@ -68,7 +68,7 @@ static void test_submachine(void) {
 
     struct test2 {
         uint16_t event;
-        const char *out;
+        const char* out;
     };
     static const struct test2 in[] = {
         /* clang-format off */
@@ -115,7 +115,7 @@ static void test_submachine(void) {
     }
 
     {
-        static const char *dest = "s111/2-EXIT;s11/2-EXIT;s1/2-EXIT;s/0-EXIT;";
+        static const char* dest = "s111/2-EXIT;s11/2-EXIT;s1/2-EXIT;s/0-EXIT;";
         am_hsm_dtor(complex);
         AM_ASSERT(0 == strncmp(m_complex_sm_log_buf, dest, strlen(dest)));
         m_complex_sm_log_buf[0] = '\0';
