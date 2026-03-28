@@ -45,10 +45,10 @@ static void calc_print(void) {
     struct am_blk d0 = calc_get_operand(calc, 0);
     struct am_blk d1 = calc_get_operand(calc, 1);
     char op = calc_get_operator(calc);
-    double res;
+    double res = 0.;
     bool result_valid = calc_get_result(calc, &res);
     if (result_valid) {
-        snprintf(
+        (void)snprintf(
             buf,
             sizeof(buf),
             "%.*s%c%.*s=%f",
@@ -60,7 +60,7 @@ static void calc_print(void) {
             res
         );
     } else {
-        snprintf(
+        (void)snprintf(
             buf,
             sizeof(buf),
             "%.*s%c%.*s",

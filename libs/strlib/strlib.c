@@ -65,7 +65,7 @@ int str_lcat(char* dst, const char* src, int lim) {
     char* d = memchr(dst, '\0', (size_t)lim);
     const char* e = &dst[lim];
     const char* s = src;
-    const char* p;
+    const char* p = NULL;
 
     if (d && (d < e)) {
         do {

@@ -49,9 +49,9 @@ struct am_hsm_path {
 /** canned event */
 static const struct am_event m_hsm_evt_empty = {.id = AM_EVT_EMPTY};
 
-static void hsm_set_state(struct am_hsm* hsm, struct am_hsm_state s) {
-    hsm->state = s;
-    hsm->smi = s.smi;
+static void hsm_set_state(struct am_hsm* hsm, struct am_hsm_state state) {
+    hsm->state = state;
+    hsm->smi = state.smi;
 }
 
 /**
@@ -111,7 +111,7 @@ static void hsm_enter(struct am_hsm* hsm, const struct am_hsm_path* path) {
         hsm_set_state(hsm, path->state[i - 1]);
     }
     hsm->hierarchy_level = (unsigned)(hsm->hierarchy_level + path->len) &
-                           (unsigned)AM_HSM_HIERARCHY_LEVEL_MASK;
+                           AM_HSM_HIERARCHY_LEVEL_MASK;
     AM_ASSERT(hsm->hierarchy_level <= AM_COUNTOF(path->state));
 }
 
@@ -165,7 +165,7 @@ static void hsm_exit(struct am_hsm* hsm, struct am_hsm_state until) {
 static void hsm_enter_and_init(struct am_hsm* hsm, struct am_hsm_path* path) {
     hsm_enter(hsm, path);
     hsm_set_state(hsm, path->state[0]);
-    enum am_rc rc;
+    enum am_rc rc = AM_RC_OK;
     struct am_event init = {.id = AM_EVT_INIT};
     while ((rc = hsm->state.fn(hsm, &init)) == AM_RC_TRAN) {
         struct am_hsm_state until = path->state[0];

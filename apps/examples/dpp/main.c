@@ -47,10 +47,18 @@
 #include "events.h"
 
 const char* event_to_str(int id) {
-    if (EVT_DONE == id) return "DONE";
-    if (EVT_EAT == id) return "EAT";
-    if (EVT_TIMEOUT == id) return "TIMEOUT";
-    if (EVT_HUNGRY == id) return "HUNGRY";
+    if (EVT_DONE == id) {
+        return "DONE";
+    }
+    if (EVT_EAT == id) {
+        return "EAT";
+    }
+    if (EVT_TIMEOUT == id) {
+        return "TIMEOUT";
+    }
+    if (EVT_HUNGRY == id) {
+        return "HUNGRY";
+    }
     AM_ASSERT(0);
 }
 
@@ -157,7 +165,7 @@ int main(void) {
         table_get_obj(),
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
         /*queue=*/queue_table,
-        /*nqueue=*/AM_COUNTOF(queue_table), /* NOLINT */
+        /*queue_size=*/AM_COUNTOF(queue_table), /* NOLINT */
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"table",
@@ -176,7 +184,7 @@ int main(void) {
             philo_get_obj(i),
             (struct am_ao_prio){.ao = prio, .task = prio},
             /*queue=*/queue_philo[i],
-            /*nqueue=*/AM_COUNTOF(queue_philo[i]),
+            /*queue_size=*/AM_COUNTOF(queue_philo[i]),
             /*stack=*/NULL,
             /*stack_size=*/0,
             /*name=*/names[i],

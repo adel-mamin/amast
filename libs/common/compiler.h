@@ -45,7 +45,7 @@
 /* Taken from
  * http://nadeausoftware.com/articles/2012/10/c_c_tip_how_detect_compiler_name_and_version_using_compiler_predefined_macros
  */
-#if defined(__clang__)
+#ifdef __clang__
 
 /* Clang */
 #define AM_COMPILER_VERSION \

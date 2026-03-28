@@ -156,11 +156,11 @@ unsigned int crc16(const unsigned char* data, int size, unsigned int crc) {
     AM_ASSERT(size > 0);
 
     for (int i = 0; i < size; ++i) {
-        int idx = 0xFFu & ((crc >> 8u) ^ *data++);
-        crc = ((crc << 8u) ^ crc16_lookup[idx]);
+        int idx = (int)(0xFFU & ((crc >> 8U) ^ *data++));
+        crc = ((crc << 8U) ^ crc16_lookup[idx]);
     }
 
-    return crc & 0xFFFFu;
+    return crc & 0xFFFFU;
 }
 
 unsigned long crc24(const unsigned char* data, int size, unsigned long crc) {
@@ -168,8 +168,8 @@ unsigned long crc24(const unsigned char* data, int size, unsigned long crc) {
     AM_ASSERT(size > 0);
 
     for (int i = 0; i < size; ++i) {
-        unsigned char index = (unsigned char)((crc >> 16u) ^ *data++);
-        crc = (crc << 8u) ^ crc24_lookup[index];
+        unsigned char index = (unsigned char)((crc >> 16U) ^ *data++);
+        crc = (crc << 8U) ^ crc24_lookup[index];
     }
 
     return crc & 0xFFFFFFUL;
@@ -180,8 +180,8 @@ unsigned long crc32(const unsigned char* data, int size, unsigned long crc) {
     AM_ASSERT(size > 0);
 
     for (int i = 0; i < size; ++i) {
-        unsigned int idx = (unsigned int)((crc >> 24U) ^ *data++);
-        idx &= (AM_COUNTOF(crc32_lookup) - 1);
+        unsigned idx = (unsigned)((crc >> 24U) ^ *data++);
+        idx &= (unsigned)(AM_COUNTOF(crc32_lookup) - 1);
         AM_ASSERT(idx < AM_COUNTOF(crc32_lookup));
         crc = (crc << 8U) ^ crc32_lookup[idx];
     }

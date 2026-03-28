@@ -36,12 +36,13 @@
 /** maximum data length without explicit zero byte(s) (for internal use) */
 #define AM_COBSZPE_ZEROLESS_MAX 223
 
-#define AM_COBSZPE_ENCODED_SIZE_FOR(n) \
-    ((n) + ((n) + AM_COBSZPE_ZEROLESS_MAX) / (AM_COBSZPE_ZEROLESS_MAX + 1) + 1)
+#define AM_COBSZPE_ENCODED_SIZE_FOR(n)                                         \
+    ((n) + (((n) + AM_COBSZPE_ZEROLESS_MAX) / (AM_COBSZPE_ZEROLESS_MAX + 1)) + \
+     1)
 
 #define AM_COBSZPE_DECODED_SIZE_FOR(n) (((n) <= 0) ? 0 : (n) - 1)
 
 int am_cobszpe_encode(void* to, int to_size, const void* from, int from_size);
-int am_cobszpe_decode(void* to, int to_size, const void* from, int from_size);
+int am_cobszpe_decode(void* dst, int dst_size, const void* src, int src_size);
 
 #endif /* AM_COBSZPE_H_INCLUDED */

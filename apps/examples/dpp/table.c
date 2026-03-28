@@ -52,8 +52,6 @@ static struct table {
     int nstops;
 } m_table;
 
-struct am_ao* g_ao_table = &m_table.ao;
-
 static struct am_event event_stop_ = {.id = EVT_STOP};
 
 static int philo_is_eating(int philo) { /*  */

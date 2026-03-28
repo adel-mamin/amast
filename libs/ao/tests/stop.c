@@ -76,7 +76,7 @@ static void start_ao(void) {
         &m_test.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
         /*queue=*/m_queue_test,
-        /*nqueue=*/AM_COUNTOF(m_queue_test),
+        /*queue_size=*/AM_COUNTOF(m_queue_test),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"test",

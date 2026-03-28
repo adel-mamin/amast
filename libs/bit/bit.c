@@ -42,13 +42,13 @@ bool am_bit_u64_is_empty(const struct am_bit_u64* u64) {
 }
 
 int am_bit_u8_msb(uint8_t u8) {
-    uint8_t u4 = u8 >> 4;
-    return u4 ? (4 + am_bit_msb_from_u4[u4]) : am_bit_msb_from_u4[u8 & 0xF];
+    uint8_t u4 = u8 >> 4U;
+    return u4 ? (4 + am_bit_msb_from_u4[u4]) : am_bit_msb_from_u4[u8 & 0xFU];
 }
 
 int am_bit_u64_msb(const struct am_bit_u64* u64) {
     int i = am_bit_u8_msb(u64->bytes);
-    return am_bit_u8_msb(u64->bits[i]) + i * 8;
+    return am_bit_u8_msb(u64->bits[i]) + (i * 8);
 }
 
 void am_bit_u64_set(struct am_bit_u64* u64, int n) {

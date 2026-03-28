@@ -121,7 +121,7 @@ static void test_calc(void) {
         m_calc_log_buf[0] = '\0';
     }
 
-    double result;
+    double result = 0.;
     bool result_valid = calc_get_result(calc, &result);
     AM_ASSERT(result_valid && AM_DOUBLE_EQ(0.9, result, 1e-9));
 

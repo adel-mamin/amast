@@ -51,14 +51,6 @@ static struct philo {
     struct am_timer_event_x timeout;
 } m_philo[PHILO_NUM];
 
-struct am_ao* g_ao_philo[PHILO_NUM] = {
-    &m_philo[0].ao,
-    &m_philo[1].ao,
-    &m_philo[2].ao,
-    &m_philo[3].ao,
-    &m_philo[4].ao,
-};
-
 static struct am_event event_stopped_ = {.id = EVT_STOPPED};
 
 static enum am_rc philo_top(struct philo* me, const struct am_event* event);
@@ -88,7 +80,7 @@ static enum am_rc philo_thinking(
     case AM_EVT_ENTRY:
         am_printf("philo %d is thinking\n", me->id);
         ++me->cnt;
-        am_timer_arm(me->timer, &me->timeout.event, /*ms=*/20, 0);
+        am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/20, 0);
         return AM_HSM_HANDLED();
 
     case EVT_TIMEOUT: {
@@ -128,7 +120,7 @@ static enum am_rc philo_eating(struct philo* me, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("philo %d is eating\n", me->id);
-        am_timer_arm(me->timer, &me->timeout.event, /*ms=*/20, 0);
+        am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/20, 0);
         return AM_HSM_HANDLED();
 
     case EVT_TIMEOUT: {

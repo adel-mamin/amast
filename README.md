@@ -394,7 +394,7 @@ int main(void) {
         &m.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
         /*queue=*/m_queue,
-        /*nqueue=*/AM_COUNTOF(m_queue),
+        /*queue_size=*/AM_COUNTOF(m_queue),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"app",

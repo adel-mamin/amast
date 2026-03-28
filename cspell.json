@@ -71,7 +71,7 @@
         "fsmq", "hsmq",
         "fnames",
 
-        "nfree", "nblocks", "nqueue", "npool", "nsession", "ntcb", "ntests",
+        "nfree", "nblocks", "queue_size", "npool", "nsession", "ntcb", "ntests",
         "ninc", "npost", "ndelim", "ndot",
 
         "bufptr",

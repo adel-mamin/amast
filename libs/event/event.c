@@ -30,7 +30,6 @@
 
 #include <stdbool.h>
 #include <string.h>
-#include <stddef.h>
 
 #include "common/alignment.h"
 #include "common/macros.h"
@@ -38,15 +37,17 @@
 #include "event.h"
 
 /** Event reference counter bit mask. */
-#define AM_EVENT_REF_COUNTER_MASK ((1U << AM_EVENT_REF_COUNTER_BITS) - 1U)
+#define AM_EVENT_REF_COUNTER_MASK \
+    ((1U << (unsigned)AM_EVENT_REF_COUNTER_BITS) - 1U)
 /** Maximum value of reference counter. */
 #define AM_EVENT_REF_COUNTER_MAX AM_EVENT_REF_COUNTER_MASK
 
 /** Event ID least significant word bit mask. */
-#define AM_EVENT_ID_LSW_MASK ((1U << AM_EVENT_ID_LSW_BITS) - 1U)
+#define AM_EVENT_ID_LSW_MASK ((1U << (unsigned)AM_EVENT_ID_LSW_BITS) - 1U)
 
 /** Pool index bit mask. */
-#define AM_EVENT_POOL_INDEX_MASK ((1U << AM_EVENT_POOL_INDEX_BITS) - 1U)
+#define AM_EVENT_POOL_INDEX_MASK \
+    ((1U << (unsigned)AM_EVENT_POOL_INDEX_BITS) - 1U)
 /** Maximum pool index value */
 #define AM_EVENT_POOL_INDEX_MAX ((int)AM_EVENT_POOL_INDEX_MASK)
 /** Is AM_EVENT_POOLS_NUM_MAX too large? */

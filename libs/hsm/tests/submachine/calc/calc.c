@@ -57,8 +57,6 @@ struct calc {
 
 static struct calc m_calc;
 
-struct am_hsm* g_calc = &m_calc.hsm;
-
 static enum am_rc calc_on(struct calc* me, const struct am_event* event);
 static enum am_rc calc_off(struct calc* me, const struct am_event* event);
 

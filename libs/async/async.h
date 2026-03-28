@@ -67,7 +67,7 @@ struct am_async {
  * @param me  pointer to the `struct am_async` managing the async state
  */
 #define AM_ASYNC_BEGIN(me) {                            \
-    struct am_async *am_async_ = (struct am_async *)me; \
+    struct am_async *am_async_ = (struct am_async *)(me); \
     switch (am_async_->state) {                         \
     default:                                            \
         AM_ASSERT(0);                                   \

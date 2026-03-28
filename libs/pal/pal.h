@@ -43,7 +43,7 @@
 #define AM_TASK_ID_NONE 0
 
 /** Main task ID. */
-#define AM_TASK_ID_MAIN -1
+#define AM_TASK_ID_MAIN (-1)
 
 /** Default tick domain. */
 #define AM_TICK_DOMAIN_DEFAULT 0

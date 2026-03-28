@@ -45,8 +45,8 @@ struct test_align {
     unsigned long long d;
 };
 
-AM_ASSERT_STATIC(16 == AM_ALIGN_SIZE(1u, 16u));
-AM_ASSERT_STATIC(16 == AM_ALIGN_SIZE(16u, 16u));
+AM_ASSERT_STATIC(16 == AM_ALIGN_SIZE(1U, 16U));
+AM_ASSERT_STATIC(16 == AM_ALIGN_SIZE(16U, 16U));
 
 static void test_align(void) {
     unsigned long data = 0;
@@ -89,6 +89,7 @@ static void test_container_of(void) {
     };
     struct foo foo = {.a = 1, .b = 2};
     int* bp = &foo.b;
+    /* NOLINTNEXTLINE(clang-analyzer-security.ArrayBound) */
     AM_ASSERT(1 == AM_CONTAINER_OF(bp, struct foo, b)->a);
 }
 

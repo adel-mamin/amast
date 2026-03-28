@@ -358,7 +358,7 @@ bool am_dlist_owns(
     const struct am_dlist* list, const struct am_dlist_item* item
 );
 
-#if defined __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

@@ -60,7 +60,7 @@ struct am_ao_prio;
 /** The medium AO priority level. */
 #define AM_AO_PRIO_MID (AM_AO_PRIO_MAX / 2)
 /** The high AO priority level. */
-#define AM_AO_PRIO_HIGH (3 * AM_AO_PRIO_MAX) / 4
+#define AM_AO_PRIO_HIGH ((3 * AM_AO_PRIO_MAX) / 4)
 
 /**
  * Check if active object priority is valid.

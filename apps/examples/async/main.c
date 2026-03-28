@@ -148,11 +148,11 @@ static enum am_rc async_blinking_green(struct async* me) {
     /* blinking green */
     for (me->i = 0; me->i < 4; ++me->i) {
         am_printff("\b" AM_COLOR_BLACK AM_SOLID_BLOCK "\b");
-        am_timer_arm(me->timer, &me->timeout.event, /*ms=*/700, 0);
+        am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/700, 0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
         am_printff(AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm(me->timer, &me->timeout.event, /*ms=*/700, 0);
+        am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/700, 0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
     }
 
@@ -167,17 +167,17 @@ static enum am_rc async_regular_(struct async* me) {
     for (;;) {
         /* red */
         am_printff(AM_COLOR_RED AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm(me->timer, &me->timeout.event, /*ms=*/2000, 0);
+        am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/2000, 0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
         /* yellow */
         am_printff("\b" AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm(me->timer, &me->timeout.event, /*ms=*/1000, 0);
+        am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/1000, 0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
         /* green */
         am_printff("\b" AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm(me->timer, &me->timeout.event, /*ms=*/2000, 0);
+        am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/2000, 0);
         AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
         /* blinking green */
@@ -232,11 +232,11 @@ static enum am_rc async_off(struct async* me, const struct am_event* event) {
         for (;;) {
             am_printff("\b");
             am_printff(AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
-            am_timer_arm(me->timer, &me->timeout.event, /*ms=*/1000, 0);
+            am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/1000, 0);
             AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
             am_printff("\b" AM_COLOR_BLACK AM_SOLID_BLOCK "\b");
-            am_timer_arm(me->timer, &me->timeout.event, /*ms=*/700, 0);
+            am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/700, 0);
             AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
         }
 
@@ -297,8 +297,8 @@ static void input_task(void* param) {
 
     am_task_wait_all();
 
-    int ch;
-    uint32_t prev_ms = am_time_get_ms() - 2 * ASYNC_TWO_NEWLINES_TIMEOUT_MS;
+    int ch = 0;
+    uint32_t prev_ms = am_time_get_ms() - (2 * ASYNC_TWO_NEWLINES_TIMEOUT_MS);
     while ((ch = getc(stdin)) != EOF) {
         if ('\n' != ch) {
             continue;
@@ -341,7 +341,7 @@ int main(void) {
         &m.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
         /*queue=*/queue,
-        /*nqueue=*/AM_COUNTOF(queue),
+        /*queue_size=*/AM_COUNTOF(queue),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"async",

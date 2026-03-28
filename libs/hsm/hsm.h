@@ -131,7 +131,8 @@ struct am_hsm_state {
 #define AM_HSM_HIERARCHY_LEVEL_BITS 5
 
 /** HSM hierarchy level representation bits mask */
-#define AM_HSM_HIERARCHY_LEVEL_MASK ((1U << AM_HSM_HIERARCHY_LEVEL_BITS) - 1)
+#define AM_HSM_HIERARCHY_LEVEL_MASK \
+    ((1U << (unsigned)AM_HSM_HIERARCHY_LEVEL_BITS) - 1)
 
 AM_ASSERT_STATIC(AM_HSM_HIERARCHY_DEPTH_MAX <= AM_HSM_HIERARCHY_LEVEL_MASK);
 

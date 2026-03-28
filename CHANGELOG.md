@@ -14,6 +14,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ### Fixed
 
+- clang-tidy warnings
+
 ## v0.15.0 - 13-March-2026
 
 ### Changed

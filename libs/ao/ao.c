@@ -87,7 +87,7 @@ bool am_ao_publish_exclude_x(
             int msb = am_bit_u8_msb((uint8_t)list);
             list &= ~(1U << (unsigned)msb);
 
-            int ind = 8 * i + msb;
+            int ind = (8 * i) + msb;
             struct am_ao* ao_ = me->aos[ind];
             AM_ASSERT(ao_);
             if (ao_ == ao) {

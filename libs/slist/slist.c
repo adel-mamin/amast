@@ -129,7 +129,7 @@ bool am_slist_owns(
     AM_ASSERT(list);
     AM_ASSERT(item);
 
-    struct am_slist_item* next = list->sentinel.next;
+    const struct am_slist_item* next = list->sentinel.next;
     while (next != &list->sentinel) {
         if (next == item) {
             return true;

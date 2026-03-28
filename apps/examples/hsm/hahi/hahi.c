@@ -173,7 +173,7 @@ int main(void) {
     am_hsm_ctor(&m.hsm, AM_HSM_STATE_CTOR(hahi_init));
     am_hsm_init(&m.hsm, /*init_event=*/NULL);
 
-    int ch;
+    int ch = 0;
     while ((ch = getc(stdin)) != EOF) {
         struct hahi_event event = {{.id = HAHI_EVT_USER_INPUT}, .ch = ch};
         am_hsm_dispatch(&m.hsm, &event.super);

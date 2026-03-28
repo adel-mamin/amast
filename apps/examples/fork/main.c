@@ -179,7 +179,7 @@ AM_NORETURN static void ticker_task(void* param) {
     }
 }
 
-static void job_task(void* param) {
+static void job_task(const void* param) {
     am_task_wait_all();
 
     static struct am_event success = {.id = EVT_FORK_SUCCESS};
@@ -191,7 +191,7 @@ static void job_task(void* param) {
         return;
     }
     if (pid == 0) { /* Child process */
-        char** argv = param;
+        char** argv = AM_CAST(char**, param);
         /* int execvp(const char *file, char *const argv[]); */
         execvp(argv[1], argv + 1);
         am_ao_publish(&failure);
@@ -199,7 +199,7 @@ static void job_task(void* param) {
     }
     /* Parent process */
     while (1) {
-        int status;
+        int status = 0;
         pid_t result = waitpid(pid, &status, WNOHANG);
         if (result == 0) {
             /* child process is still running... */
@@ -229,7 +229,7 @@ int main(int argc, const char* argv[]) {
     am_pal_ctor(/*arg=*/NULL);
 
     if (argc < 2) {
-        fprintf(stderr, "Usage: %s <program> [args...]\n", argv[0]);
+        (void)fprintf(stderr, "Usage: %s <program> [args...]\n", argv[0]);
         return EXIT_FAILURE;
     }
 
@@ -263,7 +263,7 @@ int main(int argc, const char* argv[]) {
         &m.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_LOW, .task = AM_AO_PRIO_LOW},
         /*queue=*/m_queue,
-        /*nqueue=*/AM_COUNTOF(m_queue),
+        /*queue_size=*/AM_COUNTOF(m_queue),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"progress",
@@ -284,7 +284,7 @@ int main(int argc, const char* argv[]) {
         AM_AO_PRIO_MAX,
         /*stack=*/NULL,
         /*stack_size=*/0,
-        /*entry=*/job_task,
+        /*entry=*/(void (*)(void*))job_task,
         /*arg=*/AM_CAST(void*, argv)
     );
 

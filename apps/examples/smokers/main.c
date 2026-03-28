@@ -28,7 +28,6 @@
  * Cigarette smokers problem solution.
  */
 
-#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -101,7 +100,7 @@ struct smoker {
 static int rand_012(void) {
     static unsigned long next = 1;
 
-    next = next * 1103515245 + 12345;
+    next = (next * 1103515245) + 12345;
     return (int)((unsigned)(next / 65536) % 3);
 }
 
@@ -165,7 +164,7 @@ static enum am_rc smoker_smoking(
 ) {
     switch (event->id) {
     case AM_EVT_ENTRY:
-        am_timer_arm(me->timer, &me->done.event, /*ms=*/20, /*interval=*/0);
+        am_timer_arm(me->timer, &me->done.event, /*ticks=*/20, /*interval=*/0);
         return AM_HSM_HANDLED();
 
     case AM_EVT_EXIT:
@@ -398,7 +397,7 @@ int main(void) {
         &agent.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
         /*queue=*/queue_agent,
-        /*nqueue=*/AM_COUNTOF(queue_agent),
+        /*queue_size=*/AM_COUNTOF(queue_agent),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"agent",
@@ -415,7 +414,7 @@ int main(void) {
                 .ao = (unsigned char)(prio + i), .task = AM_AO_PRIO_LOW
             },
             /*queue=*/queue_smoker[i],
-            /*nqueue=*/AM_COUNTOF(queue_smoker[i]),
+            /*queue_size=*/AM_COUNTOF(queue_smoker[i]),
             /*stack=*/NULL,
             /*stack_size=*/0,
             /*name=*/"smoker",

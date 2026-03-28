@@ -116,7 +116,7 @@ static void process_content(
 static void read_file(struct files* db, const char* fname) {
     FILE* file = fopen(fname, "r");
     if (!file) {
-        fprintf(stderr, "Error: Could not open file %s\n", fname);
+        (void)fprintf(stderr, "Error: Could not open file %s\n", fname);
         exit(EXIT_FAILURE);
     }
 
@@ -135,7 +135,7 @@ static void read_file(struct files* db, const char* fname) {
         process_content(db, line, verbatim_include_std);
     }
 
-    fclose(file);
+    (void)fclose(file);
 
     strncpy(db->fnames[db->len], fname, PATH_MAX - 1);
 }
@@ -148,14 +148,17 @@ static int compare_includes(const void* a, const void* b) {
 static void db_init(struct db* db, const char* db_fname, const char* odir) {
     FILE* file = fopen(db_fname, "r");
     if (!file) {
-        fprintf(stderr, "Error: failed to open %s\n", db_fname);
+        (void)fprintf(stderr, "Error: failed to open %s\n", db_fname);
         exit(EXIT_FAILURE);
     }
 
     char fname[PATH_MAX];
     while (fgets(fname, sizeof(fname), file)) {
         /* Remove trailing newline if present */
-        fname[strcspn(fname, "\n")] = 0;
+        char* nl = strchr(fname, '\n');
+        if (nl != NULL) {
+            *nl = '\0';
+        }
 
         if (strstr(fname, ".c") != NULL) {
             struct files* files = &db->src;
@@ -199,7 +202,7 @@ static void db_init(struct db* db, const char* db_fname, const char* odir) {
         AM_ASSERT(0);
     }
 
-    fclose(file);
+    (void)fclose(file);
     db->odir = odir;
 
     qsort(
@@ -273,20 +276,20 @@ static void file_append(
     const char* main_fn = "int main(void) {";
     char* pos = strstr(src, main_fn);
     if (!pos || !ntests || !tests) {
-        fputs(src, dst);
+        (void)fputs(src, dst);
         return;
     }
     char fn_name[PATH_MAX];
     convert_fname_to_fn_name(src_fname, fn_name);
     char buffer[2 * PATH_MAX];
-    snprintf(buffer, sizeof(buffer), "static int %s(void) {\n", fn_name);
+    (void)snprintf(buffer, sizeof(buffer), "static int %s(void) {\n", fn_name);
     str_lcpy(tests[*ntests], fn_name, sizeof(tests[*ntests]));
     ++(*ntests);
     *pos = '\0';
-    fputs(src, dst);
-    fputs(buffer, dst);
+    (void)fputs(src, dst);
+    (void)fputs(buffer, dst);
     pos += strlen(main_fn) + /*sizeof('\n')=*/1;
-    fputs(pos, dst);
+    (void)fputs(pos, dst);
 }
 
 static const char* get_repo_fname(const char* fname) {
@@ -298,22 +301,26 @@ static const char* get_repo_fname(const char* fname) {
 static void add_amast_description(
     FILE* f, const char* note, const struct files* db
 ) {
-    fprintf(f, "/*\n");
-    fprintf(f, " * This file was auto-generated as a copy-paste\n");
-    fprintf(f, " * combination of AMAST project %s files taken from\n", note);
-    fprintf(f, " * GitHub repo https://github.com/adel-mamin/amast\n");
-    fprintf(f, " * Version %s\n", AMAST_VERSION);
-    fprintf(f, " */\n");
-    fprintf(f, "\n");
+    (void)fprintf(f, "/*\n");
+    (void)fprintf(f, " * This file was auto-generated as a copy-paste\n");
+    (void)fprintf(
+        f, " * combination of AMAST project %s files taken from\n", note
+    );
+    (void)fprintf(f, " * GitHub repo https://github.com/adel-mamin/amast\n");
+    (void)fprintf(f, " * Version %s\n", AMAST_VERSION);
+    (void)fprintf(f, " */\n");
+    (void)fprintf(f, "\n");
 
-    fprintf(f, "/*\n");
-    fprintf(f, " * The complete list of the copy-pasted %s files:\n", note);
-    fprintf(f, " *\n");
+    (void)fprintf(f, "/*\n");
+    (void)fprintf(
+        f, " * The complete list of the copy-pasted %s files:\n", note
+    );
+    (void)fprintf(f, " *\n");
     for (int i = 0; i < db->len; ++i) {
-        fprintf(f, " * %s\n", get_repo_fname(db->fnames[i]));
+        (void)fprintf(f, " * %s\n", get_repo_fname(db->fnames[i]));
     }
-    fprintf(f, " */\n");
-    fprintf(f, "\n");
+    (void)fprintf(f, " */\n");
+    (void)fprintf(f, "\n");
 }
 
 static void add_amast_includes_std(FILE* f, const struct files* db) {
@@ -321,77 +328,79 @@ static void add_amast_includes_std(FILE* f, const struct files* db) {
         if (strstr(db->includes_std[i], "#include") ||
             /* verbatim inclusion */
             strstr(db->includes_std[i], "#define")) {
-            fprintf(f, "%s", db->includes_std[i]);
+            (void)fprintf(f, "%s", db->includes_std[i]);
         } else if (db->includes_std[i][0] == '\n') {
-            fprintf(f, "\n");
+            (void)fprintf(f, "\n");
         } else {
-            fprintf(f, "#include <%s>\n", db->includes_std[i]);
+            (void)fprintf(f, "#include <%s>\n", db->includes_std[i]);
         }
     }
-    fprintf(f, "\n");
+    (void)fprintf(f, "\n");
 }
 
 static void create_amast_h_file(
     struct db* db, int* ntests, char (*tests)[PATH_MAX]
 ) {
     char fname[PATH_MAX];
-    snprintf(fname, sizeof(fname), "%s/amast.h", db->odir);
+    (void)snprintf(fname, sizeof(fname), "%s/amast.h", db->odir);
     FILE* hdr_file = fopen(fname, "w");
     if (!hdr_file) {
-        fprintf(stderr, "Failed to create %s\n", fname);
+        (void)fprintf(stderr, "Failed to create %s\n", fname);
         exit(EXIT_FAILURE);
     }
 
-    fprintf(hdr_file, "#ifndef AMAST_H_INCLUDED\n");
-    fprintf(hdr_file, "#define AMAST_H_INCLUDED\n");
-    fprintf(hdr_file, "\n");
+    (void)fprintf(hdr_file, "#ifndef AMAST_H_INCLUDED\n");
+    (void)fprintf(hdr_file, "#define AMAST_H_INCLUDED\n");
+    (void)fprintf(hdr_file, "\n");
 
     add_amast_description(hdr_file, "header", &db->hdr);
     add_amast_includes_std(hdr_file, &db->hdr);
 
-    fprintf(hdr_file, "\n");
-    fprintf(hdr_file, "#include \"amast_config.h\"\n");
-    fprintf(hdr_file, "\n");
+    (void)fprintf(hdr_file, "\n");
+    (void)fprintf(hdr_file, "#include \"amast_config.h\"\n");
+    (void)fprintf(hdr_file, "\n");
 
     /* Copy content of all header files to amast.h */
     for (int i = 0; i < db->hdr.len; ++i) {
-        fprintf(hdr_file, "\n/* %s */\n\n", get_repo_fname(db->hdr.fnames[i]));
+        (void)fprintf(
+            hdr_file, "\n/* %s */\n\n", get_repo_fname(db->hdr.fnames[i])
+        );
         file_append(
             db->hdr.content[i], db->hdr.fnames[i], hdr_file, ntests, tests
         );
     }
 
-    fprintf(hdr_file, "\n");
-    fprintf(hdr_file, "#endif /* AMAST_H_INCLUDED */\n");
+    (void)fprintf(hdr_file, "\n");
+    (void)fprintf(hdr_file, "#endif /* AMAST_H_INCLUDED */\n");
 
-    fclose(hdr_file);
+    (void)fclose(hdr_file);
 }
 
 static void create_amast_test_h_file(
     struct db* db, int* ntests, char (*tests)[PATH_MAX]
 ) {
     char fname[PATH_MAX];
-    snprintf(fname, sizeof(fname), "%s/amast_test.h", db->odir);
+    (void)snprintf(fname, sizeof(fname), "%s/amast_test.h", db->odir);
     FILE* hdr_file = fopen(fname, "w");
     if (!hdr_file) {
-        fprintf(stderr, "Failed to create %s\n", fname);
+        (void)fprintf(stderr, "Failed to create %s\n", fname);
         exit(EXIT_FAILURE);
     }
 
-    fprintf(hdr_file, "#ifndef AMAST_TEST_H_INCLUDED\n");
-    fprintf(hdr_file, "#define AMAST_TEST_H_INCLUDED\n");
-    fprintf(hdr_file, "\n");
+    (void)fprintf(hdr_file, "#ifndef AMAST_TEST_H_INCLUDED\n");
+    (void)fprintf(hdr_file, "#define AMAST_TEST_H_INCLUDED\n");
+    (void)fprintf(hdr_file, "\n");
 
     add_amast_description(hdr_file, "header", &db->hdr_test);
     add_amast_includes_std(hdr_file, &db->hdr_test);
 
-    fprintf(hdr_file, "\n");
-    fprintf(hdr_file, "#include \"amast_config.h\"\n");
-    fprintf(hdr_file, "\n");
+    (void)fprintf(hdr_file, "\n");
+    (void)fprintf(hdr_file, "#include \"amast_config.h\"\n");
+    (void)fprintf(hdr_file, "\n");
 
     /* Copy content of all header files to amast.h */
     for (int i = 0; i < db->hdr_test.len; ++i) {
-        fprintf(
+        (void)fprintf(
             hdr_file, "\n/* %s */\n\n", get_repo_fname(db->hdr_test.fnames[i])
         );
         file_append(
@@ -403,10 +412,10 @@ static void create_amast_test_h_file(
         );
     }
 
-    fprintf(hdr_file, "\n");
-    fprintf(hdr_file, "#endif /* AMAST_TEST_H_INCLUDED */\n");
+    (void)fprintf(hdr_file, "\n");
+    (void)fprintf(hdr_file, "#endif /* AMAST_TEST_H_INCLUDED */\n");
 
-    fclose(hdr_file);
+    (void)fclose(hdr_file);
 }
 
 struct amast_file_cfg {
@@ -424,10 +433,12 @@ struct amast_file_cfg {
 
 static FILE* create_amast_file(struct amast_file_cfg* cfg) {
     char fname[PATH_MAX];
-    snprintf(fname, sizeof(fname), "%s/%s", cfg->db->odir, cfg->amast_fname);
+    (void)snprintf(
+        fname, sizeof(fname), "%s/%s", cfg->db->odir, cfg->amast_fname
+    );
     FILE* src_file = fopen(fname, "w");
     if (!src_file) {
-        fprintf(stderr, "Failed to create %s\n", fname);
+        (void)fprintf(stderr, "Failed to create %s\n", fname);
         exit(EXIT_FAILURE);
     }
 
@@ -435,13 +446,13 @@ static FILE* create_amast_file(struct amast_file_cfg* cfg) {
 
     add_amast_includes_std(src_file, cfg->files);
     for (int i = 0; i < cfg->ninc; ++i) {
-        fprintf(src_file, "%s\n", cfg->inc[i]);
+        (void)fprintf(src_file, "%s\n", cfg->inc[i]);
     }
-    fprintf(src_file, "\n");
+    (void)fprintf(src_file, "\n");
 
     /* Copy content of all source files to cfg->amast_fname */
     for (int i = 0; i < cfg->files->len; ++i) {
-        fprintf(
+        (void)fprintf(
             src_file, "\n/* %s */\n\n", get_repo_fname(cfg->files->fnames[i])
         );
         AM_ASSERT(*cfg->ntests < cfg->tests_max);
@@ -458,7 +469,7 @@ static FILE* create_amast_file(struct amast_file_cfg* cfg) {
     if (cfg->keep_open) {
         return src_file;
     }
-    fclose(src_file);
+    (void)fclose(src_file);
     return NULL;
 }
 
@@ -625,18 +636,18 @@ static void create_amast_test_c_file(
     FILE* src_file = create_amast_file(&cfg);
 
     /* Add the final main function to amast_test.c */
-    fprintf(src_file, "\nint main(void) {\n");
+    (void)fprintf(src_file, "\nint main(void) {\n");
     for (int i = 0; i < *ntests; ++i) {
-        fprintf(src_file, "    %s();\n", tests[i]);
+        (void)fprintf(src_file, "    %s();\n", tests[i]);
     }
-    fprintf(src_file, "\n");
-    fprintf(src_file, "    printf(\"Amast unit tests passed!\\n\");\n");
-    fprintf(src_file, "\n");
-    fprintf(src_file, "    return 0;\n");
-    fprintf(src_file, "}\n");
-    fprintf(src_file, "\n");
+    (void)fprintf(src_file, "\n");
+    (void)fprintf(src_file, "    printf(\"Amast unit tests passed!\\n\");\n");
+    (void)fprintf(src_file, "\n");
+    (void)fprintf(src_file, "    return 0;\n");
+    (void)fprintf(src_file, "}\n");
+    (void)fprintf(src_file, "\n");
 
-    fclose(src_file);
+    (void)fclose(src_file);
 }
 
 static void create_amast_files(struct db* db) {

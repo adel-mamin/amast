@@ -84,7 +84,7 @@ AM_NORETURN void am_assert_failure(
 #define AM_IS_POW2(x) (0 == (((x) - 1u) & (x)))
 
 /** Do division and round up the result. */
-#define AM_DIV_CEIL(n, d) ((n) / (d) + ((n) % (d) != 0))
+#define AM_DIV_CEIL(n, d) (((n) / (d)) + ((n) % (d) != 0))
 
 /** Taken from http://nullprogram.com/blog/2015/02/17/ */
 #define AM_CONTAINER_OF(ptr, type, member) \
@@ -175,13 +175,13 @@ struct am_do_ctx {
  * @param cnt  the count
  * @param ctx  the context
  */
-#define AM_DO_EVERY(/*int*/ cnt, /*struct am_do_ctx*/ ctx)             \
-    if (0 == ctx->init_done) {                                         \
-        ctx->state.call_cnt = 0;                                       \
-        ctx->init_done = 1;                                            \
-    }                                                                  \
-    int AM_UNIQUE(do_now) = (0 == ctx->state.call_cnt);                \
-    ctx->state.call_cnt = (ctx->state.call_cnt + 1) % (unsigned)(cnt); \
+#define AM_DO_EVERY(/*int*/ cnt, /*struct am_do_ctx*/ ctx)                 \
+    if (0 == (ctx)->init_done) {                                           \
+        (ctx)->state.call_cnt = 0;                                         \
+        (ctx)->init_done = 1;                                              \
+    }                                                                      \
+    int AM_UNIQUE(do_now) = (0 == (ctx)->state.call_cnt);                  \
+    (ctx)->state.call_cnt = ((ctx)->state.call_cnt + 1) % (unsigned)(cnt); \
     if (AM_UNIQUE(do_now))
 
 /**
@@ -232,7 +232,8 @@ struct am_do_ctx {
  *
  * @param ctx  the context
  */
-#define AM_DO_ONCE(/*struct am_do_ctx*/ ctx) if (!ctx->done && (ctx->done = 1))
+#define AM_DO_ONCE(/*struct am_do_ctx*/ ctx) \
+    if (!(ctx)->done && ((ctx)->done = 1))
 
 /**
  * Execute code in the attached scope immediately and
@@ -277,13 +278,14 @@ struct am_do_ctx {
 #define AM_DO_EACH_MS(                                                  \
     /*uint32_t*/ each_ms, /*struct am_do_ctx*/ ctx, /*uint32_t*/ now_ms \
 )                                                                       \
-    if (!ctx->init_done) {                                              \
-        ctx->init_done = 1;                                             \
+    if (!(ctx)->init_done) {                                            \
+        (ctx)->init_done = 1;                                           \
         /* make sure to do the first time around */                     \
-        ctx->state.prev_ms = now_ms - each_ms;                          \
+        (ctx)->state.prev_ms = (now_ms) - (each_ms);                    \
     }                                                                   \
-    if ((each_ms >= 0) && ((now_ms - ctx->state.prev_ms) >= each_ms) && \
-        (ctx->state.prev_ms += each_ms, 1))
+    if (((each_ms) >= 0) &&                                             \
+        (((now_ms) - (ctx)->state.prev_ms) >= (each_ms)) &&             \
+        ((ctx)->state.prev_ms += (each_ms), 1))
 
 /** Test \p d1 and \p d2 for equality within \p tolerance. */
 #define AM_DOUBLE_EQ(d1, d2, tolerance) (fabs((d1) - (d2)) <= (tolerance))

@@ -78,10 +78,6 @@ void am_mutex_destroy(int mutex) { (void)mutex; }
 
 static uint32_t am_pal_ms = 0;
 
-void am_time_set_ms(uint32_t ms);
-
-void am_time_set_ms(uint32_t ms) { am_pal_ms = ms; }
-
 uint32_t am_time_get_ms(void) { return am_pal_ms; }
 
 uint32_t am_time_get_tick(int domain) {

@@ -38,27 +38,27 @@
 
 #include "event.h"
 
-struct buf1 {
+static struct buf1 {
     struct am_event e;
     int64_t _;
 } buf1;
 
-struct buf2 {
+static struct buf2 {
     struct am_event e;
     int64_t _[2];
 } buf2;
 
-struct buf3 {
+static struct buf3 {
     struct am_event e;
     int64_t _[3];
 } buf3;
 
-struct buf4 {
+static struct buf4 {
     struct am_event e;
     int64_t _[4];
 } buf4;
 
-struct buf5 {
+static struct buf5 {
     struct am_event e;
     int64_t _[5];
 } buf5;

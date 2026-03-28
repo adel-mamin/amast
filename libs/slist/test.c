@@ -142,8 +142,8 @@ static void test_am_slist_find(void) {
     am_slist_push_front(&slist, &test_slist[1].hdr);
     am_slist_push_front(&slist, &test_slist[0].hdr);
 
-    int v;
-    struct am_slist_item* e;
+    int v = 0;
+    struct am_slist_item* e = NULL;
 
     for (v = 0; v < 3; ++v) {
         e = am_slist_find(&slist, predicate_slist, &v);

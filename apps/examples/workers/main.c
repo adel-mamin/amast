@@ -28,7 +28,6 @@
  * Demonstrate workers implementation.
  */
 
-#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -321,7 +320,7 @@ int main(void) {
         &balancer.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
         /*queue=*/queue_balancer,
-        /*nqueue=*/AM_COUNTOF(queue_balancer),
+        /*queue_size=*/AM_COUNTOF(queue_balancer),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"balancer",
@@ -335,7 +334,7 @@ int main(void) {
             &workers[i].ao,
             (struct am_ao_prio){.ao = prio, .task = AM_AO_PRIO_LOW},
             /*queue=*/queue_worker[i],
-            /*nqueue=*/AM_COUNTOF(queue_worker[i]),
+            /*queue_size=*/AM_COUNTOF(queue_worker[i]),
             /*stack=*/NULL,
             /*stack_size=*/0,
             /*name=*/"worker",

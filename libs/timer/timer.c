@@ -69,7 +69,7 @@ void am_timer_arm(
     timer->crit_enter();
 
     event->oneshot_ticks = AM_MAX(ticks, 1);
-    event->interval_ticks = interval & 0x7FFFFFFF;
+    event->interval_ticks = interval & (uint32_t)0x7FFFFFFF;
     event->disarm_pending = 0;
 
     if (!am_slist_item_is_linked(&event->item)) {
@@ -118,7 +118,8 @@ void am_timer_tick_iterator_init(struct am_timer* timer) {
 
     if (!am_slist_is_empty(&timer->events_pend)) {
         am_slist_append(&timer->events, &timer->events_pend);
-        timer->nevents.running += timer->nevents.pend;
+        timer->nevents.running =
+            (int16_t)(timer->nevents.running + timer->nevents.pend);
         timer->nevents.pend = 0;
     }
 

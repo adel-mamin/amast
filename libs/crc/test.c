@@ -47,7 +47,7 @@ static void test_crc16(void) {
         };
         static const unsigned int crc_init = 0xFFFF;
         unsigned int crc = crc16(data, AM_COUNTOF(data), crc_init);
-        data[9] = (unsigned char)(crc >> 8u);
+        data[9] = (unsigned char)(crc >> 8U);
         data[10] = (unsigned char)crc;
         crc = crc16(&data[9], 2, crc);
         AM_ASSERT(0 == crc);
@@ -74,8 +74,8 @@ static void test_crc24(void) {
         };
         static const unsigned long crc_init = 0;
         unsigned long crc = crc24(data, AM_COUNTOF(data), crc_init);
-        data[9] = (unsigned char)(crc >> 16u);
-        data[10] = (unsigned char)(crc >> 8u);
+        data[9] = (unsigned char)(crc >> 16U);
+        data[10] = (unsigned char)(crc >> 8U);
         data[11] = (unsigned char)crc;
         crc = crc24(&data[9], 3, crc);
         AM_ASSERT(0 == crc);

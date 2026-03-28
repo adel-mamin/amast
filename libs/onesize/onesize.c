@@ -72,7 +72,7 @@ void* am_onesize_allocate_x(struct am_onesize* hnd, int margin) {
         }
     } else {
         AM_ASSERT(hnd->nbump < hnd->ntotal);
-        ptr = (char*)hnd->pool_beg + hnd->block_size * hnd->nbump;
+        ptr = (char*)hnd->pool_beg + (hnd->block_size * hnd->nbump);
         ++hnd->nbump;
     }
 
@@ -200,13 +200,13 @@ void am_onesize_ctor(struct am_onesize* hnd, const struct am_onesize_cfg* cfg) {
 
     hnd->block_size =
         AM_MAX(cfg->block_size, (int)sizeof(struct am_slist_item));
-    hnd->block_size = (int)AM_ALIGN_SIZE(hnd->block_size, alignment);
+    hnd->block_size = AM_ALIGN_SIZE(hnd->block_size, alignment);
 
     AM_ASSERT(cfg->pool.size >= hnd->block_size);
     hnd->ntotal = cfg->pool.size / hnd->block_size;
     hnd->nfree = hnd->nfree_min = hnd->ntotal;
     hnd->pool_beg = cfg->pool.ptr;
-    hnd->pool_end = (char*)cfg->pool.ptr + hnd->ntotal * hnd->block_size;
+    hnd->pool_end = (char*)cfg->pool.ptr + (hnd->ntotal * hnd->block_size);
     hnd->nbump = 0;
 
     if (cfg->crit_enter && cfg->crit_exit) {

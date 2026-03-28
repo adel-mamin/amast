@@ -41,23 +41,23 @@ enum am_rc {
     /** Success. */
     AM_RC_OK = 0,
     /** Async/await operation is ongoing. Event was handled. */
-    AM_RC_ASYNC_BUSY,
+    AM_RC_ASYNC_BUSY = 1,
     /** Async/await operation is complete. Event was handled. */
-    AM_RC_ASYNC_DONE,
+    AM_RC_ASYNC_DONE = 2,
     /** Event was handled. */
-    AM_RC_HANDLED,
+    AM_RC_HANDLED = 3,
     /** Event caused state transition. */
-    AM_RC_TRAN,
+    AM_RC_TRAN = 4,
     /** Event caused state transition and redispatch. */
-    AM_RC_TRAN_REDISPATCH,
+    AM_RC_TRAN_REDISPATCH = 5,
     /** Event propagation to superstate(s) was requested. */
-    AM_RC_SUPER,
+    AM_RC_SUPER = 6,
     /**
      * Tells that event queue was empty before the corresponding call.
      * This allows to signal the event queue owner about
      * new event available for processing.
      */
-    AM_RC_QUEUE_WAS_EMPTY,
+    AM_RC_QUEUE_WAS_EMPTY = 7,
 };
 
 /** Memory block descriptor. */
