@@ -7,6 +7,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+## v0.15.1 - 28-March-2026
+
 ### Changed
 
 - Rename `AM_ASYNC_CHAIN()` to `AM_ASYNC_CALL()`
