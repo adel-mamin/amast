@@ -115,7 +115,7 @@ struct am_async {
  *
  * @param func  the function to check the return value of
  */
-#define AM_ASYNC_CALL(func)                            \
+#define AM_ASYNC_CALL(func)                             \
         am_async_->state = __LINE__;                    \
         /* FALLTHROUGH */                               \
     case __LINE__:                                      \
