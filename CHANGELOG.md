@@ -15,6 +15,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Fixed
 
 - clang-tidy warnings
+- Description of am_crit_enter() and am_crit_exit()
 
 ## v0.15.0 - 13-March-2026
 

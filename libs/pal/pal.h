@@ -67,14 +67,14 @@ void am_pal_dtor(void);
 /**
  * Enter critical section.
  *
- * Non reentrant.
+ * Not nestable.
  */
 void am_crit_enter(void);
 
 /**
  * Exit critical section.
  *
- * Non reentrant.
+ * Not nestable.
  */
 void am_crit_exit(void);
 
