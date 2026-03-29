@@ -492,6 +492,40 @@ enum am_rc am_event_queue_push_back_x(
 );
 
 /**
+ * Push event to the back of event queue (eXtended version)
+ * without using critical section (unsafe).
+ *
+ * Checks if there are more free queue slots available than \p margin.
+ * If not, then does not push. Otherwise pushes the event to the back of
+ * the event queue.
+ *
+ * Tries to free the event, if it was not pushed.
+ *
+ * Statically allocated events (the events for which am_event_is_static()
+ * returns true) are never freed.
+ *
+ * Thread safe.
+ *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
+ *
+ * @param queue   the event queue
+ * @param event   the event to push
+ * @param margin  free event queue slots to be available after
+ *                the event was pushed
+ *
+ * @retval #AM_RC_OK               the event was pushed
+ * @retval #AM_RC_QUEUE_WAS_EMPTY  the event was pushed,
+ *                                 queue was empty
+ * @retval #AM_RC_ERR              the event was not pushed
+ */
+enum am_rc am_event_queue_push_back_unsafe_x(
+    struct am_event_queue* queue, const struct am_event* event, int margin
+);
+
+/**
  * Push event to the back of event queue.
  *
  * Asserts, if the event was not pushed.

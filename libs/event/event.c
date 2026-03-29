@@ -588,6 +588,16 @@ enum am_rc am_event_queue_push_back_unsafe(
     return rc;
 }
 
+enum am_rc am_event_queue_push_back_unsafe_x(
+    struct am_event_queue* queue, const struct am_event* event, int margin
+) {
+    enum am_rc rc = event_queue_push_x(
+        queue, event, margin, /*safe=*/false, event_queue_push_back
+    );
+    AM_ASSERT(AM_RC_ERR != rc);
+    return rc;
+}
+
 enum am_rc am_event_queue_push_front_x(
     struct am_event_queue* queue, const struct am_event* event, int margin
 ) {

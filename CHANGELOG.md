@@ -7,6 +7,15 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Add new `am_event_queue_push_back_unsafe_x()` API
+
+### Fixed
+
+- clang-tidy warnings
+- Description of am_crit_enter() and am_crit_exit()
+
 ## v0.15.1 - 28-March-2026
 
 ### Changed
