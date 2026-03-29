@@ -10,11 +10,11 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Changed
 
 - Add new `am_event_queue_push_back_unsafe_x()` API
+- Improve am_ao_event_queue_is_empty() documentation
 
 ### Fixed
 
-- clang-tidy warnings
-- Description of am_crit_enter() and am_crit_exit()
+- Race condition in `am_ao_publish_exclude_x()`
 
 ## v0.15.1 - 28-March-2026
 

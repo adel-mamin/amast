@@ -80,27 +80,43 @@ bool am_ao_publish_exclude_x(
      */
     struct am_ao_subscribe_list* sub = &me->sub[event->id];
     for (int i = AM_COUNTOF(sub->list) - 1; i >= 0; --i) {
-        me->crit_enter();
-        unsigned list = sub->list[i];
-        me->crit_exit();
-        while (list) {
+        unsigned done = 0;
+        int cnt = 0;
+        while (true) {
+            AM_ASSERT(cnt++ <= 8);
+
+            me->crit_enter();
+
+            unsigned list = sub->list[i];
+            list &= ~done;
+            if (0 == list) {
+                me->crit_exit();
+                break;
+            }
+
             int msb = am_bit_u8_msb((uint8_t)list);
-            list &= ~(1U << (unsigned)msb);
+            done |= 1U << (unsigned)msb;
 
             int ind = (8 * i) + msb;
             struct am_ao* ao_ = me->aos[ind];
             AM_ASSERT(ao_);
             if (ao_ == ao) {
+                me->crit_exit();
                 continue;
             }
             AM_ASSERT(AM_ATOMIC_LOAD_N(&ao_->running));
-            enum am_rc rc =
-                am_event_queue_push_back_x(&ao_->event_queue, event, margin);
+            enum am_rc rc = am_event_queue_push_back_unsafe_x(
+                &ao_->event_queue, event, margin
+            );
             if (AM_RC_ERR == rc) {
                 AM_ASSERT(margin != 0);
                 all_published = false;
+                me->crit_exit();
                 continue;
             }
+
+            me->crit_exit();
+
             if (AM_RC_QUEUE_WAS_EMPTY == rc) {
                 am_ao_notify(ao_);
             }
