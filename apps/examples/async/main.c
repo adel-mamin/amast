@@ -355,6 +355,7 @@ int main(void) {
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*entry=*/ticker_task,
+        /*flags=*/0,
         /*arg=*/&timer
     );
 
@@ -365,6 +366,7 @@ int main(void) {
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*entry=*/input_task,
+        /*flags=*/0,
         /*arg=*/&m
     );
 

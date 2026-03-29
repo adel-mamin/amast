@@ -72,8 +72,11 @@ void* am_task_create(
     void* stack,
     int stack_size,
     void (*entry)(void* arg),
+    unsigned flags,
     void* arg
 ) {
+    (void)flags;
+
     AM_ASSERT(AM_ALIGNOF_PTR(stack) >= AM_ALIGNOF(StackType_t));
     AM_ASSERT(stack_size > 0);
     AM_ASSERT(entry);

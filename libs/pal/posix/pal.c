@@ -66,8 +66,10 @@ struct am_task {
     pthread_cond_t cond;
     /** flag to track notification state */
     bool notified;
-    /** the task is valid */
-    bool valid;
+    /** the task is running */
+    bool running;
+    /** the task is joinable */
+    bool joinable;
     /** entry function */
     void (*entry)(void* arg);
     /** entry function argument */
@@ -105,13 +107,18 @@ static int am_pal_id_from_index(int index) {
 
 static void* thread_entry_wrapper(void* arg) {
     AM_ASSERT(arg);
-    struct am_task* ctx = (struct am_task*)arg;
-    AM_ASSERT(ctx->entry);
+    struct am_task* me = (struct am_task*)arg;
+    AM_ASSERT(me->entry);
 
-    ctx->entry(ctx->arg);
-    ctx->valid = false;
-    int rc = pthread_mutex_destroy(&ctx->mutex);
+    me->entry(me->arg);
+    AM_ATOMIC_STORE_N(&me->running, false);
+    int rc = pthread_mutex_destroy(&me->mutex);
     AM_ASSERT(0 == rc);
+
+    if (!AM_ATOMIC_LOAD_N(&me->joinable)) {
+        rc = pthread_cond_destroy(&me->cond);
+        AM_ASSERT(0 == rc);
+    }
 
     return NULL;
 }
@@ -140,7 +147,7 @@ int am_task_get_own_id(void) {
     }
     for (int i = 0; i < AM_COUNTOF(am_tasks_); ++i) {
         struct am_task* me = &am_tasks_[i];
-        if (me->valid && (me->thread == thread)) {
+        if (AM_ATOMIC_LOAD_N(&me->running) && (me->thread == thread)) {
             return am_pal_id_from_index(i);
         }
     }
@@ -156,6 +163,7 @@ int am_task_create(
     void* stack,
     const int stack_size,
     void (*entry)(void* arg),
+    unsigned flags,
     void* arg
 ) {
     (void)stack;
@@ -167,9 +175,9 @@ int am_task_create(
     struct am_task* me = NULL;
     for (int i = 0; i < AM_COUNTOF(am_tasks_); ++i) {
         me = &am_tasks_[i];
-        if (!me->valid) {
+        if (!AM_ATOMIC_LOAD_N(&me->running)) {
             index = i;
-            me->valid = true;
+            AM_ATOMIC_STORE_N(&me->running, true);
             break;
         }
     }
@@ -213,6 +221,11 @@ int am_task_create(
     pthread_attr_destroy(&attr);
 
     pthread_setname_np(me->thread, name);
+
+    if (AM_TASK_FLAG_DETACH == (flags & AM_TASK_FLAG_DETACH)) {
+        ret = pthread_detach(me->thread);
+        AM_ASSERT(0 == ret);
+    }
 
     return am_pal_id_from_index(index);
 }
@@ -425,7 +438,7 @@ void* am_pal_ctor(void* arg) {
 
     int ret = pthread_cond_init(&task->cond, /*attr=*/NULL);
     AM_ASSERT(0 == ret);
-    task->valid = true;
+    AM_ATOMIC_STORE_N(&task->running, true);
 
     startup_complete_mutex_ = am_mutex_create();
 
@@ -435,9 +448,14 @@ void* am_pal_ctor(void* arg) {
 void am_pal_dtor(void) {
     for (int i = 0; i < AM_COUNTOF(am_tasks_); ++i) {
         struct am_task* me = &am_tasks_[i];
-        if (me->valid) {
+        if (AM_ATOMIC_LOAD_N(&me->joinable)) {
             pthread_join(me->thread, /*__thread_return=*/NULL);
-            me->valid = false;
+            AM_ATOMIC_STORE_N(&me->joinable, false);
+
+            int rc = pthread_mutex_destroy(&me->mutex);
+            AM_ASSERT(0 == rc);
+            rc = pthread_cond_destroy(&me->cond);
+            AM_ASSERT(0 == rc);
         }
     }
     for (int i = 0; i < AM_COUNTOF(am_mutexes_); ++i) {
@@ -446,16 +464,6 @@ void am_pal_dtor(void) {
             int rc = pthread_mutex_destroy(&mutex->mutex);
             AM_ASSERT(0 == rc);
             mutex->valid = false;
-        }
-    }
-    for (int i = 0; i < AM_COUNTOF(am_tasks_); ++i) {
-        struct am_task* task = &am_tasks_[i];
-        if (task->valid) {
-            int rc = pthread_mutex_destroy(&task->mutex);
-            AM_ASSERT(0 == rc);
-            rc = pthread_cond_destroy(&task->cond);
-            AM_ASSERT(0 == rc);
-            task->valid = false;
         }
     }
 }

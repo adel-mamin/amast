@@ -54,8 +54,10 @@ struct am_task {
     int id;
     /** priority */
     int prio;
-    /** mak task as valid */
-    bool valid;
+    /** the task is running */
+    bool running;
+    /** the task is joinable */
+    bool joinable;
 };
 
 /** PAL mutex descriptor */
@@ -105,7 +107,7 @@ void* am_pal_ctor(void* arg) {
 
     memset(task, 0, sizeof(*task));
 
-    task->valid = true;
+    AM_ATOMIC_STORE_N(&task->running, true);
     task->thread = uv_thread_self();
     uv_sem_init(&task->semaphore, 0);
 
@@ -122,9 +124,11 @@ static void close_cb(uv_handle_t* handle, void* arg) {
 
 void am_pal_dtor(void) {
     for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
-        if (tasks_[i].valid) {
-            uv_thread_join(&tasks_[i].thread);
-            tasks_[i].valid = false;
+        struct am_task* task = &tasks_[i];
+        if (AM_ATOMIC_LOAD_N(&task->joinable)) {
+            uv_thread_join(&task->thread);
+            uv_sem_destroy(&task->semaphore);
+            AM_ATOMIC_STORE_N(&task->joinable, false);
         }
     }
     for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
@@ -132,13 +136,6 @@ void am_pal_dtor(void) {
         if (mutex->valid) {
             uv_mutex_destroy(&mutex->mutex);
             mutex->valid = false;
-        }
-    }
-    for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
-        struct am_task* task = &tasks_[i];
-        if (task->valid) {
-            uv_sem_destroy(&task->semaphore);
-            task->valid = false;
         }
     }
     uv_mutex_destroy(&crit_section_);
@@ -213,6 +210,10 @@ static void task_entry_wrapper(void* arg) {
     AM_ASSERT(0 == ret);
 
     task->entry(task->arg);
+
+    if (!AM_ATOMIC_LOAD_N(&task->joinable)) {
+        uv_sem_destroy(&task->semaphore);
+    }
 }
 
 int am_task_create(
@@ -221,6 +222,7 @@ int am_task_create(
     void* stack,
     int stack_size,
     void (*entry)(void*),
+    unsigned flags,
     void* arg
 ) {
     (void)name;
@@ -231,12 +233,13 @@ int am_task_create(
     int index = -1;
     struct am_task* task = NULL;
     for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
-        if (!tasks_[i].valid) {
+        task = &tasks_[i];
+        if (!AM_ATOMIC_LOAD_N(&task->running)) {
             index = i;
-            task = &tasks_[i];
-            tasks_[i].valid = true;
+            AM_ATOMIC_STORE_N(&task->running, true);
             break;
         }
+        task = NULL;
     }
     AM_ASSERT(task);
 
@@ -249,6 +252,11 @@ int am_task_create(
     AM_ASSERT(rc == 0);
     rc = uv_thread_create(&task->thread, task_entry_wrapper, task);
     AM_ASSERT(rc == 0);
+
+    if (AM_TASK_FLAG_DETACH == (flags & AM_TASK_FLAG_DETACH)) {
+        rc = uv_thread_detach(&task->thread);
+        AM_ASSERT(rc == 0);
+    }
 
     return task->id;
 }
@@ -287,7 +295,8 @@ int am_task_get_own_id(void) {
     }
     uv_thread_t self = uv_thread_self();
     for (int i = 0; i < AM_COUNTOF(tasks_); i++) {
-        if (tasks_[i].valid && uv_thread_equal(&tasks_[i].thread, &self)) {
+        if (AM_ATOMIC_LOAD_N(&tasks_[i].running) &&
+            uv_thread_equal(&tasks_[i].thread, &self)) {
             return tasks_[i].id;
         }
     }

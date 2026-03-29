@@ -45,6 +45,9 @@
 /** Main task ID. */
 #define AM_TASK_ID_MAIN (-1)
 
+/** Mark task as non-joinable */
+#define AM_TASK_FLAG_DETACH (1U << 0U)
+
 /** Default tick domain. */
 #define AM_TICK_DOMAIN_DEFAULT 0
 
@@ -134,6 +137,7 @@ void am_mutex_destroy(int mutex);
  * @param stack       task stack
  * @param stack_size  task stack size [bytes]
  * @param entry       task entry function
+ * @param flags       task flags (bit combination of AM_TASK_FLAG_... constants)
  * @param arg         task entry function argument.
  *                    PAL does not use other than providing it as an argument
  *                    to task entry function
@@ -145,6 +149,7 @@ int am_task_create(
     void* stack,
     int stack_size,
     void (*entry)(void* arg),
+    unsigned flags,
     void* arg
 );
 

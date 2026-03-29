@@ -52,6 +52,7 @@ int am_task_create(
     void* stack,
     int stack_size,
     void (*entry)(void* arg),
+    unsigned flags,
     void* arg
 ) {
     (void)name;
@@ -59,6 +60,7 @@ int am_task_create(
     (void)stack;
     (void)stack_size;
     (void)entry;
+    (void)flags;
     (void)arg;
 
     return AM_TASK_ID_NONE;

@@ -169,8 +169,11 @@ int am_task_create(
     void* stack,
     int stack_size,
     void (*entry)(void* arg),
+    unsigned flags;
     void* arg
 ) {
+    (void)flags;
+
     AM_ASSERT(entry);
     AM_ASSERT(prio >= 0);
     AM_ASSERT(prio < AM_TASK_NUM_MAX);

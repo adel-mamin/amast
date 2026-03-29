@@ -276,6 +276,7 @@ int main(int argc, const char* argv[]) {
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*entry=*/ticker_task,
+        /*flags=*/0,
         /*arg=*/&timer
     );
 
@@ -285,6 +286,7 @@ int main(int argc, const char* argv[]) {
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*entry=*/(void (*)(void*))job_task,
+        /*flags=*/0,
         /*arg=*/AM_CAST(void*, argv)
     );
 

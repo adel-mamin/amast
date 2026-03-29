@@ -122,6 +122,7 @@ void am_ao_start(
         stack,
         stack_size,
         /*entry=*/am_ao_task,
+        /*flags=*/AM_TASK_FLAG_DETACH,
         /*arg=*/ao
     );
 }
