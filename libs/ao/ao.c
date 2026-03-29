@@ -298,7 +298,7 @@ void am_ao_init_subscribe_list(struct am_ao_subscribe_list* sub, int nsub) {
     AM_ATOMIC_STORE_N(&me->subscribe_list_set, true);
 }
 
-void am_ao_log_event_queues_unsafe(
+void am_ao_crash_dump_event_queues_unsafe(
     int num,
     void (*log)(
         const char* name, int i, int len, int cap, const struct am_event* event

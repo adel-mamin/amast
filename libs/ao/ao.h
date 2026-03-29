@@ -579,17 +579,14 @@ bool am_ao_event_queue_is_empty(struct am_ao* ao);
 /**
  * Log the content of the first \p num events in each event queue of every AO.
  *
- * Only suitable for crash handlers to inspect the state
- * of event queues of every AO.
- *
- * Used for debugging.
+ * Only suitable for crash handlers to log the state of event queues of all AOs.
  *
  * Not thread safe.
  *
  * @param num  the number of events to log. Use -1 to log all events.
  * @param log  the logging callback
  */
-void am_ao_log_event_queues_unsafe(
+void am_ao_crash_dump_event_queues_unsafe(
     int num,
     void (*log)(
         const char* name, int i, int len, int cap, const struct am_event* event

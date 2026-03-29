@@ -104,7 +104,7 @@ AM_NORETURN void am_assert_failure(
         am_task_get_own_id()
     );
     am_event_pool_log_unsafe(/*num=*/-1, log_pool);
-    am_ao_log_event_queues_unsafe(/*num=*/-1, log_queue);
+    am_ao_crash_dump_event_queues_unsafe(/*num=*/-1, log_queue);
     am_pal_flush();
     __builtin_trap();
 }

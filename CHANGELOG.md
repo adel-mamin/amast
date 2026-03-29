@@ -10,7 +10,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Changed
 
 - Add new `am_event_queue_push_back_unsafe_x()` API
-- Improve am_ao_event_queue_is_empty() documentation
+- Rename `am_ao_log_event_queues_unsafe()` to `am_ao_crash_dump_event_queues_unsafe()`
 
 ### Fixed
 

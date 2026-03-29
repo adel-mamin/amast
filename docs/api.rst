@@ -504,7 +504,7 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygenfunction:: am_ao_event_queue_is_empty
 
-.. doxygenfunction:: am_ao_log_event_queues_unsafe
+.. doxygenfunction:: am_ao_crash_dump_event_queues_unsafe
 
 .. doxygenfunction:: am_ao_log_last_events
 
