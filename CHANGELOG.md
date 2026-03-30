@@ -12,6 +12,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Add new `am_event_queue_push_back_unsafe_x()` API
 - Rename `am_ao_log_event_queues_unsafe()` to `am_ao_crash_dump_event_queues_unsafe()`
 - Upgrade libuv to v1.51.0
+- Move active object main state machine init transition to task context before global task lock
 
 ### Fixed
 

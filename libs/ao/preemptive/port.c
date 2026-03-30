@@ -51,15 +51,14 @@ static void am_ao_handle(void* ctx, const struct am_event* event) {
 static void am_ao_task(void* param) {
     AM_ASSERT(param);
 
-    am_task_wait_all();
-
     struct am_ao* ao = (struct am_ao*)param;
+    ao->task_id = am_task_get_own_id();
 
     if (ao->init_handler) {
         ao->init_handler(ao->ctx, ao->init_event);
     }
 
-    ao->task_id = am_task_get_own_id();
+    am_task_wait_all();
 
     while (AM_LIKELY(ao->running)) {
         while (am_event_queue_is_empty(&ao->event_queue)) {
