@@ -256,6 +256,9 @@ int am_task_create(
     if (AM_TASK_FLAG_DETACH == (flags & AM_TASK_FLAG_DETACH)) {
         rc = uv_thread_detach(&task->thread);
         AM_ASSERT(rc == 0);
+        AM_ATOMIC_STORE_N(&task->joinable, false);
+    } else {
+        AM_ATOMIC_STORE_N(&task->joinable, true);
     }
 
     return task->id;

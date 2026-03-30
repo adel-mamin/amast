@@ -172,20 +172,20 @@ int am_task_create(
     AM_ASSERT(prio < AM_TASK_NUM_MAX);
 
     int index = -1;
-    struct am_task* me = NULL;
+    struct am_task* task = NULL;
     for (int i = 0; i < AM_COUNTOF(am_tasks_); ++i) {
-        me = &am_tasks_[i];
-        if (!AM_ATOMIC_LOAD_N(&me->running)) {
+        task = &am_tasks_[i];
+        if (!AM_ATOMIC_LOAD_N(&task->running)) {
             index = i;
-            AM_ATOMIC_STORE_N(&me->running, true);
+            AM_ATOMIC_STORE_N(&task->running, true);
             break;
         }
     }
     AM_ASSERT(index >= 0);
 
-    am_mutex_init(&me->mutex);
+    am_mutex_init(&task->mutex);
 
-    int ret = pthread_cond_init(&me->cond, /*attr=*/NULL);
+    int ret = pthread_cond_init(&task->cond, /*attr=*/NULL);
     AM_ASSERT(0 == ret);
 
     pthread_attr_t attr;
@@ -213,18 +213,21 @@ int am_task_create(
     ret = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
     AM_ASSERT(0 == ret);
 
-    me->entry = entry;
-    me->arg = arg;
+    task->entry = entry;
+    task->arg = arg;
 
-    ret = pthread_create(&me->thread, &attr, thread_entry_wrapper, me);
+    ret = pthread_create(&task->thread, &attr, thread_entry_wrapper, task);
     AM_ASSERT(0 == ret);
     pthread_attr_destroy(&attr);
 
-    pthread_setname_np(me->thread, name);
+    pthread_setname_np(task->thread, name);
 
     if (AM_TASK_FLAG_DETACH == (flags & AM_TASK_FLAG_DETACH)) {
-        ret = pthread_detach(me->thread);
+        ret = pthread_detach(task->thread);
         AM_ASSERT(0 == ret);
+        AM_ATOMIC_STORE_N(&task->joinable, false);
+    } else {
+        AM_ATOMIC_STORE_N(&task->joinable, true);
     }
 
     return am_pal_id_from_index(index);
