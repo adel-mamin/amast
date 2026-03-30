@@ -78,7 +78,7 @@ struct am_task {
 
 static struct am_task task_main_ = {0};
 static struct am_task am_tasks_[AM_TASK_NUM_MAX] = {0};
-static int startup_complete_mutex_;
+static int startup_gate_mutex_;
 
 /** PAL mutex descriptor */
 struct am_mutex {
@@ -443,7 +443,7 @@ void* am_pal_ctor(void* arg) {
     AM_ASSERT(0 == ret);
     AM_ATOMIC_STORE_N(&task->running, true);
 
-    startup_complete_mutex_ = am_mutex_create();
+    startup_gate_mutex_ = am_mutex_create();
 
     return NULL;
 }
@@ -485,11 +485,11 @@ int am_get_cpu_count(void) {
 
 void am_task_run_all(void) {}
 
-void am_task_lock_all(void) { am_mutex_lock(startup_complete_mutex_); }
+void am_task_lock_all(void) { am_mutex_lock(startup_gate_mutex_); }
 
-void am_task_unlock_all(void) { am_mutex_unlock(startup_complete_mutex_); }
+void am_task_unlock_all(void) { am_mutex_unlock(startup_gate_mutex_); }
 
 void am_task_wait_all(void) {
-    am_mutex_lock(startup_complete_mutex_);
-    am_mutex_unlock(startup_complete_mutex_);
+    am_mutex_lock(startup_gate_mutex_);
+    am_mutex_unlock(startup_gate_mutex_);
 }

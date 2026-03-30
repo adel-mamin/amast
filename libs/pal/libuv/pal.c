@@ -82,7 +82,7 @@ static struct am_task task_main_ = {0};
 static struct am_task tasks_[AM_TASK_NUM_MAX];
 static int ntasks_ = 0;
 
-static int startup_complete_mutex_;
+static int startup_gate_mutex_;
 
 static int am_pal_index_from_id(int id) {
     AM_ASSERT(id > 0);
@@ -111,7 +111,7 @@ void* am_pal_ctor(void* arg) {
     task->thread = uv_thread_self();
     uv_sem_init(&task->semaphore, 0);
 
-    startup_complete_mutex_ = am_mutex_create();
+    startup_gate_mutex_ = am_mutex_create();
 
     return loop_;
 }
@@ -414,13 +414,13 @@ int am_get_cpu_count(void) {
     return 1;
 }
 
-void am_task_lock_all(void) { am_mutex_lock(startup_complete_mutex_); }
+void am_task_lock_all(void) { am_mutex_lock(startup_gate_mutex_); }
 
-void am_task_unlock_all(void) { am_mutex_unlock(startup_complete_mutex_); }
+void am_task_unlock_all(void) { am_mutex_unlock(startup_gate_mutex_); }
 
 void am_task_wait_all(void) {
-    am_mutex_lock(startup_complete_mutex_);
-    am_mutex_unlock(startup_complete_mutex_);
+    am_mutex_lock(startup_gate_mutex_);
+    am_mutex_unlock(startup_gate_mutex_);
 }
 
 void am_task_run_all(void) {}

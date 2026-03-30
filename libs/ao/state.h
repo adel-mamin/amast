@@ -56,7 +56,7 @@ struct am_ao_state {
     /** Number of runnings AOs */
     int aos_cnt;
     /** Ensure simultaneous start of all active objects. */
-    int startup_complete_mutex;
+    int startup_gate_mutex;
     /** User callback on idle state, when no AO is running. */
     void (*on_idle)(void);
 
