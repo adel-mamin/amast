@@ -109,6 +109,7 @@ struct am_ao {
     int task_id;                       /**< task handle */
     /** AO priority */
     struct am_ao_prio prio;
+    const struct am_event* init_event;
     /** safety net to catch missing am_ao_ctor() call */
     bool ctor_called;
     /** am_ao_start() call was made for the AO */

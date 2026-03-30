@@ -55,6 +55,10 @@ static void am_ao_task(void* param) {
 
     struct am_ao* ao = (struct am_ao*)param;
 
+    if (ao->init_handler) {
+        ao->init_handler(ao->ctx, ao->init_event);
+    }
+
     ao->task_id = am_task_get_own_id();
 
     while (AM_LIKELY(ao->running)) {
@@ -101,6 +105,7 @@ void am_ao_start(
 
     ao->prio = prio;
     ao->name = name;
+    ao->init_event = init_event;
 
     struct am_ao_state* me = &am_ao_state_;
     AM_ASSERT(NULL == me->aos[prio.ao]);
@@ -111,10 +116,6 @@ void am_ao_start(
     me->crit_exit();
 
     AM_ATOMIC_STORE_N(&ao->running, true);
-
-    if (ao->init_handler) {
-        ao->init_handler(ao->ctx, init_event);
-    }
 
     ao->task_id = am_task_create(
         name,
