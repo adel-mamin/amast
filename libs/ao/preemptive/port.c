@@ -58,6 +58,17 @@ static void am_ao_task(void* param) {
         ao->init_handler(ao->ctx, ao->init_event);
     }
 
+    struct am_ao_state* me = &am_ao_state_;
+
+    AM_ATOMIC_FETCH_ADD(&me->aos_cnt_inited, 1);
+
+    int aos_cnt_inited = AM_ATOMIC_LOAD_N(&me->aos_cnt_inited);
+    int aos_cnt = AM_ATOMIC_LOAD_N(&me->aos_cnt);
+    bool last = (aos_cnt_inited == aos_cnt);
+    if (last) {
+        am_task_notify(AM_TASK_ID_MAIN);
+    }
+
     am_task_wait_all();
 
     while (AM_LIKELY(ao->running)) {
@@ -75,9 +86,17 @@ bool am_ao_run_all(void) {
     struct am_ao_state* me = &am_ao_state_;
 
     if (!AM_ATOMIC_LOAD_N(&me->startup_complete)) {
-        /* start all AOs */
-        am_task_unlock_all();
+        while (true) {
+            int aos_cnt_inited = AM_ATOMIC_LOAD_N(&me->aos_cnt_inited);
+            int aos_cnt = AM_ATOMIC_LOAD_N(&me->aos_cnt);
+            bool ready = (aos_cnt_inited == aos_cnt);
+            if (ready) {
+                break;
+            }
+            am_task_wait(AM_TASK_ID_MAIN);
+        }
         AM_ATOMIC_STORE_N(&me->startup_complete, true);
+        am_task_unlock_all();
     }
     /* wait all AOs to complete */
     am_task_wait(AM_TASK_ID_MAIN);
@@ -110,9 +129,7 @@ void am_ao_start(
     AM_ASSERT(NULL == me->aos[prio.ao]);
     me->aos[prio.ao] = ao;
 
-    me->crit_enter();
-    ++me->aos_cnt;
-    me->crit_exit();
+    AM_ATOMIC_FETCH_ADD(&me->aos_cnt, 1);
 
     AM_ATOMIC_STORE_N(&ao->running, true);
 
@@ -130,10 +147,12 @@ void am_ao_start(
 void am_ao_stop(struct am_ao* ao) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
+    struct am_ao_state* me = &am_ao_state_;
+    AM_ASSERT(AM_ATOMIC_LOAD_N(&me->startup_complete));
+
     int task_id = am_task_get_own_id();
     AM_ASSERT(task_id == ao->task_id); /* check API description */
-    struct am_ao_state* me = &am_ao_state_;
-    AM_ASSERT(me->aos_cnt);
+    AM_ASSERT(AM_ATOMIC_LOAD_N(&me->aos_cnt));
 
     if (me->subscribe_list_set) {
         am_ao_unsubscribe_all(ao);
@@ -149,8 +168,9 @@ void am_ao_stop(struct am_ao* ao) {
     am_event_queue_dtor(&ao->event_queue);
 
     me->aos[ao->prio.ao] = NULL;
-    --me->aos_cnt;
-    bool running_aos = me->aos_cnt;
+
+    AM_ATOMIC_FETCH_ADD(&me->aos_cnt, -1);
+    AM_ATOMIC_FETCH_ADD(&me->aos_cnt_inited, -1);
 
     ao->ctor_called = false;
 
@@ -158,7 +178,7 @@ void am_ao_stop(struct am_ao* ao) {
 
     me->crit_exit();
 
-    if (!running_aos) {
+    if (0 == AM_ATOMIC_LOAD_N(&me->aos_cnt)) {
         am_task_notify(/*task=*/AM_TASK_ID_MAIN);
     }
 }

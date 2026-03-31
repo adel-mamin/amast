@@ -349,10 +349,4 @@ void am_ao_log_last_events(void (*log)(const char* name, int event)) {
     }
 }
 
-int am_ao_get_cnt(void) {
-    struct am_ao_state* me = &am_ao_state_;
-    me->crit_enter();
-    int cnt = me->aos_cnt;
-    me->crit_exit();
-    return cnt;
-}
+int am_ao_get_cnt(void) { return AM_ATOMIC_LOAD_N(&am_ao_state_.aos_cnt); }
