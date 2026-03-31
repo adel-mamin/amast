@@ -35,7 +35,7 @@
 #include "ao/ao.h"
 #include "state.h"
 
-void am_ao_state_ctor_(void) { am_task_lock_all(); }
+void am_ao_state_ctor_(void) { am_task_startup_gate_close(); }
 
 static void am_ao_handle(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
@@ -69,7 +69,7 @@ static void am_ao_task(void* param) {
         am_task_notify(AM_TASK_ID_MAIN);
     }
 
-    am_task_wait_all();
+    am_task_startup_gate_wait();
 
     while (AM_LIKELY(ao->running)) {
         while (am_event_queue_is_empty(&ao->event_queue)) {
@@ -96,7 +96,7 @@ bool am_ao_run_all(void) {
             am_task_wait(AM_TASK_ID_MAIN);
         }
         AM_ATOMIC_STORE_N(&me->startup_complete, true);
-        am_task_unlock_all();
+        am_task_startup_gate_open();
     }
     /* wait all AOs to complete */
     am_task_wait(AM_TASK_ID_MAIN);

@@ -13,6 +13,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Rename `am_ao_log_event_queues_unsafe()` to `am_ao_crash_dump_event_queues_unsafe()`
 - Upgrade libuv to v1.51.0
 - Move active object main state machine init transition to task context before global task lock
+- Rename:
+  - am_task_wait_all() to am_task_startup_gate_wait()
+  - am_task_lock_all() to am_task_startup_gate_close()
+  - am_task_unlock_all() to am_task_startup_gate_open()
 
 ### Fixed
 

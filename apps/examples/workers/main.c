@@ -255,7 +255,7 @@ static void balancer_ctor(
 static void ticker_task(void* param) {
     struct am_timer* timer = param;
 
-    am_task_wait_all();
+    am_task_startup_gate_wait();
 
     const int domain = AM_TICK_DOMAIN_DEFAULT;
     const uint32_t ticks_per_ms = am_time_get_tick_from_ms(domain, 1);

@@ -414,11 +414,11 @@ int am_get_cpu_count(void) {
     return 1;
 }
 
-void am_task_lock_all(void) { am_mutex_lock(startup_gate_mutex_); }
+void am_task_startup_gate_close(void) { am_mutex_lock(startup_gate_mutex_); }
 
-void am_task_unlock_all(void) { am_mutex_unlock(startup_gate_mutex_); }
+void am_task_startup_gate_open(void) { am_mutex_unlock(startup_gate_mutex_); }
 
-void am_task_wait_all(void) {
+void am_task_startup_gate_wait(void) {
     am_mutex_lock(startup_gate_mutex_);
     am_mutex_unlock(startup_gate_mutex_);
 }

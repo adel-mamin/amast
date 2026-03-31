@@ -152,8 +152,8 @@ int am_get_cpu_count(void) { return 1; }
 
 void am_task_run_all(void) {}
 
-void am_task_lock_all(void) {}
+void am_task_startup_gate_close(void) {}
 
-void am_task_unlock_all(void) {}
+void am_task_startup_gate_open(void) {}
 
-void am_task_wait_all(void) {}
+void am_task_startup_gate_wait(void) {}

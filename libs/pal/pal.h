@@ -180,21 +180,21 @@ int am_task_get_own_id(void);
  * Prevents using tasks before they are ready to run.
  * To be run once at the start of tasks created with am_task_create() API.
  */
-void am_task_wait_all(void);
+void am_task_startup_gate_wait(void);
 
 /**
- * Lock all tasks until am_task_unlock_all() is called.
+ * Lock all tasks until am_task_startup_gate_open() is called.
  *
  * Only used at boot-up to synchronize tasks execution.
  */
-void am_task_lock_all(void);
+void am_task_startup_gate_close(void);
 
 /**
  * Unlock all tasks.
  *
- * All tasks blocked on am_task_wait_all() are unblocked.
+ * All tasks blocked on am_task_startup_gate_wait() are unblocked.
  */
-void am_task_unlock_all(void);
+void am_task_startup_gate_open(void);
 
 /** Run all PAL tasks */
 void am_task_run_all(void);

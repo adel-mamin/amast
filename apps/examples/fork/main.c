@@ -157,7 +157,7 @@ static void progress_ctor(struct progress* me, struct am_timer* timer) {
 AM_NORETURN static void ticker_task(void* param) {
     struct am_timer* timer = param;
 
-    am_task_wait_all();
+    am_task_startup_gate_wait();
 
     const int domain = AM_TICK_DOMAIN_DEFAULT;
     const uint32_t ticks_per_ms = am_time_get_tick_from_ms(domain, 1);
@@ -180,7 +180,7 @@ AM_NORETURN static void ticker_task(void* param) {
 }
 
 static void job_task(const void* param) {
-    am_task_wait_all();
+    am_task_startup_gate_wait();
 
     static struct am_event success = {.id = EVT_FORK_SUCCESS};
     static struct am_event failure = {.id = EVT_FORK_FAILURE};
