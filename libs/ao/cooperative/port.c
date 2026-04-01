@@ -65,6 +65,7 @@ bool am_ao_run_all(void) {
     bool dispatched = false;
     do {
         me->crit_enter();
+
         if (am_bit_u64_is_empty(&am_ready_aos_)) {
             AM_ASSERT(!dispatched);
             if (me->on_idle) {
@@ -78,24 +79,25 @@ bool am_ao_run_all(void) {
             me->crit_exit();
             break;
         }
-        int msb = am_bit_u64_msb(&am_ready_aos_);
-        me->crit_exit();
 
+        int msb = am_bit_u64_msb(&am_ready_aos_);
         struct am_ao* ao = me->aos[msb];
         AM_ASSERT(ao);
         AM_ASSERT(ao->prio.ao == msb);
 
-        enum am_rc rc = am_event_queue_pop_front_with_cb(
-            &ao->event_queue, am_ao_handle, ao
-        );
-        if (AM_RC_ERR == rc) {
-            me->crit_enter();
-            if (am_event_queue_is_empty_unsafe(&ao->event_queue)) {
-                am_bit_u64_clear(&am_ready_aos_, ao->prio.ao);
-            }
+        if (am_event_queue_is_empty_unsafe(&ao->event_queue)) {
+            am_bit_u64_clear(&am_ready_aos_, ao->prio.ao);
             me->crit_exit();
             continue;
         }
+
+        me->crit_exit();
+
+        enum am_rc rc = am_event_queue_pop_front_with_cb(
+            &ao->event_queue, am_ao_handle, ao
+        );
+        AM_ASSERT(AM_RC_OK == rc);
+
         dispatched = true;
     } while (!dispatched);
 
