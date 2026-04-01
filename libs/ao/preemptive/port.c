@@ -54,6 +54,8 @@ static void am_ao_task(void* param) {
     struct am_ao* ao = (struct am_ao*)param;
     ao->task_id = am_task_get_own_id();
 
+    AM_ATOMIC_STORE_N(&ao->running, true);
+
     if (ao->init_handler) {
         ao->init_handler(ao->ctx, ao->init_event);
     }
@@ -130,8 +132,6 @@ void am_ao_start(
     me->aos[prio.ao] = ao;
 
     AM_ATOMIC_FETCH_ADD(&me->aos_cnt, 1);
-
-    AM_ATOMIC_STORE_N(&ao->running, true);
 
     ao->task_id = am_task_create(
         name,

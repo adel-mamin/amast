@@ -22,6 +22,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - Race condition in `am_ao_publish_exclude_x()`
 - Fix global start-up gate to avoid startup race conditions in preemptive builds
+- Raise AO running flag only when preemptive AO task is actually running
 
 ## v0.15.1 - 28-March-2026
 
