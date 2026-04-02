@@ -34,26 +34,27 @@
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "pal/pal.h"
+#include "throttle.h"
 
-static void do_each_ms(int *i, struct am_do_ctx *ctx, uint32_t now_ms) {
-    AM_DO_EACH_MS(1, ctx, now_ms) {
+static void do_each_ms(int* i, struct am_throttle* throttle, uint32_t now_ms) {
+    if (am_throttle_allow(throttle, 1, now_ms)) {
         ++(*i);
     }
 }
 
 static void test_do_each_ms(void) {
-    struct am_do_ctx ctx = {0};
+    struct am_throttle throttle = {0};
     int i = 0;
-    do_each_ms(&i, &ctx, /*now_ms=*/0);
+    do_each_ms(&i, &throttle, /*now_ms=*/0);
     AM_ASSERT(1 == i);
 
-    do_each_ms(&i, &ctx, /*now_ms=*/0);
+    do_each_ms(&i, &throttle, /*now_ms=*/0);
     AM_ASSERT(1 == i);
 
-    do_each_ms(&i, &ctx, /*now_ms=*/1);
+    do_each_ms(&i, &throttle, /*now_ms=*/1);
     AM_ASSERT(2 == i);
 
-    do_each_ms(&i, &ctx, /*now_ms=*/1);
+    do_each_ms(&i, &throttle, /*now_ms=*/1);
     AM_ASSERT(2 == i);
 }
 

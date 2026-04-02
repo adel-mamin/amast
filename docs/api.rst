@@ -38,8 +38,6 @@ Common Macros And Constants
 
 .. doxygendefine:: AM_DO_ONCE
 
-.. doxygendefine:: AM_DO_EACH_MS
-
 .. doxygendefine:: AM_MAX
 
 .. doxygendefine:: AM_MIN

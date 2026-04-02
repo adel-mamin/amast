@@ -18,6 +18,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
   - `am_task_lock_all()` to `am_task_startup_gate_close()`
   - `am_task_unlock_all()` to `am_task_startup_gate_open()`
 - Rework `am_ao_run_all()` in AO cooperative port
+- Replace `AM_DO_EACH_MS()` with `am_throttle_allow()`
 
 ### Fixed
 

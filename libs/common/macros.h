@@ -235,58 +235,6 @@ struct am_do_ctx {
 #define AM_DO_ONCE(/*struct am_do_ctx*/ ctx) \
     if (!(ctx)->done && ((ctx)->done = 1))
 
-/**
- * Execute code in the attached scope immediately and
- * then repeatedly every \p ms milliseconds.
- *
- * Note:
- *
- * The macro requires explicit curly braces, when used
- * in the context of if, switch-case, for, while:
- *
- * E.g., this is correct:
- *
- * @code{.c}
- * if (smth) {
- *     AM_DO_EACH_MS(5, ctx, now_ms) {
- *         // smth
- *     }
- * }
- * @endcode
- *
- * This is NOT correct and will not compile:
- *
- * @code{.c}
- * if (smth)
- *     AM_DO_EACH_MS(5, ctx, now_ms) {
- *         // smth
- *     }
- * @endcode
- *
- * Example:
- *
- * @code{.c}
- * AM_DO_EACH_MS(100, ctx, now_ms) {
- *     am_printf("Hello, world!\n");
- * }
- * @endcode
- *
- * @param each_ms  the interval
- * @param ctx      the context
- * @param now_ms   the current ms time reading
- */
-#define AM_DO_EACH_MS(                                                  \
-    /*uint32_t*/ each_ms, /*struct am_do_ctx*/ ctx, /*uint32_t*/ now_ms \
-)                                                                       \
-    if (!(ctx)->init_done) {                                            \
-        (ctx)->init_done = 1;                                           \
-        /* make sure to do the first time around */                     \
-        (ctx)->state.prev_ms = (now_ms) - (each_ms);                    \
-    }                                                                   \
-    if (((each_ms) >= 0) &&                                             \
-        (((now_ms) - (ctx)->state.prev_ms) >= (each_ms)) &&             \
-        ((ctx)->state.prev_ms += (each_ms), 1))
-
 /** Test \p d1 and \p d2 for equality within \p tolerance. */
 #define AM_DOUBLE_EQ(d1, d2, tolerance) (fabs((d1) - (d2)) <= (tolerance))
 
