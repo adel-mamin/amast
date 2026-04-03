@@ -277,12 +277,6 @@ struct app {
     int ticks;
 };
 
-/* event publish/subscribe memory */
-static struct am_ao_subscribe_list m_pubsub_list[APP_EVT_PUB_MAX];
-
-/* active object incoming events queue */
-static const struct am_event *m_queue[2];
-
 static enum am_rc app_state_a(struct app *me, const struct am_event *event);
 static enum am_rc app_state_b(struct app *me, const struct am_event *event);
 
@@ -385,10 +379,16 @@ int main(void) {
         sizeof(m_event_pool[0]),
         AM_ALIGNOF(am_event_t)
     );
-    am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
+
+    /* event publish/subscribe memory */
+    struct am_ao_subscribe_list pubsub_list[APP_EVT_PUB_MAX];
+    am_ao_init_subscribe_list(pubsub_list, AM_COUNTOF(pubsub_list));
 
     struct app m;
     app_ctor(&m, &timer);
+
+    /* active object incoming events queue */
+    const struct am_event *m_queue[2];
 
     am_ao_start(
         &m.ao,
