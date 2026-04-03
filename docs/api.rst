@@ -34,10 +34,6 @@ Common Macros And Constants
 
 .. doxygendefine:: AM_CONTAINER_OF
 
-.. doxygendefine:: AM_DO_EVERY
-
-.. doxygendefine:: AM_DO_ONCE
-
 .. doxygendefine:: AM_MAX
 
 .. doxygendefine:: AM_MIN

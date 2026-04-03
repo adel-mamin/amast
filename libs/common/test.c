@@ -33,6 +33,7 @@
 
 #include "macros.h"
 #include "alignment.h"
+#include "throttle.h"
 
 struct test_align {
     /* cppcheck-suppress unusedStructMember */
@@ -93,9 +94,34 @@ static void test_container_of(void) {
     AM_ASSERT(1 == AM_CONTAINER_OF(bp, struct foo, b)->a);
 }
 
+static void test_throttle(void) {
+    struct am_throttle throttle = AM_THROTTLE_CTOR();
+    int i = 0;
+    if (am_throttle_allow(&throttle, 1, /*now_ms=*/0)) {
+        ++i;
+    }
+    AM_ASSERT(1 == i);
+
+    if (am_throttle_allow(&throttle, 1, /*now_ms=*/0)) {
+        ++i;
+    }
+    AM_ASSERT(1 == i);
+
+    if (am_throttle_allow(&throttle, 1, /*now_ms=*/1)) {
+        ++i;
+    }
+    AM_ASSERT(2 == i);
+
+    if (am_throttle_allow(&throttle, 1, /*now_ms=*/1)) {
+        ++i;
+    }
+    AM_ASSERT(2 == i);
+}
+
 int main(void) {
     test_align();
     test_container_of();
+    test_throttle();
 
     return 0;
 }
