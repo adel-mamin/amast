@@ -7,6 +7,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+## v0.16.0 - 04-April-2026
+
 ### Changed
 
 - Add new `am_event_queue_push_back_unsafe_x()` API
