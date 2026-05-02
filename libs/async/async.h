@@ -66,14 +66,14 @@ struct am_async {
  *
  * @param me  pointer to the `struct am_async` managing the async state
  */
-#define AM_ASYNC_BEGIN(me) {                            \
-    struct am_async *am_async_ = (struct am_async *)(me); \
-    switch (am_async_->state) {                         \
-    default:                                            \
-        AM_ASSERT(0);                                   \
-        break;                                          \
-    case AM_ASYNC_STATE_INIT:                           \
-        /* to suppress cppcheck warnings */             \
+#define AM_ASYNC_BEGIN(me) {                                \
+    struct am_async *am_async_ = (struct am_async *)(me);   \
+    switch (am_async_->state) {                             \
+    default:                                                \
+        AM_ASSERT(0);                                       \
+        break;                                              \
+    case AM_ASYNC_STATE_INIT:                               \
+        /* to suppress cppcheck warnings */                 \
         am_async_->state = AM_ASYNC_STATE_INIT
 
 /**
@@ -94,14 +94,15 @@ struct am_async {
  *
  * @param cond  the condition to check for continuation
  */
-#define AM_ASYNC_AWAIT(cond)                            \
-        am_async_->state = __LINE__;                    \
-        /* FALLTHROUGH */                               \
-    case __LINE__:                                      \
-        if (!(cond)) {                                  \
-            return AM_RC_ASYNC_BUSY;                    \
-        }                                               \
-        am_async_->state = AM_ASYNC_STATE_INIT
+#define AM_ASYNC_AWAIT(cond) do {                           \
+            am_async_->state = __LINE__;                    \
+            /* FALLTHROUGH */                               \
+        case __LINE__:                                      \
+            if (!(cond)) {                                  \
+                return AM_RC_ASYNC_BUSY;                    \
+            }                                               \
+            am_async_->state = AM_ASYNC_STATE_INIT;         \
+    } while (0)
 
 /**
  * Chain an async function call and evaluate its return value.
@@ -115,18 +116,19 @@ struct am_async {
  *
  * @param func  the function to check the return value of
  */
-#define AM_ASYNC_CALL(func)                             \
-        am_async_->state = __LINE__;                    \
-        /* FALLTHROUGH */                               \
-    case __LINE__:                                      \
-        do {                                            \
-            enum am_rc rc_ = (func);                    \
-            if (AM_RC_ASYNC_BUSY == rc_) {              \
-                return AM_RC_ASYNC_BUSY;                \
-            }                                           \
-            AM_ASSERT(AM_RC_ASYNC_DONE == rc_);         \
-            am_async_->state = AM_ASYNC_STATE_INIT;     \
-        } while (0)
+#define AM_ASYNC_CALL(func) do {                            \
+            am_async_->state = __LINE__;                    \
+            /* FALLTHROUGH */                               \
+        case __LINE__:                                      \
+            do {                                            \
+                enum am_rc rc_ = (func);                    \
+                if (AM_RC_ASYNC_BUSY == rc_) {              \
+                    return AM_RC_ASYNC_BUSY;                \
+                }                                           \
+                AM_ASSERT(AM_RC_ASYNC_DONE == rc_);         \
+                am_async_->state = AM_ASYNC_STATE_INIT;     \
+            } while (0);                                    \
+    } while (0)
 
 /**
  * Yield control back to caller.
@@ -135,11 +137,12 @@ struct am_async {
  *
  * Control resumes after this point, when the function is called again.
  */
-#define AM_ASYNC_YIELD()                                \
-        am_async_->state = __LINE__;                    \
-        return AM_RC_ASYNC_BUSY;                        \
-    case __LINE__:                                      \
-        am_async_->state = AM_ASYNC_STATE_INIT
+#define AM_ASYNC_YIELD() do {                               \
+            am_async_->state = __LINE__;                    \
+            return AM_RC_ASYNC_BUSY;                        \
+        case __LINE__:                                      \
+            am_async_->state = AM_ASYNC_STATE_INIT;         \
+    } while (0)
 
 /* clang-format on */
 

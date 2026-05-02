@@ -7,6 +7,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Use do {} while (0) blocks in async macros.
+
 ## v0.16.0 - 04-April-2026
 
 ### Changed
