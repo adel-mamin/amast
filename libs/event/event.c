@@ -36,15 +36,6 @@
 #include "common/macros.h"
 #include "onesize/onesize.h"
 
-/** Event reference counter bit mask. */
-#define AM_EVENT_REF_COUNTER_MASK \
-    ((1U << (unsigned)AM_EVENT_REF_COUNTER_BITS) - 1U)
-/** Maximum value of reference counter. */
-#define AM_EVENT_REF_COUNTER_MAX AM_EVENT_REF_COUNTER_MASK
-
-/** Event ID least significant word bit mask. */
-#define AM_EVENT_ID_LSW_MASK ((1U << (unsigned)AM_EVENT_ID_LSW_BITS) - 1U)
-
 /** Pool index bit mask. */
 #define AM_EVENT_POOL_INDEX_MASK \
     ((1U << (unsigned)AM_EVENT_POOL_INDEX_BITS) - 1U)
