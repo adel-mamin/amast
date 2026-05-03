@@ -388,11 +388,14 @@ void am_event_dec_ref_cnt(
  *
  * Use sparingly as the return value could be volatile due to multitasking.
  *
+ * @param alloc  the event allocator
  * @param event  the event, which reference counter is to be returned
  *
  * @return the event reference counter
  */
-int am_event_get_ref_cnt(const struct am_event* event);
+int am_event_get_ref_cnt(
+    struct am_event_alloc* alloc, const struct am_event* event
+);
 
 /**
  * Register critical section APIs

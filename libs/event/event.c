@@ -235,7 +235,10 @@ void am_event_dec_ref_cnt(
     am_event_free(alloc, event);
 }
 
-int am_event_get_ref_cnt(const struct am_event* event) {
+int am_event_get_ref_cnt(
+    struct am_event_alloc* alloc, const struct am_event* event
+) {
+    (void)alloc;
     AM_ASSERT(event);
 
     am_event_crit_enter();
