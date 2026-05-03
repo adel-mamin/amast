@@ -35,7 +35,6 @@
 #include "event/event_common.h"
 #include "common/macros.h"
 #include "onesize/onesize.h"
-#include "event.h"
 
 /** Event reference counter bit mask. */
 #define AM_EVENT_REF_COUNTER_MASK \

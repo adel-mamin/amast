@@ -32,7 +32,6 @@
 #include <stddef.h>
 
 #include "common/macros.h"
-#include "event/event.h"
 #include "hsm/hsm.h"
 #include "pal/pal.h"
 #include "ao/ao.h"
