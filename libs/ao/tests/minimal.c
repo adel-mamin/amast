@@ -35,7 +35,7 @@
 #include <stdlib.h>
 
 #include "common/macros.h"
-#include "event/event.h"
+#include "event/event_async.h"
 #include "hsm/hsm.h"
 #include "pal/pal.h"
 #include "ao/ao.h"
@@ -127,6 +127,8 @@ static int loopback_test_init(
 
 int main(void) {
     am_pal_ctor(/*arg=*/NULL);
+
+    am_event_async_init(/*sub=*/NULL, /*nsub=*/0, /*alloc=*/NULL);
 
     am_ao_state_ctor(/*cfg=*/NULL);
 

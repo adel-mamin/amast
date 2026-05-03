@@ -58,7 +58,7 @@
 #include <stdio.h>
 
 #include "common/types.h"
-#include "event/event.h"
+#include "event/event_common.h"
 #include "hsm/hsm.h"
 
 #define HAHI_EVT_USER_INPUT AM_EVT_USER

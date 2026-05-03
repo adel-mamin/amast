@@ -56,7 +56,11 @@
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event.h"
+#include "event/event_async.h"
+#include "event/event_common.h"
+#include "event/event_pool.h"
+#include "event/event_queue.h"
+
 #include "onesize/onesize.h"
 #include "slist/slist.h"
 #include "strlib/strlib.h"
@@ -79,6 +83,7 @@ struct am_hsmq {
     struct am_hsm hsm;
     struct am_event_queue event_queue;
     AM_PRINTF(1, 0) void (*log)(const char* fmt, ...);
+    struct am_event_alloc* alloc;
 };
 
 static struct am_hsmq am_hsmq_;
@@ -88,12 +93,14 @@ static struct am_hsm* am_hsmq = &am_hsmq_.hsm;
 static enum am_rc hsmq_s1(struct am_hsmq* me, const struct am_event* event);
 static enum am_rc hsmq_s2(struct am_hsmq* me, const struct am_event* event);
 
-static void hsmq_dispatch(void* ctx, const struct am_event* event) {
+static enum am_rc hsmq_dispatch(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
     struct am_hsm* me = ctx;
     am_hsm_dispatch(me, event);
+
+    return AM_RC_OK;
 }
 
 static void hsmq_commit(void) {
@@ -111,14 +118,18 @@ static enum am_rc hsmq_sinit(struct am_hsmq* me, const struct am_event* event) {
     return AM_HSM_TRAN(hsmq_s1);
 }
 
-static void hsmq_ctor(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
+static void hsmq_ctor(
+    AM_PRINTF(1, 0) void (*log)(const char* fmt, ...),
+    struct am_event_alloc* alloc
+) {
     struct am_hsmq* me = &am_hsmq_;
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(hsmq_sinit));
     me->log = log;
+    me->alloc = alloc;
 
     /* setup HSM event queue */
     static const struct am_event* pool[2];
-    am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool));
+    am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool), alloc);
 }
 
 static enum am_rc hsmq_s1(struct am_hsmq* me, const struct am_event* event) {
@@ -126,7 +137,7 @@ static enum am_rc hsmq_s1(struct am_hsmq* me, const struct am_event* event) {
     case AM_EVT_A: {
         me->log("a-A;");
         const struct am_event* e =
-            am_event_allocate(/*id=*/AM_EVT_B, sizeof(*e));
+            am_event_allocate(me->alloc, /*id=*/AM_EVT_B, sizeof(*e));
         am_event_queue_push_back(&me->event_queue, e);
         return AM_HSM_TRAN(hsmq_s2);
     }
@@ -153,23 +164,26 @@ static enum am_rc hsmq_s2(struct am_hsmq* me, const struct am_event* event) {
 }
 
 int main(void) {
-    am_event_state_ctor(/*cfg=*/NULL);
-
+    struct am_event_alloc alloc;
     {
         static char pool[1 * AM_POOL_BLOCK_SIZEOF(struct am_event)] AM_ALIGNED(
             AM_ALIGN_MAX
         );
-        am_event_pool_add(
+        am_event_alloc_init(&alloc);
+        am_event_alloc_add_pool(
+            &alloc,
             pool,
             (int)sizeof(pool),
             AM_POOL_BLOCK_SIZEOF(struct am_event),
             AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF(am_event_t))
         );
-        AM_ASSERT(1 == am_event_pool_get_nblocks(/*index=*/0));
-        AM_ASSERT(1 == am_event_pool_get_nfree(/*index=*/0));
+        AM_ASSERT(1 == am_event_alloc_get_nblocks(&alloc, /*index=*/0));
+        AM_ASSERT(1 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
     }
 
-    hsmq_ctor(hsmq_log);
+    am_event_async_init(/*sub=*/NULL, /*nsub=*/0, &alloc);
+
+    hsmq_ctor(hsmq_log, &alloc);
 
     m_hsmq_log_buf[0] = '\0';
     am_hsm_init(am_hsmq, /*init_event=*/NULL);
@@ -193,7 +207,7 @@ int main(void) {
     am_hsm_dtor(am_hsmq);
 
     /* make sure there is no memory leak */
-    AM_ASSERT(1 == am_event_pool_get_nfree(/*index=*/0));
+    AM_ASSERT(1 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
 
     return 0;
 }

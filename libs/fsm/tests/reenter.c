@@ -30,7 +30,7 @@
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event.h"
+#include "event/event_common.h"
 #include "strlib/strlib.h"
 #include "fsm/fsm.h"
 

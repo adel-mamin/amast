@@ -40,7 +40,12 @@
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event.h"
+
+#include "event/event_async.h"
+#include "event/event_common.h"
+#include "event/event_pool.h"
+#include "event/event_queue.h"
+
 #include "onesize/onesize.h"
 #include "slist/slist.h"
 #include "strlib/strlib.h"
@@ -63,6 +68,7 @@ struct am_fsmq {
     struct am_fsm fsm;
     struct am_event_queue event_queue;
     AM_PRINTF(1, 0) void (*log)(const char* fmt, ...);
+    struct am_event_alloc* alloc;
 };
 
 static struct am_fsmq am_fsmq_;
@@ -72,13 +78,15 @@ static struct am_fsm* am_fsmq = &am_fsmq_.fsm;
 static enum am_rc fsmq_a(struct am_fsmq* me, const struct am_event* event);
 static enum am_rc fsmq_b(struct am_fsmq* me, const struct am_event* event);
 
-static void fsmq_handle(void* ctx, const struct am_event* event) {
+static enum am_rc fsmq_handle(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
     struct am_fsm* me = ctx;
     AM_ASSERT(event);
     am_fsm_dispatch(me, event);
+
+    return AM_RC_OK;
 }
 
 static void fsmq_commit(void) {
@@ -95,14 +103,18 @@ static enum am_rc fsmq_init(struct am_fsmq* me, const struct am_event* event) {
     return AM_FSM_TRAN(fsmq_a);
 }
 
-static void fsmq_ctor(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
+static void fsmq_ctor(
+    AM_PRINTF(1, 0) void (*log)(const char* fmt, ...),
+    struct am_event_alloc* alloc
+) {
     struct am_fsmq* me = &am_fsmq_;
     am_fsm_ctor(&me->fsm, AM_FSM_STATE_CTOR(fsmq_init));
     me->log = log;
+    me->alloc = alloc;
 
     /* setup FSM event queue */
     static const struct am_event* pool[2];
-    am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool));
+    am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool), alloc);
 }
 
 static enum am_rc fsmq_a(struct am_fsmq* me, const struct am_event* event) {
@@ -110,7 +122,7 @@ static enum am_rc fsmq_a(struct am_fsmq* me, const struct am_event* event) {
     case AM_EVT_A: {
         me->log("a-A;");
         const struct am_event* e =
-            am_event_allocate(/*id=*/AM_EVT_B, sizeof(*e));
+            am_event_allocate(me->alloc, /*id=*/AM_EVT_B, sizeof(*e));
         am_event_queue_push_back(&me->event_queue, e);
         return AM_FSM_TRAN(fsmq_b);
     }
@@ -137,23 +149,26 @@ static enum am_rc fsmq_b(struct am_fsmq* me, const struct am_event* event) {
 }
 
 int main(void) {
-    am_event_state_ctor(/*cfg=*/NULL);
-
+    struct am_event_alloc alloc;
     {
         static char pool[1 * AM_POOL_BLOCK_SIZEOF(struct am_event)] AM_ALIGNED(
             AM_ALIGN_MAX
         );
-        am_event_pool_add(
+        am_event_alloc_init(&alloc);
+        am_event_alloc_add_pool(
+            &alloc,
             pool,
             (int)sizeof(pool),
             AM_POOL_BLOCK_SIZEOF(struct am_event),
             AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF(am_event_t))
         );
-        AM_ASSERT(1 == am_event_pool_get_nblocks(/*index=*/0));
-        AM_ASSERT(1 == am_event_pool_get_nfree(/*index=*/0));
+        AM_ASSERT(1 == am_event_alloc_get_nblocks(&alloc, /*index=*/0));
+        AM_ASSERT(1 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
     }
 
-    fsmq_ctor(fsmq_log);
+    am_event_async_init(/*sub=*/NULL, /*nsub=*/0, &alloc);
+
+    fsmq_ctor(fsmq_log, &alloc);
 
     m_fsmq_log_buf[0] = '\0';
     am_fsm_init(am_fsmq, /*init_event=*/NULL);
@@ -174,7 +189,7 @@ int main(void) {
     am_fsm_dtor(am_fsmq);
 
     /* make sure there is no memory leak */
-    AM_ASSERT(1 == am_event_pool_get_nfree(/*index=*/0));
+    AM_ASSERT(1 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
 
     return 0;
 }

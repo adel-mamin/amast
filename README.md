@@ -372,8 +372,10 @@ int main(void) {
     struct am_timer timer;
     am_timer_ctor(&timer);
 
-    am_ao_state_ctor(/*cfg=*/NULL);
-    am_event_pool_add(
+    struct am_event_alloc alloc;
+    am_event_alloc_init(&alloc);
+
+    am_event_alloc_add_pool(&alloc,
         m_event_pool,
         sizeof(m_event_pool),
         sizeof(m_event_pool[0]),
@@ -381,8 +383,10 @@ int main(void) {
     );
 
     /* event publish/subscribe memory */
-    struct am_ao_subscribe_list pubsub_list[APP_EVT_PUB_MAX];
-    am_ao_init_subscribe_list(pubsub_list, AM_COUNTOF(pubsub_list));
+    struct am_event_subscribe_list pubsub_list[APP_EVT_PUB_MAX];
+    am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), &alloc);
+
+    am_ao_state_ctor(/*cfg=*/NULL);
 
     struct app m;
     app_ctor(&m, &timer);

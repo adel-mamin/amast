@@ -103,8 +103,8 @@ System Integration
 The Event module integrates seamlessly with event-driven systems and RTOS. Key
 integration points include:
 
-- **Initialization**: Use ``am_event_state_ctor`` to configure the event system
-  and ``am_event_pool_add`` to add memory pools.
+- **Initialization**: Use ``am_event_async_init`` to configure the event system
+  and ``am_event_alloc_add_pool`` to add memory pools.
 - **Event Handling**: Allocate events using ``am_event_allocate`` or create
   static events. Push and pop events to/from queues for asynchronous
   processing.
@@ -177,14 +177,14 @@ The proper way of doing it is as follows:
 
 .. code-block:: C
 
-    struct my_event *event = am_event_allocate(MY_EVENT, sizeof(*event));
+    struct my_event *event = am_event_allocate(alloc, MY_EVENT, sizeof(*event));
 
     am_event_inc_ref_cnt(event);
 
     am_ao_post_fifo(ao1, event);
     am_ao_post_fifo(ao2, event);
 
-    am_event_dec_ref_cnt(event);
+    am_event_dec_ref_cnt(alloc, event);
 
 Note how incrementing the event reference counter by calling ``am_event_inc_ref_cnt(event)``
 the event is guaranteed to be owned by application (``ao0``) and it becomes safe

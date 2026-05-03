@@ -69,7 +69,8 @@
 #include "common/constants.h"
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event.h"
+#include "event/event_async.h"
+#include "event/event_common.h"
 #include "timer/timer.h"
 #include "async/async.h"
 #include "ao/ao.h"
@@ -326,10 +327,10 @@ int main(void) {
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
-    am_ao_state_ctor(/*cfg=*/NULL);
+    struct am_event_subscribe_list pubsub_list[ASYNC_EVT_PUB_MAX];
+    am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), /*alloc=*/NULL);
 
-    struct am_ao_subscribe_list pubsum_list[ASYNC_EVT_PUB_MAX];
-    am_ao_init_subscribe_list(pubsum_list, AM_COUNTOF(pubsum_list));
+    am_ao_state_ctor(/*cfg=*/NULL);
 
     struct async m;
     async_ctor(&m, &timer);

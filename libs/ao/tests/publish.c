@@ -31,7 +31,9 @@
 #include "common/alignment.h"
 #include "common/compiler.h"
 #include "common/macros.h"
-#include "event/event.h"
+#include "event/event_common.h"
+#include "event/event_async.h"
+#include "event/event_pool.h"
 #include "strlib/strlib.h"
 #include "hsm/hsm.h"
 #include "ao/ao.h"
@@ -54,7 +56,6 @@ struct test_publish {
 static struct test_publish m_publish;
 static struct am_ao* m_me = &m_publish.ao;
 
-static struct am_ao_subscribe_list m_pubsub_list[AM_AO_EVT_PUB_MAX];
 static const struct am_event* m_queue_publish[1];
 
 static char m_event_pool[1][16] AM_ALIGNED(AM_ALIGN_MAX);
@@ -98,19 +99,23 @@ static AM_PRINTF(1, 0) void publish_log(const char* fmt, ...) {
 static void test_publish(void) {
     am_pal_ctor(/*arg=*/NULL);
 
-    struct am_ao_state_cfg cfg = {
-        .crit_enter = am_crit_enter, .crit_exit = am_crit_exit
-    };
-    am_ao_state_ctor(&cfg);
-
-    am_event_pool_add(
+    struct am_event_alloc alloc;
+    am_event_alloc_init(&alloc);
+    am_event_alloc_add_pool(
+        &alloc,
         m_event_pool,
         sizeof(m_event_pool),
         sizeof(m_event_pool[0]),
         AM_ALIGN_MAX
     );
 
-    am_ao_init_subscribe_list(m_pubsub_list, AM_COUNTOF(m_pubsub_list));
+    struct am_event_subscribe_list m_pubsub_list[AM_AO_EVT_PUB_MAX];
+    am_event_async_init(m_pubsub_list, AM_COUNTOF(m_pubsub_list), &alloc);
+
+    struct am_ao_state_cfg cfg = {
+        .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
+    };
+    am_ao_state_ctor(&cfg);
 
     publish_ctor(publish_log);
 

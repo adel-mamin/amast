@@ -36,21 +36,8 @@
 extern "C" {
 #endif
 
-/**
- * Check if event ID belongs to pubsub range.
- * @param event   event to check
- * @retval true   the event has pubsub event ID
- * @retval false  the event does not have pubsub event ID
- */
-#define AM_EVENT_HAS_PUBSUB_ID(event) \
-    (((const struct am_event*)(event))->id < am_ao_state_.nsub)
-
 /** Active object library internal state. */
 struct am_ao_state {
-    /** User defined pubsub list. */
-    struct am_ao_subscribe_list* sub;
-    /** User defined pubsub list length. */
-    int nsub;
     /** User defined active objects, or NULL, if not defined. */
     struct am_ao* aos[AM_AO_NUM_MAX];
     /** Number of runnings AOs */
@@ -73,10 +60,11 @@ struct am_ao_state {
      */
     struct am_ao_prio running_ao_prio;
 
+    /** Event memory allocator */
+    struct am_event_alloc* alloc;
+
     /** am_ao_start() calls were completed for all active objects */
     bool startup_complete;
-    /** safety net to catch missing am_ao_init_subscribe_list() call */
-    bool subscribe_list_set;
 };
 
 extern struct am_ao_state am_ao_state_;
@@ -105,6 +93,15 @@ void am_ao_notify_unsafe(const struct am_ao* ao);
  * active object library builds.
  */
 void am_ao_state_ctor_(void);
+
+/**
+ * AO event handler.
+ *
+ * Matches the type am_event_async_fn.
+ */
+enum am_rc am_ao_event_handler(
+    void* ctx, const struct am_event* event, struct am_event_queue_policy policy
+);
 
 #ifdef __cplusplus
 }

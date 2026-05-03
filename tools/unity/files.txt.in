@@ -19,9 +19,6 @@
 @SRC_ROOT@/libs/bit/bit.c
 @SRC_ROOT@/libs/bit/test.c
 
-@SRC_ROOT@/libs/event/event.h
-@SRC_ROOT@/libs/event/event.c
-
 @SRC_ROOT@/libs/dlist/dlist.h
 @SRC_ROOT@/libs/dlist/dlist.c
 @SRC_ROOT@/libs/dlist/test.c
@@ -30,15 +27,32 @@
 @SRC_ROOT@/libs/slist/slist.c
 @SRC_ROOT@/libs/slist/test.c
 
+@SRC_ROOT@/libs/onesize/onesize.h
+@SRC_ROOT@/libs/onesize/onesize.c
+@SRC_ROOT@/libs/onesize/test.c
+
+@SRC_ROOT@/libs/event/event_common.h
+@SRC_ROOT@/libs/event/event_queue.h
+@SRC_ROOT@/libs/event/event_pool.h
+@SRC_ROOT@/libs/event/event_sync.h
+@SRC_ROOT@/libs/event/event_async.h
+
+@SRC_ROOT@/libs/event/event.c
+@SRC_ROOT@/libs/event/event_sync.c
+@SRC_ROOT@/libs/event/event_async.c
+@SRC_ROOT@/libs/event/event_pool.c
+@SRC_ROOT@/libs/event/event_queue.c
+@SRC_ROOT@/libs/event/test.c
+
+@SRC_ROOT@/libs/async/async.h
+@SRC_ROOT@/libs/async/test.c
+
 @SRC_ROOT@/libs/strlib/strlib.h
 @SRC_ROOT@/libs/strlib/strlib.c
 
 @SRC_ROOT@/libs/timer/timer.h
 @SRC_ROOT@/libs/timer/timer.c
 @SRC_ROOT@/libs/timer/test.c
-
-@SRC_ROOT@/libs/async/async.h
-@SRC_ROOT@/libs/async/test.c
 
 @SRC_ROOT@/libs/ringbuf/ringbuf.h
 @SRC_ROOT@/libs/ringbuf/ringbuf.c
@@ -76,10 +90,6 @@
 @SRC_ROOT@/libs/crc/crc.h
 @SRC_ROOT@/libs/crc/crc.c
 @SRC_ROOT@/libs/crc/test.c
-
-@SRC_ROOT@/libs/onesize/onesize.h
-@SRC_ROOT@/libs/onesize/onesize.c
-@SRC_ROOT@/libs/onesize/test.c
 
 @SRC_ROOT@/libs/ao/cooperative/port.c
 @SRC_ROOT@/libs/ao/preemptive/port.c

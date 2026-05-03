@@ -7,6 +7,11 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Add `struct am_event_handler` structure to encapsulate event handler with its context
+- Rework event library
+
 ### Fixed
 
 - Use do {} while (0) blocks in async macros.

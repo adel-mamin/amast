@@ -34,10 +34,10 @@
 #define AM_AO_H_INCLUDED
 
 #include <stdbool.h>
-#include <stdint.h>
 
 #include "common/macros.h"
-#include "event/event.h"
+#include "event/event_common.h"
+#include "event/event_queue.h"
 #include "pal/pal.h"
 
 #ifndef AM_AO_NUM_MAX
@@ -74,6 +74,7 @@ struct am_ao_prio;
     (((prio).ao <= AM_AO_PRIO_MAX) && ((prio).task <= AM_AO_PRIO_MAX))
 
 AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_TASK_NUM_MAX);
+AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_EVT_HANDLERS_NUM_MAX);
 
 /** AO priorities. */
 struct am_ao_prio {
@@ -100,8 +101,8 @@ typedef void (*am_ao_fn)(struct am_ao* ao, const struct am_event* event);
 
 /** The active object. */
 struct am_ao {
-    am_ao_fn init_handler;             /**< init event handler */
-    am_ao_fn event_handler;            /**< event handler */
+    am_ao_fn user_init_handler;        /**< user init event handler */
+    am_ao_fn user_event_handler;       /**< user event handler */
     void* ctx;                         /**< the event handler context */
     const char* name;                  /**< human readable name of AO */
     struct am_event_queue event_queue; /**< event queue */
@@ -140,11 +141,9 @@ struct am_ao_state_cfg {
     void (*crit_enter)(void);
     /** Callback to exit critical section. */
     void (*crit_exit)(void);
-};
 
-/** The subscribe list for one event. */
-struct am_ao_subscribe_list {
-    uint8_t list[AM_DIV_CEIL(AM_AO_NUM_MAX, 8)]; /**< the bitmask */
+    /** Event memory allocator. */
+    struct am_event_alloc* alloc;
 };
 
 #ifdef __cplusplus
@@ -501,7 +500,7 @@ void am_ao_state_dtor(void);
  *
  * The \p event ID must be smaller than the number of elements
  * in the array of active object subscribe lists provided to
- * am_ao_init_subscribe_list().
+ * am_event_async_init().
  *
  * @param ao     active object to subscribe
  * @param event  the event ID to subscribe to
@@ -513,7 +512,7 @@ void am_ao_subscribe(const struct am_ao* ao, int event);
  *
  * The \p event ID must be smaller than the number of elements
  * in the array of active object subscribe lists provided to
- * am_ao_init_subscribe_list().
+ * am_event_async_init().
  *
  * @param ao     active object to unsubscribe
  * @param event  the event ID to unsubscribe from
@@ -526,20 +525,6 @@ void am_ao_unsubscribe(const struct am_ao* ao, int event);
  * @param ao  active object to unsubscribe
  */
 void am_ao_unsubscribe_all(const struct am_ao* ao);
-
-/**
- * Initialize active object global subscribe list.
- *
- * Optional. Only needed, if active object pub/sub functionality is used.
- * The pub/sub functionality is provided by
- * am_ao_publish(), am_ao_publish_x(),
- * am_ao_publish_exclude(), am_ao_publish_exclude_x(),
- * am_ao_subscribe(), am_ao_unsubscribe() and am_ao_unsubscribe_all() APIs.
- *
- * @param sub   the array of active object subscribe lists
- * @param nsub  the number of elements in sub array
- */
-void am_ao_init_subscribe_list(struct am_ao_subscribe_list* sub, int nsub);
 
 /**
  * Run all active objects.

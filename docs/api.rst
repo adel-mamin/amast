@@ -218,10 +218,17 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenstruct:: am_event_queue
 
-.. doxygenstruct:: am_event_state_cfg
-   :members:
+.. doxygenstruct:: am_event_alloc
 
-.. doxygenfunction:: am_event_state_ctor
+.. doxygenstruct:: am_event_queue_policy
+
+.. doxygentypedef:: am_event_handler_fn
+
+.. doxygentypedef:: am_event_sync_fn
+
+.. doxygentypedef:: am_event_async_fn
+
+.. doxygenfunction:: am_event_async_init
 
 .. doxygenfunction:: am_event_queue_ctor
 
@@ -239,13 +246,7 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_queue_pop_front
 
-.. doxygenfunction:: am_event_queue_push_back_x
-
 .. doxygenfunction:: am_event_queue_push_back
-
-.. doxygenfunction:: am_event_queue_push_back_unsafe
-
-.. doxygenfunction:: am_event_queue_push_front_x
 
 .. doxygenfunction:: am_event_queue_push_front
 
@@ -253,17 +254,17 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_queue_flush
 
-.. doxygenfunction:: am_event_pool_add
+.. doxygenfunction:: am_event_alloc_add_pool
 
-.. doxygenfunction:: am_event_pool_get_nfree
+.. doxygenfunction:: am_event_alloc_get_nfree
 
-.. doxygenfunction:: am_event_pool_get_nfree_min
+.. doxygenfunction:: am_event_alloc_get_nfree_min
 
-.. doxygenfunction:: am_event_pool_get_nblocks
+.. doxygenfunction:: am_event_alloc_get_nblocks
 
-.. doxygenfunction:: am_event_pool_get_num
+.. doxygenfunction:: am_event_alloc_get_num
 
-.. doxygenfunction:: am_event_pool_log_unsafe
+.. doxygenfunction:: am_event_alloc_log_unsafe
 
 .. doxygenfunction:: am_event_allocate_x
 
@@ -285,7 +286,15 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_get_ref_cnt
 
-.. doxygentypedef:: am_event_handle_fn
+.. doxygenfunction:: am_event_async_register_with_id
+
+.. doxygenfunction:: am_event_async_unregister
+
+.. doxygenfunction:: am_event_async_subscribe
+
+.. doxygenfunction:: am_event_async_unsubscribe
+
+.. doxygenfunction:: am_event_async_unsubscribe_all
 
 .. _timer_api:
 
@@ -458,7 +467,7 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygendefine:: AM_AO_PRIO_IS_VALID
 
-.. doxygenstruct:: am_ao_subscribe_list
+.. doxygenstruct:: am_event_subscribe_list
 
 .. doxygenfunction:: am_ao_publish_exclude_x
 
@@ -491,8 +500,6 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 .. doxygenfunction:: am_ao_unsubscribe
 
 .. doxygenfunction:: am_ao_unsubscribe_all
-
-.. doxygenfunction:: am_ao_init_subscribe_list
 
 .. doxygenfunction:: am_ao_run_all
 

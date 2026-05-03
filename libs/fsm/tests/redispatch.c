@@ -28,7 +28,7 @@
 
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event.h"
+#include "event/event_common.h"
 #include "fsm/fsm.h"
 
 #define FSM_EVT_A (AM_EVT_USER)

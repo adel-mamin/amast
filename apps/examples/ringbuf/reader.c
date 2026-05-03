@@ -37,7 +37,7 @@
 #include "common/macros.h"
 #include "ringbuf/ringbuf.h"
 #include "timer/timer.h"
-#include "event/event.h"
+#include "event/event_common.h"
 #include "ao/ao.h"
 #include "state.h"
 

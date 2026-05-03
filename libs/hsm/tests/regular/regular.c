@@ -26,7 +26,7 @@
 
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event.h"
+#include "event/event_common.h"
 #include "hsm/hsm.h"
 #include "common.h"
 #include "regular.h"

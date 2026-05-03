@@ -36,7 +36,7 @@
 
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event.h"
+#include "event/event_common.h"
 #include "timer/timer.h"
 #include "ao/ao.h"
 #include "pal/pal.h"
@@ -190,7 +190,6 @@ int main(void) {
     am_pal_ctor(/*arg=*/NULL);
 
     struct am_timer timer;
-
     am_timer_ctor(&timer);
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);

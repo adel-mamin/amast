@@ -29,7 +29,7 @@
 
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event.h"
+#include "event/event_common.h"
 #include "hsm/hsm.h"
 #include "pal/pal.h"
 #include "ao/ao.h"
@@ -50,6 +50,7 @@ static struct table {
     int philo[PHILO_NUM];
     int nsessions;
     int nstops;
+    struct am_event_alloc* alloc;
 } m_table;
 
 static struct am_event event_stop_ = {.id = EVT_STOP};
@@ -97,9 +98,9 @@ static int table_can_serve(int philo) {
     return 1;
 }
 
-static void table_serve(int philo) {
+static void table_serve(struct table* me, int philo) {
     struct eat* eat =
-        (struct eat*)am_event_allocate(EVT_EAT, sizeof(struct eat));
+        (struct eat*)am_event_allocate(me->alloc, EVT_EAT, sizeof(struct eat));
     eat->philo = philo;
     am_printf("table serving philo %d\n", philo);
     am_ao_publish(AM_CAST(const struct am_event*, eat));
@@ -140,7 +141,7 @@ static enum am_rc table_serving(
         const struct hungry* hungry = (const struct hungry*)event;
         AM_ASSERT(!philo_is_hungry(hungry->philo));
         if (table_can_serve(hungry->philo)) {
-            table_serve(hungry->philo);
+            table_serve(me, hungry->philo);
             if (table_sessions_are_over(me)) {
                 am_ao_publish(&event_stop_);
                 return AM_HSM_TRAN(table_stopping);
@@ -158,13 +159,13 @@ static enum am_rc table_serving(
         int left = LEFT(done->philo);
         if (philo_is_hungry(left)) {
             if (table_can_serve(left)) {
-                table_serve(left);
+                table_serve(me, left);
             }
         }
         int right = RIGHT(done->philo);
         if (philo_is_hungry(right)) {
             if (table_can_serve(right)) {
-                table_serve(right);
+                table_serve(me, right);
             }
         }
         if (table_sessions_are_over(me)) {
@@ -185,15 +186,17 @@ static enum am_rc table_init(struct table* me, const struct am_event* event) {
     return AM_HSM_TRAN(table_serving);
 }
 
-void table_ctor(int nsessions) {
+void table_ctor(int nsessions, struct am_event_alloc* alloc) {
     struct table* me = &m_table;
     memset(me, 0, sizeof(*me));
     for (int i = 0; i < AM_COUNTOF(me->philo); ++i) {
         me->philo[i] = PHILO_DONE;
     }
-    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(table_init));
     me->nsessions = nsessions;
+    me->alloc = alloc;
+
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(table_init));
+    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
 }
 
 struct am_ao* table_get_obj(void) { return &m_table.ao; }

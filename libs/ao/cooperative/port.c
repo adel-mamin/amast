@@ -31,7 +31,9 @@
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event.h"
+#include "event/event_common.h"
+#include "event/event_async.h"
+#include "event/event_queue.h"
 #include "pal/pal.h"
 #include "ao/ao.h"
 #include "state.h"
@@ -42,7 +44,7 @@ void am_ao_state_ctor_(void) {
     memset(&am_ready_aos_, 0, sizeof(am_ready_aos_));
 }
 
-static void am_ao_handle(void* ctx, const struct am_event* event) {
+static enum am_rc am_ao_handle(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
@@ -51,10 +53,12 @@ static void am_ao_handle(void* ctx, const struct am_event* event) {
     AM_ATOMIC_STORE_N(&ao->last_event, event->id);
     me->running_ao_prio = ao->prio;
 
-    ao->event_handler(ao->ctx, event);
+    ao->user_event_handler(ao->ctx, event);
 
     me->running_ao_prio = AM_AO_PRIO_INVALID;
     AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_EMPTY);
+
+    return AM_RC_OK;
 }
 
 bool am_ao_run_all(void) {
@@ -123,13 +127,13 @@ void am_ao_start(
     AM_ASSERT(queue);
     AM_ASSERT(queue_size > 0);
 
-    am_event_queue_ctor(&ao->event_queue, queue, queue_size);
+    struct am_ao_state* me = &am_ao_state_;
+    am_event_queue_ctor(&ao->event_queue, queue, queue_size, me->alloc);
 
     ao->prio = prio;
     ao->name = name;
     ao->task_id = am_task_get_own_id();
 
-    struct am_ao_state* me = &am_ao_state_;
     AM_ASSERT(NULL == me->aos[prio.ao]);
     me->aos[prio.ao] = ao;
     ++me->aos_cnt;
@@ -137,8 +141,11 @@ void am_ao_start(
     AM_ATOMIC_STORE_N(&ao->running, true);
 
     me->running_ao_prio = prio;
-    if (ao->init_handler) {
-        ao->init_handler(ao->ctx, init_event);
+
+    am_event_async_register_with_id(am_ao_event_handler, ao, ao->prio.ao);
+
+    if (ao->user_init_handler) {
+        ao->user_init_handler(ao->ctx, init_event);
     }
     me->running_ao_prio = AM_AO_PRIO_INVALID;
 }
@@ -151,13 +158,11 @@ void am_ao_stop(struct am_ao* ao) {
     struct am_ao_state* me = &am_ao_state_;
     AM_ASSERT(me->aos_cnt);
 
-    if (me->subscribe_list_set) {
-        am_ao_unsubscribe_all(ao);
-    }
+    am_event_async_unsubscribe_all(ao->prio.ao);
 
     const struct am_event* e = NULL;
     while ((e = am_event_queue_pop_front(&ao->event_queue)) != NULL) {
-        am_event_free(e);
+        am_event_free(me->alloc, e);
     }
 
     me->crit_enter();
@@ -172,6 +177,8 @@ void am_ao_stop(struct am_ao* ao) {
     AM_ATOMIC_STORE_N(&ao->running, false);
 
     me->crit_exit();
+
+    am_event_async_unregister(ao->prio.ao);
 }
 
 void am_ao_notify_unsafe(const struct am_ao* ao) {

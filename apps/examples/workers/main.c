@@ -35,7 +35,9 @@
 #include "common/alignment.h"
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event.h"
+#include "event/event_async.h"
+#include "event/event_common.h"
+#include "event/event_pool.h"
 #include "timer/timer.h"
 #include "ao/ao.h"
 #include "pal/pal.h"
@@ -81,6 +83,7 @@ struct worker {
     struct am_hsm hsm;
     struct am_ao ao;
     int id;
+    struct am_event_alloc* alloc;
 };
 
 static const struct am_event m_evt_stop = {.id = EVT_STOP};
@@ -100,7 +103,7 @@ static enum am_rc worker_proc(struct worker* me, const struct am_event* event) {
         AM_ASSERT(req->work);
         req->work(req->cycles);
         struct job_done* done = (struct job_done*)am_event_allocate(
-            EVT_JOB_DONE, sizeof(struct job_done)
+            me->alloc, EVT_JOB_DONE, sizeof(struct job_done)
         );
         done->worker = me->id;
         am_ao_publish(&done->event);
@@ -124,11 +127,14 @@ static enum am_rc worker_init(struct worker* me, const struct am_event* event) {
     return AM_HSM_TRAN(worker_proc);
 }
 
-static void worker_ctor(struct worker* me, int id) {
+static void worker_ctor(
+    struct worker* me, int id, struct am_event_alloc* alloc
+) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(worker_init));
     me->id = id;
+    me->alloc = alloc;
 }
 
 struct balancer {
@@ -145,6 +151,8 @@ struct balancer {
     int stats[AM_WORKERS_NUM_MAX];
     struct worker* workers;
     int nworkers;
+
+    struct am_event_alloc* alloc;
 };
 
 static void balancer_check_stats(const struct balancer* me) {
@@ -194,7 +202,7 @@ static enum am_rc balancer_proc(
     case EVT_START: {
         struct job_req* req = AM_CAST(
             struct job_req*,
-            am_event_allocate(EVT_JOB_REQ, sizeof(struct job_req))
+            am_event_allocate(me->alloc, EVT_JOB_REQ, sizeof(struct job_req))
         );
         req->work = work;
         req->cycles = AM_WORKER_LOAD_CYCLES;
@@ -210,7 +218,7 @@ static enum am_rc balancer_proc(
         AM_ASSERT(done->worker < me->nworkers);
         struct job_req* req = AM_CAST(
             struct job_req*,
-            am_event_allocate(EVT_JOB_REQ, sizeof(struct job_req))
+            am_event_allocate(me->alloc, EVT_JOB_REQ, sizeof(struct job_req))
         );
         req->work = work;
         req->cycles = AM_WORKER_LOAD_CYCLES;
@@ -238,7 +246,8 @@ static void balancer_ctor(
     int ncpus,
     struct am_timer* timer,
     struct worker* workers,
-    int nworkers
+    int nworkers,
+    struct am_event_alloc* alloc
 ) {
     memset(me, 0, sizeof(*me));
     me->ncpus = ncpus;
@@ -250,6 +259,8 @@ static void balancer_ctor(
 
     me->timer = timer;
     me->timeout = am_timer_event_ctor_x(EVT_TIMEOUT, &me->ao);
+
+    me->alloc = alloc;
 }
 
 static void ticker_task(void* param) {
@@ -283,23 +294,29 @@ int main(void) {
     am_pal_ctor(/*arg=*/NULL);
 
     struct am_timer timer;
-
     am_timer_ctor(&timer);
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
-    am_ao_state_ctor(/*cfg=*/NULL);
+    struct am_event_alloc alloc;
+    am_event_alloc_init(&alloc);
 
     union events event_pool[AM_WORKERS_NUM_MAX];
-    am_event_pool_add(
+    am_event_alloc_add_pool(
+        &alloc,
         event_pool,
         sizeof(event_pool),
         sizeof(event_pool[0]),
         AM_ALIGNOF(events_t)
     );
 
-    struct am_ao_subscribe_list pubsub_list[EVT_PUB_MAX];
-    am_ao_init_subscribe_list(pubsub_list, AM_COUNTOF(pubsub_list));
+    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX];
+    am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), &alloc);
+
+    struct am_ao_state_cfg cfg = {
+        .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
+    };
+    am_ao_state_ctor(&cfg);
 
     int ncpus = am_get_cpu_count();
     am_printf("Number of CPUs: %d\n", ncpus);
@@ -310,9 +327,11 @@ int main(void) {
     struct balancer balancer;
     struct worker workers[AM_WORKERS_NUM_MAX];
 
-    balancer_ctor(&balancer, ncpus, &timer, workers, AM_COUNTOF(workers));
+    balancer_ctor(
+        &balancer, ncpus, &timer, workers, AM_COUNTOF(workers), &alloc
+    );
     for (int i = 0; i < ncpus; ++i) {
-        worker_ctor(&workers[i], /*id=*/i);
+        worker_ctor(&workers[i], /*id=*/i, &alloc);
     }
 
     const struct am_event* queue_balancer[AM_WORKERS_NUM_MAX];

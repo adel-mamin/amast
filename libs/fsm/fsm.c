@@ -109,7 +109,7 @@ void am_fsm_dispatch(struct am_fsm* fsm, const struct am_event* event) {
      *
      * One possible reason could be the following usage scenario:
      *
-     *  const struct am_event *e = am_event_allocate(id, size);
+     *  const struct am_event *e = am_event_allocate(alloc, id, size);
      *  am_event_inc_ref_cnt(e); <-- THIS IS MISSING
      *  am_fsm_dispatch(fsm, e);
      *      am_event_queue_push_XXX(...) & am_event_queue_pop_front_with_cb(...)

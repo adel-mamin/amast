@@ -29,7 +29,7 @@
 #include "common/types.h"
 #include "hsm/hsm.h"
 #include "common.h"
-#include "event/event.h"
+#include "event/event_common.h"
 #include "submachine.h"
 
 /**

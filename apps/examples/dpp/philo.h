@@ -29,10 +29,16 @@
 
 #include "ao/ao.h"
 #include "timer/timer.h"
+#include "event/event_common.h"
 
 #define PHILO_NUM 5
 
 struct am_ao* philo_get_obj(int id);
-void philo_ctor(int id, struct am_ao* table, struct am_timer* timer);
+void philo_ctor(
+    int id,
+    struct am_ao* table,
+    struct am_timer* timer,
+    struct am_event_alloc* alloc
+);
 
 #endif /* DPP_PHILO_H_INCLUDED */

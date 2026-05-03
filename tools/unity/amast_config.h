@@ -44,7 +44,7 @@
  * The max number of event pools.
  * Valid range: [1,32].
  */
-#define AM_EVENT_POOLS_NUM_MAX 3
+#define AM_EVENT_POOLS_NUM_MAX 12
 
 /**
  * The maximum number of active objects.

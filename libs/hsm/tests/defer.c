@@ -31,7 +31,10 @@
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event.h"
+#include "event/event_async.h"
+#include "event/event_common.h"
+#include "event/event_pool.h"
+#include "event/event_queue.h"
 #include "onesize/onesize.h"
 #include "slist/slist.h"
 #include "strlib/strlib.h"
@@ -69,12 +72,14 @@ static struct test_defer m_test_defer;
 static enum am_rc defer_s1(struct test_defer* me, const struct am_event* event);
 static enum am_rc defer_s2(struct test_defer* me, const struct am_event* event);
 
-static void defer_push_front(void* ctx, const struct am_event* event) {
+static enum am_rc defer_push_front(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
     struct test_defer* me = (struct test_defer*)ctx;
     am_event_queue_push_front(&me->event_queue, event);
+
+    return AM_RC_OK;
 }
 
 static enum am_rc defer_s1(
@@ -119,7 +124,10 @@ static enum am_rc defer_sinit(
     return AM_HSM_TRAN(defer_s1);
 }
 
-static void defer_ctor(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
+static void defer_ctor(
+    AM_PRINTF(1, 0) void (*log)(const char* fmt, ...),
+    struct am_event_alloc* alloc
+) {
     struct test_defer* me = &m_test_defer;
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(defer_sinit));
     me->log = log;
@@ -127,13 +135,13 @@ static void defer_ctor(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
     /* setup HSM event queue */
     {
         static const struct am_event* pool[2];
-        am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool));
+        am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool), alloc);
     }
 
     /* setup HSM defer queue */
     {
         static const struct am_event* pool[2];
-        am_event_queue_ctor(&me->defer_queue, pool, AM_COUNTOF(pool));
+        am_event_queue_ctor(&me->defer_queue, pool, AM_COUNTOF(pool), alloc);
     }
 }
 
@@ -145,12 +153,14 @@ static AM_PRINTF(1, 0) void defer_hsm_log(const char* fmt, ...) {
     va_end(ap);
 }
 
-static void defer_dispatch(void* ctx, const struct am_event* event) {
+static enum am_rc defer_dispatch(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
     struct test_defer* me = (struct test_defer*)ctx;
     am_hsm_dispatch(&me->hsm, event);
+
+    return AM_RC_OK;
 }
 
 static void defer_commit(void) {
@@ -164,23 +174,26 @@ static void defer_commit(void) {
 }
 
 static void test_defer(void) {
-    am_event_state_ctor(/*cfg=*/NULL);
-
+    struct am_event_alloc alloc;
     {
         static char pool[2 * AM_POOL_BLOCK_SIZEOF(struct am_event)] AM_ALIGNED(
             AM_ALIGN_MAX
         );
-        am_event_pool_add(
+        am_event_alloc_init(&alloc);
+        am_event_alloc_add_pool(
+            &alloc,
             pool,
             (int)sizeof(pool),
             AM_POOL_BLOCK_SIZEOF(struct am_event),
             AM_POOL_BLOCK_ALIGNMENT(AM_ALIGNOF(am_event_t))
         );
-        AM_ASSERT(2 == am_event_pool_get_nblocks(/*index=*/0));
-        AM_ASSERT(2 == am_event_pool_get_nfree(/*index=*/0));
+        AM_ASSERT(2 == am_event_alloc_get_nblocks(&alloc, /*index=*/0));
+        AM_ASSERT(2 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
     }
 
-    defer_ctor(defer_hsm_log);
+    am_event_async_init(/*sub=*/NULL, /*nsub=*/0, &alloc);
+
+    defer_ctor(defer_hsm_log, &alloc);
 
     struct test_defer* me = &m_test_defer;
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
@@ -194,18 +207,19 @@ static void test_defer(void) {
     };
 
     for (int i = 0; i < AM_COUNTOF(in); ++i) {
-        const struct am_event* e =
-            am_event_allocate(in[i].event, (int)sizeof(struct am_event));
+        const struct am_event* e = am_event_allocate(
+            &alloc, in[i].event, (int)sizeof(struct am_event)
+        );
         am_event_inc_ref_cnt(e);
         am_hsm_dispatch(&me->hsm, e);
-        am_event_free(e);
+        am_event_free(&alloc, e);
         defer_commit();
         AM_ASSERT(0 == strncmp(me->log_buf, in[i].out, strlen(in[i].out)));
         me->log_buf[0] = '\0';
     }
 
     /* make sure there is no memory leak */
-    AM_ASSERT(2 == am_event_pool_get_nfree(/*index=*/0));
+    AM_ASSERT(2 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
 }
 
 int main(void) {

@@ -37,7 +37,7 @@
 #include <stdint.h>
 
 #include "common/alignment.h"
-#include "event/event.h"
+#include "event/event_common.h"
 #include "slist/slist.h"
 
 /** Timer state. */
@@ -166,7 +166,14 @@ void am_timer_tick_iterator_init(struct am_timer* timer);
  * Iterate tick to next timer event.
  *
  * Must follow am_timer_tick_iterator_init() call.
- * Must be called every tick until it retuns a non-null value.
+ *
+ * This must be done every tick:
+ *
+ *   am_timer_tick_iterator_init(timer);
+ *   struct am_timer_event* fired = NULL;
+ *   while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
+ *       // handle "fired" event here
+ *   }
  *
  * @param timer  tick timer events in this timer state
  *

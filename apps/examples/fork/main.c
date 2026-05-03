@@ -52,7 +52,9 @@
 #include "common/alignment.h"
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event.h"
+#include "event/event_async.h"
+#include "event/event_common.h"
+#include "event/event_pool.h"
 #include "timer/timer.h"
 #include "ao/ao.h"
 #include "pal/pal.h"
@@ -234,25 +236,32 @@ int main(int argc, const char* argv[]) {
     }
 
     struct am_timer timer;
-
     am_timer_ctor(&timer);
 
-    am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
-
-    am_ao_state_ctor(/*cfg=*/NULL);
-
-    struct am_ao_subscribe_list pubsub_list[EVT_PUB_MAX];
-
-    am_ao_init_subscribe_list(pubsub_list, AM_COUNTOF(pubsub_list));
+    struct am_event_alloc alloc;
+    am_event_alloc_init(&alloc);
 
     /*
      * Event size is set to arbitrary value.
      */
     char event_pool[EVT_MAX][128] AM_ALIGNED(AM_ALIGN_MAX);
-
-    am_event_pool_add(
-        event_pool, sizeof(event_pool), sizeof(event_pool[0]), AM_ALIGN_MAX
+    am_event_alloc_add_pool(
+        &alloc,
+        event_pool,
+        sizeof(event_pool),
+        sizeof(event_pool[0]),
+        AM_ALIGN_MAX
     );
+
+    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX];
+    am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), &alloc);
+
+    am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
+
+    struct am_ao_state_cfg cfg = {
+        .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
+    };
+    am_ao_state_ctor(&cfg);
 
     struct progress m;
     progress_ctor(&m, &timer);

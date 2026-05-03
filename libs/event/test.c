@@ -36,7 +36,10 @@
 #include "common/macros.h"
 #include "common/alignment.h"
 
-#include "event.h"
+#include "event_common.h"
+#include "event_queue.h"
+#include "event_async.h"
+#include "event_pool.h"
 
 static struct buf1 {
     struct am_event e;
@@ -63,17 +66,25 @@ static struct buf5 {
     int64_t _[5];
 } buf5;
 
-static void test_allocate(int size, int pool_index_plus_one) {
-    const struct am_event* e = am_event_allocate(AM_EVT_USER, size);
+static void test_allocate(
+    struct am_event_alloc* alloc, int size, int pool_index_plus_one
+) {
+    const struct am_event* e = am_event_allocate(alloc, AM_EVT_USER, size);
     AM_ASSERT(e->pool_index_plus_one == pool_index_plus_one);
-    am_event_free(e);
+    am_event_free(alloc, e);
 }
 
 static void test_am_event_queue(const int capacity, const int rdwr_num) {
+    struct am_event_alloc alloc;
+    am_event_alloc_init(&alloc);
+    am_event_alloc_add_pool(
+        &alloc, &buf1, sizeof(buf1), sizeof(buf1), AM_ALIGNOF(am_event_t)
+    );
+
     const struct am_event* pool[capacity];
 
     struct am_event_queue q;
-    am_event_queue_ctor(&q, pool, capacity);
+    am_event_queue_ctor(&q, pool, capacity, &alloc);
     AM_ASSERT(am_event_queue_is_empty(&q));
 
     if (!rdwr_num) {
@@ -114,75 +125,90 @@ static void test_am_event_queue(const int capacity, const int rdwr_num) {
 int main(void) {
     const int align = AM_ALIGNOF(am_event_t);
     {
-        am_event_state_ctor(/*cfg=*/NULL);
-        am_event_pool_add(&buf1, sizeof(buf1), sizeof(buf1), align);
+        struct am_event_alloc ea;
+        am_event_alloc_init(&ea);
+        am_event_alloc_add_pool(&ea, &buf1, sizeof(buf1), sizeof(buf1), align);
 
-        test_allocate(sizeof(buf1), /*pool_index_plus_one=*/1);
-        test_allocate(sizeof(buf1) - 1, /*pool_index_plus_one=*/1);
+        am_event_async_init(/*sub=*/NULL, /*nsub=*/0, &ea);
+
+        test_allocate(&ea, sizeof(buf1), /*pool_index_plus_one=*/1);
+        test_allocate(&ea, sizeof(buf1) - 1, /*pool_index_plus_one=*/1);
     }
     {
-        am_event_state_ctor(/*cfg=*/NULL);
-        am_event_pool_add(&buf1, sizeof(buf1), sizeof(buf1), align);
-        am_event_pool_add(&buf2, sizeof(buf2), sizeof(buf2), align);
+        struct am_event_alloc ea;
+        am_event_alloc_init(&ea);
+        am_event_alloc_add_pool(&ea, &buf1, sizeof(buf1), sizeof(buf1), align);
+        am_event_alloc_add_pool(&ea, &buf2, sizeof(buf2), sizeof(buf2), align);
 
-        test_allocate(sizeof(buf1), /*pool_index_plus_one=*/1);
-        test_allocate(sizeof(buf1) + 1, /*pool_index_plus_one=*/2);
-        test_allocate(sizeof(buf2), /*pool_index_plus_one=*/2);
-        test_allocate(sizeof(buf2) - 1, /*pool_index_plus_one=*/2);
+        am_event_async_init(/*sub=*/NULL, /*nsub=*/0, &ea);
+
+        test_allocate(&ea, sizeof(buf1), /*pool_index_plus_one=*/1);
+        test_allocate(&ea, sizeof(buf1) + 1, /*pool_index_plus_one=*/2);
+        test_allocate(&ea, sizeof(buf2), /*pool_index_plus_one=*/2);
+        test_allocate(&ea, sizeof(buf2) - 1, /*pool_index_plus_one=*/2);
     }
     {
-        am_event_state_ctor(/*cfg=*/NULL);
-        am_event_pool_add(&buf1, sizeof(buf1), sizeof(buf1), align);
-        am_event_pool_add(&buf2, sizeof(buf2), sizeof(buf2), align);
-        am_event_pool_add(&buf3, sizeof(buf3), sizeof(buf3), align);
+        struct am_event_alloc ea;
+        am_event_alloc_init(&ea);
+        am_event_alloc_add_pool(&ea, &buf1, sizeof(buf1), sizeof(buf1), align);
+        am_event_alloc_add_pool(&ea, &buf2, sizeof(buf2), sizeof(buf2), align);
+        am_event_alloc_add_pool(&ea, &buf3, sizeof(buf3), sizeof(buf3), align);
 
-        test_allocate(sizeof(buf1), /*pool_index_plus_one=*/1);
-        test_allocate(sizeof(buf2), /*pool_index_plus_one=*/2);
-        test_allocate(sizeof(buf1) + 1, /*pool_index_plus_one=*/2);
-        test_allocate(sizeof(buf2) - 1, /*pool_index_plus_one=*/2);
-        test_allocate(sizeof(buf2) + 1, /*pool_index_plus_one=*/3);
-        test_allocate(sizeof(buf3) - 1, /*pool_index_plus_one=*/3);
-        test_allocate(sizeof(buf3), /*pool_index_plus_one=*/3);
+        am_event_async_init(/*sub=*/NULL, /*nsub=*/0, &ea);
+
+        test_allocate(&ea, sizeof(buf1), /*pool_index_plus_one=*/1);
+        test_allocate(&ea, sizeof(buf2), /*pool_index_plus_one=*/2);
+        test_allocate(&ea, sizeof(buf1) + 1, /*pool_index_plus_one=*/2);
+        test_allocate(&ea, sizeof(buf2) - 1, /*pool_index_plus_one=*/2);
+        test_allocate(&ea, sizeof(buf2) + 1, /*pool_index_plus_one=*/3);
+        test_allocate(&ea, sizeof(buf3) - 1, /*pool_index_plus_one=*/3);
+        test_allocate(&ea, sizeof(buf3), /*pool_index_plus_one=*/3);
     }
     {
-        am_event_state_ctor(/*cfg=*/NULL);
-        am_event_pool_add(&buf1, sizeof(buf1), sizeof(buf1), align);
-        am_event_pool_add(&buf2, sizeof(buf2), sizeof(buf2), align);
-        am_event_pool_add(&buf3, sizeof(buf3), sizeof(buf3), align);
-        am_event_pool_add(&buf4, sizeof(buf4), sizeof(buf4), align);
+        struct am_event_alloc ea;
+        am_event_alloc_init(&ea);
+        am_event_alloc_add_pool(&ea, &buf1, sizeof(buf1), sizeof(buf1), align);
+        am_event_alloc_add_pool(&ea, &buf2, sizeof(buf2), sizeof(buf2), align);
+        am_event_alloc_add_pool(&ea, &buf3, sizeof(buf3), sizeof(buf3), align);
+        am_event_alloc_add_pool(&ea, &buf4, sizeof(buf4), sizeof(buf4), align);
 
-        test_allocate(sizeof(buf1), /*pool_index_plus_one=*/1);
-        test_allocate(sizeof(buf1) + 1, /*pool_index_plus_one=*/2);
-        test_allocate(sizeof(buf2), /*pool_index_plus_one=*/2);
-        test_allocate(sizeof(buf2) - 1, /*pool_index_plus_one=*/2);
-        test_allocate(sizeof(buf2) + 1, /*pool_index_plus_one=*/3);
-        test_allocate(sizeof(buf3) - 1, /*pool_index_plus_one=*/3);
-        test_allocate(sizeof(buf3), /*pool_index_plus_one=*/3);
-        test_allocate(sizeof(buf3) + 1, /*pool_index_plus_one=*/4);
-        test_allocate(sizeof(buf4) - 1, /*pool_index_plus_one=*/4);
-        test_allocate(sizeof(buf4), /*pool_index_plus_one=*/4);
+        am_event_async_init(/*sub=*/NULL, /*nsub=*/0, &ea);
+
+        test_allocate(&ea, sizeof(buf1), /*pool_index_plus_one=*/1);
+        test_allocate(&ea, sizeof(buf1) + 1, /*pool_index_plus_one=*/2);
+        test_allocate(&ea, sizeof(buf2), /*pool_index_plus_one=*/2);
+        test_allocate(&ea, sizeof(buf2) - 1, /*pool_index_plus_one=*/2);
+        test_allocate(&ea, sizeof(buf2) + 1, /*pool_index_plus_one=*/3);
+        test_allocate(&ea, sizeof(buf3) - 1, /*pool_index_plus_one=*/3);
+        test_allocate(&ea, sizeof(buf3), /*pool_index_plus_one=*/3);
+        test_allocate(&ea, sizeof(buf3) + 1, /*pool_index_plus_one=*/4);
+        test_allocate(&ea, sizeof(buf4) - 1, /*pool_index_plus_one=*/4);
+        test_allocate(&ea, sizeof(buf4), /*pool_index_plus_one=*/4);
     }
     {
-        am_event_state_ctor(/*cfg=*/NULL);
-        am_event_pool_add(&buf1, sizeof(buf1), sizeof(buf1), align);
-        am_event_pool_add(&buf2, sizeof(buf2), sizeof(buf2), align);
-        am_event_pool_add(&buf3, sizeof(buf3), sizeof(buf3), align);
-        am_event_pool_add(&buf4, sizeof(buf4), sizeof(buf4), align);
-        am_event_pool_add(&buf5, sizeof(buf5), sizeof(buf5), align);
+        struct am_event_alloc ea;
+        am_event_alloc_init(&ea);
+        am_event_alloc_add_pool(&ea, &buf1, sizeof(buf1), sizeof(buf1), align);
+        am_event_alloc_add_pool(&ea, &buf2, sizeof(buf2), sizeof(buf2), align);
+        am_event_alloc_add_pool(&ea, &buf3, sizeof(buf3), sizeof(buf3), align);
+        am_event_alloc_add_pool(&ea, &buf4, sizeof(buf4), sizeof(buf4), align);
+        am_event_alloc_add_pool(&ea, &buf5, sizeof(buf5), sizeof(buf5), align);
 
-        test_allocate(sizeof(buf1), /*pool_index_plus_one=*/1);
-        test_allocate(sizeof(buf1) + 1, /*pool_index_plus_one=*/2);
-        test_allocate(sizeof(buf2), /*pool_index_plus_one=*/2);
-        test_allocate(sizeof(buf2) - 1, /*pool_index_plus_one=*/2);
-        test_allocate(sizeof(buf2) + 1, /*pool_index_plus_one=*/3);
-        test_allocate(sizeof(buf3) - 1, /*pool_index_plus_one=*/3);
-        test_allocate(sizeof(buf3), /*pool_index_plus_one=*/3);
-        test_allocate(sizeof(buf3) + 1, /*pool_index_plus_one=*/4);
-        test_allocate(sizeof(buf4) - 1, /*pool_index_plus_one=*/4);
-        test_allocate(sizeof(buf4), /*pool_index_plus_one=*/4);
-        test_allocate(sizeof(buf4) + 1, /*pool_index_plus_one=*/5);
-        test_allocate(sizeof(buf5) - 1, /*pool_index_plus_one=*/5);
-        test_allocate(sizeof(buf5), /*pool_index_plus_one=*/5);
+        am_event_async_init(/*sub=*/NULL, /*nsub=*/0, &ea);
+
+        test_allocate(&ea, sizeof(buf1), /*pool_index_plus_one=*/1);
+        test_allocate(&ea, sizeof(buf1) + 1, /*pool_index_plus_one=*/2);
+        test_allocate(&ea, sizeof(buf2), /*pool_index_plus_one=*/2);
+        test_allocate(&ea, sizeof(buf2) - 1, /*pool_index_plus_one=*/2);
+        test_allocate(&ea, sizeof(buf2) + 1, /*pool_index_plus_one=*/3);
+        test_allocate(&ea, sizeof(buf3) - 1, /*pool_index_plus_one=*/3);
+        test_allocate(&ea, sizeof(buf3), /*pool_index_plus_one=*/3);
+        test_allocate(&ea, sizeof(buf3) + 1, /*pool_index_plus_one=*/4);
+        test_allocate(&ea, sizeof(buf4) - 1, /*pool_index_plus_one=*/4);
+        test_allocate(&ea, sizeof(buf4), /*pool_index_plus_one=*/4);
+        test_allocate(&ea, sizeof(buf4) + 1, /*pool_index_plus_one=*/5);
+        test_allocate(&ea, sizeof(buf5) - 1, /*pool_index_plus_one=*/5);
+        test_allocate(&ea, sizeof(buf5), /*pool_index_plus_one=*/5);
     }
 
     test_am_event_queue(/*capacity=*/1, /*rdwr_num=*/0);

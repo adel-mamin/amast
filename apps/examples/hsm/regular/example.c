@@ -31,7 +31,7 @@
 #include "common/compiler.h"
 #include "common/constants.h"
 #include "common/macros.h"
-#include "event/event.h"
+#include "event/event_common.h"
 #include "strlib/strlib.h"
 #include "hsm/hsm.h"
 #include "common.h"

@@ -37,7 +37,7 @@
 #include <stdint.h>
 
 #include "common/types.h"
-#include "event/event.h"
+#include "event/event_common.h"
 
 /** Forward declaration. */
 struct am_fsm;

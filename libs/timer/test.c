@@ -32,7 +32,7 @@
 #include <stddef.h>
 
 #include "common/macros.h"
-#include "event/event.h"
+#include "event/event_common.h"
 #include "timer/timer.h"
 
 #define EVT_TEST AM_EVT_USER

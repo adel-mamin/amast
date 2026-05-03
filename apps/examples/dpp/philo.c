@@ -29,7 +29,7 @@
 #include "common/macros.h"
 #include "common/types.h"
 #include "hsm/hsm.h"
-#include "event/event.h"
+#include "event/event_common.h"
 #include "pal/pal.h"
 #include "timer/timer.h"
 #include "ao/ao.h"
@@ -48,6 +48,7 @@ static struct philo {
     int cnt;
     struct am_ao* table;
     struct am_timer* timer;
+    struct am_event_alloc* alloc;
     struct am_timer_event_x timeout;
 } m_philo[PHILO_NUM];
 
@@ -85,7 +86,7 @@ static enum am_rc philo_thinking(
 
     case EVT_TIMEOUT: {
         struct hungry* msg = (struct hungry*)am_event_allocate(
-            EVT_HUNGRY, sizeof(struct hungry)
+            me->alloc, EVT_HUNGRY, sizeof(struct hungry)
         );
         msg->philo = me->id;
         am_ao_post_fifo(me->table, &msg->event);
@@ -125,8 +126,9 @@ static enum am_rc philo_eating(struct philo* me, const struct am_event* event) {
 
     case EVT_TIMEOUT: {
         am_printf("philo %d publishing DONE\n", me->id);
-        struct done* msg =
-            (struct done*)am_event_allocate(EVT_DONE, sizeof(struct done));
+        struct done* msg = (struct done*)am_event_allocate(
+            me->alloc, EVT_DONE, sizeof(struct done)
+        );
         msg->philo = me->id;
         am_ao_publish(AM_CAST(const struct am_event*, msg));
         return AM_HSM_TRAN(philo_thinking);
@@ -144,9 +146,15 @@ static enum am_rc philo_init(struct philo* me, const struct am_event* event) {
     return AM_HSM_TRAN(philo_thinking);
 }
 
-void philo_ctor(int id, struct am_ao* table, struct am_timer* timer) {
+void philo_ctor(
+    int id,
+    struct am_ao* table,
+    struct am_timer* timer,
+    struct am_event_alloc* alloc
+) {
     AM_ASSERT(id >= 0);
     AM_ASSERT(id < AM_COUNTOF(m_philo));
+    AM_ASSERT(alloc);
 
     struct philo* me = &m_philo[id];
     memset(me, 0, sizeof(*me));
@@ -158,6 +166,7 @@ void philo_ctor(int id, struct am_ao* table, struct am_timer* timer) {
     me->table = table;
     me->timer = timer;
     me->timeout = am_timer_event_ctor_x(EVT_TIMEOUT, &me->ao);
+    me->alloc = alloc;
 }
 
 struct am_ao* philo_get_obj(int id) {

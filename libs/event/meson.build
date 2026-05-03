@@ -24,7 +24,13 @@
 # SOFTWARE.
 #
 
-event_src = [files('event.c')]
+event_src = [files(
+  'event_async.c',
+  'event_pool.c',
+  'event_queue.c',
+  'event_sync.c',
+  'event.c')
+]
 
 libevent = library(
     'event',
@@ -44,9 +50,9 @@ libraries += libevent
 if unit_test
     e = executable(
         'event',
-        ['event.c', 'test.c', slist_src],
+        ['test.c', slist_src],
         c_args: ['-DAM_EVENT_POOLS_NUM_MAX=32'],
-        dependencies : [libonesize_dep, libassert_dep],
+        dependencies : [libonesize_dep, libassert_dep, libevent_dep],
         include_directories: inc)
     test('event', e)
 endif

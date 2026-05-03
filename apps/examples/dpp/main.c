@@ -37,7 +37,9 @@
 #include "common/compiler.h"
 #include "common/constants.h"
 #include "common/macros.h"
-#include "event/event.h"
+#include "event/event_async.h"
+#include "event/event_common.h"
+#include "event/event_pool.h"
 #include "timer/timer.h"
 #include "pal/pal.h"
 #include "ao/ao.h"
@@ -45,6 +47,8 @@
 #include "philo.h"
 #include "table.h"
 #include "events.h"
+
+static struct am_event_alloc alloc;
 
 const char* event_to_str(int id) {
     if (EVT_DONE == id) {
@@ -103,7 +107,7 @@ AM_NORETURN void am_assert_failure(
         line,
         am_task_get_own_id()
     );
-    am_event_pool_log_unsafe(/*num=*/-1, log_pool);
+    am_event_alloc_log_unsafe(&alloc, /*num=*/-1, log_pool);
     am_ao_crash_dump_event_queues_unsafe(/*num=*/-1, log_queue);
     am_pal_flush();
     __builtin_trap();
@@ -137,27 +141,33 @@ static void ticker_task(void* param) {
 int main(void) {
     am_pal_ctor(/*arg=*/NULL);
 
+    am_event_alloc_init(&alloc);
+
     struct am_timer timer;
-
     am_timer_ctor(&timer);
-
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
-    am_ao_state_ctor(/*cfg=*/NULL);
+    struct am_event_subscribe_list pubsub_list[AM_AO_EVT_PUB_MAX];
+    am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), &alloc);
 
     char event_pool[3 * PHILO_NUM][128] AM_ALIGNED(AM_ALIGN_MAX);
-
-    am_event_pool_add(
-        event_pool, sizeof(event_pool), sizeof(event_pool[0]), AM_ALIGN_MAX
+    am_event_alloc_add_pool(
+        &alloc,
+        event_pool,
+        sizeof(event_pool),
+        sizeof(event_pool[0]),
+        AM_ALIGN_MAX
     );
 
-    struct am_ao_subscribe_list pubsub_list[AM_AO_EVT_PUB_MAX];
-    am_ao_init_subscribe_list(pubsub_list, AM_COUNTOF(pubsub_list));
+    struct am_ao_state_cfg cfg = {
+        .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
+    };
+    am_ao_state_ctor(&cfg);
 
     for (int i = 0; i < PHILO_NUM; ++i) {
-        philo_ctor(i, table_get_obj(), &timer);
+        philo_ctor(i, table_get_obj(), &timer, &alloc);
     }
-    table_ctor(/*nsessions=*/100);
+    table_ctor(/*nsessions=*/100, &alloc);
 
     const struct am_event* queue_table[2 * PHILO_NUM];
 

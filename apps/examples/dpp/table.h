@@ -27,7 +27,9 @@
 #ifndef DPP_TABLE_H_INCLUDED
 #define DPP_TABLE_H_INCLUDED
 
+#include "event/event_common.h"
+
 struct am_ao* table_get_obj(void);
-void table_ctor(int nsessions);
+void table_ctor(int nsessions, struct am_event_alloc* alloc);
 
 #endif /* DPP_TABLE_H_INCLUDED */
