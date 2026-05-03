@@ -119,15 +119,14 @@ struct am_async {
 #define AM_ASYNC_CALL(func) do {                            \
             am_async_->state = __LINE__;                    \
             /* FALLTHROUGH */                               \
-        case __LINE__:                                      \
-            do {                                            \
-                enum am_rc rc_ = (func);                    \
-                if (AM_RC_ASYNC_BUSY == rc_) {              \
-                    return AM_RC_ASYNC_BUSY;                \
-                }                                           \
-                AM_ASSERT(AM_RC_ASYNC_DONE == rc_);         \
-                am_async_->state = AM_ASYNC_STATE_INIT;     \
-            } while (0);                                    \
+        case __LINE__: {                                    \
+            enum am_rc rc_ = (func);                        \
+            if (AM_RC_ASYNC_BUSY == rc_) {                  \
+                return AM_RC_ASYNC_BUSY;                    \
+            }                                               \
+            AM_ASSERT(AM_RC_ASYNC_DONE == rc_);             \
+            am_async_->state = AM_ASYNC_STATE_INIT;         \
+        }                                                   \
     } while (0)
 
 /**
