@@ -11,6 +11,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - Add `struct am_event_handler` structure to encapsulate event handler with its context
 - Rework event library
+- Simplify ticker tasks in all examples
 
 ### Fixed
 

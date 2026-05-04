@@ -31,7 +31,6 @@
  */
 
 #include <stddef.h>
-#include <stdint.h>
 
 #include "common/alignment.h"
 #include "common/compiler.h"
@@ -118,12 +117,8 @@ static void ticker_task(void* param) {
 
     am_task_startup_gate_wait();
 
-    const int domain = AM_TICK_DOMAIN_DEFAULT;
-    const uint32_t ticks_per_ms = am_time_get_tick_from_ms(domain, 1);
-    uint32_t now_ticks = am_time_get_tick(domain);
     while (am_ao_get_cnt() > 0) {
-        am_sleep_till_ticks(domain, now_ticks + ticks_per_ms);
-        now_ticks += ticks_per_ms;
+        am_sleep_ticks(AM_TICK_DOMAIN_DEFAULT, /*ticks=*/1);
 
         am_timer_tick_iterator_init(timer);
         struct am_timer_event* fired = NULL;
