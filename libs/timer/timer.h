@@ -48,7 +48,7 @@ struct am_timer {
      * List of armed pending timer events.
      * Each armed timer event is first placed into this list
      * and then moved to the list of armed timers events
-     * in next am_timer_tick() call.
+     * in next am_timer_tick_iterator_init() call.
      *
      * This is done to limit the armed timer events list operations
      * exclusively to am_timer_tick_iterator_init() call to avoid race
