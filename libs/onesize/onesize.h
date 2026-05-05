@@ -50,10 +50,6 @@ struct am_onesize {
     int ntotal;         /**< total number of blocks */
     int nfree_min;      /**< minimum number of blocks in free list */
     int nbump;          /**< bump index */
-    /** Enter critical section */
-    void (*crit_enter)(void);
-    /** Exit critical section */
-    void (*crit_exit)(void);
 };
 
 /** Onesize configuration. */
@@ -68,10 +64,6 @@ struct am_onesize_cfg {
     int block_size;
     /** The alignment of allocated memory blocks [bytes]. */
     int alignment;
-    /** Enter critical section. */
-    void (*crit_enter)(void);
-    /** Exit critical section. */
-    void (*crit_exit)(void);
 };
 
 #ifdef __cplusplus

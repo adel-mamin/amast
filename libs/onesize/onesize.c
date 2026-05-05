@@ -48,10 +48,7 @@ void* am_onesize_allocate_x(struct am_onesize* hnd, int margin) {
     AM_ASSERT(hnd);
     AM_ASSERT(margin >= 0);
 
-    hnd->crit_enter();
-
     if (hnd->nfree <= margin) {
-        hnd->crit_exit();
         return NULL;
     }
 
@@ -76,8 +73,6 @@ void* am_onesize_allocate_x(struct am_onesize* hnd, int margin) {
         ++hnd->nbump;
     }
 
-    hnd->crit_exit();
-
     return ptr;
 }
 
@@ -96,8 +91,6 @@ void am_onesize_free(struct am_onesize* hnd, const void* ptr) {
 
     struct am_slist_item* p = AM_CAST(struct am_slist_item*, ptr);
 
-    hnd->crit_enter();
-
     const struct am_slist_item* head = am_slist_peek_front(&hnd->fl);
     if (head) {
         AM_ASSERT(head != ptr); /* double free? */
@@ -108,20 +101,14 @@ void am_onesize_free(struct am_onesize* hnd, const void* ptr) {
     ++hnd->nfree;
 
     am_slist_push_front(&hnd->fl, p);
-
-    hnd->crit_exit();
 }
 
 void am_onesize_free_all(struct am_onesize* hnd) {
     AM_ASSERT(hnd);
 
-    hnd->crit_enter();
-
     am_slist_ctor(&hnd->fl);
     hnd->nbump = 0;
     hnd->nfree = hnd->ntotal;
-
-    hnd->crit_exit();
 }
 
 void am_onesize_iterate_over_allocated_unsafe(
@@ -154,22 +141,12 @@ void am_onesize_iterate_over_allocated_unsafe(
 
 int am_onesize_get_nfree(const struct am_onesize* hnd) {
     AM_ASSERT(hnd);
-
-    hnd->crit_enter();
-    int nfree = hnd->nfree;
-    hnd->crit_exit();
-
-    return nfree;
+    return hnd->nfree;
 }
 
 int am_onesize_get_nfree_min(const struct am_onesize* hnd) {
     AM_ASSERT(hnd);
-
-    hnd->crit_enter();
-    int nfree_min = hnd->nfree_min;
-    hnd->crit_exit();
-
-    return nfree_min;
+    return hnd->nfree_min;
 }
 
 int am_onesize_get_block_size(const struct am_onesize* hnd) {
@@ -181,9 +158,6 @@ int am_onesize_get_nblocks(const struct am_onesize* hnd) {
     AM_ASSERT(hnd);
     return hnd->ntotal;
 }
-
-static void am_onesize_crit_enter(void) {}
-static void am_onesize_crit_exit(void) {}
 
 void am_onesize_ctor(struct am_onesize* hnd, const struct am_onesize_cfg* cfg) {
     AM_ASSERT(hnd);
@@ -208,14 +182,6 @@ void am_onesize_ctor(struct am_onesize* hnd, const struct am_onesize_cfg* cfg) {
     hnd->pool_beg = cfg->pool.ptr;
     hnd->pool_end = (char*)cfg->pool.ptr + (hnd->ntotal * hnd->block_size);
     hnd->nbump = 0;
-
-    if (cfg->crit_enter && cfg->crit_exit) {
-        hnd->crit_enter = cfg->crit_enter;
-        hnd->crit_exit = cfg->crit_exit;
-    } else {
-        hnd->crit_enter = am_onesize_crit_enter;
-        hnd->crit_exit = am_onesize_crit_exit;
-    }
 
     am_slist_ctor(&hnd->fl);
 }
