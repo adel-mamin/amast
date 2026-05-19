@@ -117,8 +117,8 @@ void am_task_notify(void* task) {
     }
 }
 
-void am_task_wait(void* task) {
-    (void)task;
+void am_task_wait(int task_id) {
+    (void)task_id;
     if (xPortIsInsideInterrupt()) {
         ulTaskNotifyTakeFromIsr(
             /*xClearCountOnExit=*/pdTRUE, /*xTicksToWait=*/portMAX_DELAY

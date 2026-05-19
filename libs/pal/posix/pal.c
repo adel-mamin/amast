@@ -248,17 +248,17 @@ void am_task_notify(int task) {
     pthread_mutex_unlock(&t->mutex);
 }
 
-void am_task_wait(int task) {
-    if (AM_TASK_ID_NONE == task) {
-        task = am_task_get_own_id();
+void am_task_wait(int task_id) {
+    if (AM_TASK_ID_NONE == task_id) {
+        task_id = am_task_get_own_id();
     }
-    AM_ASSERT(task != AM_TASK_ID_NONE);
+    AM_ASSERT(task_id != AM_TASK_ID_NONE);
 
     struct am_task* t = NULL;
-    if (AM_TASK_ID_MAIN == task) {
+    if (AM_TASK_ID_MAIN == task_id) {
         t = &task_main_;
     } else {
-        t = &am_tasks_[am_pal_index_from_id(task)];
+        t = &am_tasks_[am_pal_index_from_id(task_id)];
     }
     pthread_mutex_lock(&t->mutex);
     while (!AM_ATOMIC_LOAD_N(&t->notified)) {

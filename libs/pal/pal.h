@@ -163,9 +163,9 @@ void am_task_notify(int task);
 /**
  * Block PAL task till am_task_notify() is called.
  *
- * @param task  the task ID returned by am_task_create()
+ * @param task_id  the task ID returned by am_task_create()
  */
-void am_task_wait(int task);
+void am_task_wait(int task_id);
 
 /**
  * Return task own ID.

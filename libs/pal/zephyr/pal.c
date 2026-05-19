@@ -228,7 +228,7 @@ void am_task_notify(int task) {
     k_wakeup(t->tid);
 }
 
-void am_task_wait(int task) { k_sleep(K_FOREVER); }
+void am_task_wait(int task_id) { k_sleep(K_FOREVER); }
 
 int am_task_get_own_id(void) {
     k_tid_t tid = k_current_get();
