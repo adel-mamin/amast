@@ -14,6 +14,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Simplify ticker tasks in all examples
 - Prune critical section use from onesize memory allocator
 
+### Added
+
+- Add `AM_ATOMIC_EXCHANGE_N()` macro
+
 ### Fixed
 
 - Use do {} while (0) blocks in async macros.

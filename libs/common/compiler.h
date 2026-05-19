@@ -117,4 +117,8 @@
 #define AM_ATOMIC_FETCH_ADD(ptr, val) \
     __atomic_fetch_add(ptr, val, __ATOMIC_SEQ_CST)
 
+/** Atomic exchange operation. */
+#define AM_ATOMIC_EXCHANGE_N(ptr, val) \
+    __atomic_exchange_n(ptr, val, __ATOMIC_SEQ_CST)
+
 #endif /* AM_COMPILER_H_INCLUDED */
