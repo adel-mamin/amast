@@ -156,9 +156,9 @@ int am_task_create(
 /**
  * Wake up PAL task.
  *
- * @param task  task ID returned by am_task_create()
+ * @param task_id  task ID returned by am_task_create()
  */
-void am_task_notify(int task);
+void am_task_notify(int task_id);
 
 /**
  * Block PAL task till am_task_notify() is called.

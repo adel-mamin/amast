@@ -251,8 +251,8 @@ int am_task_create(
     return am_pal_id_from_index(index);
 }
 
-void am_task_notify(int task) {
-    AM_ASSERT(task != AM_TASK_ID_NONE);
+void am_task_notify(int task_id) {
+    AM_ASSERT(task_id != AM_TASK_ID_NONE);
 
     struct am_task* t = am_task_get_hnd(task_id);
     pthread_mutex_lock(&t->mutex);

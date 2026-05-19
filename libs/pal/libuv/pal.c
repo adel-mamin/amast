@@ -216,6 +216,24 @@ static void task_entry_wrapper(void* arg) {
     }
 }
 
+static bool am_task_id_is_valid(int task_id) {
+    if (AM_TASK_ID_MAIN == task_id) {
+        return true;
+    }
+    if ((AM_TASK_ID_NONE == task_id) || (task_id < 0)) {
+        return false;
+    }
+    return task_id <= AM_COUNTOF(tasks_);
+}
+
+static struct am_task* am_task_get_hnd(int task_id) {
+    AM_ASSERT(am_task_id_is_valid(task_id));
+    if (AM_TASK_ID_MAIN == task_id) {
+        return &task_main_;
+    }
+    return &tasks_[am_pal_index_from_id(task_id)];
+}
+
 int am_task_create(
     const char* name,
     int prio,
@@ -264,15 +282,10 @@ int am_task_create(
     return task->id;
 }
 
-void am_task_notify(int task) {
-    AM_ASSERT(task != AM_TASK_ID_NONE);
+void am_task_notify(int task_id) {
+    AM_ASSERT(task_id != AM_TASK_ID_NONE);
 
-    struct am_task* t = NULL;
-    if (AM_TASK_ID_MAIN == task) {
-        t = &task_main_;
-    } else {
-        t = &tasks_[am_pal_index_from_id(task)];
-    }
+    struct am_task* t = am_task_get_hnd(task_id);
     uv_sem_post(&t->semaphore);
 }
 
@@ -282,12 +295,7 @@ void am_task_wait(int task_id) {
     }
     AM_ASSERT(task_id != AM_TASK_ID_NONE);
 
-    struct am_task* t = NULL;
-    if (AM_TASK_ID_MAIN == task_id) {
-        t = &task_main_;
-    } else {
-        t = &tasks_[am_pal_index_from_id(task_id)];
-    }
+    struct am_task* t = am_task_get_hnd(task_id);
     uv_sem_wait(&t->semaphore);
 }
 

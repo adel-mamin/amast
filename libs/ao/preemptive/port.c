@@ -187,7 +187,7 @@ void am_ao_stop(struct am_ao* ao) {
     am_event_async_unregister(ao->prio.ao);
 
     if (0 == AM_ATOMIC_LOAD_N(&me->aos_cnt)) {
-        am_task_notify(/*task=*/AM_TASK_ID_MAIN);
+        am_task_notify(/*task_id=*/AM_TASK_ID_MAIN);
     }
 }
 

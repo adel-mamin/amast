@@ -163,6 +163,24 @@ static void am_pal_thread_entry(void* p1, void* p2, void* p3) {
     task->entry(task->arg);
 }
 
+static bool am_task_id_is_valid(int task_id) {
+    if (AM_TASK_ID_MAIN == task_id) {
+        return true;
+    }
+    if ((AM_TASK_ID_NONE == task_id) || (task_id < 0)) {
+        return false;
+    }
+    return task_id <= AM_COUNTOF(am_tasks_);
+}
+
+static struct am_task* am_task_get_hnd(int task_id) {
+    AM_ASSERT(am_task_id_is_valid(task_id));
+    if (AM_TASK_ID_MAIN == task_id) {
+        return &task_main_;
+    }
+    return &am_tasks_[am_pal_index_from_id(task_id)];
+}
+
 int am_task_create(
     const char* name,
     int prio,
@@ -216,16 +234,11 @@ int am_task_create(
     return am_pal_id_from_index(index);
 }
 
-void am_task_notify(int task) {
-    AM_ASSERT(task != AM_TASK_ID_NONE);
+void am_task_notify(int task_id) {
+    AM_ASSERT(task_id != AM_TASK_ID_NONE);
 
-    struct am_task* t = NULL;
-    if (AM_TASK_ID_MAIN == task) {
-        t = &task_main_;
-    } else {
-        t = &am_tasks_[am_pal_index_from_id(task)];
-    }
-    k_wakeup(t->tid);
+    struct am_task* t = am_task_get_hnd(task_id);
+    k_wakeup(->tid);
 }
 
 void am_task_wait(int task_id) { k_sleep(K_FOREVER); }
