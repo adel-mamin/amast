@@ -105,6 +105,16 @@ static int am_pal_id_from_index(int index) {
     return index + 1;
 }
 
+static bool am_task_id_is_valid(int task_id) {
+    if (AM_TASK_ID_MAIN == task_id) {
+        return true;
+    }
+    if ((AM_TASK_ID_NONE == task_id) || (task_id < 0)) {
+        return false;
+    }
+    return task_id <= AM_COUNTOF(am_tasks_);
+}
+
 static void* thread_entry_wrapper(void* arg) {
     AM_ASSERT(arg);
     struct am_task* me = (struct am_task*)arg;
