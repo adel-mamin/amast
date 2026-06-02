@@ -487,8 +487,8 @@ Here is how it is coded in pseudocode:
        switch (event->id) {
        case AM_EVT_INIT: {
            static const struct am_hsm_state tt[] = {
-               [S1_0] = {.fn = AM_HSM_STATE_FN_CTOR(s2)},
-               [S1_1] = {.fn = AM_HSM_STATE_FN_CTOR(s3)}
+               [S1_0] = {.fn = (am_hsm_state_fn)s2},
+               [S1_1] = {.fn = (am_hsm_state_fn)s3}
            };
            int instance = am_hsm_get_instance(&me->hsm);
            AM_ASSERT(instance < AM_COUNTOF(tt));
