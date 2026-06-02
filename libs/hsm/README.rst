@@ -855,6 +855,3 @@ The test checks that given events generate the expected sequence of actions:
 For example, notice how the processing of the event **A** triggers exit from
 **s1** and **s** with subsequent entry into the same states.
 
-Complex Submachine
-------------------
-
