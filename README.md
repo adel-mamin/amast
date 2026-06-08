@@ -331,8 +331,6 @@ static void app_ctor(struct app *me, struct am_timer *timer) {
 static void ticker_task(void *param) {
     struct am_timer *timer = param;
 
-    am_task_startup_gate_wait();
-
     while (am_ao_get_cnt() > 0) {
         am_sleep_ticks(AM_TICK_DOMAIN_DEFAULT, /*ticks=*/1);
 
@@ -350,8 +348,6 @@ static void ticker_task(void *param) {
 }
 
 static void input_task(void *param) {
-    am_task_startup_gate_wait();
-
     int ch;
     while ((ch = getc(stdin)) != EOF) {
         if ('\n' == ch) {
@@ -409,8 +405,9 @@ int main(void) {
         AM_AO_PRIO_MIN,
         /*stack=*/NULL,
         /*stack_size=*/0,
+        /*init=*/NULL,
         /*entry=*/ticker_task,
-        /*flags=*/0,
+        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
         /*arg=*/&timer
     );
 
@@ -420,8 +417,9 @@ int main(void) {
         AM_AO_PRIO_MIN,
         /*stack=*/NULL,
         /*stack_size=*/0,
+        /*init=*/NULL,
         /*entry=*/input_task,
-        /*flags=*/0,
+        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
         /*arg=*/&m
     );
 

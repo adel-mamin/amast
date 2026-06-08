@@ -44,8 +44,6 @@
 AM_NORETURN static void ticker_task(void* param) {
     struct am_timer* timer = param;
 
-    am_task_startup_gate_wait();
-
     for (;;) {
         am_sleep_ticks(AM_TICK_DOMAIN_DEFAULT, /*ticks=*/1);
 
@@ -112,8 +110,9 @@ static void test_ringbuf_threading(void) {
         AM_AO_PRIO_MIN,
         /*stack=*/NULL,
         /*stack_size=*/0,
+        /*init=*/NULL,
         /*entry=*/ticker_task,
-        /*flags=*/0,
+        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
         /*arg=*/&timer
     );
 

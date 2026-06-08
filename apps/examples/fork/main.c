@@ -158,8 +158,6 @@ static void progress_ctor(struct progress* me, struct am_timer* timer) {
 AM_NORETURN static void ticker_task(void* param) {
     struct am_timer* timer = param;
 
-    am_task_startup_gate_wait();
-
     for (;;) {
         am_sleep_ticks(AM_TICK_DOMAIN_DEFAULT, /*ticks=*/1);
 
@@ -177,8 +175,6 @@ AM_NORETURN static void ticker_task(void* param) {
 }
 
 static void job_task(const void* param) {
-    am_task_startup_gate_wait();
-
     static struct am_event success = {.id = EVT_FORK_SUCCESS};
     static struct am_event failure = {.id = EVT_FORK_FAILURE};
 
@@ -279,8 +275,9 @@ int main(int argc, const char* argv[]) {
         AM_AO_PRIO_MIN,
         /*stack=*/NULL,
         /*stack_size=*/0,
+        /*init=*/NULL,
         /*entry=*/ticker_task,
-        /*flags=*/0,
+        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
         /*arg=*/&timer
     );
 
@@ -289,8 +286,9 @@ int main(int argc, const char* argv[]) {
         AM_AO_PRIO_MAX,
         /*stack=*/NULL,
         /*stack_size=*/0,
+        /*init=*/NULL,
         /*entry=*/(void (*)(void*))job_task,
-        /*flags=*/0,
+        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
         /*arg=*/AM_CAST(void*, argv)
     );
 

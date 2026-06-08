@@ -51,6 +51,7 @@ int am_task_create(
     int prio,
     void* stack,
     int stack_size,
+    void (*init)(void* arg),
     void (*entry)(void* arg),
     unsigned flags,
     void* arg
@@ -59,6 +60,7 @@ int am_task_create(
     (void)prio;
     (void)stack;
     (void)stack_size;
+    (void)init;
     (void)entry;
     (void)flags;
     (void)arg;
@@ -152,8 +154,4 @@ int am_get_cpu_count(void) { return 1; }
 
 void am_task_run_all(void) {}
 
-void am_task_startup_gate_close(void) {}
-
-void am_task_startup_gate_open(void) {}
-
-void am_task_startup_gate_wait(void) {}
+void am_task_init_wait(void) {}

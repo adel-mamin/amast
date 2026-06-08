@@ -66,14 +66,26 @@ struct am_task {
     pthread_cond_t cond;
     /** flag to track notification state */
     bool notified;
+    /** the task is created */
+    bool created;
     /** the task is running */
     bool running;
     /** the task is joinable */
     bool joinable;
+    /** the task waits for the startup gate to open */
+    bool wait_init;
+    /** the task waits for the startup gate to open */
+    bool init_complete;
+    /** init function */
+    void (*init)(void* arg);
     /** entry function */
     void (*entry)(void* arg);
     /** entry function argument */
     void* arg;
+    /** flags */
+    unsigned flags;
+    /** task name */
+    const char* name;
 };
 
 static struct am_task task_main_ = {0};
@@ -125,18 +137,28 @@ static struct am_task* am_task_get_hnd(int task_id) {
 
 static void* thread_entry_wrapper(void* arg) {
     AM_ASSERT(arg);
-    struct am_task* me = (struct am_task*)arg;
-    AM_ASSERT(me->entry);
+    struct am_task* task = (struct am_task*)arg;
+    AM_ASSERT(task->entry);
 
-    me->entry(me->arg);
-    AM_ATOMIC_STORE_N(&me->running, false);
-    int rc = pthread_mutex_destroy(&me->mutex);
+    AM_ATOMIC_STORE_N(&task->running, true);
+
+    if (task->init) {
+        task->init(task->arg);
+    }
+    if (task->flags & AM_TASK_FLAG_WAIT_INIT) {
+        am_task_init_wait();
+    }
+
+    task->entry(task->arg);
+
+    int rc = pthread_mutex_destroy(&task->mutex);
     AM_ASSERT(0 == rc);
 
-    if (!AM_ATOMIC_LOAD_N(&me->joinable)) {
-        rc = pthread_cond_destroy(&me->cond);
+    if (!AM_ATOMIC_LOAD_N(&task->joinable)) {
+        rc = pthread_cond_destroy(&task->cond);
         AM_ASSERT(0 == rc);
     }
+    AM_ATOMIC_STORE_N(&task->created, false);
 
     return NULL;
 }
@@ -180,6 +202,7 @@ int am_task_create(
     int prio,
     void* stack,
     const int stack_size,
+    void (*init)(void* arg),
     void (*entry)(void* arg),
     unsigned flags,
     void* arg
@@ -193,9 +216,9 @@ int am_task_create(
     struct am_task* task = NULL;
     for (int i = 0; i < AM_COUNTOF(am_tasks_); ++i) {
         task = &am_tasks_[i];
-        if (!AM_ATOMIC_LOAD_N(&task->running)) {
+        bool was_created = AM_ATOMIC_EXCHANGE_N(&task->created, true);
+        if (!was_created) {
             index = i;
-            AM_ATOMIC_STORE_N(&task->running, true);
             break;
         }
     }
@@ -231,13 +254,16 @@ int am_task_create(
     ret = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
     AM_ASSERT(0 == ret);
 
+    task->init = init;
     task->entry = entry;
     task->arg = arg;
+    task->flags = flags;
 
     ret = pthread_create(&task->thread, &attr, thread_entry_wrapper, task);
     AM_ASSERT(0 == ret);
     pthread_attr_destroy(&attr);
 
+    task->name = name;
     pthread_setname_np(task->thread, name);
 
     if (AM_TASK_FLAG_DETACH == (flags & AM_TASK_FLAG_DETACH)) {
@@ -452,6 +478,7 @@ void* am_pal_ctor(void* arg) {
     AM_ATOMIC_STORE_N(&task->running, true);
 
     startup_gate_mutex_ = am_mutex_create();
+    am_mutex_lock(startup_gate_mutex_);
 
     return NULL;
 }
@@ -481,8 +508,8 @@ void am_pal_dtor(void) {
 
 void am_on_idle(void) {
     am_crit_exit();
-    int task = am_task_get_own_id();
-    am_task_wait(task);
+    int task_id = am_task_get_own_id();
+    am_task_wait(task_id);
     am_crit_enter();
 }
 
@@ -493,11 +520,39 @@ int am_get_cpu_count(void) {
 
 void am_task_run_all(void) {}
 
-void am_task_startup_gate_close(void) { am_mutex_lock(startup_gate_mutex_); }
+void am_task_init_wait(void) {
+    int task_id = am_task_get_own_id();
 
-void am_task_startup_gate_open(void) { am_mutex_unlock(startup_gate_mutex_); }
+    if (task_id == AM_TASK_ID_MAIN) {
+        bool init_complete = false;
+        while (!init_complete) {
+            init_complete = true;
+            for (int i = 0; i < AM_COUNTOF(am_tasks_); ++i) {
+                struct am_task* task = &am_tasks_[i];
 
-void am_task_startup_gate_wait(void) {
-    am_mutex_lock(startup_gate_mutex_);
+                if (!AM_ATOMIC_LOAD_N(&task->created)) {
+                    continue;
+                }
+                if ((task->flags & AM_TASK_FLAG_WAIT_INIT) !=
+                    AM_TASK_FLAG_WAIT_INIT) {
+                    continue;
+                }
+                if (!AM_ATOMIC_LOAD_N(&task->init_complete)) {
+                    init_complete = false;
+                    am_task_wait(AM_TASK_ID_MAIN);
+                    break;
+                }
+            }
+        }
+    } else {
+        struct am_task* this_task = am_task_get_hnd(task_id);
+
+        AM_ATOMIC_STORE_N(&this_task->init_complete, true);
+
+        am_task_notify(AM_TASK_ID_MAIN);
+
+        am_mutex_lock(startup_gate_mutex_);
+    }
+
     am_mutex_unlock(startup_gate_mutex_);
 }

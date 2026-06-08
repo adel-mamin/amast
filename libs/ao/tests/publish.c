@@ -130,10 +130,12 @@ static void test_publish(void) {
         /*init_event=*/NULL
     );
 
+    am_ao_run_all();
+
     static const struct am_event event = {.id = AM_EVT_PUB};
 
-    am_ao_run_all();
     am_ao_publish(&event);
+
     am_ao_run_all();
 
     const char* expected = "s-PUB";

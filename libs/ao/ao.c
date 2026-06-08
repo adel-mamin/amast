@@ -57,7 +57,7 @@ bool am_ao_publish_exclude_x(
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
     AM_ASSERT(margin >= 0);
     struct am_ao_state* me = &am_ao_state_;
-    AM_ASSERT(AM_ATOMIC_LOAD_N(&me->startup_complete));
+    AM_ASSERT(AM_ATOMIC_LOAD_N(&me->init_complete));
 
     struct am_event_queue_policy policy = {
         .lifo = 0,
@@ -168,7 +168,7 @@ void am_ao_state_ctor(const struct am_ao_state_cfg* cfg) {
 
     am_ao_state_ctor_();
 
-    AM_ATOMIC_STORE_N(&me->startup_complete, false);
+    AM_ATOMIC_STORE_N(&me->init_complete, false);
 
     if (cfg) {
         me->crit_enter = cfg->crit_enter;

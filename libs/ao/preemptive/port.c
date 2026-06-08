@@ -37,7 +37,7 @@
 #include "ao/ao.h"
 #include "state.h"
 
-void am_ao_state_ctor_(void) { am_task_startup_gate_close(); }
+void am_ao_state_ctor_(void) {}
 
 static enum am_rc am_ao_handle(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
@@ -52,7 +52,7 @@ static enum am_rc am_ao_handle(void* ctx, const struct am_event* event) {
     return AM_RC_OK;
 }
 
-static void am_ao_task(void* param) {
+static void am_ao_task_init(void* param) {
     AM_ASSERT(param);
 
     struct am_ao* ao = (struct am_ao*)param;
@@ -65,19 +65,12 @@ static void am_ao_task(void* param) {
     if (ao->user_init_handler) {
         ao->user_init_handler(ao->ctx, ao->init_event);
     }
+}
 
-    struct am_ao_state* me = &am_ao_state_;
+static void am_ao_task(void* param) {
+    AM_ASSERT(param);
 
-    AM_ATOMIC_FETCH_ADD(&me->aos_cnt_inited, 1);
-
-    int aos_cnt_inited = AM_ATOMIC_LOAD_N(&me->aos_cnt_inited);
-    int aos_cnt = AM_ATOMIC_LOAD_N(&me->aos_cnt);
-    bool last = (aos_cnt_inited == aos_cnt);
-    if (last) {
-        am_task_notify(AM_TASK_ID_MAIN);
-    }
-
-    am_task_startup_gate_wait();
+    struct am_ao* ao = (struct am_ao*)param;
 
     while (AM_LIKELY(ao->running)) {
         while (am_event_queue_is_empty(&ao->event_queue)) {
@@ -92,22 +85,14 @@ static void am_ao_task(void* param) {
 
 bool am_ao_run_all(void) {
     struct am_ao_state* me = &am_ao_state_;
-
-    if (!AM_ATOMIC_LOAD_N(&me->startup_complete)) {
-        while (true) {
-            int aos_cnt_inited = AM_ATOMIC_LOAD_N(&me->aos_cnt_inited);
-            int aos_cnt = AM_ATOMIC_LOAD_N(&me->aos_cnt);
-            bool ready = (aos_cnt_inited == aos_cnt);
-            if (ready) {
-                break;
-            }
-            am_task_wait(AM_TASK_ID_MAIN);
-        }
-        AM_ATOMIC_STORE_N(&me->startup_complete, true);
-        am_task_startup_gate_open();
+    bool was_init_complete = AM_ATOMIC_EXCHANGE_N(&me->init_complete, true);
+    if (!was_init_complete) {
+        am_task_init_wait();
     }
+
     /* wait all AOs to complete */
     am_task_wait(AM_TASK_ID_MAIN);
+
     return false;
 }
 
@@ -144,8 +129,9 @@ void am_ao_start(
         prio.task,
         stack,
         stack_size,
+        /*init=*/am_ao_task_init,
         /*entry=*/am_ao_task,
-        /*flags=*/AM_TASK_FLAG_DETACH,
+        /*flags=*/AM_TASK_FLAG_DETACH | AM_TASK_FLAG_WAIT_INIT,
         /*arg=*/ao
     );
 }
@@ -154,7 +140,7 @@ void am_ao_stop(struct am_ao* ao) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
     struct am_ao_state* me = &am_ao_state_;
-    AM_ASSERT(AM_ATOMIC_LOAD_N(&me->startup_complete));
+    AM_ASSERT(AM_ATOMIC_LOAD_N(&me->init_complete));
 
     int task_id = am_task_get_own_id();
     AM_ASSERT(task_id == ao->task_id); /* check API description */
@@ -176,7 +162,6 @@ void am_ao_stop(struct am_ao* ao) {
     me->aos[ao->prio.ao] = NULL;
 
     AM_ATOMIC_FETCH_ADD(&me->aos_cnt, -1);
-    AM_ATOMIC_FETCH_ADD(&me->aos_cnt_inited, -1);
 
     ao->ctor_called = false;
 

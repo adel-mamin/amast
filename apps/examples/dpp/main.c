@@ -115,8 +115,6 @@ AM_NORETURN void am_assert_failure(
 static void ticker_task(void* param) {
     struct am_timer* timer = param;
 
-    am_task_startup_gate_wait();
-
     while (am_ao_get_cnt() > 0) {
         am_sleep_ticks(AM_TICK_DOMAIN_DEFAULT, /*ticks=*/1);
 
@@ -202,8 +200,9 @@ int main(void) {
         AM_AO_PRIO_MIN,
         /*stack=*/NULL,
         /*stack_size=*/0,
+        /*init=*/NULL,
         /*entry=*/ticker_task,
-        /*flags=*/0,
+        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
         /*arg=*/&timer
     );
 

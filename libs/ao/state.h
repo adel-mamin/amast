@@ -43,9 +43,6 @@ struct am_ao_state {
     /** Number of runnings AOs */
     int aos_cnt;
 
-    /** AOs that finished init_handler() */
-    int aos_cnt_inited;
-
     /** User callback on idle state, when no AO is running. */
     void (*on_idle)(void);
 
@@ -63,8 +60,8 @@ struct am_ao_state {
     /** Event memory allocator */
     struct am_event_alloc* alloc;
 
-    /** am_ao_start() calls were completed for all active objects */
-    bool startup_complete;
+    /** All active objects have finished their initialization. */
+    bool init_complete;
 };
 
 extern struct am_ao_state am_ao_state_;

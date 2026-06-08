@@ -64,7 +64,10 @@ static enum am_rc am_ao_handle(void* ctx, const struct am_event* event) {
 bool am_ao_run_all(void) {
     struct am_ao_state* me = &am_ao_state_;
 
-    AM_ATOMIC_STORE_N(&me->startup_complete, true);
+    bool was_init_complete = AM_ATOMIC_EXCHANGE_N(&me->init_complete, true);
+    if (!was_init_complete) {
+        am_task_init_wait();
+    }
 
     bool dispatched = false;
     do {

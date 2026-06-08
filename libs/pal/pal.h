@@ -48,6 +48,12 @@
 /** Mark task as non-joinable */
 #define AM_TASK_FLAG_DETACH (1U << 0U)
 
+/**
+ * PAL calls task's entry() callback after executing init() callbacks
+ * of all tasks with this flag set.
+ */
+#define AM_TASK_FLAG_WAIT_INIT (1U << 1U)
+
 /** Default tick domain. */
 #define AM_TICK_DOMAIN_DEFAULT 0
 
@@ -136,7 +142,10 @@ void am_mutex_destroy(int mutex);
  * @param prio        task priority [0, #AM_TASK_NUM_MAX[.
  * @param stack       task stack
  * @param stack_size  task stack size [bytes]
- * @param entry       task entry function
+ * @param init        task init function
+ *                    Called from the task context before @p entry.
+ *                    Can be NULL.
+ * @param entry       task entry function. Must not be NULL.
  * @param flags       task flags (bit combination of AM_TASK_FLAG_... constants)
  * @param arg         task entry function argument.
  *                    PAL does not use other than providing it as an argument
@@ -148,6 +157,7 @@ int am_task_create(
     int prio,
     void* stack,
     int stack_size,
+    void (*init)(void* arg),
     void (*entry)(void* arg),
     unsigned flags,
     void* arg
@@ -180,21 +190,7 @@ int am_task_get_own_id(void);
  * Prevents using tasks before they are ready to run.
  * To be run once at the start of tasks created with am_task_create() API.
  */
-void am_task_startup_gate_wait(void);
-
-/**
- * Lock all tasks until am_task_startup_gate_open() is called.
- *
- * Only used at boot-up to synchronize tasks execution.
- */
-void am_task_startup_gate_close(void);
-
-/**
- * Unlock all tasks.
- *
- * All tasks blocked on am_task_startup_gate_wait() are unblocked.
- */
-void am_task_startup_gate_open(void);
+void am_task_init_wait(void);
 
 /** Run all PAL tasks */
 void am_task_run_all(void);
