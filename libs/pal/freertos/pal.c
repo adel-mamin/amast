@@ -136,29 +136,29 @@ uint32_t am_time_get_ms(void) {
     return ticks * portTICK_PERIOD_MS;
 }
 
-uint32_t am_time_get_tick(int domain) {
-    (void)domain;
+uint32_t am_time_get_tick(int ticker_id) {
+    (void)ticker_id;
     if (xPortIsInsideInterrupt()) {
         return (uint32_t)xTaskGetTickCountFromISR();
     }
     return (uint32_t)xTaskGetTickCount();
 }
 
-uint32_t am_time_get_tick_from_ms(int domain, uint32_t ms) {
-    (void)domain;
+uint32_t am_time_get_tick_from_ms(int ticker_id, uint32_t ms) {
+    (void)ticker_id;
     if (0 == ms) {
         return 0;
     }
     return AM_MAX(1, AM_DIV_CEIL(ms, portTICK_PERIOD_MS));
 }
 
-void am_sleep_ticks(int domain, uint32_t ticks) {
-    AM_ASSERT(AM_TICK_DOMAIN_DEFAULT == domain);
+void am_sleep_ticks(int ticker_id, uint32_t ticks) {
+    AM_ASSERT(AM_TICKER_DEFAULT == ticker_id);
     vTaskDelay(ticks);
 }
 
 void am_sleep_ms(uint32_t ms) {
-    uint32_t ticks = am_time_get_tick_from_ms(AM_TICK_DOMAIN_DEFAULT, ms);
+    uint32_t ticks = am_time_get_tick_from_ms(AM_TICKER_DEFAULT, ms);
     vTaskDelay(ticks);
 }
 

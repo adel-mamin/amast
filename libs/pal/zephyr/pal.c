@@ -260,20 +260,20 @@ int am_task_get_own_id(void) {
 
 uint32_t am_time_get_ms(void) { return k_uptime_get_32(); }
 
-uint32_t am_time_get_tick(int domain) { return k_cycle_get_32(); }
+uint32_t am_time_get_tick(int ticker_id) { return k_cycle_get_32(); }
 
-uint32_t am_time_get_tick_from_ms(int domain, uint32_t ms) {
+uint32_t am_time_get_tick_from_ms(int ticker_id, uint32_t ms) {
     return k_ms_to_ticks_ceil32(ms);
 }
 
-uint32_t am_time_get_ms_from_tick(int domain, uint32_t tick) {
+uint32_t am_time_get_ms_from_tick(int ticker_id, uint32_t tick) {
     return k_ticks_to_ms_ceil32(tick);
 }
 
-void am_sleep_ticks(int domain, uint32_t ticks) { k_sleep(K_TICKS(ticks)); }
+void am_sleep_ticks(int ticker_id, uint32_t ticks) { k_sleep(K_TICKS(ticks)); }
 
-void am_sleep_till_ticks(int domain, uint32_t ticks) {
-    (void)domain;
+void am_sleep_till_ticks(int ticker_id, uint32_t ticks) {
+    (void)ticker_id;
     uint32_t now = k_cycle_get_32();
     int64_t delta = (int64_t)ticks - now;
     if (delta > 0) {

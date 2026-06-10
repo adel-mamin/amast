@@ -116,7 +116,7 @@ static void ticker_task(void* param) {
     struct am_timer* timer = param;
 
     while (am_ao_get_cnt() > 0) {
-        am_sleep_ticks(AM_TICK_DOMAIN_DEFAULT, /*ticks=*/1);
+        am_sleep_ticks(AM_TICKER_DEFAULT, /*ticks=*/1);
 
         am_timer_tick_iterator_init(timer);
         struct am_timer_event* fired = NULL;

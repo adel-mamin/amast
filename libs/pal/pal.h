@@ -54,8 +54,8 @@
  */
 #define AM_TASK_FLAG_WAIT_INIT (1U << 1U)
 
-/** Default tick domain. */
-#define AM_TICK_DOMAIN_DEFAULT 0
+/** Default ticker identifier. */
+#define AM_TICKER_DEFAULT 0
 
 #ifdef __cplusplus
 extern "C" {
@@ -205,47 +205,47 @@ uint32_t am_time_get_ms(void);
 /**
  * Get current time in ticks.
  *
- * @param domain  tick domain
+ * @param ticker_id  tick identifier
  *
  * @return current time [tick]
  */
-uint32_t am_time_get_tick(int domain);
+uint32_t am_time_get_tick(int ticker_id);
 
 /**
- * Convert ms to ticks for the given tick domain.
+ * Convert ms to ticks for the given ticker identifier.
  *
- * @param domain  tick domain [0, INT_MAX[
+ * @param ticker_id  ticker identifier [0, INT_MAX[
  * @param ms      milliseconds to convert
  *
  * @return time [tick]
  */
-uint32_t am_time_get_tick_from_ms(int domain, uint32_t ms);
+uint32_t am_time_get_tick_from_ms(int ticker_id, uint32_t ms);
 
 /**
- * Convert ticks from the given tick domain to milliseconds.
+ * Convert ticks from the given ticker identifier to milliseconds.
  *
- * @param domain  tick domain
+ * @param ticker_id  ticker identifier
  * @param tick    ticks to convert
  *
  * @return time [ms]
  */
-uint32_t am_time_get_ms_from_tick(int domain, uint32_t tick);
+uint32_t am_time_get_ms_from_tick(int ticker_id, uint32_t tick);
 
 /**
- * Sleep for given number of ticks from the given tick domain.
+ * Sleep for given number of ticks from the given ticker identifier.
  *
- * @param domain  tick domain
+ * @param ticker_id  ticker identifier
  * @param ticks   ticks to sleep. Sleep forever, if ticks < 0.
  */
-void am_sleep_ticks(int domain, uint32_t ticks);
+void am_sleep_ticks(int ticker_id, uint32_t ticks);
 
 /**
- * Sleep till the given number of ticks from the given tick domain.
+ * Sleep till the given number of ticks from the given ticker identifier.
  *
- * @param domain  tick domain
+ * @param ticker_id  ticker identifier
  * @param ticks   sleep till this ticks value
  */
-void am_sleep_till_ticks(int domain, uint32_t ticks);
+void am_sleep_till_ticks(int ticker_id, uint32_t ticks);
 
 /**
  * Sleep for given number of milliseconds.

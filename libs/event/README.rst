@@ -61,7 +61,7 @@ Design Considerations
 1. **Event Representation**:
 
    - Each event (``am_event``) contains metadata such as its ID, reference count,
-     tick domain (optional), and memory pool index.
+     ticker identifier (optional), and memory pool index.
    - Reference counting ensures that events are safely recycled or retained as
      needed.
 

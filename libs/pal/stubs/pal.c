@@ -84,30 +84,30 @@ static uint32_t am_pal_ms = 0;
 
 uint32_t am_time_get_ms(void) { return am_pal_ms; }
 
-uint32_t am_time_get_tick(int domain) {
-    (void)domain;
+uint32_t am_time_get_tick(int ticker_id) {
+    (void)ticker_id;
     return 0;
 }
 
-uint32_t am_time_get_tick_from_ms(int domain, uint32_t ms) {
-    (void)domain;
+uint32_t am_time_get_tick_from_ms(int ticker_id, uint32_t ms) {
+    (void)ticker_id;
     (void)ms;
     return 0;
 }
 
-uint32_t am_time_get_ms_from_tick(int domain, uint32_t tick) {
-    (void)domain;
+uint32_t am_time_get_ms_from_tick(int ticker_id, uint32_t tick) {
+    (void)ticker_id;
     (void)tick;
     return 0;
 }
 
-void am_sleep_ticks(int domain, uint32_t ticks) {
-    (void)domain;
+void am_sleep_ticks(int ticker_id, uint32_t ticks) {
+    (void)ticker_id;
     (void)ticks;
 }
 
-void am_sleep_till_ticks(int domain, uint32_t ticks) {
-    (void)domain;
+void am_sleep_till_ticks(int ticker_id, uint32_t ticks) {
+    (void)ticker_id;
     (void)ticks;
 }
 
