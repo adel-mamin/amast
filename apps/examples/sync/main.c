@@ -268,23 +268,33 @@ static void async_ctor(struct async* me, struct am_timer* timer) {
     me->timeout = am_timer_event_ctor_x(ASYNC_EVT_TIMER, &me->ao);
 }
 
-static void ticker_cb(void* param) {
+static void ticker_task(void* param) {
     struct am_timer* timer = param;
 
-    am_timer_tick_iterator_init(timer);
-    struct am_timer_event* fired = NULL;
-    while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
-        void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
-        if (owner) {
-            am_ao_post_fifo(owner, &fired->event);
-        } else {
-            am_ao_publish(&fired->event);
+    am_task_init_wait();
+
+    while (am_ao_get_cnt() > 0) {
+        am_sleep_ticks(AM_TICK_DOMAIN_DEFAULT, /*ticks=*/1);
+
+        am_timer_tick_iterator_init(
+            timer, am_time_get_tick(AM_TICK_DOMAIN_DEFAULT)
+        );
+        struct am_timer_event* fired = NULL;
+        while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
+            void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
+            if (owner) {
+                am_ao_post_fifo(owner, &fired->event);
+            } else {
+                am_ao_publish(&fired->event);
+            }
         }
     }
 }
 
 static void input_task(void* param) {
     (void)param;
+
+    am_task_init_wait();
 
     int ch = 0;
     uint32_t prev_ms = am_time_get_ms() - (2 * ASYNC_TWO_NEWLINES_TIMEOUT_MS);
@@ -307,62 +317,56 @@ static void input_task(void* param) {
     }
 }
 
+enum {
+    SYNC_EVT_SWITCH_MODE = AM_EVT_USER,
+    SYNC_EVT_TIMER,
+    SYNC_EVT_EXIT,
+    SYNC_EVT_PUB_MAX,
+    SYNC_EVT_START,
+};
+
+void mod_a_init();
+
 int main(void) {
     am_pal_ctor(/*arg=*/NULL);
 
-    struct am_event_subscribe_list pubsub_list[ASYNC_EVT_PUB_MAX];
-    am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), /*alloc=*/NULL);
-
-    am_ao_state_ctor(/*cfg=*/NULL);
-
     struct am_timer timer;
     am_timer_ctor(&timer);
+
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
-    struct async m;
-    async_ctor(&m, &timer);
-
-    const struct am_event* queue[2];
-
-    /* traffic lights controlling active object */
-    am_ao_start(
-        &m.ao,
-        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/queue,
-        /*queue_size=*/AM_COUNTOF(queue),
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*name=*/"async",
-        /*init_event=*/NULL
+    struct am_event_sync_hub hub;
+    struct am_event_subscribe_list pubsub_list[SYNC_EVT_PUB_MAX];
+    am_event_sync_init(
+        &hub, &pubsub_list, AM_COUNTOF(pubsub_list), /*alloc=*/NULL
     );
 
-    /* user input controlling thread */
-    am_task_create(
-        "input",
-        AM_AO_PRIO_MIN,
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*init=*/NULL,
-        /*entry=*/input_task,
-        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
-        /*arg=*/&m
+    am_sleep_ticks(AM_TICK_DOMAIN_DEFAULT, /*ticks=*/1);
+
+    am_timer_tick_iterator_init(
+        timer, am_time_get_tick(AM_TICK_DOMAIN_DEFAULT)
     );
+    struct am_timer_event* fired = NULL;
+    while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
+        void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
+        if (owner) {
+            am_event_sync_post(
+                &hub, int dest_id, &fired->event, /*out=*/NULL, /*out_size=*/0
+            );
 
-    int ticker = am_ticker_create(&(struct am_ticker_cfg){
-        .ticker_id = AM_TICKER_DEFAULT,
-        .ticker_cb = ticker_cb,
-        .ctx = &timer,
-        .priority_hint = AM_AO_PRIO_MIN,
-    });
-    am_ticker_start(ticker);
+        } else {
+            am_ao_publish(&fired->event);
 
-    while (am_ao_get_cnt() > 0) {
-        am_ao_run_all();
+            am_event_sync_publish(
+                &hub,
+                int publisher_id,
+                &fired->event,
+                /*out=*/NULL,
+                /*out_size=*/0,
+                /*policy=*/0
+            );
+        }
     }
-
-    am_ticker_stop(ticker);
-
-    am_ao_state_dtor();
 
     am_pal_dtor();
 

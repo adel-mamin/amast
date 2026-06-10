@@ -46,6 +46,7 @@
 #include <sched.h>
 #include <features.h>
 #include <unistd.h>
+#include <errno.h>
 
 /* amast-pragma: verbatim-include-std-off */
 
@@ -555,4 +556,114 @@ void am_task_init_wait(void) {
     }
 
     am_mutex_unlock(startup_gate_mutex_);
+}
+
+#define NSEC_PER_SEC 1000000000L
+
+/** Ticker handler */
+struct am_ticker {
+    /** ticker identifier */
+    int task_id;
+    /** ticker configuration */
+    struct am_ticker_cfg cfg;
+    /** ticker thread is running */
+    bool running;
+    /** ticker is busy */
+    bool busy;
+    /** ticker period [ns] */
+    long period_ns;
+};
+
+static struct am_ticker tickers[1];
+
+static void timespec_add_ns(struct timespec* ts, long ns) {
+    ts->tv_nsec += ns;
+
+    while (ts->tv_nsec >= NSEC_PER_SEC) {
+        ts->tv_nsec -= NSEC_PER_SEC;
+        ts->tv_sec += 1;
+    }
+}
+
+static void am_ticker_task(void* arg) {
+    struct am_ticker* ticker = arg;
+
+    struct timespec next;
+    clock_gettime(CLOCK_MONOTONIC, &next);
+
+    while (AM_ATOMIC_LOAD_N(&ticker->running)) {
+        timespec_add_ns(&next, ticker->period_ns);
+
+        int rc;
+        do {
+            rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next, NULL);
+        } while ((rc == EINTR) && AM_ATOMIC_LOAD_N(&ticker->running));
+
+        if (!AM_ATOMIC_LOAD_N(&ticker->running)) {
+            break;
+        }
+
+        if (ticker->cfg.ticker_cb != NULL) {
+            ticker->cfg.ticker_cb(ticker->cfg.ctx);
+        }
+    }
+}
+
+int am_ticker_create(const struct am_ticker_cfg* cfg) {
+    AM_ASSERT(cfg);
+    AM_ASSERT(cfg->ticker_cb);
+
+    struct am_ticker* ticker = &tickers[0];
+
+    AM_ASSERT(!ticker->busy);
+
+    memset(ticker, 0, sizeof(*ticker));
+    ticker->busy = true;
+    ticker->cfg = *cfg;
+    ticker->period_ns =
+        1000000 * am_time_get_ms_from_tick(cfg->ticker_id, /*tick=*/1);
+
+    return am_pal_id_from_index(0);
+}
+
+void am_ticker_start(int ticker_id) {
+    struct am_ticker* ticker = &tickers[am_pal_index_from_id(ticker_id)];
+    AM_ASSERT(ticker->busy);
+
+    bool was_running = AM_ATOMIC_EXCHANGE_N(&ticker->running, true);
+    AM_ASSERT(!was_running);
+
+    /* ticker thread to feed timers */
+    ticker->task_id = am_task_create(
+        "ticker",
+        ticker->cfg.priority_hint,
+        /*stack=*/NULL,
+        /*stack_size=*/0,
+        /*init=*/NULL,
+        /*entry=*/am_ticker_task,
+        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
+        /*arg=*/ticker
+    );
+}
+
+void am_ticker_stop(int ticker_id) {
+    struct am_ticker* ticker = &tickers[am_pal_index_from_id(ticker_id)];
+    AM_ASSERT(ticker->busy);
+
+    bool was_running = AM_ATOMIC_EXCHANGE_N(&ticker->running, false);
+    AM_ASSERT(was_running);
+
+    AM_ASSERT(am_task_id_is_valid(ticker->task_id));
+    const int task_index = am_pal_index_from_id(ticker->task_id);
+    struct am_task* task = &am_tasks_[task_index];
+    AM_ASSERT(task);
+    if (AM_ATOMIC_LOAD_N(&task->joinable)) {
+        pthread_join(task->thread, /*__thread_return=*/NULL);
+        AM_ATOMIC_STORE_N(&task->joinable, false);
+
+        int rc = pthread_mutex_destroy(&task->mutex);
+        AM_ASSERT(0 == rc);
+        rc = pthread_cond_destroy(&task->cond);
+        AM_ASSERT(0 == rc);
+    }
 }

@@ -35,6 +35,7 @@
 
 #include <stdint.h>
 #include <stdarg.h>
+#include <stdbool.h>
 
 /** Maximum number of PAL tasks. */
 #define AM_TASK_NUM_MAX 64
@@ -333,6 +334,44 @@ void am_on_idle(void);
 
 /** Return the number of CPU cores. */
 int am_get_cpu_count(void);
+
+/** Ticker configuration */
+struct am_ticker_cfg {
+    /** ticker identifier */
+    int ticker_id;
+    /**
+     * ticker callback
+     * @param ctx  callback context
+     */
+    void (*ticker_cb)(void* ctx);
+    /** ticker context */
+    void* ctx;
+    /** ticker thread platform specific priority hint (optional) */
+    int priority_hint;
+};
+
+/**
+ * Initialize a tick object.
+ * Does not necessarily start it yet.
+ *
+ * @param cfg     ticker configuration
+ * @return ticker handler
+ */
+int am_ticker_create(const struct am_ticker_cfg* cfg);
+
+/**
+ * Start periodic ticking.
+ *
+ * @param ticker_id  ticker handler returned by am_ticker_create()
+ */
+void am_ticker_start(int ticker_id);
+
+/**
+ * Stop periodic ticking.
+ *
+ * @param ticker_id  ticker handler returned by am_ticker_create()
+ */
+void am_ticker_stop(int ticker_id);
 
 #ifdef __cplusplus
 }

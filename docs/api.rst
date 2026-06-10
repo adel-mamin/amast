@@ -520,6 +520,87 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 PAL
 ---
 
+Platform Abstraction Layer (PAL) API documentation.
+
 The source code of the corresponding header file is in `pal.h <https://github.com/adel-mamin/amast/blob/main/libs/pal/pal.h>`_.
 
-.. doxygenfile:: pal.h
+.. doxygendefine:: AM_TASK_NUM_MAX
+
+.. doxygendefine:: AM_TASK_ID_NONE
+
+.. doxygendefine:: AM_TASK_ID_MAIN
+
+.. doxygendefine:: AM_TASK_FLAG_DETACH
+
+.. doxygendefine:: AM_TASK_FLAG_WAIT_INIT
+
+.. doxygendefine:: AM_TICKER_DEFAULT
+
+.. doxygenstruct:: am_ticker_cfg
+   :members:
+
+.. doxygenfunction:: am_pal_ctor
+
+.. doxygenfunction:: am_pal_dtor
+
+.. doxygenfunction:: am_crit_enter
+
+.. doxygenfunction:: am_crit_exit
+
+.. doxygenfunction:: am_mutex_create
+
+.. doxygenfunction:: am_mutex_lock
+
+.. doxygenfunction:: am_mutex_unlock
+
+.. doxygenfunction:: am_mutex_destroy
+
+.. doxygenfunction:: am_task_create
+
+.. doxygenfunction:: am_task_notify
+
+.. doxygenfunction:: am_task_wait
+
+.. doxygenfunction:: am_task_get_own_id
+
+.. doxygenfunction:: am_task_init_wait
+
+.. doxygenfunction:: am_task_run_all
+
+.. doxygenfunction:: am_time_get_ms
+
+.. doxygenfunction:: am_time_get_tick
+
+.. doxygenfunction:: am_time_get_tick_from_ms
+
+.. doxygenfunction:: am_time_get_ms_from_tick
+
+.. doxygenfunction:: am_sleep_ticks
+
+.. doxygenfunction:: am_sleep_till_ticks
+
+.. doxygenfunction:: am_sleep_ms
+
+.. doxygenfunction:: am_sleep_till_ms
+
+.. doxygenfunction:: am_printf
+
+.. doxygenfunction:: am_printf_unsafe
+
+.. doxygenfunction:: am_printff
+
+.. doxygenfunction:: am_vprintf
+
+.. doxygenfunction:: am_vprintff
+
+.. doxygenfunction:: am_pal_flush
+
+.. doxygenfunction:: am_on_idle
+
+.. doxygenfunction:: am_get_cpu_count
+
+.. doxygenfunction:: am_ticker_create
+
+.. doxygenfunction:: am_ticker_start
+
+.. doxygenfunction:: am_ticker_stop

@@ -155,3 +155,12 @@ int am_get_cpu_count(void) { return 1; }
 void am_task_run_all(void) {}
 
 void am_task_init_wait(void) {}
+
+int am_ticker_create(const struct am_ticker_cfg* cfg) {
+    (void)cfg;
+    return 0;
+}
+
+void am_ticker_start(int ticker) { (void)ticker; }
+
+void am_ticker_stop(int ticker) { (void)ticker; }

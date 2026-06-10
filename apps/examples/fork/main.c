@@ -155,21 +155,17 @@ static void progress_ctor(struct progress* me, struct am_timer* timer) {
     me->progress = am_timer_event_ctor_x(EVT_PROGRESS_TICK, &me->ao);
 }
 
-AM_NORETURN static void ticker_task(void* param) {
+static void ticker_task(void* param) {
     struct am_timer* timer = param;
 
-    for (;;) {
-        am_sleep_ticks(AM_TICKER_DEFAULT, /*ticks=*/1);
-
-        am_timer_tick_iterator_init(timer);
-        struct am_timer_event* fired = NULL;
-        while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
-            void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
-            if (owner) {
-                am_ao_post_fifo(owner, &fired->event);
-            } else {
-                am_ao_publish(&fired->event);
-            }
+    am_timer_tick_iterator_init(timer);
+    struct am_timer_event* fired = NULL;
+    while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
+        void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
+        if (owner) {
+            am_ao_post_fifo(owner, &fired->event);
+        } else {
+            am_ao_publish(&fired->event);
         }
     }
 }

@@ -33,7 +33,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "common/compiler.h"
 #include "common/macros.h"
 #include "timer/timer.h"
 #include "ringbuf/ringbuf.h"
@@ -41,21 +40,17 @@
 #include "pal/pal.h"
 #include "state.h"
 
-AM_NORETURN static void ticker_task(void* param) {
+static void ticker_cb(void* param) {
     struct am_timer* timer = param;
 
-    for (;;) {
-        am_sleep_ticks(AM_TICKER_DEFAULT, /*ticks=*/1);
-
-        am_timer_tick_iterator_init(timer);
-        struct am_timer_event* fired = NULL;
-        while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
-            void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
-            if (owner) {
-                am_ao_post_fifo(owner, &fired->event);
-            } else {
-                am_ao_publish(&fired->event);
-            }
+    am_timer_tick_iterator_init(timer);
+    struct am_timer_event* fired = NULL;
+    while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
+        void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
+        if (owner) {
+            am_ao_post_fifo(owner, &fired->event);
+        } else {
+            am_ao_publish(&fired->event);
         }
     }
 }
@@ -105,20 +100,19 @@ static void test_ringbuf_threading(void) {
         /*init_event=*/NULL
     );
 
-    am_task_create(
-        "ticker",
-        AM_AO_PRIO_MIN,
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*init=*/NULL,
-        /*entry=*/ticker_task,
-        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
-        /*arg=*/&timer
-    );
+    int ticker = am_ticker_create(&(struct am_ticker_cfg){
+        .ticker_id = AM_TICKER_DEFAULT,
+        .ticker_cb = ticker_cb,
+        .ctx = &timer,
+        .priority_hint = AM_AO_PRIO_MIN
+    });
+    am_ticker_start(ticker);
 
     while (am_ao_get_cnt() > 0) {
         am_ao_run_all();
     }
+
+    am_ticker_stop(ticker);
 
     am_ao_state_dtor();
 
