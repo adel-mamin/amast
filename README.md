@@ -359,22 +359,12 @@ int main(void) {
     struct am_timer timer;
     am_timer_ctor(&timer);
 
-    struct am_event_alloc alloc;
-    am_event_alloc_init(&alloc);
-
-    am_event_alloc_add_pool(&alloc,
-        m_event_pool,
-        sizeof(m_event_pool),
-        sizeof(m_event_pool[0]),
-        AM_ALIGNOF(am_event_t)
-    );
-
     /* event publish/subscribe memory */
     struct am_event_subscribe_list pubsub_list[APP_EVT_PUB_MAX];
-    am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), &alloc);
+    am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), /*alloc=*/NULL);
 
     struct am_ao_state_cfg cfg = {
-        .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
+        .crit_enter = am_crit_enter, .crit_exit = am_crit_exit
     };
     am_ao_state_ctor(&cfg);
 
