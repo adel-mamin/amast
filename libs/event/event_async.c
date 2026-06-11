@@ -62,6 +62,9 @@ static struct am_event_async_state m_async_state;
 void am_event_async_init(
     struct am_event_subscribe_list* sub, int nsub, struct am_event_alloc* alloc
 ) {
+    if (nsub) {
+        AM_ASSERT(sub != 0);
+    }
     if (sub) {
         AM_ASSERT(nsub > 0);
         memset(sub, 0, sizeof(*sub) * (size_t)nsub);
@@ -85,6 +88,7 @@ void am_event_async_subscribe(int handler_id, int event_id) {
     AM_ASSERT(me->handlers[handler_id].fn);
     AM_ASSERT(event_id >= AM_EVT_USER);
     AM_ASSERT(event_id < me->nsub);
+    AM_ASSERT(me->sub != NULL);
 
     int i = handler_id / 8;
 
@@ -100,6 +104,7 @@ void am_event_async_unsubscribe(int handler_id, int event_id) {
     AM_ASSERT(me->handlers[handler_id].fn);
     AM_ASSERT(event_id >= AM_EVT_USER);
     AM_ASSERT(event_id < me->nsub);
+    AM_ASSERT(me->sub != NULL);
 
     int h = handler_id / 8;
     int i = event_id - AM_EVT_USER;
@@ -183,6 +188,7 @@ enum am_rc am_event_async_publish(
     struct am_event_async_state* me = &m_async_state;
 
     AM_ASSERT(event->id < me->nsub);
+    AM_ASSERT(me->sub != NULL);
 
     if (!am_event_is_static(event)) {
         /*
