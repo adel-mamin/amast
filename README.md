@@ -328,21 +328,17 @@ static void app_ctor(struct app *me, struct am_timer *timer) {
     me->ticks = am_time_get_tick_from_ms(AM_TIMEBASE_DEFAULT, 1000);
 }
 
-static void ticker_task(void *param) {
-    struct am_timer *timer = param;
+static void ticker_cb(void* param) {
+    struct am_timer* timer = param;
 
-    while (am_ao_get_cnt() > 0) {
-        am_sleep_ticks(AM_TIMEBASE_DEFAULT, /*ticks=*/1);
-
-        am_timer_tick_iterator_init(timer);
-        struct am_timer_event* fired = NULL;
-        while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
-            void *owner = AM_CAST(struct am_timer_event_x *, fired)->ctx;
-            if (owner) {
-                am_ao_post_fifo(owner, &fired->event);
-            } else {
-                am_ao_publish(&fired->event);
-            }
+    am_timer_tick_iterator_init(timer);
+    struct am_timer_event* fired = NULL;
+    while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
+        void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
+        if (owner) {
+            am_ao_post_fifo(owner, &fired->event);
+        } else {
+            am_ao_publish(&fired->event);
         }
     }
 }
@@ -399,18 +395,6 @@ int main(void) {
         /*init_event=*/NULL
     );
 
-    /* ticker thread to feed timers */
-    am_task_create(
-        "ticker",
-        AM_AO_PRIO_MIN,
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*init=*/NULL,
-        /*entry=*/ticker_task,
-        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
-        /*arg=*/&timer
-    );
-
     /* user input controlling thread */
     am_task_create(
         "input",
@@ -423,9 +407,19 @@ int main(void) {
         /*arg=*/&m
     );
 
+    int ticker = am_ticker_create(&(struct am_ticker_cfg){
+        .timebase = AM_TIMEBASE_DEFAULT,
+        .ticker_cb = ticker_cb,
+        .ctx = &timer,
+        .priority_hint = AM_AO_PRIO_MIN,
+    });
+    am_ticker_start(ticker);
+
     while (am_ao_get_cnt() > 0) {
         am_ao_run_all();
     }
+
+    am_ticker_stop(ticker);
 
     am_ao_state_dtor();
 
