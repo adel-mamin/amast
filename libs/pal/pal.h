@@ -55,8 +55,8 @@
  */
 #define AM_TASK_FLAG_WAIT_INIT (1U << 1U)
 
-/** Default ticker identifier. */
-#define AM_TICKER_DEFAULT 0
+/** Default timebase. */
+#define AM_TIMEBASE_DEFAULT 0
 
 #ifdef __cplusplus
 extern "C" {
@@ -206,47 +206,47 @@ uint32_t am_time_get_ms(void);
 /**
  * Get current time in ticks.
  *
- * @param ticker_id  tick identifier
+ * @param timebase  timebase
  *
  * @return current time [tick]
  */
-uint32_t am_time_get_tick(int ticker_id);
+uint32_t am_time_get_tick(int timebase);
 
 /**
  * Convert ms to ticks for the given ticker identifier.
  *
- * @param ticker_id  ticker identifier [0, INT_MAX[
+ * @param timebase  timebase [0, INT_MAX[
  * @param ms      milliseconds to convert
  *
  * @return time [tick]
  */
-uint32_t am_time_get_tick_from_ms(int ticker_id, uint32_t ms);
+uint32_t am_time_get_tick_from_ms(int timebase, uint32_t ms);
 
 /**
  * Convert ticks from the given ticker identifier to milliseconds.
  *
- * @param ticker_id  ticker identifier
+ * @param timebase  timebase
  * @param tick    ticks to convert
  *
  * @return time [ms]
  */
-uint32_t am_time_get_ms_from_tick(int ticker_id, uint32_t tick);
+uint32_t am_time_get_ms_from_tick(int timebase, uint32_t tick);
 
 /**
  * Sleep for given number of ticks from the given ticker identifier.
  *
- * @param ticker_id  ticker identifier
+ * @param timebase  timebase
  * @param ticks   ticks to sleep. Sleep forever, if ticks < 0.
  */
-void am_sleep_ticks(int ticker_id, uint32_t ticks);
+void am_sleep_ticks(int timebase, uint32_t ticks);
 
 /**
  * Sleep till the given number of ticks from the given ticker identifier.
  *
- * @param ticker_id  ticker identifier
+ * @param timebase  timebase
  * @param ticks   sleep till this ticks value
  */
-void am_sleep_till_ticks(int ticker_id, uint32_t ticks);
+void am_sleep_till_ticks(int timebase, uint32_t ticks);
 
 /**
  * Sleep for given number of milliseconds.
@@ -337,8 +337,8 @@ int am_get_cpu_count(void);
 
 /** Ticker configuration */
 struct am_ticker_cfg {
-    /** ticker identifier */
-    int ticker_id;
+    /** ticker timebase */
+    int timebase;
     /**
      * ticker callback
      * @param ctx  callback context
@@ -355,21 +355,21 @@ struct am_ticker_cfg {
  * Does not necessarily start it yet.
  *
  * @param cfg     ticker configuration
- * @return ticker handler
+ * @return ticker ID
  */
 int am_ticker_create(const struct am_ticker_cfg* cfg);
 
 /**
  * Start periodic ticking.
  *
- * @param ticker_id  ticker handler returned by am_ticker_create()
+ * @param ticker_id  ticker ID returned by am_ticker_create()
  */
 void am_ticker_start(int ticker_id);
 
 /**
  * Stop periodic ticking.
  *
- * @param ticker_id  ticker handler returned by am_ticker_create()
+ * @param ticker_id  ticker ID returned by am_ticker_create()
  */
 void am_ticker_stop(int ticker_id);
 

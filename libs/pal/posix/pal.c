@@ -366,23 +366,23 @@ uint32_t am_time_get_ms(void) {
     return (uint32_t)ms;
 }
 
-uint32_t am_time_get_tick(int ticker_id) {
-    AM_ASSERT(AM_TICKER_DEFAULT == ticker_id);
+uint32_t am_time_get_tick(int timebase) {
+    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase);
     return am_time_get_ms();
 }
 
-uint32_t am_time_get_tick_from_ms(int ticker_id, uint32_t ms) {
-    AM_ASSERT(AM_TICKER_DEFAULT == ticker_id);
+uint32_t am_time_get_tick_from_ms(int timebase, uint32_t ms) {
+    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase);
     return ms;
 }
 
-uint32_t am_time_get_ms_from_tick(int ticker_id, uint32_t tick) {
-    AM_ASSERT(AM_TICKER_DEFAULT == ticker_id);
+uint32_t am_time_get_ms_from_tick(int timebase, uint32_t tick) {
+    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase);
     return tick;
 }
 
-void am_sleep_ticks(int ticker_id, uint32_t ticks) {
-    AM_ASSERT(AM_TICKER_DEFAULT == ticker_id);
+void am_sleep_ticks(int timebase, uint32_t ticks) {
+    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase);
     if (0 == ticks) {
         return;
     }
@@ -409,8 +409,8 @@ void am_sleep_till_ms(uint32_t ms) {
     usleep(sleep_ms * 1000);
 }
 
-void am_sleep_till_ticks(int ticker_id, uint32_t ticks) {
-    uint32_t now_ticks = am_time_get_tick(ticker_id);
+void am_sleep_till_ticks(int timebase, uint32_t ticks) {
+    uint32_t now_ticks = am_time_get_tick(timebase);
     uint32_t sleep_ticks = ticks - now_ticks;
     if ((0 == sleep_ticks) || (sleep_ticks > UINT32_MAX / 2)) {
         return;
@@ -621,7 +621,7 @@ int am_ticker_create(const struct am_ticker_cfg* cfg) {
     ticker->busy = true;
     ticker->cfg = *cfg;
     ticker->period_ns =
-        1000000 * am_time_get_ms_from_tick(cfg->ticker_id, /*tick=*/1);
+        1000000 * am_time_get_ms_from_tick(cfg->timebase, /*tick=*/1);
 
     return am_pal_id_from_index(0);
 }

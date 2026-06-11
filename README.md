@@ -325,14 +325,14 @@ static void app_ctor(struct app *me, struct am_timer *timer) {
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(app_init));
     me->timer = timer;
     me->timout = am_timer_event_ctor_x(APP_EVT_TIMER, &me->ao);
-    me->ticks = am_time_get_tick_from_ms(AM_TICKER_DEFAULT, 1000);
+    me->ticks = am_time_get_tick_from_ms(AM_TIMEBASE_DEFAULT, 1000);
 }
 
 static void ticker_task(void *param) {
     struct am_timer *timer = param;
 
     while (am_ao_get_cnt() > 0) {
-        am_sleep_ticks(AM_TICKER_DEFAULT, /*ticks=*/1);
+        am_sleep_ticks(AM_TIMEBASE_DEFAULT, /*ticks=*/1);
 
         am_timer_tick_iterator_init(timer);
         struct am_timer_event* fired = NULL;

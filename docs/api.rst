@@ -534,7 +534,7 @@ The source code of the corresponding header file is in `pal.h <https://github.co
 
 .. doxygendefine:: AM_TASK_FLAG_WAIT_INIT
 
-.. doxygendefine:: AM_TICKER_DEFAULT
+.. doxygendefine:: AM_TIMEBASE_DEFAULT
 
 .. doxygenstruct:: am_ticker_cfg
    :members:
