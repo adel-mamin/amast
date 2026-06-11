@@ -273,7 +273,7 @@ struct app {
     struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer *timer;
-    struct am_timer_event timeout;
+    struct am_timer_event_x timeout;
     int ticks;
 };
 
@@ -324,7 +324,7 @@ static void app_ctor(struct app *me, struct am_timer *timer) {
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(app_init));
     me->timer = timer;
-    me->timout = am_timer_event_ctor_x(APP_EVT_TIMER, &me->ao);
+    me->timeout = am_timer_event_ctor_x(APP_EVT_TIMER, &me->ao);
     me->ticks = am_time_get_tick_from_ms(AM_TIMEBASE_DEFAULT, 1000);
 }
 
