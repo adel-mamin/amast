@@ -141,7 +141,7 @@ void am_event_sync_unregister(struct am_event_sync_hub* hub, int handler_id) {
     hub->handlers[handler_id].ctx = NULL;
 }
 
-enum am_rc am_event_sync_post(
+enum am_rc am_event_sync_post_request(
     struct am_event_sync_hub* hub,
     int dest_id,
     const struct am_event* event,
@@ -161,7 +161,19 @@ enum am_rc am_event_sync_post(
     return fn(ctx, event, out, out_size);
 }
 
-enum am_rc am_event_sync_publish(
+enum am_rc am_event_sync_post(
+    struct am_event_sync_hub* hub, int dest_id, const struct am_event* event
+) {
+    return am_event_sync_post_request(
+        hub,
+        dest_id,
+        event,
+        /*out=*/NULL,
+        /*out_size=*/0
+    );
+}
+
+enum am_rc am_event_sync_publish_request(
     struct am_event_sync_hub* hub,
     int publisher_id,
     const struct am_event* event,
@@ -226,4 +238,20 @@ enum am_rc am_event_sync_publish(
     am_event_free(hub->alloc, event);
 
     return all_published;
+}
+
+enum am_rc am_event_sync_publish(
+    struct am_event_sync_hub* hub,
+    int publisher_id,
+    const struct am_event* event,
+    unsigned policy
+) {
+    return am_event_sync_publish_request(
+        hub,
+        publisher_id,
+        event,
+        /*out=*/NULL,
+        /*out_size=*/0,
+        policy
+    );
 }

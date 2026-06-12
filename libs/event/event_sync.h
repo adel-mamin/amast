@@ -210,8 +210,29 @@ void am_event_sync_unregister(struct am_event_sync_hub* hub, int handler_id);
 /**
  * Post event to a specific event handler.
  *
- * This function delivers \p event directly to the event handler identified by
- * \p dest_id.
+ * This function delivers @p event directly to the event handler identified by
+ * @p dest_id.
+ *
+ * WARNING:
+ * Posting an event to the currently executing handler may cause recursion.
+ *
+ * @param hub       synchronous event hub
+ * @param dest_id   destination event handler ID returned by
+ *                  am_event_sync_register()
+ *                  Passing an invalid event handler ID is a programming error
+ *                  and results in an assertion failure.
+ * @param event     input event
+ * @return Return code.
+ */
+enum am_rc am_event_sync_post(
+    struct am_event_sync_hub* hub, int dest_id, const struct am_event* event
+);
+
+/**
+ * Post event to a specific event handler and get
+ *
+ * This function delivers @p event directly to the event handler identified by
+ * @p dest_id and allows the handler to return an output event in @p out.
  *
  * WARNING:
  * Posting an event to the currently executing handler may cause recursion.
@@ -225,10 +246,10 @@ void am_event_sync_unregister(struct am_event_sync_hub* hub, int handler_id);
  * @param out       output event. Optional. Can be NULL.
  *                  The memory is provided by the caller and must be sufficient
  *                  to accommodate the output event data.
- * @param out_size  the size of memory behind \p out pointer [bytes]
+ * @param out_size  the size of memory behind @p out pointer [bytes]
  * @return Return code.
  */
-enum am_rc am_event_sync_post(
+enum am_rc am_event_sync_post_request(
     struct am_event_sync_hub* hub,
     int dest_id,
     const struct am_event* event,
@@ -242,11 +263,41 @@ enum am_rc am_event_sync_post(
 /**
  * Publish event to subscribed event handlers.
  *
- * This function delivers \p event to all event handlers subscribed to the
- * event ID carried by \p event.
+ * This function delivers @p event to all event handlers subscribed to the
+ * event ID carried by @p event and allows a subscribed handler to return an
+ * output event in @p out.
  *
  * Delivery to the publisher itself is controlled by
- * AM_EVENT_SYNC_RECURSION in \p policy.
+ * AM_EVENT_SYNC_RECURSION in @p policy.
+ * If recursion is enabled and the publisher is subscribed to the event,
+ * the event is also delivered to the publisher, resulting in recursion.
+ *
+ * @param hub           synchronous event hub
+ * @param publisher_id  publisher event handler ID returned by
+ *                      am_event_sync_register().
+ *                      Passing an invalid event handler ID is a programming
+ *                      error and results in an assertion failure.
+ * @param event         input event
+ * @param policy        event handling policy. A bitwise OR of AM_EVENT_SYNC_*
+ *                      flags, such as #AM_EVENT_SYNC_RECURSION.
+ * @return Return code.
+ */
+enum am_rc am_event_sync_publish(
+    struct am_event_sync_hub* hub,
+    int publisher_id,
+    const struct am_event* event,
+    unsigned policy
+);
+
+/**
+ * Publish event to subscribed event handlers.
+ *
+ * This function delivers @p event to all event handlers subscribed to the
+ * event ID carried by @p event and allows a subscribed handler to return an
+ * output event in @p out.
+ *
+ * Delivery to the publisher itself is controlled by
+ * AM_EVENT_SYNC_RECURSION in @p policy.
  * If recursion is enabled and the publisher is subscribed to the event,
  * the event is also delivered to the publisher, resulting in recursion.
  *
@@ -259,12 +310,12 @@ enum am_rc am_event_sync_post(
  * @param out           output event. Optional. Can be NULL.
  *                      The memory is provided by the caller and must be
  *                      sufficient to accommodate the output event data.
- * @param out_size      the size of memory behind \p out pointer [bytes]
+ * @param out_size      the size of memory behind @p out pointer [bytes]
  * @param policy        event handling policy. A bitwise OR of AM_EVENT_SYNC_*
- *                      flags, such as AM_EVENT_SYNC_RECURSION.
+ *                      flags, such as #AM_EVENT_SYNC_RECURSION.
  * @return Return code.
  */
-enum am_rc am_event_sync_publish(
+enum am_rc am_event_sync_publish_request(
     struct am_event_sync_hub* hub,
     int publisher_id,
     const struct am_event* event,
