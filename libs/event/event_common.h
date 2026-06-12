@@ -207,7 +207,7 @@ extern "C" {
  * The event is allocated from one of the memory pools provided
  * with am_event_alloc_add_pool() function.
  *
- * Checks if there are more free memory blocks available than \p margin.
+ * Checks if there are more free memory blocks available than @p margin.
  * If not, then returns NULL. Otherwise allocates the event and returns it.
  *
  * Thread safe.
@@ -278,7 +278,7 @@ void am_event_free(struct am_event_alloc* alloc, const struct am_event* event);
  * Allocates it from memory pools provided by am_event_alloc_add_pool()
  * function.
  *
- * Checks if there are more free memory blocks available than \p margin.
+ * Checks if there are more free memory blocks available than @p margin.
  * If not, then returns NULL. Otherwise allocates memory block
  * and then copies the content of the given event to it.
  *
@@ -294,7 +294,7 @@ void am_event_free(struct am_event_alloc* alloc, const struct am_event* event);
  * @param size    the event size [bytes]
  * @param margin  free memory blocks to be available after the allocation
  *
- * @return the newly allocated copy of \p event
+ * @return the newly allocated copy of @p event
  */
 struct am_event* am_event_dup_x(
     struct am_event_alloc* alloc,
@@ -322,7 +322,7 @@ struct am_event* am_event_dup_x(
  * @param event  the event to duplicate
  * @param size   the event size [bytes]
  *
- * @return the newly allocated copy of \p event
+ * @return the newly allocated copy of @p event
  */
 struct am_event* am_event_dup(
     struct am_event_alloc* alloc, const struct am_event* event, int size

@@ -47,7 +47,7 @@
  *                   The memory is provided by the caller and
  *                   should be sufficient to accommodate the output
  *                   event data. Optional. Can be NULL.
- * @param out_size   the size of memory behind \p out pointer [bytes]
+ * @param out_size   the size of memory behind @p out pointer [bytes]
  *
  * @return Return code.
  */
@@ -94,7 +94,7 @@ extern "C" {
  * @param sub    the array of subscription lists
  *               Optional. Only needed, if event pub/sub functionality is used.
  *               The pub/sub functionality is provided by
- *               am_event_sync_publish(),
+ *               am_event_sync_publish_request(),
  *               am_event_sync_subscribe(), am_event_sync_unsubscribe() and
  *               am_event_sync_unsubscribe_all() APIs.
  * @param nsub   the number of elements in sub array
@@ -119,9 +119,9 @@ void am_event_sync_init(
 bool am_event_sync_is_pubsub_enabled(const struct am_event_sync_hub* hub);
 
 /**
- * Subscribe event handler to \p event ID.
+ * Subscribe event handler to @p event ID.
  *
- * The \p event ID must be smaller than the number of elements
+ * The @p event ID must be smaller than the number of elements
  * in the array of subscription lists provided to
  * am_event_sync_init().
  *
@@ -142,9 +142,9 @@ void am_event_sync_subscribe(
 );
 
 /**
- * Unsubscribe event handler from \p event ID.
+ * Unsubscribe event handler from @p event ID.
  *
- * The \p event ID must be smaller than the number of elements
+ * The @p event ID must be smaller than the number of elements
  * in the array of subscription lists provided to
  * am_event_sync_init().
  *

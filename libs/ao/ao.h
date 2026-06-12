@@ -151,14 +151,14 @@ extern "C" {
 #endif
 
 /**
- * Publish \p event to all subscribed active objects except the given one
+ * Publish @p event to all subscribed active objects except the given one
  * (eXtended version).
  *
- * The \p event is delivered to event queues of all the active objects,
- * which are subscribed to the \p event excluding the specified AO.
- * The \p event is then handled asynchronously by the active objects.
+ * The @p event is delivered to event queues of all the active objects,
+ * which are subscribed to the @p event excluding the specified AO.
+ * The @p event is then handled asynchronously by the active objects.
  *
- * Might be useful, if the AO publishing the \p event does not want
+ * Might be useful, if the AO publishing the @p event does not want
  * the library to route the same event back to this AO.
  *
  * Application might observe changed order of events after the publishing.
@@ -170,22 +170,22 @@ extern "C" {
  * Use am_ao_unsubscribe() to unsubscribe it from the event
  * or am_ao_unsubscribe_all() to unsubscribe it from all events.
  *
- * Guarantees availability of \p margin free slots in destination event queues
- * after the \p event was delivered to subscribed active objects.
+ * Guarantees availability of @p margin free slots in destination event queues
+ * after the @p event was delivered to subscribed active objects.
  *
- * If any active object cannot accommodate the \p event,
- * then the function skips the \p event delivery to the active object.
+ * If any active object cannot accommodate the @p event,
+ * then the function skips the @p event delivery to the active object.
  *
- * If your application is not prepared for loosing the \p event,
+ * If your application is not prepared for loosing the @p event,
  * then use am_ao_publish_exclude() function instead.
  *
- * Internally the \p event is pushed to subscribed active object event queues
+ * Internally the @p event is pushed to subscribed active object event queues
  * using am_event_queue_push_back() function.
  *
- * Tries to free the \p event synchronously, if it was not delivered
+ * Tries to free the @p event synchronously, if it was not delivered
  * to any subscriber.
  *
- * The library takes care of freeing the \p event once all
+ * The library takes care of freeing the @p event once all
  * subscribed active objects handled it.
  * This is done asynchronously after this function returns.
  *
@@ -210,7 +210,7 @@ extern "C" {
  *                to their event queues
  *
  * @retval true   the event was delivered to all subscribed active objects
- *                except the active object \p ao
+ *                except the active object @p ao
  * @retval false  at least one delivery of the event has failed
  */
 bool am_ao_publish_exclude_x(
@@ -218,10 +218,10 @@ bool am_ao_publish_exclude_x(
 );
 
 /**
- * Publish \p event to all subscribed active objects except the given one.
+ * Publish @p event to all subscribed active objects except the given one.
  *
  * Same as am_ao_publish_exclude_x() except this function
- * crashes with assert, if it fails delivering the \p event to at
+ * crashes with assert, if it fails delivering the @p event to at
  * least one subscribed active object.
  *
  * There are limitations to what application code can do with the event after
@@ -240,12 +240,12 @@ void am_ao_publish_exclude(
 );
 
 /**
- * Publish \p event to all subscribed active objects (eXtended version).
+ * Publish @p event to all subscribed active objects (eXtended version).
  *
- * The \p event is delivered to event queues of all the active objects,
- * which are subscribed to the \p event including the AO publishing
- * the \p event.
- * The \p event is then handled asynchronously by the active objects.
+ * The @p event is delivered to event queues of all the active objects,
+ * which are subscribed to the @p event including the AO publishing
+ * the @p event.
+ * The @p event is then handled asynchronously by the active objects.
  *
  * Application might observe changed order of events after the publishing.
  * This change of order might happen, if the publishing is from low-priority
@@ -256,22 +256,22 @@ void am_ao_publish_exclude(
  * Use am_ao_unsubscribe() to unsubscribe it from the event.
  * or am_ao_unsubscribe_all() to unsubscribe it from all events.
  *
- * Guarantees availability of \p margin free slots in destination event queues
- * after the \p event was delivered to subscribed active objects.
+ * Guarantees availability of @p margin free slots in destination event queues
+ * after the @p event was delivered to subscribed active objects.
  *
- * If any active object cannot accommodate the \p event, then the function skips
- * the \p event delivery to the active object.
+ * If any active object cannot accommodate the @p event, then the function skips
+ * the @p event delivery to the active object.
  *
- * If your application is not prepared for loosing the \p event,
+ * If your application is not prepared for loosing the @p event,
  * then use am_ao_publish() function instead.
  *
- * Internally the \p event is pushed to subscribed active object event queues
+ * Internally the @p event is pushed to subscribed active object event queues
  * using am_event_queue_push_back() function.
  *
  * Tries to free the event synchronously, if it was not delivered
  * to any subscriber.
  *
- * The library takes care of freeing the \p event once all
+ * The library takes care of freeing the @p event once all
  * subscribed active objects handled it.
  * This is done asynchronously after this function returns.
  *
@@ -297,10 +297,10 @@ void am_ao_publish_exclude(
 bool am_ao_publish_x(const struct am_event* event, int margin);
 
 /**
- * Publish \p event to all subscribed active objects.
+ * Publish @p event to all subscribed active objects.
  *
  * Same as am_ao_publish_x() except this function
- * crashes with assert, if it fails delivering the \p event to at
+ * crashes with assert, if it fails delivering the @p event to at
  * least one subscribed active object.
  *
  * There are limitations to what application code can do with the event after
@@ -313,17 +313,17 @@ bool am_ao_publish_x(const struct am_event* event, int margin);
 void am_ao_publish(const struct am_event* event);
 
 /**
- * Post \p event to the back of active object's event queue (eXtended version).
+ * Post @p event to the back of active object's event queue (eXtended version).
  *
- * The \p event is then handled asynchronously by the active object.
+ * The @p event is then handled asynchronously by the active object.
  *
- * Guarantees availability of \p margin free slots in destination event queue
- * after the \p event was delivered to the active object.
+ * Guarantees availability of @p margin free slots in destination event queue
+ * after the @p event was delivered to the active object.
  *
- * Tries to free the \p event synchronously, if it was not posted.
+ * Tries to free the @p event synchronously, if it was not posted.
  *
- * The library takes care of freeing the \p event once the
- * active object handled the \p event.
+ * The library takes care of freeing the @p event once the
+ * active object handled the @p event.
  * This is done asynchronously after this function returns.
  *
  * Statically allocated events, i.e. events for which am_event_is_static()
@@ -350,10 +350,10 @@ bool am_ao_post_fifo_x(
 );
 
 /**
- * Post \p event to the back of active object's event queue.
+ * Post @p event to the back of active object's event queue.
  *
  * Same as am_ao_post_fifo_x() except this function
- * crashes with assert, if it fails delivering the \p event to the active
+ * crashes with assert, if it fails delivering the @p event to the active
  * object.
  *
  * There are limitations to what application code can do with the event after
@@ -367,17 +367,17 @@ bool am_ao_post_fifo_x(
 void am_ao_post_fifo(struct am_ao* ao, const struct am_event* event);
 
 /**
- * Post \p event to the front of AO event queue (eXtended version).
+ * Post @p event to the front of AO event queue (eXtended version).
  *
- * The \p event is then handled asynchronously by the active object.
+ * The @p event is then handled asynchronously by the active object.
  *
- * If active object's event queue is full and \p margin is >0,
+ * If active object's event queue is full and @p margin is >0,
  * then the function fails gracefully.
  *
- * Tries to free the \p event synchronously, if it was not posted.
+ * Tries to free the @p event synchronously, if it was not posted.
  *
- * The library takes care of freeing the \p event once the
- * active object handled the \p event.
+ * The library takes care of freeing the @p event once the
+ * active object handled the @p event.
  * This is done asynchronously after this function returns.
  *
  * Statically allocated events, i.e. events for which am_event_is_static()
@@ -401,10 +401,10 @@ bool am_ao_post_lifo_x(
 );
 
 /**
- * Post \p event to the front of active object's event queue.
+ * Post @p event to the front of active object's event queue.
  *
  * Same as am_ao_post_lifo_x() except this function
- * crashes with assert, if it fails delivering the \p event to the active
+ * crashes with assert, if it fails delivering the @p event to the active
  * object.
  *
  * There are limitations to what application code can do with the event after
@@ -496,9 +496,9 @@ void am_ao_state_ctor(const struct am_ao_state_cfg* cfg);
 void am_ao_state_dtor(void);
 
 /**
- * Subscribe active object to \p event ID.
+ * Subscribe active object to @p event ID.
  *
- * The \p event ID must be smaller than the number of elements
+ * The @p event ID must be smaller than the number of elements
  * in the array of active object subscribe lists provided to
  * am_event_async_init().
  *
@@ -508,9 +508,9 @@ void am_ao_state_dtor(void);
 void am_ao_subscribe(const struct am_ao* ao, int event);
 
 /**
- * Unsubscribe active object from \p event ID.
+ * Unsubscribe active object from @p event ID.
  *
- * The \p event ID must be smaller than the number of elements
+ * The @p event ID must be smaller than the number of elements
  * in the array of active object subscribe lists provided to
  * am_event_async_init().
  *
@@ -564,7 +564,7 @@ bool am_ao_run_all(void);
 bool am_ao_event_queue_is_empty(struct am_ao* ao);
 
 /**
- * Log the content of the first \p num events in each event queue of every AO.
+ * Log the content of the first @p num events in each event queue of every AO.
  *
  * Only suitable for crash handlers to log the state of event queues of all AOs.
  *

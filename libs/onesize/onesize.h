@@ -88,7 +88,7 @@ void am_onesize_ctor(struct am_onesize* hnd, const struct am_onesize_cfg* cfg);
 /**
  * Allocate memory block of configured block size (eXtended version).
  *
- * Checks if there are more free memory blocks available than \p margin.
+ * Checks if there are more free memory blocks available than @p margin.
  * If not, then returns NULL. Otherwise allocates memory block and returns it.
  *
  * @param hnd     the allocator

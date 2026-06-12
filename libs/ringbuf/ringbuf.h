@@ -83,7 +83,7 @@ void am_ringbuf_ctor(struct am_ringbuf* rb, void* buf, int buf_size);
  *
  * @param rb    the ring buffer
  * @param ptr   the read data pointer is returned here. Can be NULL.
- * @param size  the byte size of the memory pointed to by \p ptr is
+ * @param size  the byte size of the memory pointed to by @p ptr is
  *              returned here. Can be 0.
  *
  * @return true if the ring buffer state was updated and false otherwise
@@ -103,7 +103,7 @@ bool am_ringbuf_get_read_ptr(struct am_ringbuf* rb, uint8_t** ptr, int* size);
  * @param size  the requested memory size behind the write date pointer [bytes].
  *              Can be set to 0.
  *              Returns the byte size of all the available memory pointed
- *              to by \p ptr. Can be 0 or more than the requested size.
+ *              to by @p ptr. Can be 0 or more than the requested size.
  *
  * @return true if the ring buffer state was updated and false otherwise
  */

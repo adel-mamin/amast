@@ -118,7 +118,7 @@ int am_event_alloc_get_nblocks(struct am_event_alloc* alloc, int index);
 int am_event_alloc_get_num(const struct am_event_alloc* alloc);
 
 /**
- * Log events content of the first \p num events in each event pool.
+ * Log events content of the first @p num events in each event pool.
  *
  * To be used for debugging purposes.
  *

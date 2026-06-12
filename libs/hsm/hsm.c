@@ -42,7 +42,7 @@ struct am_hsm_path {
      * state[i] is always a substate of state[i-1]
      */
     struct am_hsm_state state[AM_HSM_HIERARCHY_DEPTH_MAX];
-    /** the actual length of \p state */
+    /** the actual length of @p state */
     int len;
 };
 
@@ -54,8 +54,8 @@ static void hsm_set_state(struct am_hsm* hsm, struct am_hsm_state state) {
 /**
  * Build ancestor chain path.
  *
- * The path starts with \p from state and ends with substate of \p until state
- * OR with state \p till, if it is provided.
+ * The path starts with @p from state and ends with substate of @p until state
+ * OR with state @p till, if it is provided.
  *
  * @param hsm    HSM handler
  * @param path   the path is placed here
@@ -131,7 +131,7 @@ static void hsm_exit_state(struct am_hsm* hsm) {
 /**
  * Exit states.
  *
- * Start with current and end with immediate substate of \p until.
+ * Start with current and end with immediate substate of @p until.
  *
  * @param hsm    HSM handler
  * @param until  stop the exit when reaching this state without exiting it
@@ -149,10 +149,10 @@ static void hsm_exit(struct am_hsm* hsm, struct am_hsm_state until) {
 /**
  * Recursively enter and init destination state.
  *
- * 1. enter all states in \p path
- * 2. init destination state stored in \p path[0]
+ * 1. enter all states in @p path
+ * 2. init destination state stored in @p path[0]
  * 3. if destination state requested an initial transition, then build
- *    new \p path and go to step 1
+ *    new @p path and go to step 1
  *
  * @param hsm   HSM handler
  * @param path  the path to enter

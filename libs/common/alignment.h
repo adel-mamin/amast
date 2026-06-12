@@ -78,7 +78,7 @@ AM_ALIGNOF_DEFINE(max_align_t);
     ((int)(1U << (unsigned)__builtin_ctzl(AM_CAST(uintptr_t, ptr))))
 
 /**
- * Align pointer to the bigger value, which has \p align alignment.
+ * Align pointer to the bigger value, which has @p align alignment.
  *
  * @param ptr    the pointer to align
  * @param align  the alignment [bytes]. Must be power of 2.
@@ -90,7 +90,7 @@ AM_ALIGNOF_DEFINE(max_align_t);
              ~(uintptr_t)((align) - 1)))
 
 /**
- * Align pointer to the smaller value, which has \p align alignment.
+ * Align pointer to the smaller value, which has @p align alignment.
  *
  * @param ptr    the pointer to align
  * @param align  the alignment [bytes]. Must be power of 2.
@@ -101,7 +101,7 @@ AM_ALIGNOF_DEFINE(max_align_t);
     ((void*)((uintptr_t)(ptr) & ~(uintptr_t)((align) - 1)))
 
 /**
- * Return \p size + the byte difference between aligned and unaligned \p size.
+ * Return @p size + the byte difference between aligned and unaligned @p size.
  *
  * For example,
  *

@@ -337,7 +337,7 @@ void am_hsm_dispatch(struct am_hsm* hsm, const struct am_event* event);
 bool am_hsm_is_in(struct am_hsm* hsm, struct am_hsm_state state);
 
 /**
- * Check if HSM's active state equals to \p state (not in hierarchical sense).
+ * Check if HSM's active state equals to @p state (not in hierarchical sense).
  *
  * If active state of hsm is S1, which is substate of S, then
  * `am_hsm_state_is_eq``(hsm, AM_HSM_STATE_CTOR(S1))` is true, but
@@ -346,8 +346,8 @@ bool am_hsm_is_in(struct am_hsm* hsm, struct am_hsm_state state);
  * @param hsm    the HSM
  * @param state  the state to compare against
  *
- * @retval true   the active HSM state equals \p state
- * @retval false  the active HSM state DOES NOT equal \p state
+ * @retval true   the active HSM state equals @p state
+ * @retval false  the active HSM state DOES NOT equal @p state
  */
 bool am_hsm_state_is_eq(const struct am_hsm* hsm, struct am_hsm_state state);
 

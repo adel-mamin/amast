@@ -284,7 +284,7 @@ struct am_slist_item* am_slist_next_item(
  * @param to    append to this list
  * @param from  append this list.
  *              The handler is initialized after the list is appended.
- *              So this list becomes empty after it gets appended to \p to list.
+ *              So this list becomes empty after it gets appended to @p to list.
  */
 void am_slist_append(struct am_slist* to, struct am_slist* from);
 

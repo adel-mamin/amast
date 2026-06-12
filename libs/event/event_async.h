@@ -78,9 +78,9 @@ void am_event_async_init(
 bool am_event_async_is_pubsub_enabled(void);
 
 /**
- * Subscribe event handler to \p event ID.
+ * Subscribe event handler to @p event ID.
  *
- * The \p event ID must be smaller than the number of elements
+ * The @p event ID must be smaller than the number of elements
  * in the array of subscription lists provided to
  * am_event_async_init().
  *
@@ -98,9 +98,9 @@ bool am_event_async_is_pubsub_enabled(void);
 void am_event_async_subscribe(int handler_id, int event_id);
 
 /**
- * Unsubscribe event handler from \p event ID.
+ * Unsubscribe event handler from @p event ID.
  *
- * The \p event ID must be smaller than the number of elements
+ * The @p event ID must be smaller than the number of elements
  * in the array of subscription lists provided to
  * am_event_async_init().
  *
@@ -159,8 +159,8 @@ void am_event_async_unregister(int handler_id);
 /**
  * Post event to a specific event handler.
  *
- * This function delivers \p event directly to the event handler identified by
- * \p dest_id.
+ * This function delivers @p event directly to the event handler identified by
+ * @p dest_id.
  *
  * @param dest_id   destination event handler ID returned by
  *                  am_event_async_register()
@@ -179,8 +179,8 @@ enum am_rc am_event_async_post(
 /**
  * Publish event to subscribed event handlers.
  *
- * This function delivers \p event to all event handlers subscribed to the
- * event ID carried by \p event.
+ * This function delivers @p event to all event handlers subscribed to the
+ * event ID carried by @p event.
  *
  * @param event         input event
  * @param policy        event queue posting policy

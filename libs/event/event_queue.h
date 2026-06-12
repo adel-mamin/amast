@@ -107,7 +107,7 @@ void am_event_queue_dtor(struct am_event_queue* queue);
 /**
  * Push event to the back of event queue (eXtended version).
  *
- * Checks if there are more free queue slots available than \p margin.
+ * Checks if there are more free queue slots available than @p margin.
  * If not, then does not push. Otherwise pushes the event to the back of
  * the event queue.
  *
@@ -141,7 +141,7 @@ enum am_rc am_event_queue_push(
 /**
  * Push event to the back of event queue (eXtended version).
  *
- * Checks if there are more free queue slots available than \p margin.
+ * Checks if there are more free queue slots available than @p margin.
  * If not, then does not push. Otherwise pushes the event to the back of
  * the event queue.
  *
