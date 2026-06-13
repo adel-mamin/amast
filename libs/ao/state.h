@@ -96,7 +96,7 @@ void am_ao_state_ctor_(void);
  *
  * Matches the type am_event_async_fn.
  */
-enum am_rc am_ao_event_handler(
+bool am_ao_event_handler(
     void* ctx, const struct am_event* event, struct am_event_queue_policy policy
 );
 

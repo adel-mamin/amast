@@ -48,6 +48,7 @@
  * transition to state hsm_b, where the event B is processed.
  */
 
+#include <stdbool.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
@@ -93,14 +94,14 @@ static struct am_hsm* am_hsmq = &am_hsmq_.hsm;
 static enum am_rc hsmq_s1(struct am_hsmq* me, const struct am_event* event);
 static enum am_rc hsmq_s2(struct am_hsmq* me, const struct am_event* event);
 
-static enum am_rc hsmq_dispatch(void* ctx, const struct am_event* event) {
+static bool hsmq_dispatch(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
     struct am_hsm* me = ctx;
     am_hsm_dispatch(me, event);
 
-    return AM_RC_OK;
+    return true;
 }
 
 static void hsmq_commit(void) {

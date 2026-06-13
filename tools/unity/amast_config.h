@@ -64,4 +64,10 @@
  */
 #define AM_PAL_MUTEX_NUM_MAX 2
 
+/**
+ * Maximum allowed recursion count in synchronous event processing.
+ * Valid range: [1,INT_MAX].
+ */
+#define AM_SYNC_RECURSION_MAX 16
+
 #endif /* AMAST_CONFIG_H_INCLUDED */

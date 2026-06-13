@@ -226,11 +226,9 @@ enum am_rc am_event_queue_push_front(
  * @param ctx    the callback context
  * @param event  the popped event
  *
- * @return Return code.
+ * @return true on success, false otherwise
  */
-typedef enum am_rc (*am_event_handler_fn)(
-    void* ctx, const struct am_event* event
-);
+typedef bool (*am_event_handler_fn)(void* ctx, const struct am_event* event);
 
 /**
  * Pop event from the front of event queue.

@@ -33,6 +33,7 @@
 #include <string.h>
 
 #include "common/compiler.h"
+#include "common/types.h"
 #include "common/macros.h"
 #include "bit/bit.h"
 #include "event_common.h"
@@ -161,7 +162,7 @@ void am_event_async_unregister(int handler_id) {
     am_event_crit_exit();
 }
 
-enum am_rc am_event_async_post(
+bool am_event_async_post(
     int dest_id,
     const struct am_event* event,
     struct am_event_queue_policy policy
@@ -182,7 +183,7 @@ enum am_rc am_event_async_post(
     return handler->fn(handler->ctx, event, policy);
 }
 
-enum am_rc am_event_async_publish(
+bool am_event_async_publish(
     const struct am_event* event, struct am_event_queue_policy policy
 ) {
     struct am_event_async_state* me = &m_async_state;

@@ -35,7 +35,6 @@
 
 #include <stdbool.h>
 
-#include "common/types.h"
 #include "event_common.h"
 
 /**
@@ -49,9 +48,9 @@
  *                   event data. Optional. Can be NULL.
  * @param out_size   the size of memory behind @p out pointer [bytes]
  *
- * @return Return code.
+ * @return true on success, false otherwise
  */
-typedef enum am_rc (*am_event_sync_fn)(
+typedef bool (*am_event_sync_fn)(
     void* ctx, const struct am_event* event, struct am_event* out, int out_size
 );
 
@@ -62,9 +61,6 @@ struct am_event_sync_hub {
     /** User defined pub/sub list length. */
     int nsub;
 
-    /** The event allocator. */
-    struct am_event_alloc* alloc;
-
     /** Synchronous event handlers */
     struct am_event_sync_handler {
         /** Event handler function */
@@ -73,10 +69,8 @@ struct am_event_sync_hub {
         void* ctx;
     } handlers[AM_EVT_HANDLERS_NUM_MAX]; /**< event handlers */
 
-    /**
-     * safety net to catch missing subscribe list in am_event_sync_init()
-     */
-    bool subscribe_list_set;
+    /** recursion counter */
+    int recursion_count;
 };
 
 #ifdef __cplusplus
@@ -98,13 +92,9 @@ extern "C" {
  *               am_event_sync_subscribe(), am_event_sync_unsubscribe() and
  *               am_event_sync_unsubscribe_all() APIs.
  * @param nsub   the number of elements in sub array
- * @param alloc  the event allocator
  */
 void am_event_sync_init(
-    struct am_event_sync_hub* hub,
-    struct am_event_subscribe_list* sub,
-    int nsub,
-    struct am_event_alloc* alloc
+    struct am_event_sync_hub* hub, struct am_event_subscribe_list* sub, int nsub
 );
 
 /**
@@ -222,9 +212,9 @@ void am_event_sync_unregister(struct am_event_sync_hub* hub, int handler_id);
  *                  Passing an invalid event handler ID is a programming error
  *                  and results in an assertion failure.
  * @param event     input event
- * @return Return code.
+ * @return true on success, false otherwise
  */
-enum am_rc am_event_sync_post(
+bool am_event_sync_post(
     struct am_event_sync_hub* hub, int dest_id, const struct am_event* event
 );
 
@@ -247,9 +237,9 @@ enum am_rc am_event_sync_post(
  *                  The memory is provided by the caller and must be sufficient
  *                  to accommodate the output event data.
  * @param out_size  the size of memory behind @p out pointer [bytes]
- * @return Return code.
+ * @return true on success, false otherwise
  */
-enum am_rc am_event_sync_post_request(
+bool am_event_sync_post_request(
     struct am_event_sync_hub* hub,
     int dest_id,
     const struct am_event* event,
@@ -257,9 +247,6 @@ enum am_rc am_event_sync_post_request(
     int out_size
 );
 
-/** Enable event recursion */
-#define AM_EVENT_SYNC_RECURSION 0x01U
-
 /**
  * Publish event to subscribed event handlers.
  *
@@ -273,20 +260,11 @@ enum am_rc am_event_sync_post_request(
  * the event is also delivered to the publisher, resulting in recursion.
  *
  * @param hub           synchronous event hub
- * @param publisher_id  publisher event handler ID returned by
- *                      am_event_sync_register().
- *                      Passing an invalid event handler ID is a programming
- *                      error and results in an assertion failure.
  * @param event         input event
- * @param policy        event handling policy. A bitwise OR of AM_EVENT_SYNC_*
- *                      flags, such as #AM_EVENT_SYNC_RECURSION.
- * @return Return code.
+ * @return true on success, false otherwise
  */
-enum am_rc am_event_sync_publish(
-    struct am_event_sync_hub* hub,
-    int publisher_id,
-    const struct am_event* event,
-    unsigned policy
+bool am_event_sync_publish(
+    struct am_event_sync_hub* hub, const struct am_event* event
 );
 
 /**
@@ -302,26 +280,18 @@ enum am_rc am_event_sync_publish(
  * the event is also delivered to the publisher, resulting in recursion.
  *
  * @param hub           synchronous event hub
- * @param publisher_id  publisher event handler ID returned by
- *                      am_event_sync_register().
- *                      Passing an invalid event handler ID is a programming
- *                      error and results in an assertion failure.
  * @param event         input event
  * @param out           output event. Optional. Can be NULL.
  *                      The memory is provided by the caller and must be
  *                      sufficient to accommodate the output event data.
  * @param out_size      the size of memory behind @p out pointer [bytes]
- * @param policy        event handling policy. A bitwise OR of AM_EVENT_SYNC_*
- *                      flags, such as #AM_EVENT_SYNC_RECURSION.
- * @return Return code.
+ * @return true on success, false otherwise
  */
-enum am_rc am_event_sync_publish_request(
+bool am_event_sync_publish_request(
     struct am_event_sync_hub* hub,
-    int publisher_id,
     const struct am_event* event,
     struct am_event* out,
-    int out_size,
-    unsigned policy
+    int out_size
 );
 
 #ifdef __cplusplus

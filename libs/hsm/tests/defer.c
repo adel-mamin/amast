@@ -25,6 +25,7 @@
  */
 
 #include <stdarg.h>
+#include <stdbool.h>
 #include <string.h>
 
 #include "common/alignment.h"
@@ -72,14 +73,14 @@ static struct test_defer m_test_defer;
 static enum am_rc defer_s1(struct test_defer* me, const struct am_event* event);
 static enum am_rc defer_s2(struct test_defer* me, const struct am_event* event);
 
-static enum am_rc defer_push_front(void* ctx, const struct am_event* event) {
+static bool defer_push_front(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
     struct test_defer* me = (struct test_defer*)ctx;
     am_event_queue_push_front(&me->event_queue, event);
 
-    return AM_RC_OK;
+    return true;
 }
 
 static enum am_rc defer_s1(
@@ -153,14 +154,14 @@ static AM_PRINTF(1, 0) void defer_hsm_log(const char* fmt, ...) {
     va_end(ap);
 }
 
-static enum am_rc defer_dispatch(void* ctx, const struct am_event* event) {
+static bool defer_dispatch(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
     struct test_defer* me = (struct test_defer*)ctx;
     am_hsm_dispatch(&me->hsm, event);
 
-    return AM_RC_OK;
+    return true;
 }
 
 static void defer_commit(void) {

@@ -32,6 +32,7 @@
  * transition to state fsm_b, where the event B is processed.
  */
 
+#include <stdbool.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
@@ -78,7 +79,7 @@ static struct am_fsm* am_fsmq = &am_fsmq_.fsm;
 static enum am_rc fsmq_a(struct am_fsmq* me, const struct am_event* event);
 static enum am_rc fsmq_b(struct am_fsmq* me, const struct am_event* event);
 
-static enum am_rc fsmq_handle(void* ctx, const struct am_event* event) {
+static bool fsmq_handle(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
@@ -86,7 +87,7 @@ static enum am_rc fsmq_handle(void* ctx, const struct am_event* event) {
     AM_ASSERT(event);
     am_fsm_dispatch(me, event);
 
-    return AM_RC_OK;
+    return true;
 }
 
 static void fsmq_commit(void) {

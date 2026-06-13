@@ -44,7 +44,7 @@ void am_ao_state_ctor_(void) {
     memset(&am_ready_aos_, 0, sizeof(am_ready_aos_));
 }
 
-static enum am_rc am_ao_handle(void* ctx, const struct am_event* event) {
+static bool am_ao_handle(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
@@ -58,7 +58,7 @@ static enum am_rc am_ao_handle(void* ctx, const struct am_event* event) {
     me->running_ao_prio = AM_AO_PRIO_INVALID;
     AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_EMPTY);
 
-    return AM_RC_OK;
+    return true;
 }
 
 bool am_ao_run_all(void) {

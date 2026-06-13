@@ -242,7 +242,7 @@ void am_ao_log_last_events(void (*log)(const char* name, int event)) {
 
 int am_ao_get_cnt(void) { return AM_ATOMIC_LOAD_N(&am_ao_state_.aos_cnt); }
 
-enum am_rc am_ao_event_handler(
+bool am_ao_event_handler(
     void* ctx, const struct am_event* event, struct am_event_queue_policy policy
 ) {
     AM_ASSERT(ctx);
@@ -257,5 +257,5 @@ enum am_rc am_ao_event_handler(
     if (AM_RC_QUEUE_WAS_EMPTY == rc) {
         am_ao_notify_unsafe(ao);
     }
-    return AM_RC_OK;
+    return true;
 }

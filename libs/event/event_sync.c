@@ -32,18 +32,19 @@
 #include <string.h>
 
 #include <stdint.h>
-#include "common/types.h"
 #include "event/event_common.h"
 #include "event/event_sync.h"
 
 #include "common/macros.h"
 #include "bit/bit.h"
 
+/** Maximum recursion count allowed. */
+#ifndef AM_SYNC_RECURSION_MAX
+#define AM_SYNC_RECURSION_MAX 16
+#endif
+
 void am_event_sync_init(
-    struct am_event_sync_hub* hub,
-    struct am_event_subscribe_list* sub,
-    int nsub,
-    struct am_event_alloc* alloc
+    struct am_event_sync_hub* hub, struct am_event_subscribe_list* sub, int nsub
 ) {
     AM_ASSERT(hub);
 
@@ -56,7 +57,6 @@ void am_event_sync_init(
 
     hub->sub = sub;
     hub->nsub = nsub;
-    hub->alloc = alloc;
 }
 
 bool am_event_sync_is_pubsub_enabled(const struct am_event_sync_hub* hub) {
@@ -141,7 +141,7 @@ void am_event_sync_unregister(struct am_event_sync_hub* hub, int handler_id) {
     hub->handlers[handler_id].ctx = NULL;
 }
 
-enum am_rc am_event_sync_post_request(
+bool am_event_sync_post_request(
     struct am_event_sync_hub* hub,
     int dest_id,
     const struct am_event* event,
@@ -149,6 +149,7 @@ enum am_rc am_event_sync_post_request(
     int out_size
 ) {
     AM_ASSERT(hub);
+    AM_ASSERT(hub->recursion_count < AM_SYNC_RECURSION_MAX);
 
     AM_ASSERT(dest_id >= 0);
     AM_ASSERT(dest_id < AM_EVT_HANDLERS_NUM_MAX);
@@ -158,10 +159,16 @@ enum am_rc am_event_sync_post_request(
 
     void* ctx = hub->handlers[dest_id].ctx;
 
-    return fn(ctx, event, out, out_size);
+    ++hub->recursion_count;
+
+    bool ret = fn(ctx, event, out, out_size);
+
+    --hub->recursion_count;
+
+    return ret;
 }
 
-enum am_rc am_event_sync_post(
+bool am_event_sync_post(
     struct am_event_sync_hub* hub, int dest_id, const struct am_event* event
 ) {
     return am_event_sync_post_request(
@@ -173,85 +180,51 @@ enum am_rc am_event_sync_post(
     );
 }
 
-enum am_rc am_event_sync_publish_request(
+bool am_event_sync_publish_request(
     struct am_event_sync_hub* hub,
-    int publisher_id,
     const struct am_event* event,
     struct am_event* out,
-    int out_size,
-    unsigned policy
+    int out_size
 ) {
     AM_ASSERT(hub);
     AM_ASSERT(hub->sub);
+    AM_ASSERT(hub->recursion_count < AM_SYNC_RECURSION_MAX);
 
-    AM_ASSERT(publisher_id >= 0);
-    AM_ASSERT(publisher_id < AM_EVT_HANDLERS_NUM_MAX);
     AM_ASSERT(event->id >= AM_EVT_USER);
     AM_ASSERT(event->id < hub->nsub);
 
-    if (!am_event_is_static(event)) {
-        /* to avoid freeing the event during the processing */
-        am_event_inc_ref_cnt(event);
-    }
+    ++hub->recursion_count;
 
     bool all_published = true;
 
     struct am_event_subscribe_list* sub = &hub->sub[event->id];
     for (int i = 0; i < AM_COUNTOF(sub->list); ++i) {
-        unsigned done = 0;
-        int cnt = 0;
-        while (true) {
-            AM_ASSERT(cnt++ <= 8);
-
-            unsigned list = sub->list[i];
-            list &= ~done;
-            if (0 == list) {
-                break;
-            }
-
+        unsigned list = sub->list[i];
+        while (list) {
             int msb = am_bit_u8_msb((uint8_t)list);
-            done |= 1U << (unsigned)msb;
+            list &= ~(1U << (unsigned)msb);
 
             int ind = (8 * i) + msb;
-            if (0 == (policy & AM_EVENT_SYNC_RECURSION)) {
-                if (ind == publisher_id) {
-                    continue;
-                }
-            }
-
             struct am_event_sync_handler* handler = &hub->handlers[ind];
             AM_ASSERT(handler->fn);
-            enum am_rc rc = handler->fn(handler->ctx, event, out, out_size);
-
-            if (AM_RC_ERR == rc) {
+            if (!handler->fn(handler->ctx, event, out, out_size)) {
                 all_published = false;
             }
         }
     }
 
-    /*
-     * Tries to free the event.
-     * It is needed to balance the ref counter increment at the beginning of
-     * the function. Also takes care of the case when no event handlers
-     * subscribed to this event.
-     */
-    am_event_free(hub->alloc, event);
+    --hub->recursion_count;
 
     return all_published;
 }
 
-enum am_rc am_event_sync_publish(
-    struct am_event_sync_hub* hub,
-    int publisher_id,
-    const struct am_event* event,
-    unsigned policy
+bool am_event_sync_publish(
+    struct am_event_sync_hub* hub, const struct am_event* event
 ) {
     return am_event_sync_publish_request(
         hub,
-        publisher_id,
         event,
         /*out=*/NULL,
-        /*out_size=*/0,
-        policy
+        /*out_size=*/0
     );
 }

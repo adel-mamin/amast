@@ -39,7 +39,7 @@
 
 void am_ao_state_ctor_(void) {}
 
-static enum am_rc am_ao_handle(void* ctx, const struct am_event* event) {
+static bool am_ao_handle(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
     AM_ASSERT(event);
 
@@ -49,7 +49,7 @@ static enum am_rc am_ao_handle(void* ctx, const struct am_event* event) {
     ao->user_event_handler(ao->ctx, event);
     AM_ATOMIC_STORE_N(&ao->last_event, AM_EVT_EMPTY);
 
-    return AM_RC_OK;
+    return true;
 }
 
 static void am_ao_task_init(void* param) {

@@ -35,7 +35,6 @@
 
 #include <stdbool.h>
 
-#include "common/types.h"
 #include "event_common.h"
 #include "event_queue.h"
 
@@ -46,9 +45,9 @@
  * @param event   event to handle
  * @param policy  the event queue handling policy
  *
- * @return Return code.
+ * @return true on success, false otherwise
  */
-typedef enum am_rc (*am_event_async_fn)(
+typedef bool (*am_event_async_fn)(
     void* ctx, const struct am_event* event, struct am_event_queue_policy policy
 );
 
@@ -168,9 +167,9 @@ void am_event_async_unregister(int handler_id);
  *                  and results in an assertion failure.
  * @param event     input event
  * @param policy    event queue posting policy
- * @return Return code.
+ * @return true on success, false otherwise
  */
-enum am_rc am_event_async_post(
+bool am_event_async_post(
     int dest_id,
     const struct am_event* event,
     struct am_event_queue_policy policy
@@ -184,9 +183,9 @@ enum am_rc am_event_async_post(
  *
  * @param event         input event
  * @param policy        event queue posting policy
- * @return Return code.
+ * @return true on success, false otherwise
  */
-enum am_rc am_event_async_publish(
+bool am_event_async_publish(
     const struct am_event* event, struct am_event_queue_policy policy
 );
 
