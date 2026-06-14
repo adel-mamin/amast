@@ -92,8 +92,8 @@ static struct am_task task_main_ = {0};
 static struct am_task tasks_[AM_TASK_NUM_MAX];
 static int ntasks_ = 0;
 
-static int startup_gate_mutex_;
-static int startup_gate_mutex_acquired_;
+static int init_complete_mutex_;
+static int init_complete_mutex_acquired_;
 
 static int am_pal_index_from_id(int id) {
     AM_ASSERT(id > 0);
@@ -122,11 +122,11 @@ void* am_pal_ctor(void* arg) {
     task->thread = uv_thread_self();
     uv_sem_init(&task->semaphore, 0);
 
-    startup_gate_mutex_ = am_mutex_create();
+    init_complete_mutex_ = am_mutex_create();
 
-    am_mutex_lock(startup_gate_mutex_);
+    am_mutex_lock(init_complete_mutex_);
 
-    startup_gate_mutex_acquired_ = true;
+    init_complete_mutex_acquired_ = true;
 
     return loop_;
 }
@@ -138,9 +138,9 @@ static void close_cb(uv_handle_t* handle, void* arg) {
 }
 
 void am_pal_dtor(void) {
-    if (startup_gate_mutex_acquired_) {
-        am_mutex_unlock(startup_gate_mutex_);
-        startup_gate_mutex_acquired_ = false;
+    if (init_complete_mutex_acquired_) {
+        am_mutex_unlock(init_complete_mutex_);
+        init_complete_mutex_acquired_ = false;
     }
     for (int i = 0; i < AM_COUNTOF(tasks_); ++i) {
         struct am_task* task = &tasks_[i];
@@ -479,7 +479,7 @@ void am_task_init_wait(void) {
                 }
             }
         }
-        startup_gate_mutex_acquired_ = false;
+        init_complete_mutex_acquired_ = false;
     } else {
         struct am_task* this_task = am_task_get_hnd(task_id);
 
@@ -487,10 +487,10 @@ void am_task_init_wait(void) {
 
         am_task_notify(AM_TASK_ID_MAIN);
 
-        am_mutex_lock(startup_gate_mutex_);
+        am_mutex_lock(init_complete_mutex_);
     }
 
-    am_mutex_unlock(startup_gate_mutex_);
+    am_mutex_unlock(init_complete_mutex_);
 }
 
 void am_task_run_all(void) {}
