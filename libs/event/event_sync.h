@@ -136,9 +136,10 @@ bool am_event_sync_is_pubsub_enabled(const struct am_event_sync_hub* hub);
  * @param event_id    the event ID to subscribe to.
  *                    Must be more or equal to AM_EVT_USER.
  *                    Used to compute an index into the array of subscription
- *                    lists passed to am_event_sync_init().
- *                    Passing an event ID beyond the size of the array
- *                    results in an assertion failure.
+ *                    lists passed to am_event_sync_init() like this:
+ *                    (event_id - AM_EVT_USER).
+ *                    Passing an event ID which results in an index beyond
+ *                    the size of the array results in an assertion failure.
  */
 void am_event_sync_subscribe(
     struct am_event_sync_hub* hub, int handler_id, int event_id
@@ -159,9 +160,10 @@ void am_event_sync_subscribe(
  * @param event_id    the event ID to unsubscribe from.
  *                    Must be more or equal to AM_EVT_USER.
  *                    Used to compute an index into the array of subscription
- *                    lists passed to am_event_sync_init().
- *                    Passing an event ID beyond the size of the array
- *                    results in an assertion failure.
+ *                    lists passed to am_event_sync_init() like this:
+ *                    (event_id - AM_EVT_USER).
+ *                    Passing an event ID which results in an index beyond
+ *                    the size of the array results in an assertion failure.
  */
 void am_event_sync_unsubscribe(
     struct am_event_sync_hub* hub, int handler_id, int event_id
