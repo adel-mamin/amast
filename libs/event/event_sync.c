@@ -136,6 +136,8 @@ int am_event_sync_register(
         }
     }
     AM_ASSERT(0);
+
+    return -1;
 }
 
 void am_event_sync_unregister(struct am_event_sync_hub* hub, int handler_id) {
@@ -143,6 +145,10 @@ void am_event_sync_unregister(struct am_event_sync_hub* hub, int handler_id) {
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
     AM_ASSERT(hub->handlers[handler_id].fn);
+
+    if (hub->sub) {
+        am_event_sync_unsubscribe_all(hub, handler_id);
+    }
 
     hub->handlers[handler_id].fn = NULL;
     hub->handlers[handler_id].ctx = NULL;
@@ -169,6 +175,7 @@ bool am_event_sync_post_request(
     AM_ASSERT(dest_id < AM_EVT_HANDLERS_NUM_MAX);
     am_event_sync_fn fn = hub->handlers[dest_id].fn;
     AM_ASSERT(fn);
+    AM_ASSERT(event);
     AM_ASSERT(event->id >= 0);
 
     void* ctx = hub->handlers[dest_id].ctx;
@@ -206,6 +213,7 @@ bool am_event_sync_publish_request(
     AM_ASSERT(hub->sub);
     AM_ASSERT(hub->recursion_count < AM_SYNC_RECURSION_MAX);
 
+    AM_ASSERT(event);
     AM_ASSERT(event->id >= 0);
     AM_ASSERT(event->id < hub->nsub);
 

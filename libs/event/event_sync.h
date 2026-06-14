@@ -277,11 +277,6 @@ bool am_event_sync_post_request(
  * event ID carried by @p event and allows a subscribed handler to return an
  * output event in @p out.
  *
- * Delivery to the publisher itself is controlled by
- * AM_EVENT_SYNC_RECURSION in @p policy.
- * If recursion is enabled and the publisher is subscribed to the event,
- * the event is also delivered to the publisher, resulting in recursion.
- *
  * @param hub           synchronous event hub
  * @param event         input event
  * @return true on success, false otherwise
@@ -296,11 +291,6 @@ bool am_event_sync_publish(
  * This function delivers @p event to all event handlers subscribed to the
  * event ID carried by @p event and allows a subscribed handler to return an
  * output event in @p out.
- *
- * Delivery to the publisher itself is controlled by
- * AM_EVENT_SYNC_RECURSION in @p policy.
- * If recursion is enabled and the publisher is subscribed to the event,
- * the event is also delivered to the publisher, resulting in recursion.
  *
  * @param hub           synchronous event hub
  * @param event         input event
