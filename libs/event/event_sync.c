@@ -176,7 +176,6 @@ bool am_event_sync_post_request(
     am_event_sync_fn fn = hub->handlers[dest_id].fn;
     AM_ASSERT(fn);
     AM_ASSERT(event);
-    AM_ASSERT(event->id >= 0);
 
     void* ctx = hub->handlers[dest_id].ctx;
 
@@ -214,7 +213,6 @@ bool am_event_sync_publish_request(
     AM_ASSERT(hub->recursion_count < AM_SYNC_RECURSION_MAX);
 
     AM_ASSERT(event);
-    AM_ASSERT(event->id >= 0);
     AM_ASSERT(event->id < hub->nsub);
 
     ++hub->recursion_count;
