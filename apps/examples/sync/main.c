@@ -25,6 +25,7 @@
  */
 
 #include <stdio.h>
+#include <inttypes.h>
 
 #include "common/macros.h"
 #include "event/event_sync.h"
@@ -47,6 +48,31 @@ static void timer_proc(struct am_timer* timer, struct am_event_sync_hub* hub) {
     }
 }
 
+static const char* event_to_str(int event_id) {
+    switch (event_id) {
+    case EVT_JOB_REQ:
+        return "JOB_REQ";
+    case EVT_JOB_DONE:
+        return "JOB_DONE";
+    case EVT_COMMIT:
+        return "COMMIT";
+    case EVT_TIMEOUT:
+        return "TIMEOUT";
+    default:
+        break;
+    }
+    return "UNKN";
+}
+
+static void event_sync_observe(int handler_id, const struct am_event* event) {
+    am_printf(
+        "%" PRIu32 " handler_id: %d event: %s\n",
+        am_time_get_ms(),
+        handler_id,
+        event_to_str(event->id)
+    );
+}
+
 int main(void) {
     am_pal_ctor(/*arg=*/NULL);
 
@@ -57,6 +83,7 @@ int main(void) {
     struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX];
 
     am_event_sync_init(&hub, &pubsub_list[0], AM_COUNTOF(pubsub_list));
+    am_event_sync_observe(&hub, event_sync_observe);
 
     struct top top;
     struct low low;

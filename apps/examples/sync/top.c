@@ -27,7 +27,6 @@
 #include <string.h>
 
 #include "event/event_sync.h"
-#include "pal/pal.h"
 
 #include "top.h"
 #include "events.h"
@@ -43,17 +42,14 @@ static bool top_event_handler(
 
     switch (event->id) {
     case EVT_COMMIT:
-        if (!top->job_pend && top->rounds) {
-            am_printf("top: request job\n");
-            top->job_pend = true;
-            am_event_sync_publish(
-                top->hub, &(struct am_event){.id = EVT_JOB_REQ}
-            );
+        if (top->job_pend || (0 == top->rounds)) {
+            break;
         }
+        top->job_pend = true;
+        am_event_sync_publish(top->hub, &(struct am_event){.id = EVT_JOB_REQ});
         break;
 
     case EVT_JOB_DONE:
-        am_printf("top: EVT_JOB_DONE\n");
         top->job_pend = false;
         top->rounds--;
         break;

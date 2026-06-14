@@ -43,6 +43,13 @@
 #define AM_SYNC_RECURSION_MAX 16
 #endif
 
+static void am_event_sync_observer_nil(
+    int handler_id, const struct am_event* event
+) {
+    (void)handler_id;
+    (void)event;
+}
+
 void am_event_sync_init(
     struct am_event_sync_hub* hub, struct am_event_subscribe_list* sub, int nsub
 ) {
@@ -57,6 +64,7 @@ void am_event_sync_init(
 
     hub->sub = sub;
     hub->nsub = nsub;
+    hub->observer_cb = am_event_sync_observer_nil;
 }
 
 bool am_event_sync_is_pubsub_enabled(const struct am_event_sync_hub* hub) {
@@ -141,6 +149,13 @@ void am_event_sync_unregister(struct am_event_sync_hub* hub, int handler_id) {
     hub->handlers[handler_id].ctx = NULL;
 }
 
+void am_event_sync_observe(
+    struct am_event_sync_hub* hub, am_event_sync_observer_fn fn
+) {
+    AM_ASSERT(hub);
+    hub->observer_cb = fn ? fn : am_event_sync_observer_nil;
+}
+
 bool am_event_sync_post_request(
     struct am_event_sync_hub* hub,
     int dest_id,
@@ -160,6 +175,8 @@ bool am_event_sync_post_request(
     void* ctx = hub->handlers[dest_id].ctx;
 
     ++hub->recursion_count;
+
+    hub->observer_cb(dest_id, event);
 
     bool ret = fn(ctx, event, out, out_size);
 
@@ -204,8 +221,12 @@ bool am_event_sync_publish_request(
             int msb = am_bit_u8_msb((uint8_t)list);
             list &= ~(1U << (unsigned)msb);
 
-            int ind = (8 * i) + msb;
-            struct am_event_sync_handler* handler = &hub->handlers[ind];
+            int handler_id = (8 * i) + msb;
+
+            hub->observer_cb(handler_id, event);
+
+            struct am_event_sync_handler* handler = &hub->handlers[handler_id];
+
             AM_ASSERT(handler->fn);
             if (!handler->fn(handler->ctx, event, out, out_size)) {
                 all_published = false;

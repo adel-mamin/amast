@@ -54,6 +54,16 @@ typedef bool (*am_event_sync_fn)(
     void* ctx, const struct am_event* event, struct am_event* out, int out_size
 );
 
+/**
+ * Event handler function type.
+ *
+ * @param handler_id  event handler ID, which receives the event
+ * @param event       input event
+ */
+typedef void (*am_event_sync_observer_fn)(
+    int handler_id, const struct am_event* event
+);
+
 /** Synchronous event hub. */
 struct am_event_sync_hub {
     /** User defined pub/sub list. */
@@ -71,6 +81,9 @@ struct am_event_sync_hub {
 
     /** recursion counter */
     int recursion_count;
+
+    /** event hub observer */
+    am_event_sync_observer_fn observer_cb;
 };
 
 #ifdef __cplusplus
@@ -170,7 +183,7 @@ void am_event_sync_unsubscribe_all(
 /**
  * Register event handler.
  *
- * @param hub         synchronous event hub
+ * @param hub  synchronous event hub
  * @param fn   the event handler function
  * @param ctx  the event handler function context
  * @return the event handler ID. To be used as a parameter to
@@ -181,6 +194,16 @@ void am_event_sync_unsubscribe_all(
  */
 int am_event_sync_register(
     struct am_event_sync_hub* hub, am_event_sync_fn fn, void* ctx
+);
+
+/**
+ * Register event hub observer.
+ *
+ * @param hub  synchronous event hub
+ * @param fn   the event observer function. Use NULL to stop observing
+ */
+void am_event_sync_observe(
+    struct am_event_sync_hub* hub, am_event_sync_observer_fn fn
 );
 
 /**

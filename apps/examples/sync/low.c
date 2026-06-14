@@ -42,9 +42,9 @@ static bool low_event_handler(
 ) {
     (void)out;
     (void)out_size;
+
     switch (event->id) {
     case EVT_JOB_REQ:
-        am_printf("low: EVT_JOB_REQ\n");
         AM_ASSERT(!am_timer_is_armed(low->timer, &low->timer_event.event));
 
         am_timer_arm(
@@ -53,7 +53,6 @@ static bool low_event_handler(
         break;
 
     case EVT_TIMEOUT:
-        am_printf("low: EVT_TIMEOUT\n");
         am_event_sync_publish(low->hub, &(struct am_event){.id = EVT_JOB_DONE});
         break;
 
