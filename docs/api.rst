@@ -573,7 +573,7 @@ The source code of the corresponding header file is in `pal.h <https://github.co
 
 .. doxygenfunction:: am_time_get_ticks_from_ms
 
-.. doxygenfunction:: am_time_get_ms_from_tick
+.. doxygenfunction:: am_time_get_ms_from_ticks
 
 .. doxygenfunction:: am_sleep_ticks
 

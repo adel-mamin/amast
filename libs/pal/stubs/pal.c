@@ -95,9 +95,9 @@ uint32_t am_time_get_ticks_from_ms(int timebase, uint32_t ms) {
     return 0;
 }
 
-uint32_t am_time_get_ms_from_tick(int timebase, uint32_t tick) {
+uint32_t am_time_get_ms_from_ticks(int timebase, uint32_t ticks) {
     (void)timebase;
-    (void)tick;
+    (void)ticks;
     return 0;
 }
 

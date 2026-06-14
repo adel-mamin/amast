@@ -266,8 +266,8 @@ uint32_t am_time_get_ticks_from_ms(int timebase, uint32_t ms) {
     return k_ms_to_ticks_ceil32(ms);
 }
 
-uint32_t am_time_get_ms_from_tick(int timebase, uint32_t tick) {
-    return k_ticks_to_ms_ceil32(tick);
+uint32_t am_time_get_ms_from_ticks(int timebase, uint32_t ticks) {
+    return k_ticks_to_ms_ceil32(ticks);
 }
 
 void am_sleep_ticks(int timebase, uint32_t ticks) { k_sleep(K_TICKS(ticks)); }

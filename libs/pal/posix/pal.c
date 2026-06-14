@@ -377,9 +377,9 @@ uint32_t am_time_get_ticks_from_ms(int timebase, uint32_t ms) {
     return ms;
 }
 
-uint32_t am_time_get_ms_from_tick(int timebase, uint32_t tick) {
+uint32_t am_time_get_ms_from_ticks(int timebase, uint32_t ticks) {
     AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase);
-    return tick;
+    return ticks;
 }
 
 void am_sleep_ticks(int timebase, uint32_t ticks) {
@@ -628,7 +628,7 @@ int am_ticker_create(const struct am_ticker_cfg* cfg) {
     ticker->busy = true;
     ticker->cfg = *cfg;
     ticker->period_ns =
-        1000000 * am_time_get_ms_from_tick(cfg->timebase, /*tick=*/1);
+        1000000 * am_time_get_ms_from_ticks(cfg->timebase, /*ticks=*/1);
 
     return am_pal_id_from_index(0);
 }

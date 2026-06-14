@@ -226,11 +226,11 @@ uint32_t am_time_get_ticks_from_ms(int timebase, uint32_t ms);
  * Convert ticks from the given ticker identifier to milliseconds.
  *
  * @param timebase  timebase
- * @param tick    ticks to convert
+ * @param ticks     ticks to convert
  *
  * @return time [ms]
  */
-uint32_t am_time_get_ms_from_tick(int timebase, uint32_t tick);
+uint32_t am_time_get_ms_from_ticks(int timebase, uint32_t ticks);
 
 /**
  * Sleep for given number of ticks from the given ticker identifier.
