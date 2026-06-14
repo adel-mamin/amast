@@ -221,12 +221,11 @@ bool am_event_sync_publish_request(
 
     bool all_published = true;
 
-    struct am_event_subscribe_list* sub = &hub->sub[event->id];
-    for (int i = 0; i < AM_COUNTOF(sub->list); ++i) {
-        unsigned list = sub->list[i];
-        while (list) {
-            int msb = am_bit_u8_msb((uint8_t)list);
-            list &= ~(1U << (unsigned)msb);
+    struct am_event_subscribe_list sub = hub->sub[event->id];
+    for (int i = 0; i < AM_COUNTOF(sub.list); ++i) {
+        while (sub.list[i]) {
+            int msb = am_bit_u8_msb(sub.list[i]);
+            sub.list[i] &= (uint8_t)~(1U << (unsigned)msb);
 
             int handler_id = (8 * i) + msb;
 

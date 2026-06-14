@@ -242,7 +242,7 @@ bool am_event_sync_post(
 );
 
 /**
- * Post event to a specific event handler and get
+ * Post event to a specific event handler and get a response.
  *
  * This function delivers @p event directly to the event handler identified by
  * @p dest_id and allows the handler to return an output event in @p out.
