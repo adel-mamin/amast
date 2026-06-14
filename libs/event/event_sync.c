@@ -81,7 +81,7 @@ void am_event_sync_subscribe(
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
     AM_ASSERT(hub->handlers[handler_id].fn);
-    AM_ASSERT(event_id >= 0);
+    AM_ASSERT(event_id >= AM_EVT_USER);
     AM_ASSERT(event_id < hub->nsub);
 
     int li = handler_id / 8;
@@ -97,7 +97,7 @@ void am_event_sync_unsubscribe(
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
     AM_ASSERT(hub->handlers[handler_id].fn);
-    AM_ASSERT(event_id >= 0);
+    AM_ASSERT(event_id >= AM_EVT_USER);
     AM_ASSERT(event_id < hub->nsub);
 
     int li = handler_id / 8;
@@ -213,6 +213,7 @@ bool am_event_sync_publish_request(
     AM_ASSERT(hub->recursion_count < AM_SYNC_RECURSION_MAX);
 
     AM_ASSERT(event);
+    AM_ASSERT(event->id >= AM_EVT_USER);
     AM_ASSERT(event->id < hub->nsub);
 
     ++hub->recursion_count;
