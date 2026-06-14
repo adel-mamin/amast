@@ -24,57 +24,56 @@
  * SOFTWARE.
  */
 
-#include <stdio.h>
+#include <string.h>
 
-#include "common/macros.h"
 #include "event/event_sync.h"
-#include "event/event_common.h"
-#include "timer/timer.h"
 #include "pal/pal.h"
-#include "events.h"
-#include "low.h"
+
 #include "top.h"
+#include "events.h"
 
-static void timer_proc(struct am_timer* timer, struct am_event_sync_hub* hub) {
-    struct am_timer_event* fired = NULL;
+static bool top_event_handler(
+    struct top* top,
+    const struct am_event* event,
+    struct am_event* out,
+    int out_size
+) {
+    (void)out;
+    (void)out_size;
 
-    am_timer_tick_iterator_init(timer);
+    switch (event->id) {
+    case EVT_COMMIT:
+        if (!top->job_pend && top->rounds) {
+            am_printf("top: request job\n");
+            top->job_pend = true;
+            am_event_sync_publish(
+                top->hub, &(struct am_event){.id = EVT_JOB_REQ}
+            );
+        }
+        break;
 
-    while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
-        const int* dest_id = AM_CAST(struct am_timer_event_x*, fired)->ctx;
-        AM_ASSERT(dest_id);
-        am_event_sync_post(hub, *dest_id, &fired->event);
+    case EVT_JOB_DONE:
+        am_printf("top: EVT_JOB_DONE\n");
+        top->job_pend = false;
+        top->rounds--;
+        break;
+    default:
+        break;
     }
+    return true;
 }
 
-int main(void) {
-    am_pal_ctor(/*arg=*/NULL);
-
-    struct am_timer timer;
-    am_timer_ctor(&timer);
-
-    struct am_event_sync_hub hub;
-    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX];
-
-    am_event_sync_init(&hub, &pubsub_list[0], AM_COUNTOF(pubsub_list));
-
-    struct top top;
-    struct low low;
-
-    top_init(&top, &hub, /*rounds=*/2);
-    low_init(&low, &hub, &timer);
-
-    while (top_is_active(&top)) {
-        const struct am_event commit = {.id = EVT_COMMIT};
-        top_event_post(&top, &commit);
-        low_event_post(&low, &commit);
-
-        am_sleep_ticks(AM_TIMEBASE_DEFAULT, /*ticks=*/1);
-
-        timer_proc(&timer, &hub);
-    }
-
-    am_pal_dtor();
-
-    return 0;
+bool top_event_post(struct top* top, const struct am_event* event) {
+    return top_event_handler(top, event, /*out=*/NULL, /*out_size=*/0);
 }
+
+void top_init(struct top* top, struct am_event_sync_hub* hub, int rounds) {
+    memset(top, 0, sizeof(*top));
+    top->rounds = rounds;
+    top->hub = hub;
+    int handler_id =
+        am_event_sync_register(hub, (am_event_sync_fn)top_event_handler, top);
+    am_event_sync_subscribe(hub, handler_id, EVT_JOB_DONE);
+}
+
+bool top_is_active(const struct top* top) { return top->rounds > 0; }

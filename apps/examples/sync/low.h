@@ -24,57 +24,30 @@
  * SOFTWARE.
  */
 
-#include <stdio.h>
+#ifndef LOW_H_INCLUDED
+#define LOW_H_INCLUDED
 
-#include "common/macros.h"
-#include "event/event_sync.h"
+#include <stdbool.h>
+#include <stdint.h>
 #include "event/event_common.h"
+#include "event/event_sync.h"
 #include "timer/timer.h"
-#include "pal/pal.h"
-#include "events.h"
-#include "low.h"
-#include "top.h"
 
-static void timer_proc(struct am_timer* timer, struct am_event_sync_hub* hub) {
-    struct am_timer_event* fired = NULL;
+struct low {
+    struct am_event_sync_hub* hub;
 
-    am_timer_tick_iterator_init(timer);
+    int handler_id;
 
-    while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
-        const int* dest_id = AM_CAST(struct am_timer_event_x*, fired)->ctx;
-        AM_ASSERT(dest_id);
-        am_event_sync_post(hub, *dest_id, &fired->event);
-    }
-}
+    uint32_t timeout;
 
-int main(void) {
-    am_pal_ctor(/*arg=*/NULL);
+    struct am_timer* timer;
+    struct am_timer_event_x timer_event;
+};
 
-    struct am_timer timer;
-    am_timer_ctor(&timer);
+void low_init(
+    struct low* low, struct am_event_sync_hub* hub, struct am_timer* timer
+);
 
-    struct am_event_sync_hub hub;
-    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX];
+bool low_event_post(struct low* low, const struct am_event* event);
 
-    am_event_sync_init(&hub, &pubsub_list[0], AM_COUNTOF(pubsub_list));
-
-    struct top top;
-    struct low low;
-
-    top_init(&top, &hub, /*rounds=*/2);
-    low_init(&low, &hub, &timer);
-
-    while (top_is_active(&top)) {
-        const struct am_event commit = {.id = EVT_COMMIT};
-        top_event_post(&top, &commit);
-        low_event_post(&low, &commit);
-
-        am_sleep_ticks(AM_TIMEBASE_DEFAULT, /*ticks=*/1);
-
-        timer_proc(&timer, &hub);
-    }
-
-    am_pal_dtor();
-
-    return 0;
-}
+#endif

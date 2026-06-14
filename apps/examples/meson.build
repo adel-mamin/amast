@@ -119,6 +119,22 @@ async = executable(
     ]
 )
 
+sync = executable(
+    'sync',
+    [
+        'sync' / 'main.c',
+        'sync' / 'top.c',
+        'sync' / 'low.c'
+    ],
+    dependencies: [
+        libbit_dep,
+        libevent_dep,
+        libtimer_dep,
+        libpal_dep,
+        libassert_dep,
+    ]
+)
+
 fork = executable(
     'fork',
     ['fork' / 'main.c'],
