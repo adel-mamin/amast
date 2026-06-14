@@ -64,12 +64,14 @@ int main(void) {
     top_init(&top, &hub, /*rounds=*/2);
     low_init(&low, &hub, &timer);
 
+    uint32_t now_ticks = am_time_get_ticks(AM_TIMEBASE_DEFAULT);
     while (top_is_active(&top)) {
         const struct am_event commit = {.id = EVT_COMMIT};
         top_event_post(&top, &commit);
         low_event_post(&low, &commit);
 
-        am_sleep_ticks(AM_TIMEBASE_DEFAULT, /*ticks=*/1);
+        am_sleep_till_ticks(AM_TIMEBASE_DEFAULT, now_ticks + 1);
+        now_ticks += 1;
 
         timer_proc(&timer, &hub);
     }
