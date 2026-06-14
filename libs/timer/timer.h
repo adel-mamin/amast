@@ -187,7 +187,7 @@ struct am_timer_event* am_timer_tick_iterator_next(struct am_timer* timer);
  * It is fine to arm an already armed timer event.
  * The timer event is re-armed in this case.
  *
- * @param timer     the timer event to arm
+ * @param timer     the timer state
  * @param event     the timer event
  * @param ticks     the timer event is to be sent in these many ticks.
  *                  The valid range is [0, 2^32[
@@ -255,7 +255,7 @@ bool am_timer_is_empty_unsafe(const struct am_timer* timer);
 /**
  * Get number of ticks till timer event is sent.
  *
- * @param timer  the timer handler
+ * @param timer  the timer state
  * @param event  the timer event
  *
  * @return the timer event will be sent in this number of ticks
