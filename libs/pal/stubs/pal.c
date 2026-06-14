@@ -84,12 +84,12 @@ static uint32_t am_pal_ms = 0;
 
 uint32_t am_time_get_ms(void) { return am_pal_ms; }
 
-uint32_t am_time_get_tick(int timebase) {
+uint32_t am_time_get_ticks(int timebase) {
     (void)timebase;
     return 0;
 }
 
-uint32_t am_time_get_tick_from_ms(int timebase, uint32_t ms) {
+uint32_t am_time_get_ticks_from_ms(int timebase, uint32_t ms) {
     (void)timebase;
     (void)ms;
     return 0;

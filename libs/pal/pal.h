@@ -210,7 +210,7 @@ uint32_t am_time_get_ms(void);
  *
  * @return current time [tick]
  */
-uint32_t am_time_get_tick(int timebase);
+uint32_t am_time_get_ticks(int timebase);
 
 /**
  * Convert ms to ticks for the given ticker identifier.
@@ -220,7 +220,7 @@ uint32_t am_time_get_tick(int timebase);
  *
  * @return time [tick]
  */
-uint32_t am_time_get_tick_from_ms(int timebase, uint32_t ms);
+uint32_t am_time_get_ticks_from_ms(int timebase, uint32_t ms);
 
 /**
  * Convert ticks from the given ticker identifier to milliseconds.

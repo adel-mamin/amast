@@ -260,9 +260,9 @@ int am_task_get_own_id(void) {
 
 uint32_t am_time_get_ms(void) { return k_uptime_get_32(); }
 
-uint32_t am_time_get_tick(int timebase) { return k_cycle_get_32(); }
+uint32_t am_time_get_ticks(int timebase) { return k_cycle_get_32(); }
 
-uint32_t am_time_get_tick_from_ms(int timebase, uint32_t ms) {
+uint32_t am_time_get_ticks_from_ms(int timebase, uint32_t ms) {
     return k_ms_to_ticks_ceil32(ms);
 }
 

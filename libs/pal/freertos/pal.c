@@ -132,11 +132,11 @@ void am_task_wait(int task_id) {
 }
 
 uint32_t am_time_get_ms(void) {
-    uint32_t ticks = am_time_get_tick();
+    uint32_t ticks = am_time_get_ticks();
     return ticks * portTICK_PERIOD_MS;
 }
 
-uint32_t am_time_get_tick(int timebase) {
+uint32_t am_time_get_ticks(int timebase) {
     (void)timebase;
     if (xPortIsInsideInterrupt()) {
         return (uint32_t)xTaskGetTickCountFromISR();
@@ -144,7 +144,7 @@ uint32_t am_time_get_tick(int timebase) {
     return (uint32_t)xTaskGetTickCount();
 }
 
-uint32_t am_time_get_tick_from_ms(int timebase, uint32_t ms) {
+uint32_t am_time_get_ticks_from_ms(int timebase, uint32_t ms) {
     (void)timebase;
     if (0 == ms) {
         return 0;
@@ -158,7 +158,7 @@ void am_sleep_ticks(int timebase, uint32_t ticks) {
 }
 
 void am_sleep_ms(uint32_t ms) {
-    uint32_t ticks = am_time_get_tick_from_ms(AM_TIMEBASE_DEFAULT, ms);
+    uint32_t ticks = am_time_get_ticks_from_ms(AM_TIMEBASE_DEFAULT, ms);
     vTaskDelay(ticks);
 }
 

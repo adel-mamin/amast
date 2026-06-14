@@ -353,12 +353,12 @@ uint32_t am_time_get_ms(void) {
     return (uint32_t)uv_now(loop_);
 }
 
-uint32_t am_time_get_tick(int timebase) {
+uint32_t am_time_get_ticks(int timebase) {
     (void)timebase;
     return am_time_get_ms();
 }
 
-uint32_t am_time_get_tick_from_ms(int timebase, uint32_t ms) {
+uint32_t am_time_get_ticks_from_ms(int timebase, uint32_t ms) {
     (void)timebase;
     return ms;
 }
@@ -375,7 +375,7 @@ void am_sleep_ticks(int timebase, uint32_t ticks) {
 }
 
 void am_sleep_till_ticks(int timebase, uint32_t ticks) {
-    uint32_t now = am_time_get_tick(timebase);
+    uint32_t now = am_time_get_ticks(timebase);
     if (ticks > now) {
         uint32_t diff = ticks - now;
         am_sleep_ticks(timebase, diff);

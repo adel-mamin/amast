@@ -569,9 +569,9 @@ The source code of the corresponding header file is in `pal.h <https://github.co
 
 .. doxygenfunction:: am_time_get_ms
 
-.. doxygenfunction:: am_time_get_tick
+.. doxygenfunction:: am_time_get_ticks
 
-.. doxygenfunction:: am_time_get_tick_from_ms
+.. doxygenfunction:: am_time_get_ticks_from_ms
 
 .. doxygenfunction:: am_time_get_ms_from_tick
 

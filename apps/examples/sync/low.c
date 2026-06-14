@@ -82,7 +82,7 @@ void low_init(
     low->handler_id =
         am_event_sync_register(hub, (am_event_sync_fn)low_event_handler, low);
     low->timer_event = am_timer_event_ctor_x(EVT_TIMEOUT, &low->handler_id);
-    low->timeout = am_time_get_tick_from_ms(AM_TIMEBASE_DEFAULT, 1000);
+    low->timeout = am_time_get_ticks_from_ms(AM_TIMEBASE_DEFAULT, 1000);
 
     am_event_sync_subscribe(hub, low->handler_id, EVT_JOB_REQ);
 }

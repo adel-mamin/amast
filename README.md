@@ -325,7 +325,7 @@ static void app_ctor(struct app *me, struct am_timer *timer) {
     am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(app_init));
     me->timer = timer;
     me->timeout = am_timer_event_ctor_x(APP_EVT_TIMER, &me->ao);
-    me->ticks = am_time_get_tick_from_ms(AM_TIMEBASE_DEFAULT, 1000);
+    me->ticks = am_time_get_ticks_from_ms(AM_TIMEBASE_DEFAULT, 1000);
 }
 
 static void ticker_cb(void* param) {
