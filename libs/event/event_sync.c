@@ -82,10 +82,12 @@ void am_event_sync_subscribe(
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
     AM_ASSERT(hub->handlers[handler_id].fn);
     AM_ASSERT(event_id >= AM_EVT_USER);
-    AM_ASSERT(event_id < hub->nsub);
+
+    int si = event_id - AM_EVT_USER;
+    AM_ASSERT(si < hub->nsub);
 
     int li = handler_id / 8;
-    hub->sub[event_id].list[li] |= (uint8_t)(1U << (unsigned)(handler_id % 8));
+    hub->sub[si].list[li] |= (uint8_t)(1U << (unsigned)(handler_id % 8));
 }
 
 void am_event_sync_unsubscribe(
@@ -98,10 +100,12 @@ void am_event_sync_unsubscribe(
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
     AM_ASSERT(hub->handlers[handler_id].fn);
     AM_ASSERT(event_id >= AM_EVT_USER);
-    AM_ASSERT(event_id < hub->nsub);
+
+    int si = event_id - AM_EVT_USER;
+    AM_ASSERT(si < hub->nsub);
 
     int li = handler_id / 8;
-    hub->sub[event_id].list[li] &= (uint8_t)~(1U << (unsigned)(handler_id % 8));
+    hub->sub[si].list[li] &= (uint8_t)~(1U << (unsigned)(handler_id % 8));
 }
 
 void am_event_sync_unsubscribe_all(
@@ -214,13 +218,15 @@ bool am_event_sync_publish_request(
 
     AM_ASSERT(event);
     AM_ASSERT(event->id >= AM_EVT_USER);
-    AM_ASSERT(event->id < hub->nsub);
 
     ++hub->recursion_count;
 
     bool all_published = true;
 
-    struct am_event_subscribe_list sub = hub->sub[event->id];
+    int si = event->id - AM_EVT_USER;
+    AM_ASSERT(si < hub->nsub);
+
+    struct am_event_subscribe_list sub = hub->sub[si];
     for (int i = 0; i < AM_COUNTOF(sub.list); ++i) {
         while (sub.list[i]) {
             int msb = am_bit_u8_msb(sub.list[i]);

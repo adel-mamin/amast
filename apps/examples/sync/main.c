@@ -80,7 +80,7 @@ int main(void) {
     am_timer_ctor(&timer);
 
     struct am_event_sync_hub hub;
-    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX];
+    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX - AM_EVT_USER];
 
     am_event_sync_init(&hub, &pubsub_list[0], AM_COUNTOF(pubsub_list));
     am_event_sync_observe(&hub, event_sync_observe);
