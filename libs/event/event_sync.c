@@ -81,11 +81,11 @@ void am_event_sync_subscribe(
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
     AM_ASSERT(hub->handlers[handler_id].fn);
-    AM_ASSERT(event_id >= AM_EVT_USER);
+    AM_ASSERT(event_id >= 0);
     AM_ASSERT(event_id < hub->nsub);
 
-    int i = handler_id / 8;
-    hub->sub[event_id].list[i] |= (uint8_t)(1U << (unsigned)(handler_id % 8));
+    int li = handler_id / 8;
+    hub->sub[event_id].list[li] |= (uint8_t)(1U << (unsigned)(handler_id % 8));
 }
 
 void am_event_sync_unsubscribe(
@@ -97,12 +97,11 @@ void am_event_sync_unsubscribe(
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
     AM_ASSERT(hub->handlers[handler_id].fn);
-    AM_ASSERT(event_id >= AM_EVT_USER);
+    AM_ASSERT(event_id >= 0);
     AM_ASSERT(event_id < hub->nsub);
 
-    int h = handler_id / 8;
-    int i = event_id - AM_EVT_USER;
-    hub->sub[i].list[h] &= (uint8_t)~(1U << (unsigned)(handler_id % 8));
+    int li = handler_id / 8;
+    hub->sub[event_id].list[li] &= (uint8_t)~(1U << (unsigned)(handler_id % 8));
 }
 
 void am_event_sync_unsubscribe_all(
@@ -115,11 +114,11 @@ void am_event_sync_unsubscribe_all(
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
     AM_ASSERT(hub->handlers[handler_id].fn);
 
-    int h = handler_id / 8;
+    int li = handler_id / 8;
     unsigned clear_mask = ~(1U << (unsigned)(handler_id % 8));
 
     for (int i = 0; i < hub->nsub; ++i) {
-        hub->sub[i].list[h] &= (uint8_t)clear_mask;
+        hub->sub[i].list[li] &= (uint8_t)clear_mask;
     }
 }
 
@@ -170,7 +169,7 @@ bool am_event_sync_post_request(
     AM_ASSERT(dest_id < AM_EVT_HANDLERS_NUM_MAX);
     am_event_sync_fn fn = hub->handlers[dest_id].fn;
     AM_ASSERT(fn);
-    AM_ASSERT(event->id >= AM_EVT_USER);
+    AM_ASSERT(event->id >= 0);
 
     void* ctx = hub->handlers[dest_id].ctx;
 
@@ -207,7 +206,7 @@ bool am_event_sync_publish_request(
     AM_ASSERT(hub->sub);
     AM_ASSERT(hub->recursion_count < AM_SYNC_RECURSION_MAX);
 
-    AM_ASSERT(event->id >= AM_EVT_USER);
+    AM_ASSERT(event->id >= 0);
     AM_ASSERT(event->id < hub->nsub);
 
     ++hub->recursion_count;
