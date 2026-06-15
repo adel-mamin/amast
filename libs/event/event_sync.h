@@ -42,16 +42,16 @@
  *
  * @param ctx        event handler specific context
  * @param event      input event
- * @param out        output event.
+ * @param out        output data.
  *                   The memory is provided by the caller and
  *                   should be sufficient to accommodate the output
- *                   event data. Optional. Can be NULL.
+ *                   data. Can be NULL.
  * @param out_size   the size of memory behind @p out pointer [bytes]
  *
  * @return true on success, false otherwise
  */
 typedef bool (*am_event_sync_fn)(
-    void* ctx, const struct am_event* event, struct am_event* out, int out_size
+    void* ctx, const struct am_event* event, void* out, int out_size
 );
 
 /**
@@ -258,9 +258,9 @@ bool am_event_sync_post(
  *                  Passing an invalid event handler ID is a programming error
  *                  and results in an assertion failure.
  * @param event     input event
- * @param out       output event. Optional. Can be NULL.
+ * @param out       output data.
  *                  The memory is provided by the caller and must be sufficient
- *                  to accommodate the output event data.
+ *                  to accommodate the output data.
  * @param out_size  the size of memory behind @p out pointer [bytes]
  * @return true on success, false otherwise
  */
@@ -268,7 +268,7 @@ bool am_event_sync_post_request(
     struct am_event_sync_hub* hub,
     int dest_id,
     const struct am_event* event,
-    struct am_event* out,
+    void* out,
     int out_size
 );
 
@@ -296,16 +296,16 @@ bool am_event_sync_publish(
  *
  * @param hub           synchronous event hub
  * @param event         input event
- * @param out           output event. Optional. Can be NULL.
+ * @param out           output data.
  *                      The memory is provided by the caller and must be
- *                      sufficient to accommodate the output event data.
+ *                      sufficient to accommodate the output data.
  * @param out_size      the size of memory behind @p out pointer [bytes]
  * @return true on success, false otherwise
  */
 bool am_event_sync_publish_request(
     struct am_event_sync_hub* hub,
     const struct am_event* event,
-    struct am_event* out,
+    void* out,
     int out_size
 );
 
