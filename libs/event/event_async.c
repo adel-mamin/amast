@@ -33,7 +33,6 @@
 #include <string.h>
 
 #include "common/compiler.h"
-#include "common/types.h"
 #include "common/macros.h"
 #include "bit/bit.h"
 #include "event_common.h"
@@ -88,13 +87,17 @@ void am_event_async_subscribe(int handler_id, int event_id) {
     struct am_event_async_state* me = &m_async_state;
     AM_ASSERT(me->handlers[handler_id].fn);
     AM_ASSERT(event_id >= AM_EVT_USER);
-    AM_ASSERT(event_id < me->nsub);
     AM_ASSERT(me->sub != NULL);
 
-    int i = handler_id / 8;
+    int si = event_id - AM_EVT_USER;
+    AM_ASSERT(si < me->nsub);
+
+    int li = handler_id / 8;
 
     am_event_crit_enter();
-    me->sub[event_id].list[i] |= (uint8_t)(1U << (unsigned)(handler_id % 8));
+
+    me->sub[si].list[li] |= (uint8_t)(1U << (unsigned)(handler_id % 8));
+
     am_event_crit_exit();
 }
 
@@ -104,14 +107,17 @@ void am_event_async_unsubscribe(int handler_id, int event_id) {
     struct am_event_async_state* me = &m_async_state;
     AM_ASSERT(me->handlers[handler_id].fn);
     AM_ASSERT(event_id >= AM_EVT_USER);
-    AM_ASSERT(event_id < me->nsub);
     AM_ASSERT(me->sub != NULL);
 
-    int h = handler_id / 8;
-    int i = event_id - AM_EVT_USER;
+    int si = event_id - AM_EVT_USER;
+    AM_ASSERT(si < me->nsub);
+
+    int li = handler_id / 8;
 
     am_event_crit_enter();
-    me->sub[i].list[h] &= (uint8_t)~(1U << (unsigned)(handler_id % 8));
+
+    me->sub[si].list[li] &= (uint8_t)~(1U << (unsigned)(handler_id % 8));
+
     am_event_crit_exit();
 }
 
@@ -121,14 +127,16 @@ void am_event_async_unsubscribe_all(int handler_id) {
     struct am_event_async_state* me = &m_async_state;
     AM_ASSERT(me->handlers[handler_id].fn);
 
-    int h = handler_id / 8;
+    int li = handler_id / 8;
     unsigned clear_mask = ~(1U << (unsigned)(handler_id % 8));
 
+    am_event_crit_enter();
+
     for (int i = 0; i < me->nsub; ++i) {
-        am_event_crit_enter();
-        me->sub[i].list[h] &= (uint8_t)clear_mask;
-        am_event_crit_exit();
+        me->sub[i].list[li] &= (uint8_t)clear_mask;
     }
+
+    am_event_crit_exit();
 }
 
 void am_event_async_register_with_id(
@@ -156,9 +164,18 @@ void am_event_async_unregister(int handler_id) {
     struct am_event_async_state* me = &m_async_state;
 
     am_event_crit_enter();
+
+    int h = handler_id / 8;
+    unsigned clear_mask = ~(1U << (unsigned)(handler_id % 8));
+
+    for (int i = 0; i < me->nsub; ++i) {
+        me->sub[i].list[h] &= (uint8_t)clear_mask;
+    }
+
     AM_ASSERT(me->handlers[handler_id].fn);
     me->handlers[handler_id].fn = NULL;
     me->handlers[handler_id].ctx = NULL;
+
     am_event_crit_exit();
 }
 
@@ -169,6 +186,7 @@ bool am_event_async_post(
 ) {
     AM_ASSERT(dest_id >= 0);
     AM_ASSERT(dest_id < AM_EVT_HANDLERS_NUM_MAX);
+    AM_ASSERT(event);
     AM_ASSERT(event->id >= AM_EVT_USER);
 
     struct am_event_async_state* me = &m_async_state;
@@ -177,10 +195,11 @@ bool am_event_async_post(
 
     struct am_event_async_handler* handler = &me->handlers[dest_id];
     AM_ASSERT(handler->fn);
+    bool ok = handler->fn(handler->ctx, event, policy);
 
     am_event_crit_exit();
 
-    return handler->fn(handler->ctx, event, policy);
+    return ok;
 }
 
 bool am_event_async_publish(
@@ -188,8 +207,13 @@ bool am_event_async_publish(
 ) {
     struct am_event_async_state* me = &m_async_state;
 
-    AM_ASSERT(event->id < me->nsub);
     AM_ASSERT(me->sub != NULL);
+    AM_ASSERT(event);
+    AM_ASSERT(event->id >= AM_EVT_USER);
+
+    int si = event->id - AM_EVT_USER;
+
+    AM_ASSERT(si < me->nsub);
 
     if (!am_event_is_static(event)) {
         /*
@@ -206,40 +230,34 @@ bool am_event_async_publish(
      * The event publishing is done for higher priority
      * event handlers first to avoid priority inversion.
      */
-    struct am_event_subscribe_list* sub = &me->sub[event->id];
-    for (int i = AM_COUNTOF(sub->list) - 1; i >= 0; --i) {
-        unsigned done = 0;
-        int cnt = 0;
-        while (true) {
-            AM_ASSERT(cnt++ <= 8);
+    am_event_crit_enter();
 
-            am_event_crit_enter();
+    struct am_event_subscribe_list sub = me->sub[si];
 
-            unsigned list = sub->list[i];
-            list &= ~done;
-            if (0 == list) {
-                am_event_crit_exit();
-                break;
-            }
+    am_event_crit_exit();
 
-            int msb = am_bit_u8_msb((uint8_t)list);
-            done |= 1U << (unsigned)msb;
+    for (int i = AM_COUNTOF(sub.list) - 1; i >= 0; --i) {
+        while (sub.list[i]) {
+            int msb = am_bit_u8_msb(sub.list[i]);
+            sub.list[i] &= (uint8_t)~(1U << (unsigned)msb);
 
             const int ind = (8 * i) + msb;
             if (policy.exclude_id == ind) {
-                am_event_crit_exit();
                 continue;
             }
 
+            am_event_crit_enter();
+
             struct am_event_async_handler* handler = &me->handlers[ind];
-            AM_ASSERT(handler->fn);
-            enum am_rc rc = handler->fn(handler->ctx, event, policy);
+
+            if (handler->fn) {
+                bool ok = handler->fn(handler->ctx, event, policy);
+                if (!ok) {
+                    all_published = false;
+                }
+            }
 
             am_event_crit_exit();
-
-            if (AM_RC_ERR == rc) {
-                all_published = false;
-            }
         }
     }
 

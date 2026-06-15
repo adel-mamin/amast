@@ -242,7 +242,7 @@ void am_ao_log_last_events(void (*log)(const char* name, int event)) {
 
 int am_ao_get_cnt(void) { return AM_ATOMIC_LOAD_N(&am_ao_state_.aos_cnt); }
 
-bool am_ao_event_handler(
+bool am_ao_event_handler_unsafe(
     void* ctx, const struct am_event* event, struct am_event_queue_policy policy
 ) {
     AM_ASSERT(ctx);

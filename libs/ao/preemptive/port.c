@@ -60,7 +60,9 @@ static void am_ao_task_init(void* param) {
 
     AM_ATOMIC_STORE_N(&ao->running, true);
 
-    am_event_async_register_with_id(am_ao_event_handler, ao, ao->prio.ao);
+    am_event_async_register_with_id(
+        am_ao_event_handler_unsafe, ao, ao->prio.ao
+    );
 
     if (ao->user_init_handler) {
         ao->user_init_handler(ao->ctx, ao->init_event);

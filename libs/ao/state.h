@@ -95,8 +95,9 @@ void am_ao_state_ctor_(void);
  * AO event handler.
  *
  * Matches the type am_event_async_fn.
+ * Does not use critical section.
  */
-bool am_ao_event_handler(
+bool am_ao_event_handler_unsafe(
     void* ctx, const struct am_event* event, struct am_event_queue_policy policy
 );
 

@@ -41,6 +41,10 @@
 /**
  * Asynchronous event handler function type.
  *
+ * Called from am_event_async_post() and am_event_async_publish()
+ * inside an event critical section. The handler must not call APIs
+ * that may enter the same critical section, block, or perform long work.
+ *
  * @param ctx     event handler specific context
  * @param event   event to handle
  * @param policy  the event queue handling policy
@@ -84,7 +88,7 @@ bool am_event_async_is_pubsub_enabled(void);
  * am_event_async_init().
  *
  * @param handler_id  event handler to subscribe
- *                    The ID is returned by am_event_async_register()
+ *                    The ID provided to am_event_async_register_with_id()
  *                    Passing an invalid event handler ID is a programming error
  *                    and results in an assertion failure.
  * @param event_id    the event ID to subscribe to.
@@ -104,7 +108,7 @@ void am_event_async_subscribe(int handler_id, int event_id);
  * am_event_async_init().
  *
  * @param handler_id  event handler to unsubscribe
- *                    The ID is returned by am_event_async_register()
+ *                    The ID provided to am_event_async_register_with_id()
  *                    Passing an invalid event handler ID is a programming error
  *                    and results in an assertion failure.
  * @param event_id    the event ID to unsubscribe from.
@@ -120,7 +124,7 @@ void am_event_async_unsubscribe(int handler_id, int event_id);
  * Unsubscribe event handler from all events.
  *
  * @param handler_id  event handler to unsubscribe.
- *                    The ID is returned by am_event_async_register()
+ *                    The ID provided to am_event_async_register_with_id()
  *                    Passing an invalid event handler ID is a programming error
  *                    and results in an assertion failure.
  */
@@ -129,7 +133,9 @@ void am_event_async_unsubscribe_all(int handler_id);
 /**
  * Register event handler with ID.
  *
- * @param fn   the event handler function
+ * @param fn   the event handler function.
+ *             Called by am_event_async_post() and am_event_async_publish()
+ *             inside a critical section.
  * @param ctx  the event handler function context
  * @param handler_id  the event handler ID to register with.
  *                    To be used as a parameter to
@@ -145,11 +151,11 @@ void am_event_async_register_with_id(
 /**
  * Unregister event handler by ID.
  *
- * The event handler must be registered with am_event_async_register()
+ * The event handler must be registered with am_event_async_register_with_id()
  * prior to calling this function.
  *
  * @param handler_id  the ID of event handler to unregister.
- *                    The ID is returned by am_event_async_register()
+ *                    The ID provided to am_event_async_register_with_id()
  *                    Passing an invalid event handler ID is a programming error
  *                    and results in an assertion failure.
  */
@@ -161,8 +167,8 @@ void am_event_async_unregister(int handler_id);
  * This function delivers @p event directly to the event handler identified by
  * @p dest_id.
  *
- * @param dest_id   destination event handler ID returned by
- *                  am_event_async_register()
+ * @param dest_id   destination event handler ID provided to
+ *                  am_event_async_register_with_id()
  *                  Passing an invalid event handler ID is a programming error
  *                  and results in an assertion failure.
  * @param event     input event
