@@ -106,13 +106,13 @@ if pal != 'stubs'
     test('threaded_cooperative', ringbuf_cooperative, suite: 'ringbuf')
 endif
 
-async = executable(
-    'async',
-    ['async' / 'main.c'],
+coro = executable(
+    'coro',
+    ['coro' / 'main.c'],
     dependencies: [
         libhsm_dep,
         libbit_dep,
-        libasync_dep,
+        libcoro_dep,
         libao_preemptive_dep,
         libpal_dep,
         libassert_dep,
@@ -140,7 +140,7 @@ fork = executable(
     ['fork' / 'main.c'],
     dependencies: [
         libhsm_dep,
-        libasync_dep,
+        libcoro_dep,
         libao_preemptive_dep,
         libpal_dep,
         libassert_dep,

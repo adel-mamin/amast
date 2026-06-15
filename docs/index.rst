@@ -33,7 +33,7 @@ and how they can be used, customized, and extended.
    fsm
    ao
    event
-   async
+   coro
    timer
    onesize
    ringbuf

@@ -44,8 +44,8 @@
 @SRC_ROOT@/libs/event/event_queue.c
 @SRC_ROOT@/libs/event/test.c
 
-@SRC_ROOT@/libs/async/async.h
-@SRC_ROOT@/libs/async/test.c
+@SRC_ROOT@/libs/coro/coro.h
+@SRC_ROOT@/libs/coro/test.c
 
 @SRC_ROOT@/libs/strlib/strlib.h
 @SRC_ROOT@/libs/strlib/strlib.c

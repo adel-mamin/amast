@@ -40,10 +40,10 @@ enum am_rc {
     AM_RC_ERR = -1,
     /** Success. */
     AM_RC_OK = 0,
-    /** Async operation is ongoing. */
-    AM_RC_ASYNC_BUSY = 1,
-    /** Async operation is complete. Event was handled. */
-    AM_RC_ASYNC_DONE = 2,
+    /** Coroutine operation is ongoing. */
+    AM_RC_CORO_BUSY = 1,
+    /** Coroutine operation is complete. Event was handled. */
+    AM_RC_CORO_DONE = 2,
     /** Event was handled. */
     AM_RC_HANDLED = 3,
     /** Event caused state transition. */

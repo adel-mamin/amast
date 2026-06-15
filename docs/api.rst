@@ -346,23 +346,23 @@ Async API documentation.
 
 The source code of the corresponding header file is in `async.h <https://github.com/adel-mamin/amast/blob/main/libs/async/async.h>`_.
 
-.. doxygendefine:: AM_ASYNC_STATE_INIT
+.. doxygendefine:: AM_CORO_STATE_INIT
 
-.. doxygenstruct:: am_async
+.. doxygenstruct:: am_coro
 
-.. doxygendefine:: AM_ASYNC_BEGIN
+.. doxygendefine:: AM_CORO_BEGIN
 
-.. doxygendefine:: AM_ASYNC_END
+.. doxygendefine:: AM_CORO_END
 
-.. doxygendefine:: AM_ASYNC_AWAIT
+.. doxygendefine:: AM_CORO_AWAIT
 
-.. doxygendefine:: AM_ASYNC_CALL
+.. doxygendefine:: AM_CORO_CALL
 
-.. doxygendefine:: AM_ASYNC_YIELD
+.. doxygendefine:: AM_CORO_YIELD
 
-.. doxygenfunction:: am_async_is_busy
+.. doxygenfunction:: am_coro_is_busy
 
-.. doxygenfunction:: am_async_ctor
+.. doxygenfunction:: am_coro_ctor
 
 .. _hsm_api:
 

@@ -25,41 +25,41 @@
  */
 
 /*
- * Demonstrate integration of async with HSM.
+ * Demonstrate integration of coroutine(s) with HSM.
  * HSM topology:
  *
- *  +--------------------------------------------------------+
- *  |                    am_hsm_top                          |
- *  | +----------------------------------+                   |
- *  | |            async_top             |                   |
- *  | | +-------------+  +-------------+ | +---------------+ |
- *  | | |async_regular|  |  async_off  | | | async_exiting | |
- *  | | +-------------+  +-------------+ | +---------------+ |
- *  | +----------------------------------+                   |
- *  +--------------------------------------------------------+
+ *  +-----------------------------------------------------+
+ *  |                    am_hsm_top                       |
+ *  | +--------------------------------+                  |
+ *  | |            coro_top            |                  |
+ *  | | +------------+  +------------+ | +--------------+ |
+ *  | | |coro_regular|  |  coro_off  | | | coro_exiting | |
+ *  | | +------------+  +------------+ | +--------------+ |
+ *  | +--------------------------------+                  |
+ *  +-----------------------------------------------------+
  *
  * It mimics the behavior of traffic lights.
  *
- * The async_regular substate prints colored rectangles in the order
+ * The coro_regular substate prints colored rectangles in the order
  * red - yellow - green - blinking green
  * The print delay of each rectangle varies.
  *
- * The async_off substate shows blinking yellow mimicking unregulated
+ * The coro_off substate shows blinking yellow mimicking unregulated
  * road intersection.
  * The blink delay is 700 ms.
  *
- * async_exiting substate calls am_ao_stop().
+ * coro_exiting substate calls am_ao_stop().
  *
- * async_top handles user input:
- * - press ENTER to switch between async_regular and async_off substates
- * - press ENTER two times in a row within 500ms to switch to async_exiting
+ * coro_top handles user input:
+ * - press ENTER to switch between coro_regular and coro_off substates
+ * - press ENTER two times in a row within 500ms to switch to coro_exiting
  *   and exit the app
  *
- * Generally the use of async is warranted, if the sequence of
+ * Generally the use of coroutine is warranted, if the sequence of
  * steps can be represented as a flowchart like in this case.
  *
- * async_regular calls async_regular_() to do the printing
- * async_off calls async_off_() to do the printing.
+ * coro_regular calls coro_regular_() to do the printing
+ * coro_off calls coro_off_() to do the printing.
  */
 
 #include <stdio.h>
@@ -72,22 +72,22 @@
 #include "event/event_async.h"
 #include "event/event_common.h"
 #include "timer/timer.h"
-#include "async/async.h"
+#include "coro/coro.h"
 #include "ao/ao.h"
 #include "pal/pal.h"
 #include "hsm/hsm.h"
 
-#define ASYNC_TWO_NEWLINES_TIMEOUT_MS 500
+#define CORO_TWO_NEWLINES_TIMEOUT_MS 500
 
 enum {
-    ASYNC_EVT_SWITCH_MODE = AM_EVT_USER,
-    ASYNC_EVT_TIMER,
-    ASYNC_EVT_EXIT,
-    ASYNC_EVT_PUB_MAX,
-    ASYNC_EVT_START,
+    CORO_EVT_SWITCH_MODE = AM_EVT_USER,
+    CORO_EVT_TIMER,
+    CORO_EVT_EXIT,
+    CORO_EVT_PUB_MAX,
+    CORO_EVT_START,
 };
 
-struct async {
+struct coro {
     /*
      * Must be the first member of the structure.
      * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
@@ -96,32 +96,32 @@ struct async {
     struct am_ao ao;
     struct am_timer* timer;
     struct am_timer_event_x timeout;
-    struct am_async async;
-    struct am_async async_blinking_green;
+    struct am_coro coro;
+    struct am_coro coro_blinking_green;
     unsigned i;
 };
 
-static const struct am_event am_evt_start = {.id = ASYNC_EVT_START};
+static const struct am_event am_evt_start = {.id = CORO_EVT_START};
 
-static enum am_rc async_top(struct async* me, const struct am_event* event);
-static enum am_rc async_regular(struct async* me, const struct am_event* event);
-static enum am_rc async_off(struct async* me, const struct am_event* event);
-static enum am_rc async_exiting(struct async* me, const struct am_event* event);
+static enum am_rc coro_top(struct coro* me, const struct am_event* event);
+static enum am_rc coro_regular(struct coro* me, const struct am_event* event);
+static enum am_rc coro_off(struct coro* me, const struct am_event* event);
+static enum am_rc coro_exiting(struct coro* me, const struct am_event* event);
 
-static enum am_rc async_top(struct async* me, const struct am_event* event) {
+static enum am_rc coro_top(struct coro* me, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_INIT: {
-        return AM_HSM_TRAN(async_regular);
+        return AM_HSM_TRAN(coro_regular);
     }
-    case ASYNC_EVT_SWITCH_MODE: {
+    case CORO_EVT_SWITCH_MODE: {
         am_printff("\b");
-        if (am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(async_regular))) {
-            return AM_HSM_TRAN(async_off);
+        if (am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(coro_regular))) {
+            return AM_HSM_TRAN(coro_off);
         }
-        return AM_HSM_TRAN(async_regular);
+        return AM_HSM_TRAN(coro_regular);
     }
-    case ASYNC_EVT_EXIT: {
-        return AM_HSM_TRAN_REDISPATCH(async_exiting);
+    case CORO_EVT_EXIT: {
+        return AM_HSM_TRAN_REDISPATCH(coro_exiting);
     }
     default:
         break;
@@ -129,11 +129,9 @@ static enum am_rc async_top(struct async* me, const struct am_event* event) {
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_rc async_exiting(
-    struct async* me, const struct am_event* event
-) {
+static enum am_rc coro_exiting(struct coro* me, const struct am_event* event) {
     switch (event->id) {
-    case ASYNC_EVT_EXIT: {
+    case CORO_EVT_EXIT: {
         am_ao_stop(&me->ao);
         return AM_HSM_HANDLED();
     }
@@ -143,61 +141,59 @@ static enum am_rc async_exiting(
     return AM_HSM_SUPER(am_hsm_top);
 }
 
-static enum am_rc async_blinking_green(struct async* me) {
-    AM_ASYNC_BEGIN(&me->async_blinking_green);
+static enum am_rc coro_blinking_green(struct coro* me) {
+    AM_CORO_BEGIN(&me->coro_blinking_green);
 
     /* blinking green */
     for (me->i = 0; me->i < 4; ++me->i) {
         am_printff("\b" AM_COLOR_BLACK AM_SOLID_BLOCK "\b");
         am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/700, 0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
+        AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
         am_printff(AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/700, 0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
+        AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
     }
 
-    AM_ASYNC_END();
+    AM_CORO_END();
 
-    return AM_RC_ASYNC_DONE;
+    return AM_RC_CORO_DONE;
 }
 
-static enum am_rc async_regular_(struct async* me) {
-    AM_ASYNC_BEGIN(&me->async);
+static enum am_rc coro_regular_(struct coro* me) {
+    AM_CORO_BEGIN(&me->coro);
 
     for (;;) {
         /* red */
         am_printff(AM_COLOR_RED AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/2000, 0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
+        AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
         /* yellow */
         am_printff("\b" AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/1000, 0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
+        AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
         /* green */
         am_printff("\b" AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/2000, 0);
-        AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
+        AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
         /* blinking green */
-        AM_ASYNC_CALL(async_blinking_green(me));
+        AM_CORO_CALL(coro_blinking_green(me));
         am_printff("\b");
     }
 
-    AM_ASYNC_END();
+    AM_CORO_END();
 
-    return AM_RC_ASYNC_DONE;
+    return AM_RC_CORO_DONE;
 }
 
-static enum am_rc async_regular(
-    struct async* me, const struct am_event* event
-) {
+static enum am_rc coro_regular(struct coro* me, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_async_ctor(&me->async);
-        am_async_ctor(&me->async_blinking_green);
+        am_coro_ctor(&me->coro);
+        am_coro_ctor(&me->coro_blinking_green);
         am_ao_post_fifo(&me->ao, &am_evt_start);
         return AM_HSM_HANDLED();
     }
@@ -205,20 +201,20 @@ static enum am_rc async_regular(
         am_timer_disarm(me->timer, &me->timeout.event);
         return AM_HSM_HANDLED();
     }
-    case ASYNC_EVT_START:
-    case ASYNC_EVT_TIMER: {
-        return async_regular_(me);
+    case CORO_EVT_START:
+    case CORO_EVT_TIMER: {
+        return coro_regular_(me);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(async_top);
+    return AM_HSM_SUPER(coro_top);
 }
 
-static enum am_rc async_off(struct async* me, const struct am_event* event) {
+static enum am_rc coro_off(struct coro* me, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_async_ctor(&me->async);
+        am_coro_ctor(&me->coro);
         am_ao_post_fifo(&me->ao, &am_evt_start);
         return AM_HSM_HANDLED();
     }
@@ -226,46 +222,46 @@ static enum am_rc async_off(struct async* me, const struct am_event* event) {
         am_timer_disarm(me->timer, &me->timeout.event);
         return AM_HSM_HANDLED();
     }
-    case ASYNC_EVT_START:
-    case ASYNC_EVT_TIMER: {
-        AM_ASYNC_BEGIN(&me->async);
+    case CORO_EVT_START:
+    case CORO_EVT_TIMER: {
+        AM_CORO_BEGIN(&me->coro);
 
         for (;;) {
             am_printff("\b");
             am_printff(AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
             am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/1000, 0);
-            AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
+            AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
             am_printff("\b" AM_COLOR_BLACK AM_SOLID_BLOCK "\b");
             am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/700, 0);
-            AM_ASYNC_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
+            AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
         }
 
-        AM_ASYNC_END();
+        AM_CORO_END();
 
         return AM_HSM_HANDLED();
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(async_top);
+    return AM_HSM_SUPER(coro_top);
 }
 
-static enum am_rc async_init(struct async* me, const struct am_event* event) {
+static enum am_rc coro_init(struct coro* me, const struct am_event* event) {
     (void)event;
-    am_ao_subscribe(&me->ao, ASYNC_EVT_SWITCH_MODE);
-    am_ao_subscribe(&me->ao, ASYNC_EVT_EXIT);
-    return AM_HSM_TRAN(async_top);
+    am_ao_subscribe(&me->ao, CORO_EVT_SWITCH_MODE);
+    am_ao_subscribe(&me->ao, CORO_EVT_EXIT);
+    return AM_HSM_TRAN(coro_top);
 }
 
-static void async_ctor(struct async* me, struct am_timer* timer) {
+static void coro_ctor(struct coro* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
 
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(async_init));
+    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(coro_init));
 
     me->timer = timer;
-    me->timeout = am_timer_event_ctor_x(ASYNC_EVT_TIMER, &me->ao);
+    me->timeout = am_timer_event_ctor_x(CORO_EVT_TIMER, &me->ao);
 }
 
 static void ticker_cb(void* param) {
@@ -287,7 +283,7 @@ static void input_task(void* param) {
     (void)param;
 
     int ch = 0;
-    uint32_t prev_ms = am_time_get_ms() - (2 * ASYNC_TWO_NEWLINES_TIMEOUT_MS);
+    uint32_t prev_ms = am_time_get_ms() - (2 * CORO_TWO_NEWLINES_TIMEOUT_MS);
     while ((ch = getc(stdin)) != EOF) {
         if ('\n' != ch) {
             continue;
@@ -296,12 +292,12 @@ static void input_task(void* param) {
         uint32_t now_ms = am_time_get_ms();
         uint32_t diff_ms = now_ms - prev_ms;
         prev_ms = now_ms;
-        if (diff_ms > ASYNC_TWO_NEWLINES_TIMEOUT_MS) {
-            static struct am_event event = {.id = ASYNC_EVT_SWITCH_MODE};
+        if (diff_ms > CORO_TWO_NEWLINES_TIMEOUT_MS) {
+            static struct am_event event = {.id = CORO_EVT_SWITCH_MODE};
             am_ao_publish(&event);
             continue;
         }
-        static struct am_event event = {.id = ASYNC_EVT_EXIT};
+        static struct am_event event = {.id = CORO_EVT_EXIT};
         am_ao_publish(&event);
         break;
     }
@@ -310,7 +306,7 @@ static void input_task(void* param) {
 int main(void) {
     am_pal_ctor(/*arg=*/NULL);
 
-    struct am_event_subscribe_list pubsub_list[ASYNC_EVT_PUB_MAX];
+    struct am_event_subscribe_list pubsub_list[CORO_EVT_PUB_MAX];
     am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), /*alloc=*/NULL);
 
     am_ao_state_ctor(/*cfg=*/NULL);
@@ -319,8 +315,8 @@ int main(void) {
     am_timer_ctor(&timer);
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
-    struct async m;
-    async_ctor(&m, &timer);
+    struct coro m;
+    coro_ctor(&m, &timer);
 
     const struct am_event* queue[2];
 
@@ -332,7 +328,7 @@ int main(void) {
         /*queue_size=*/AM_COUNTOF(queue),
         /*stack=*/NULL,
         /*stack_size=*/0,
-        /*name=*/"async",
+        /*name=*/"coro",
         /*init_event=*/NULL
     );
 

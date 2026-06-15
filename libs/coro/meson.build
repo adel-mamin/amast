@@ -24,16 +24,16 @@
 # SOFTWARE.
 #
 
-libasync_dep = declare_dependency(
+libcoro_dep = declare_dependency(
     include_directories : [inc, include_directories('.')]
 )
 
 if unit_test
     e = executable(
-        'async',
+        'coro',
         [
             'test.c'
         ],
-        dependencies: [libasync_dep, libassert_dep])
-    test('async', e, suite: 'async')
+        dependencies: [libcoro_dep, libassert_dep])
+    test('coro', e, suite: 'coro')
 endif

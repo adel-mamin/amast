@@ -3,14 +3,14 @@ Async-Await
 ===========
 
 Provides a lightweight implementation of asynchronous programming using
-a custom async-await mechanism in C. It allows a stateful asynchronous
+a custom coroutine mechanism in C. It allows a stateful asynchronous
 execution flow be represented in a linear structured, readable manner.
 
 Overview
 ========
 
 The core of the implementation revolves around managing async state
-in a ``struct am_async`` object. The object combined with a set of
+in a ``struct am_coro`` object. The object combined with a set of
 state-tracking macros allows to mimic async-await behavior.
 
 Useful for the cases when the sequence of states (operations) is strictly
@@ -26,51 +26,51 @@ Inspired by:
 - `Async.h - asynchronous, stackless subroutines <https://github.com/naasking/async.h>`_
 - `Protothreads <https://dunkels.com/adam/pt/>`_
 
-Async Macros and Functions
-==========================
+Coroutine Macros and Functions
+==============================
 
-The async macros and functions below help create asynchronous functions/blocks,
+The coroutine macros and functions below help create coroutine functions/blocks,
 manage state, and handle control flow.
 
 Macros
 ------
 
-- **AM_ASYNC_BEGIN(me)**
+- **AM_CORO_BEGIN(me)**
 
-  Begins an asynchronous function/block and initializes the async state.
-  It takes a pointer ``me`` to the ``struct am_async`` managing the async state.
+  Begins an coroutine function/block and initializes the coroutine state.
+  It takes a pointer ``me`` to the ``struct am_coro`` managing the coroutine state.
 
-- **AM_ASYNC_END()**
+- **AM_CORO_END()**
 
-  Ends the asynchronous function/block.
+  Ends the coroutine function/block.
 
-- **AM_ASYNC_AWAIT(cond)**
+- **AM_CORO_AWAIT(cond)**
 
   Awaits a specified condition ``cond`` before proceeding with execution.
   If the condition is not met, the function/block returns and can be re-entered later.
-  This allows the async function/block to wait for external conditions without blocking.
+  This allows the coroutine function/block to wait for external conditions without blocking.
 
-- **AM_ASYNC_CALL(func)**
+- **AM_CORO_CALL(func)**
 
-  Call an async function and evaluate its return value.
-  Returns, if the async function call return value is not ``AM_RC_ASYNC_DONE``,
+  Call an coroutine function and evaluate its return value.
+  Returns, if the coroutine function call return value is not ``AM_RC_ASYNC_DONE``,
   in which case the function call is evaluated again on next invocation.
 
-- **AM_ASYNC_YIELD()**
+- **AM_CORO_YIELD()**
 
   Yields control back to the caller without completing the function/block
-  This enables the async function/block to be resumed later from this point.
+  This enables the coroutine function/block to be resumed later from this point.
 
 Functions
 ---------
 
-- **void am_async_ctor(struct am_async *me)**
+- **void am_coro_ctor(struct am_coro *me)**
 
-  Initializes an ``struct am_async`` structure by setting its ``state`` field
-  to ``AM_ASYNC_STATE_INIT``. This prepares the structure to be used in
-  an async function.
+  Initializes an ``struct am_coro`` structure by setting its ``state`` field
+  to ``AM_CORO_STATE_INIT``. This prepares the structure to be used in
+  an coroutine function.
 
-- **bool am_async_is_busy(const struct am_async *me)**
+- **bool am_coro_is_busy(const struct am_coro *me)**
 
   Checks if async operation is in progress.
 
@@ -84,7 +84,7 @@ for usage examples.
 Notes
 =====
 
-- Avoid using switch-case constructs within asynchronous function
+- Avoid using switch-case constructs within coroutine function
   using the macros
 - Keep the variables that should preserve their values across async
-  function calls in a state stored outside of the async function.
+  function calls in a state stored outside of the coroutine function.

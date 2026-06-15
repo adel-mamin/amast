@@ -27,7 +27,7 @@
 /**
  * @file
  *
- * Async/await API implementation.
+ * Coroutine API implementation.
  * See test.c for usage examples.
  *
  * Based on the work from the following sources:
@@ -37,51 +37,51 @@
  * - https://dunkels.com/adam/pt/
  */
 
-#ifndef AM_ASYNC_H_INCLUDED
-#define AM_ASYNC_H_INCLUDED
+#ifndef AM_CORO_H_INCLUDED
+#define AM_CORO_H_INCLUDED
 
 #include <stdbool.h>
 
 #include "common/types.h" /* IWYU pragma: keep */
 
 /**
- * Init value of async function/block state.
+ * Init value of coro function/block state.
  *
  * Only used by implementation.
  * Not to be used directly by user code.
  */
-#define AM_ASYNC_STATE_INIT 0
+#define AM_CORO_STATE_INIT 0
 
-/** Async state. */
-struct am_async {
-    int state; /**< a line number or #AM_ASYNC_STATE_INIT constant */
+/** Coro state. */
+struct am_coro {
+    int state; /**< a line number or #AM_CORO_STATE_INIT constant */
 };
 
 /* clang-format off */
 
 /**
- * Mark the beginning of async function/block.
+ * Mark the beginning of coro function/block.
  *
- * Should be called at the beginning of async function/block.
+ * Should be called at the beginning of coro function/block.
  *
- * @param me  pointer to the `struct am_async` managing the async state
+ * @param me  pointer to the `struct am_coro` managing the coro state
  */
-#define AM_ASYNC_BEGIN(me) {                                \
-    struct am_async *am_async_ = (struct am_async *)(me);   \
-    switch (am_async_->state) {                             \
+#define AM_CORO_BEGIN(me) {                                \
+    struct am_coro *am_coro_ = (struct am_coro *)(me);   \
+    switch (am_coro_->state) {                             \
     default:                                                \
         AM_ASSERT(0);                                       \
         break;                                              \
-    case AM_ASYNC_STATE_INIT:                               \
+    case AM_CORO_STATE_INIT:                               \
         /* to suppress cppcheck warnings */                 \
-        am_async_->state = AM_ASYNC_STATE_INIT
+        am_coro_->state = AM_CORO_STATE_INIT
 
 /**
- * Mark the end of async function/block.
+ * Mark the end of coro function/block.
  *
- * Should be called at the end of async function/block.
+ * Should be called at the end of coro function/block.
  */
-#define AM_ASYNC_END() }} do {} while (0)
+#define AM_CORO_END() }} do {} while (0)
 
 /**
  * Await a condition before proceeding.
@@ -94,53 +94,53 @@ struct am_async {
  *
  * @param cond  the condition to check for continuation
  */
-#define AM_ASYNC_AWAIT(cond) do {                           \
-            am_async_->state = __LINE__;                    \
+#define AM_CORO_AWAIT(cond) do {                           \
+            am_coro_->state = __LINE__;                    \
             /* FALLTHROUGH */                               \
         case __LINE__:                                      \
             if (!(cond)) {                                  \
-                return AM_RC_ASYNC_BUSY;                    \
+                return AM_RC_CORO_BUSY;                    \
             }                                               \
-            am_async_->state = AM_ASYNC_STATE_INIT;         \
+            am_coro_->state = AM_CORO_STATE_INIT;         \
     } while (0)
 
 /**
- * Chain an async function call and evaluate its return value.
+ * Chain an coro function call and evaluate its return value.
  *
- * Returns, if the async function call returns
- * #AM_RC_ASYNC_BUSY,
+ * Returns, if the coro function call returns
+ * #AM_RC_CORO_BUSY,
  *
  * The function call is evaluated again on next invocation,
- * if #AM_RC_ASYNC_BUSY is returned. Otherwise the execution continues
+ * if #AM_RC_CORO_BUSY is returned. Otherwise the execution continues
  * on next invocation without the function call.
  *
  * @param func  the function to check the return value of
  */
-#define AM_ASYNC_CALL(func) do {                            \
-            am_async_->state = __LINE__;                    \
+#define AM_CORO_CALL(func) do {                            \
+            am_coro_->state = __LINE__;                    \
             /* FALLTHROUGH */                               \
         case __LINE__: {                                    \
             enum am_rc rc_ = (func);                        \
-            if (AM_RC_ASYNC_BUSY == rc_) {                  \
-                return AM_RC_ASYNC_BUSY;                    \
+            if (AM_RC_CORO_BUSY == rc_) {                  \
+                return AM_RC_CORO_BUSY;                    \
             }                                               \
-            AM_ASSERT(AM_RC_ASYNC_DONE == rc_);             \
-            am_async_->state = AM_ASYNC_STATE_INIT;         \
+            AM_ASSERT(AM_RC_CORO_DONE == rc_);             \
+            am_coro_->state = AM_CORO_STATE_INIT;         \
         }                                                   \
     } while (0)
 
 /**
  * Yield control back to caller.
  *
- * Allows the async function/block to yield.
+ * Allows the coro function/block to yield.
  *
  * Control resumes after this point, when the function is called again.
  */
-#define AM_ASYNC_YIELD() do {                               \
-            am_async_->state = __LINE__;                    \
-            return AM_RC_ASYNC_BUSY;                        \
+#define AM_CORO_YIELD() do {                               \
+            am_coro_->state = __LINE__;                    \
+            return AM_RC_CORO_BUSY;                        \
         case __LINE__:                                      \
-            am_async_->state = AM_ASYNC_STATE_INIT;         \
+            am_coro_->state = AM_CORO_STATE_INIT;         \
     } while (0)
 
 /* clang-format on */
@@ -150,31 +150,31 @@ extern "C" {
 #endif
 
 /**
- * Construct async state.
+ * Construct coro state.
  *
- * Sets the async state to #AM_ASYNC_STATE_INIT
- * preparing it for use in async operation.
+ * Sets the coro state to #AM_CORO_STATE_INIT
+ * preparing it for use in coro operation.
  *
- * @param me  the async state to construct
+ * @param me  the coro state to construct
  */
-static inline void am_async_ctor(struct am_async* me) {
-    me->state = AM_ASYNC_STATE_INIT;
+static inline void am_coro_ctor(struct am_coro* me) {
+    me->state = AM_CORO_STATE_INIT;
 }
 
 /**
- * Check if async operation is in progress.
+ * Check if coro operation is in progress.
  *
- * @param me  the async state
+ * @param me  the coro state
  *
- * @return true   the async operation is in progress
- * @return false  the async operation is not in progress
+ * @return true   the coro operation is in progress
+ * @return false  the coro operation is not in progress
  */
-static inline bool am_async_is_busy(const struct am_async* me) {
-    return me->state != AM_ASYNC_STATE_INIT;
+static inline bool am_coro_is_busy(const struct am_coro* me) {
+    return me->state != AM_CORO_STATE_INIT;
 }
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* AM_ASYNC_H_INCLUDED */
+#endif /* AM_CORO_H_INCLUDED */
