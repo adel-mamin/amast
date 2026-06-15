@@ -238,6 +238,10 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_queue_is_empty
 
+.. doxygenfunction:: am_event_async_publish
+
+.. doxygenfunction:: am_event_async_post
+
 .. doxygenfunction:: am_event_queue_get_nbusy_unsafe
 
 .. doxygenfunction:: am_event_queue_get_nfree_min
