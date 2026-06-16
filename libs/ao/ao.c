@@ -91,11 +91,8 @@ bool am_ao_post_fifo_x(
     AM_ASSERT(margin >= 0);
 
     struct am_event_queue_policy policy = {.lifo = 0, .margin = margin};
-    enum am_rc rc = am_event_queue_push(&ao->event_queue, event, policy);
-    if (AM_RC_QUEUE_WAS_EMPTY == rc) {
-        am_ao_notify(ao);
-    }
-    return (AM_RC_OK == rc) || (AM_RC_QUEUE_WAS_EMPTY == rc);
+
+    return am_event_async_post(/*dest_id=*/ao->prio.ao, event, policy);
 }
 
 void am_ao_post_fifo(struct am_ao* ao, const struct am_event* event) {
@@ -112,12 +109,9 @@ bool am_ao_post_lifo_x(
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
 
-    struct am_event_queue_policy policy = {.margin = margin};
-    enum am_rc rc = am_event_queue_push(&ao->event_queue, event, policy);
-    if (AM_RC_QUEUE_WAS_EMPTY == rc) {
-        am_ao_notify(ao);
-    }
-    return (AM_RC_OK == rc) || (AM_RC_QUEUE_WAS_EMPTY == rc);
+    struct am_event_queue_policy policy = {.lifo = 1, .margin = margin};
+
+    return am_event_async_post(/*dest_id=*/ao->prio.ao, event, policy);
 }
 
 void am_ao_post_lifo(struct am_ao* ao, const struct am_event* event) {
