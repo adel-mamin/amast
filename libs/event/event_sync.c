@@ -174,8 +174,6 @@ bool am_event_sync_post_request(
 ) {
     AM_ASSERT(hub);
     AM_ASSERT(hub->recursion_count < AM_SYNC_RECURSION_MAX);
-    AM_ASSERT(out);
-    AM_ASSERT(out_size > 0);
 
     AM_ASSERT(dest_id >= 0);
     AM_ASSERT(dest_id < AM_EVT_HANDLERS_NUM_MAX);
@@ -220,8 +218,6 @@ bool am_event_sync_publish_request(
 
     AM_ASSERT(event);
     AM_ASSERT(event->id >= AM_EVT_USER);
-    AM_ASSERT(out);
-    AM_ASSERT(out_size > 0);
 
     ++hub->recursion_count;
 

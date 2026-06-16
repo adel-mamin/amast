@@ -258,7 +258,7 @@ bool am_event_sync_post(
  *                  Passing an invalid event handler ID is a programming error
  *                  and results in an assertion failure.
  * @param event     input event
- * @param out       output data.
+ * @param out       output data. Can be NULL.
  *                  The memory is provided by the caller and must be sufficient
  *                  to accommodate the output data.
  * @param out_size  the size of memory behind @p out pointer [bytes]
@@ -296,7 +296,7 @@ bool am_event_sync_publish(
  *
  * @param hub           synchronous event hub
  * @param event         input event
- * @param out           output data.
+ * @param out           output data. Can be NULL.
  *                      The memory is provided by the caller and must be
  *                      sufficient to accommodate the output data.
  * @param out_size      the size of memory behind @p out pointer [bytes]
