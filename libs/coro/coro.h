@@ -45,14 +45,14 @@
 #include "common/types.h" /* IWYU pragma: keep */
 
 /**
- * Init value of coro function/block state.
+ * Init value of coroutine function/block state.
  *
  * Only used by implementation.
  * Not to be used directly by user code.
  */
 #define AM_CORO_STATE_INIT 0
 
-/** Coro state. */
+/** Coroutine state. */
 struct am_coro {
     int state; /**< a line number or #AM_CORO_STATE_INIT constant */
 };
@@ -60,26 +60,26 @@ struct am_coro {
 /* clang-format off */
 
 /**
- * Mark the beginning of coro function/block.
+ * Mark the beginning of coroutine function/block.
  *
- * Should be called at the beginning of coro function/block.
+ * Should be called at the beginning of coroutine function/block.
  *
- * @param me  pointer to the `struct am_coro` managing the coro state
+ * @param me  pointer to the `struct am_coro` managing the coroutine state
  */
-#define AM_CORO_BEGIN(me) {                                \
-    struct am_coro *am_coro_ = (struct am_coro *)(me);   \
-    switch (am_coro_->state) {                             \
+#define AM_CORO_BEGIN(me) {                                 \
+    struct am_coro *am_coro_ = (struct am_coro *)(me);      \
+    switch (am_coro_->state) {                              \
     default:                                                \
         AM_ASSERT(0);                                       \
         break;                                              \
-    case AM_CORO_STATE_INIT:                               \
+    case AM_CORO_STATE_INIT:                                \
         /* to suppress cppcheck warnings */                 \
         am_coro_->state = AM_CORO_STATE_INIT
 
 /**
- * Mark the end of coro function/block.
+ * Mark the end of coroutine function/block.
  *
- * Should be called at the end of coro function/block.
+ * Should be called at the end of coroutine function/block.
  */
 #define AM_CORO_END() }} do {} while (0)
 
@@ -94,20 +94,20 @@ struct am_coro {
  *
  * @param cond  the condition to check for continuation
  */
-#define AM_CORO_AWAIT(cond) do {                           \
-            am_coro_->state = __LINE__;                    \
+#define AM_CORO_AWAIT(cond) do {                            \
+            am_coro_->state = __LINE__;                     \
             /* FALLTHROUGH */                               \
         case __LINE__:                                      \
             if (!(cond)) {                                  \
-                return AM_RC_CORO_BUSY;                    \
+                return AM_RC_CORO_BUSY;                     \
             }                                               \
-            am_coro_->state = AM_CORO_STATE_INIT;         \
+            am_coro_->state = AM_CORO_STATE_INIT;           \
     } while (0)
 
 /**
- * Chain an coro function call and evaluate its return value.
+ * Chain an coroutine function call and evaluate its return value.
  *
- * Returns, if the coro function call returns
+ * Returns, if the coroutine function call returns
  * #AM_RC_CORO_BUSY,
  *
  * The function call is evaluated again on next invocation,
@@ -116,31 +116,31 @@ struct am_coro {
  *
  * @param func  the function to check the return value of
  */
-#define AM_CORO_CALL(func) do {                            \
-            am_coro_->state = __LINE__;                    \
+#define AM_CORO_CALL(func) do {                             \
+            am_coro_->state = __LINE__;                     \
             /* FALLTHROUGH */                               \
         case __LINE__: {                                    \
             enum am_rc rc_ = (func);                        \
-            if (AM_RC_CORO_BUSY == rc_) {                  \
-                return AM_RC_CORO_BUSY;                    \
+            if (AM_RC_CORO_BUSY == rc_) {                   \
+                return AM_RC_CORO_BUSY;                     \
             }                                               \
-            AM_ASSERT(AM_RC_CORO_DONE == rc_);             \
-            am_coro_->state = AM_CORO_STATE_INIT;         \
+            AM_ASSERT(AM_RC_CORO_DONE == rc_);              \
+            am_coro_->state = AM_CORO_STATE_INIT;           \
         }                                                   \
     } while (0)
 
 /**
  * Yield control back to caller.
  *
- * Allows the coro function/block to yield.
+ * Allows the coroutine function/block to yield.
  *
  * Control resumes after this point, when the function is called again.
  */
-#define AM_CORO_YIELD() do {                               \
-            am_coro_->state = __LINE__;                    \
-            return AM_RC_CORO_BUSY;                        \
+#define AM_CORO_YIELD() do {                                \
+            am_coro_->state = __LINE__;                     \
+            return AM_RC_CORO_BUSY;                         \
         case __LINE__:                                      \
-            am_coro_->state = AM_CORO_STATE_INIT;         \
+            am_coro_->state = AM_CORO_STATE_INIT;           \
     } while (0)
 
 /* clang-format on */
@@ -150,24 +150,24 @@ extern "C" {
 #endif
 
 /**
- * Construct coro state.
+ * Construct coroutine state.
  *
- * Sets the coro state to #AM_CORO_STATE_INIT
- * preparing it for use in coro operation.
+ * Sets the coroutine state to #AM_CORO_STATE_INIT
+ * preparing it for use in coroutine operation.
  *
- * @param me  the coro state to construct
+ * @param me  the coroutine state to construct
  */
 static inline void am_coro_ctor(struct am_coro* me) {
     me->state = AM_CORO_STATE_INIT;
 }
 
 /**
- * Check if coro operation is in progress.
+ * Check if coroutine operation is in progress.
  *
- * @param me  the coro state
+ * @param me  the coroutine state
  *
- * @return true   the coro operation is in progress
- * @return false  the coro operation is not in progress
+ * @return true   the coroutine operation is in progress
+ * @return false  the coroutine operation is not in progress
  */
 static inline bool am_coro_is_busy(const struct am_coro* me) {
     return me->state != AM_CORO_STATE_INIT;
