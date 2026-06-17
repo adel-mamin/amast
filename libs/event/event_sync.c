@@ -30,10 +30,10 @@
 
 #include <stdbool.h>
 #include <string.h>
-
 #include <stdint.h>
-#include "event/event_common.h"
-#include "event/event_sync.h"
+
+#include "event_common.h"
+#include "event_sync.h"
 
 #include "common/macros.h"
 #include "bit/bit.h"

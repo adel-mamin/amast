@@ -33,7 +33,7 @@
 #ifndef AM_EVENT_POOL_H_INCLUDED
 #define AM_EVENT_POOL_H_INCLUDED
 
-#include "event/event_common.h"
+#include "event_common.h"
 
 #ifdef __cplusplus
 extern "C" {

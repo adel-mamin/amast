@@ -32,7 +32,7 @@
 #include <string.h>
 #include <stdint.h>
 
-#include "event/event_common.h"
+#include "event_common.h"
 #include "common/macros.h"
 #include "onesize/onesize.h"
 

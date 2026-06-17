@@ -33,10 +33,10 @@
 #include <stdint.h>
 
 #include "common/types.h"
-#include "event/event_common.h"
-#include "event/event_queue.h"
-
 #include "common/macros.h"
+
+#include "event_common.h"
+#include "event_queue.h"
 
 void am_event_queue_ctor(
     struct am_event_queue* queue,
