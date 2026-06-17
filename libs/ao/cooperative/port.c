@@ -165,13 +165,9 @@ void am_ao_stop(struct am_ao* ao) {
 
     am_event_async_unsubscribe_all(ao->prio.ao);
 
-    const struct am_event* e = NULL;
-    while ((e = am_event_queue_pop_front(&ao->event_queue)) != NULL) {
-        am_event_free(me->alloc, e);
-    }
-
     me->crit_enter();
 
+    am_event_queue_flush_unsafe(&ao->event_queue);
     am_event_queue_dtor(&ao->event_queue);
     am_bit_u64_clear(&am_ready_aos_, ao->prio.ao);
 

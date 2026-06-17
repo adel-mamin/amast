@@ -375,6 +375,19 @@ int am_event_queue_get_nfree_min(const struct am_event_queue* queue);
  */
 int am_event_queue_flush(struct am_event_queue* queue);
 
+/**
+ * Flush all events from event queue.
+ *
+ * Takes care of recycling the events by calling am_event_free_unsafe().
+ *
+ * Thread unsafe.
+ *
+ * @param queue  the event queue to flush
+ *
+ * @return the number of events flushed
+ */
+int am_event_queue_flush_unsafe(struct am_event_queue* queue);
+
 #ifdef __cplusplus
 }
 #endif

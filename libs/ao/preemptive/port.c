@@ -152,13 +152,9 @@ void am_ao_stop(struct am_ao* ao) {
         am_ao_unsubscribe_all(ao);
     }
 
-    const struct am_event* e = NULL;
-    while ((e = am_event_queue_pop_front(&ao->event_queue)) != NULL) {
-        am_event_free(me->alloc, e);
-    }
-
     me->crit_enter();
 
+    am_event_queue_flush_unsafe(&ao->event_queue);
     am_event_queue_dtor(&ao->event_queue);
 
     me->aos[ao->prio.ao] = NULL;
