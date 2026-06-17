@@ -136,6 +136,8 @@ void am_event_async_unsubscribe_all(int handler_id);
  * @param fn   the event handler function.
  *             Called by am_event_async_post() and am_event_async_publish()
  *             inside a critical section.
+ *             So, only unsafe (not using critical section)
+ *             event handlers are allowed.
  * @param ctx  the event handler function context
  * @param handler_id  the event handler ID to register with.
  *                    To be used as a parameter to
