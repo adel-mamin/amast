@@ -71,6 +71,8 @@ void am_event_async_init(
     }
 
     struct am_event_async_state* me = &m_async_state;
+    memset(me, 0, sizeof(*me));
+
     AM_ATOMIC_STORE_N(&me->sub, sub);
     me->nsub = nsub;
 
