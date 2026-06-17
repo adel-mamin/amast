@@ -32,6 +32,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "common/macros.h"
 #include "common/alignment.h"
@@ -93,27 +94,37 @@ static void test_am_event_queue(const int capacity, const int rdwr_num) {
     AM_ASSERT(rdwr_num > 0);
     struct am_event events[rdwr_num];
 
-    for (int i = 1; i < rdwr_num; ++i) {
-        bool rc = am_event_queue_push_back(&q, &events[i]);
-        AM_ASSERT(rc);
-        AM_ASSERT(am_event_queue_get_nbusy_unsafe(&q) == i);
+    memset(events, 0, sizeof(events));
+
+    for (int i = 0; i < rdwr_num; ++i) {
+        enum am_rc rc = am_event_queue_push_back(&q, &events[i]);
+        if (i == 0) {
+            AM_ASSERT(rc == AM_RC_QUEUE_WAS_EMPTY);
+        } else {
+            AM_ASSERT(rc == AM_RC_OK);
+        }
+        AM_ASSERT(am_event_queue_get_nbusy_unsafe(&q) == (i + 1));
         AM_ASSERT(!am_event_queue_is_empty(&q));
     }
 
-    for (int i = 1; i <= rdwr_num; ++i) {
+    for (int i = 0; i < rdwr_num; ++i) {
         const struct am_event* event = am_event_queue_pop_front(&q);
         AM_ASSERT(event == &events[i]);
     }
 
-    for (int i = 1; i <= rdwr_num; ++i) {
-        bool rc = am_event_queue_push_front(&q, &events[i]);
-        AM_ASSERT(rc);
+    for (int i = 0; i < rdwr_num; ++i) {
+        enum am_rc rc = am_event_queue_push_front(&q, &events[i]);
+        if (i == 0) {
+            AM_ASSERT(rc == AM_RC_QUEUE_WAS_EMPTY);
+        } else {
+            AM_ASSERT(rc == AM_RC_OK);
+        }
         AM_ASSERT(am_event_queue_get_nbusy_unsafe(&q) > 0);
-        AM_ASSERT(am_event_queue_get_nbusy_unsafe(&q) == i);
+        AM_ASSERT(am_event_queue_get_nbusy_unsafe(&q) == (i + 1));
         AM_ASSERT(!am_event_queue_is_empty(&q));
     }
 
-    for (int i = rdwr_num; i > 0; --i) {
+    for (int i = (rdwr_num - 1); i >= 0; --i) {
         const struct am_event* event = am_event_queue_pop_front(&q);
         AM_ASSERT(&events[i] == event);
     }
@@ -212,9 +223,9 @@ int main(void) {
     }
 
     test_am_event_queue(/*capacity=*/1, /*rdwr_num=*/0);
-    /* test_am_event_queue(/\*capacity=*\/1, /\*rdwr_num=*\/1); */
-    /* test_am_event_queue(/\*capacity=*\/2, /\*rdwr_num=*\/1); */
-    /* test_am_event_queue(/\*capacity=*\/3, /\*rdwr_num=*\/3); */
+    test_am_event_queue(/*capacity=*/1, /*rdwr_num=*/1);
+    test_am_event_queue(/*capacity=*/2, /*rdwr_num=*/1);
+    test_am_event_queue(/*capacity=*/3, /*rdwr_num=*/3);
 
     return 0;
 }
