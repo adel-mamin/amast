@@ -27,7 +27,7 @@
 /**
  * @file
  *
- * Event API declaration.
+ * Event pools API declaration.
  */
 
 #ifndef AM_EVENT_POOL_H_INCLUDED

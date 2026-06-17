@@ -27,7 +27,7 @@
 /**
  * @file
  *
- * Event API declaration.
+ * Synchronous event API declaration.
  */
 
 #ifndef AM_EVENT_SYNC_H_INCLUDED

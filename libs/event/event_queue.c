@@ -25,7 +25,7 @@
  */
 
 /**
- * Event library API implementation.
+ * Event queue API implementation.
  */
 
 #include <stdbool.h>

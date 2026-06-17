@@ -27,7 +27,7 @@
 /**
  * @file
  *
- * Event API declaration.
+ * Asynchronous event API declaration.
  */
 
 #ifndef AM_EVENT_ASYNC_H_INCLUDED

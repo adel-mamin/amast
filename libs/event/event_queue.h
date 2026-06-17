@@ -27,7 +27,7 @@
 /**
  * @file
  *
- * Event API declaration.
+ * Event queue API declaration.
  */
 
 #ifndef AM_EVENT_QUEUE_H_INCLUDED
