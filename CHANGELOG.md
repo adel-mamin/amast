@@ -20,6 +20,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Add `AM_ATOMIC_EXCHANGE_N()` macro
 - Add synchronous event handling API and an example application to show its usage
 - Add ticker API to PAL
+- Add `am_event_queue_flush_unsafe()`
 
 ### Fixed
 
