@@ -29,12 +29,11 @@
  * Event allocation unit tests.
  */
 
-#include <stdbool.h>
-#include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
 #include "common/macros.h"
+#include "common/types.h"
 #include "common/alignment.h"
 
 #include "event_common.h"
