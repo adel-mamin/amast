@@ -218,6 +218,7 @@ bool am_event_async_publish(
     AM_ASSERT(si < me->nsub);
 
     if (!am_event_is_static(event)) {
+        AM_ASSERT(me->alloc);
         /*
          * To avoid a potential race condition, if higher priority
          * event handler preempts the event publishing and frees the event
