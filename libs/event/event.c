@@ -42,7 +42,7 @@
 /** Maximum pool index value */
 #define AM_EVENT_POOL_INDEX_MAX ((int)AM_EVENT_POOL_INDEX_MASK)
 /** Is AM_EVENT_POOLS_NUM_MAX too large? */
-AM_ASSERT_STATIC(AM_EVENT_POOLS_NUM_MAX <= (AM_EVENT_POOL_INDEX_MAX + 1));
+AM_ASSERT_STATIC(AM_EVENT_POOLS_NUM_MAX <= AM_EVENT_POOL_INDEX_MAX);
 
 static void am_event_crit_stub(void) {}
 

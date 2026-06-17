@@ -51,7 +51,7 @@ if unit_test
     e = executable(
         'event',
         ['test.c', slist_src],
-        c_args: ['-DAM_EVENT_POOLS_NUM_MAX=32'],
+        c_args: ['-DAM_EVENT_POOLS_NUM_MAX=31'],
         dependencies : [libonesize_dep, libassert_dep, libevent_dep],
         include_directories: inc)
     test('event', e)
