@@ -167,6 +167,10 @@ enum am_rc am_event_queue_push(
     enum am_rc rc = am_event_queue_push_unsafe(queue, event, policy);
     am_event_crit_exit();
 
+    if (policy.margin == 0) {
+        AM_ASSERT((rc == AM_RC_OK) || (rc == AM_RC_QUEUE_WAS_EMPTY));
+    }
+
     return rc;
 }
 
