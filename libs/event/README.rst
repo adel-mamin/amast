@@ -60,8 +60,8 @@ Design Considerations
 
 1. **Event Representation**:
 
-   - Each event (``am_event``) contains metadata such as its ID, reference count,
-     ticker identifier (optional), and memory pool index.
+   - Each event (``am_event``) contains metadata such as its ID, reference count
+     and memory pool index.
    - Reference counting ensures that events are safely recycled or retained as
      needed.
 
@@ -77,8 +77,7 @@ Design Considerations
 
    - Events can be pushed to the front or back of queues, supporting different
      prioritization strategies.
-   - Deferred events can be recalled for future processing, ensuring
-     flexibility in handling complex workflows.
+   - Deferred events can be recalled for further processing.
 
 4. **Concurrency Management**:
 
@@ -123,7 +122,8 @@ Event Ownership Diagram
   |              |------------------------------->|   event owned by    |
   |              |                                |   application       |
   |              |  am_event_free(event)          |   with read and     |
-  |              |  am_event_queue_push_...(event)|   write permissions |
+  |              |  am_event_free_unsafe(event)   |   write permissions |
+  |              |  am_event_queue_push_...(event)|                     |
   |              |  am_ao_publish_...(event)      |                     |
   |              |  am_ao_post_...(event)         |                     |
   |              |<-------------------------------|                     |
@@ -161,7 +161,7 @@ Please note that the following pseudocode shows an incorrect use of the API:
 
 .. code-block:: C
 
-    struct my_event *event = am_event_allocate(MY_EVENT, sizeof(*event));
+    struct my_event *event = am_event_allocate(alloc, MY_EVENT, sizeof(*event));
 
     am_ao_post_fifo(ao1, event);
     am_ao_post_fifo(ao2, event);

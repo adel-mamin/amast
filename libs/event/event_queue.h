@@ -100,6 +100,8 @@ void am_event_queue_ctor(
 /**
  * Destruct event queue.
  *
+ * The event queue must be empty.
+ *
  * @param queue  the queue
  */
 void am_event_queue_dtor(struct am_event_queue* queue);
