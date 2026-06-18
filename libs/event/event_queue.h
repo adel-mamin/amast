@@ -113,6 +113,8 @@ void am_event_queue_dtor(struct am_event_queue* queue);
  * If not, then does not push. Otherwise pushes the event to the back of
  * the event queue.
  *
+ * Asserts, if policy.margin == 0 and the event was not pushed.
+ *
  * Tries to free the event, if it was not pushed.
  *
  * Statically allocated events (the events for which am_event_is_static()
@@ -141,11 +143,13 @@ enum am_rc am_event_queue_push(
 );
 
 /**
- * Push event to the back of event queue (eXtended version).
+ * Push event to the back of event queue (extended version).
  *
  * Checks if there are more free queue slots available than @p margin.
  * If not, then does not push. Otherwise pushes the event to the back of
  * the event queue.
+ *
+ * Asserts, if policy.margin == 0 and the event was not pushed.
  *
  * Tries to free the event, if it was not pushed.
  *
