@@ -86,15 +86,11 @@ Design Considerations
    - The module is designed to integrate seamlessly into multi-threaded
      environments.
 
-Module Configuration
+Critical Section Use
 ====================
 
-The module configuration (``am_event_cfg``) defines:
-
-- **Critical Section Callbacks**: Protect shared resources during event
-  operations.
-- **Memory Pools**: Must be added during initialization in ascending order of
-  block size.
+The critical section callback can be registered with
+``am_event_register_crit()`` API.
 
 System Integration
 ==================
