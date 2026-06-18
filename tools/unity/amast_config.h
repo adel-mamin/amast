@@ -42,7 +42,7 @@
 
 /**
  * The max number of event pools.
- * Valid range: [1,32].
+ * Valid range: [1,31].
  */
 #define AM_EVENT_POOLS_NUM_MAX 12
 
