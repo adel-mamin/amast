@@ -176,7 +176,7 @@ struct am_event_log_ctx {
 };
 
 #ifndef AM_EVENT_POOLS_NUM_MAX
-/*
+/**
  * The max number of event pools.
  * Can be redefined by user up to 31 with the default event descriptor layout.
  * Value 0 of pool_index_plus_one is reserved for static events.
