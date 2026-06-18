@@ -57,19 +57,9 @@ void am_event_queue_ctor(
     queue->alloc = alloc;
 }
 
-int am_event_queue_flush_unsafe(struct am_event_queue* queue) {
-    int cnt = 0;
-    const struct am_event* e = NULL;
-    while ((e = am_event_queue_pop_front_unsafe(queue)) != NULL) {
-        ++cnt;
-        AM_ASSERT(cnt <= queue->capacity);
-        am_event_free_unsafe(queue->alloc, e);
-    }
-    return cnt;
-}
-
 void am_event_queue_dtor(struct am_event_queue* queue) {
     AM_ASSERT(queue);
+    AM_ASSERT(am_event_queue_is_empty_unsafe(queue));
     memset(queue, 0, sizeof(*queue));
 }
 
@@ -278,6 +268,17 @@ int am_event_queue_flush(struct am_event_queue* queue) {
         ++cnt;
         AM_ASSERT(cnt <= queue->capacity);
         am_event_free(queue->alloc, e);
+    }
+    return cnt;
+}
+
+int am_event_queue_flush_unsafe(struct am_event_queue* queue) {
+    int cnt = 0;
+    const struct am_event* e = NULL;
+    while ((e = am_event_queue_pop_front_unsafe(queue)) != NULL) {
+        ++cnt;
+        AM_ASSERT(cnt <= queue->capacity);
+        am_event_free_unsafe(queue->alloc, e);
     }
     return cnt;
 }
