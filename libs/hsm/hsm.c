@@ -372,7 +372,8 @@ void am_hsm_dtor(struct am_hsm* hsm) {
 
 void am_hsm_init(struct am_hsm* hsm, const struct am_event* init_event) {
     AM_ASSERT(hsm);
-    AM_ASSERT(hsm->ctor_called); /* was am_hsm_ctor() called? */
+    AM_ASSERT(hsm->ctor_called);  /* was am_hsm_ctor() called? */
+    AM_ASSERT(!hsm->init_called); /* double init? */
 
     struct am_hsm_state state = hsm->state;
     enum am_rc rc = hsm->state.fn(hsm, init_event);
