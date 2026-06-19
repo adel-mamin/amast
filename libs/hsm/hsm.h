@@ -78,16 +78,24 @@ struct am_hsm_state {
      *
      * Default is 0.
      */
-    int smi;
+    uint8_t smi;
 };
+
+/** Helper function. Not to be used directly. */
+static inline uint8_t am_hsm_state_instance_(int instance) {
+    AM_ASSERT((unsigned)instance <= 255);
+    return (uint8_t)instance;
+}
 
 /** Helper macro. Not to be used directly. */
 #define AM_STATE1_(s) \
     (struct am_hsm_state){.fn = (am_hsm_state_fn)(s), .smi = 0}
 
 /** Helper macro. Not to be used directly. */
-#define AM_STATE2_(s, i) \
-    (struct am_hsm_state) { .fn = (am_hsm_state_fn)(s), .smi = (i) }
+#define AM_STATE2_(s, i)                                             \
+    (struct am_hsm_state) {                                          \
+        .fn = (am_hsm_state_fn)(s), .smi = am_hsm_state_instance_(i) \
+    }
 
 /**
  * Construct HSM state from HSM event handler and optionally
@@ -176,12 +184,6 @@ struct am_hsm {
  * superstate(s).
  */
 #define AM_HSM_HANDLED() AM_RC_HANDLED
-
-/** Helper function. Not to be used directly. */
-static inline uint8_t am_hsm_state_instance_(int instance) {
-    AM_ASSERT((unsigned)instance <= 255);
-    return (uint8_t)instance;
-}
 
 /** Helper macro. Not to be used directly. */
 #define AM_HSM_SET_(s, i)                                   \
