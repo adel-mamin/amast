@@ -45,8 +45,6 @@ The Onesize Memory Allocator is ideal for systems that require:
   consistent sizes.
 - **Real-Time Performance**: Fast allocation and deallocation with minimal
   overhead.
-- **Thread-Safe Memory Management**: Safe operations in multi-threaded
-  environments using critical section management.
 
 Design Considerations
 =====================
@@ -62,7 +60,6 @@ Design Considerations
 
    - Customizable block size and alignment settings are defined during
      construction.
-   - Critical section entry and exit callbacks provide thread safety.
 
 3. **Diagnostics**:
 
@@ -78,8 +75,6 @@ The module configuration (``am_onesize_cfg``) specifies:
 
 - **Memory Pool**: The memory pool from which blocks are allocated.
 - **Block Size and Alignment**: The size and alignment of memory blocks.
-- **Critical Section Callbacks**: Ensure thread safety during allocation and
-  deallocation.
 
 System Integration
 ==================
