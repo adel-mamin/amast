@@ -47,8 +47,10 @@ struct am_hsm_path {
 };
 
 static void hsm_set_state(struct am_hsm* hsm, struct am_hsm_state state) {
+    AM_ASSERT(state.smi >= 0);
+    AM_ASSERT(state.smi <= 255);
     hsm->state = state;
-    hsm->smi = state.smi;
+    hsm->smi = (uint8_t)state.smi;
 }
 
 /**

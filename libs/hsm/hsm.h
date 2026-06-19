@@ -76,9 +76,9 @@ struct am_hsm_state {
     /**
      * HSM submachine instance.
      *
-     * Default is 0. Valid range is [0,255].
+     * Default is 0.
      */
-    uint8_t smi;
+    int smi;
 };
 
 /** Helper macro. Not to be used directly. */
@@ -87,7 +87,7 @@ struct am_hsm_state {
 
 /** Helper macro. Not to be used directly. */
 #define AM_STATE2_(s, i) \
-    (struct am_hsm_state) { .fn = (am_hsm_state_fn)(s), .smi = (uint8_t)(i) }
+    (struct am_hsm_state) { .fn = (am_hsm_state_fn)(s), .smi = (i) }
 
 /**
  * Construct HSM state from HSM event handler and optionally
