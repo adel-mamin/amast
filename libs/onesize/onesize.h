@@ -38,7 +38,7 @@
 #include "slist/slist.h"
 
 #define AM_POOL_BLOCK_SIZEOF(t) AM_MAX(sizeof(struct am_slist_item), sizeof(t))
-#define AM_POOL_BLOCK_ALIGNMENT(a) AM_MAX(AM_ALIGNOF(am_slist_t), a)
+#define AM_POOL_BLOCK_ALIGNMENT(a) AM_MAX(AM_ALIGNOF(am_slist_item_t), a)
 
 /** Onesize memory allocator descriptor. */
 struct am_onesize {
