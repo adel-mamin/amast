@@ -103,14 +103,14 @@ Glossary
        *s11*-*s1*-*am_hsm_top* is the ancestor chain.
        Another one is *s2* - *am_hsm_top* etc.
 
-   *nearest common ancestor (NCA)*
+   *least common ancestor (LCA)*
        the first common ancestor in two ancestor chains constructed from
        source and target states to the top level superstate.
        For example, given the state diagram in :ref:`example-hsm` section below:
 
-       1. for *s11*-*s1*-*am_hsm_top* and *s2*-*am_hsm_top* the NCA is *am_hsm_top*
-       2. for *s111*-*s11*-*s1*-*am_hsm_top* and *s12*-*s1*-*am_hsm_top* the NCA is *s1*
-       3. for *s111*-*s11*-*s1*-*am_hsm_top* and *s11*-*s1*-*am_hsm_top* the NCA is *s1*
+       1. for *s11*-*s1*-*am_hsm_top* and *s2*-*am_hsm_top* the LCA is *am_hsm_top*
+       2. for *s111*-*s11*-*s1*-*am_hsm_top* and *s12*-*s1*-*am_hsm_top* the LCA is *s1*
+       3. for *s111*-*s11*-*s1*-*am_hsm_top* and *s11*-*s1*-*am_hsm_top* the LCA is *s1*
 
    *topology*
        HSM topology is the architecture of HSM - the set of all parent -
@@ -222,24 +222,24 @@ the source state is *s1* and the target state is *s2*.
 
 When transitioning, exit events
 (:c:macro:`AM_EVT_EXIT`) are sent
-by the library automatically up the ancestor chain until reaching the nearest
-common ancestor (NCA) of the source and target states.
+by the library automatically up the ancestor chain until reaching the least
+common ancestor (LCA) of the source and target states.
 Then, entry events (:c:macro:`AM_EVT_ENTRY`)
 are sent automatically by the library down the ancestor chain to the target state.
 Finally the library sends the init event
 (:c:macro:`AM_EVT_INIT`) to the target state.
-The NCA does not receive the exit event nor does it receive the entry and init events.
+The LCA does not receive the exit event nor does it receive the entry and init events.
 
 There is a special case when the source and target states match
 (a self-transition). In this scenario the source state will be sent
 the exit and then the entry event followed by the init event.
 
 For example, if *s111* is the source state and *s121* is the target state, then the
-NCA is state *s1*. This means that the exit events are sent to *s111*
+LCA is state *s1*. This means that the exit events are sent to *s111*
 and *s11* and then the entry events are sent to *s12* and *s121*. Then the init event
 is sent to *s121*.
 
-If *s11* is the source state and *s2* is the target state, then the NCA
+If *s11* is the source state and *s2* is the target state, then the LCA
 is the default top level state *am_hsm_top*, so exit events are sent
 to *s11* and *s1* and then an entry event is sent to *s2*.
 Then the init event is sent to *s2*.
@@ -249,11 +249,11 @@ case of the self-transition. So *s111* will be sent the exit event then
 the entry event followed by the init event.
 
 If *s111* is the current state and the transition is initiated by *s1* with the
-target state *s1*, then NCA is *s1*, the exit events are sent to *s111*, *s11*, *s1* and
+target state *s1*, then LCA is *s1*, the exit events are sent to *s111*, *s11*, *s1* and
 then the entry event is sent to *s1* followed by the init event.
 
 If *s111* is the current state and the transition is initiated by *s111* with the
-target state *s1*, then NCA is *s1*, the exit events are sent to *s111*, *s11* and then
+target state *s1*, then LCA is *s1*, the exit events are sent to *s111*, *s11* and then
 the init event is sent to *s1*. Please note that the state *s1* is not exited in
 this case.
 
@@ -275,7 +275,7 @@ Initial State Transition
 ========================
 
 If *s111* is the current state and the transition is initiated by *s1* with the
-target state *s12*, then NCA is *s1*, the exit events are sent to *s11*, *s1* and
+target state *s12*, then LCA is *s1*, the exit events are sent to *s11*, *s1* and
 then the entry event is sent to *s12* followed by the init event. The init event
 triggers the initial state transition to *s121*. So, the entry event is sent to *s121*
 followed by the init event.
@@ -741,10 +741,10 @@ The test steps:
 3. Send **OPEN** event. Check that the current state is **open**.
 4. Send **CLOSE** event. Check that the current state is **on**.
 
-:cpp:func:`am_hsm_top()` as NCA
+:cpp:func:`am_hsm_top()` as LCA
 -------------------------------
 
-Demonstrates the use of :cpp:func:`am_hsm_top()` as the nearest common ancestor (NCA).
+Demonstrates the use of :cpp:func:`am_hsm_top()` as the least common ancestor (LCA).
 
 The source code is in `hsm_top_as_nca.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/hsm_top_as_nca.c>`_.
 
@@ -770,7 +770,7 @@ The HSM topology:
 
     @enduml
 
-The key thing to notice here is that NCA of **s11** and **s2** is :cpp:func:`am_hsm_top()`.
+The key thing to notice here is that LCA of **s11** and **s2** is :cpp:func:`am_hsm_top()`.
 
 The test checks that the transition from **s11** to **s2** is done correctly
 on the reception of the event **A**.
