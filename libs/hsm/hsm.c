@@ -363,7 +363,9 @@ void am_hsm_dtor(struct am_hsm* hsm) {
     AM_ASSERT(hsm->ctor_called); /* was am_hsm_ctor() called? */
     AM_ASSERT(hsm->state.fn);
 
-    hsm_exit(hsm, /*until=*/AM_HSM_STATE_CTOR(am_hsm_top));
+    if (hsm->init_called) {
+        hsm_exit(hsm, /*until=*/AM_HSM_STATE_CTOR(am_hsm_top));
+    }
     hsm_set_state(hsm, AM_HSM_STATE_CTOR(am_hsm_top));
     hsm->ctor_called = hsm->init_called = false;
 }
