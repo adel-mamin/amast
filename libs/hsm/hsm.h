@@ -177,11 +177,16 @@ struct am_hsm {
  */
 #define AM_HSM_HANDLED() AM_RC_HANDLED
 
+/** Helper function. Not to be used directly. */
+static inline uint8_t am_hsm_state_instance_(int instance) {
+    AM_ASSERT((unsigned)instance <= 255);
+    return (uint8_t)instance;
+}
+
 /** Helper macro. Not to be used directly. */
 #define AM_HSM_SET_(s, i)                                   \
     (((struct am_hsm*)me)->state = AM_HSM_STATE_CTOR(s, i), \
-     AM_ASSERT((unsigned)(i) < 255),                        \
-     ((struct am_hsm*)me)->smi = (uint8_t)(i))
+     ((struct am_hsm*)me)->smi = am_hsm_state_instance_(i))
 
 /** Helper macro. Not to be used directly. */
 #define AM_TRAN1_(s) (AM_HSM_SET_(s, 0), AM_RC_TRAN)
