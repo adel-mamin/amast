@@ -33,8 +33,7 @@ Key Features
 
 4. **Custom Configuration**:
 
-   - Supports custom memory pools, alignment requirements, and critical section
-     handlers.
+   - Supports custom memory pools and alignment requirements
 
 Usage Scenarios
 ===============
