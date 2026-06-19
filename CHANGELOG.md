@@ -26,6 +26,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - Use do {} while (0) blocks in async macros.
 - Correctness bugs in onesize memory allocator.
+- HSM hierarchy level overflow issue.
 
 ## v0.16.0 - 04-April-2026
 

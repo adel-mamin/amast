@@ -107,9 +107,9 @@ static void hsm_enter(struct am_hsm* hsm, const struct am_hsm_path* path) {
         AM_ASSERT((AM_RC_SUPER == rc) || (AM_RC_HANDLED == rc));
         hsm_set_state(hsm, path->state[i - 1]);
     }
-    hsm->hierarchy_level = (unsigned)(hsm->hierarchy_level + path->len) &
-                           AM_HSM_HIERARCHY_LEVEL_MASK;
-    AM_ASSERT(hsm->hierarchy_level <= AM_COUNTOF(path->state));
+    int level = (int)hsm->hierarchy_level + path->len;
+    AM_ASSERT(level <= AM_COUNTOF(path->state));
+    hsm->hierarchy_level = (unsigned)level & AM_HSM_HIERARCHY_LEVEL_MASK;
 }
 
 /**
