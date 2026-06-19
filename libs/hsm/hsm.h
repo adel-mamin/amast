@@ -180,6 +180,7 @@ struct am_hsm {
 /** Helper macro. Not to be used directly. */
 #define AM_HSM_SET_(s, i)                                   \
     (((struct am_hsm*)me)->state = AM_HSM_STATE_CTOR(s, i), \
+     AM_ASSERT((unsigned)(i) < 255),                        \
      ((struct am_hsm*)me)->smi = (uint8_t)(i))
 
 /** Helper macro. Not to be used directly. */
