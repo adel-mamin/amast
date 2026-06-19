@@ -81,7 +81,7 @@ AM_NORETURN void am_assert_failure(
     AM_LIKELY(x) ? (void)(0) : am_assert_failure(#x, AM_FILE_NAME, __LINE__)
 
 /** Checks if @p x is a power of two */
-#define AM_IS_POW2(x) (0 == (((x) - 1u) & (x)))
+#define AM_IS_POW2(x) (0 == (((x) - 1U) & (x)))
 
 /** Do division and round up the result. */
 #define AM_DIV_CEIL(n, d) (((n) / (d)) + ((n) % (d) != 0))

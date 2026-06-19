@@ -170,6 +170,7 @@ void am_onesize_ctor(struct am_onesize* hnd, const struct am_onesize_cfg* cfg) {
     AM_ASSERT(cfg->pool.size > 0);
     AM_ASSERT(cfg->block_size > 0);
     AM_ASSERT(cfg->pool.size >= cfg->block_size);
+    AM_ASSERT(AM_IS_POW2((unsigned)cfg->alignment));
 
     int alignment = AM_MAX(cfg->alignment, AM_ALIGNOF(am_slist_item_t));
     AM_ASSERT(AM_ALIGNOF_PTR(cfg->pool.ptr) >= alignment);
