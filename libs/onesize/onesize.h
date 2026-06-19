@@ -37,7 +37,7 @@
 #include "common/types.h"
 #include "slist/slist.h"
 
-#define AM_POOL_BLOCK_SIZEOF(t) AM_MAX(sizeof(struct am_slist), sizeof(t))
+#define AM_POOL_BLOCK_SIZEOF(t) AM_MAX(sizeof(struct am_slist_item), sizeof(t))
 #define AM_POOL_BLOCK_ALIGNMENT(a) AM_MAX(AM_ALIGNOF(am_slist_t), a)
 
 /** Onesize memory allocator descriptor. */
@@ -48,7 +48,7 @@ struct am_onesize {
     struct am_slist fl; /**< list of non-allocated memory blocks (free list) */
     int nfree;          /**< current number of blocks in free list */
     int ntotal;         /**< total number of blocks */
-    int nfree_min;      /**< minimum number of blocks in free list */
+    int nfree_min;      /**< minimum free blocks observed since construction */
     int nbump;          /**< bump index */
 };
 

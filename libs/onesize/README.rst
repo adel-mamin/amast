@@ -31,11 +31,7 @@ Key Features
    - Tracks the minimum number of free blocks available to monitor resource
      usage.
 
-4. **Concurrency and Thread Safety**:
-
-   - Critical section callbacks allow safe usage in multi-threaded environments.
-
-5. **Custom Configuration**:
+4. **Custom Configuration**:
 
    - Supports custom memory pools, alignment requirements, and critical section
      handlers.

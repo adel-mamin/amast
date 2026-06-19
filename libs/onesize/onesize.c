@@ -37,11 +37,16 @@
 #include "slist/slist.h"
 #include "onesize/onesize.h"
 
-static void am_assert_memptr_validity(struct am_onesize* hnd, const void* ptr) {
-    AM_ASSERT(ptr >= hnd->pool_beg);
-    AM_ASSERT(ptr < hnd->pool_end);
-    uintptr_t offset = (uintptr_t)((const char*)ptr - (char*)hnd->pool_beg);
-    AM_ASSERT((offset % (uintptr_t)hnd->block_size) == 0);
+static void am_assert_memptr_validity(
+    const struct am_onesize* hnd, const void* ptr
+) {
+    uintptr_t p = (uintptr_t)ptr;
+    uintptr_t beg = (uintptr_t)hnd->pool_beg;
+    uintptr_t end = (uintptr_t)hnd->pool_end;
+
+    AM_ASSERT(p >= beg);
+    AM_ASSERT(p < end);
+    AM_ASSERT(((p - beg) % (uintptr_t)hnd->block_size) == 0);
 }
 
 void* am_onesize_allocate_x(struct am_onesize* hnd, int margin) {
@@ -118,7 +123,6 @@ void am_onesize_iterate_over_allocated_unsafe(
     AM_ASSERT(cb);
     AM_ASSERT(num != 0);
 
-    char* ptr = (char*)hnd->pool_beg;
     if (num < 0) {
         num = hnd->nbump;
     }
@@ -126,15 +130,15 @@ void am_onesize_iterate_over_allocated_unsafe(
     num = AM_MIN(num, hnd->nbump);
 
     for (int i = 0; (i < hnd->nbump) && (iterated < num); ++i) {
-        AM_ASSERT(AM_ALIGNOF_PTR(ptr) >= AM_ALIGNOF(am_slist_item_t));
+        const char* ptr = (char*)hnd->pool_beg + (hnd->block_size * i);
         struct am_slist_item* item = AM_CAST(struct am_slist_item*, ptr);
+
         if (am_slist_owns(&hnd->fl, item)) {
-            continue; /* the item is free */
+            continue;
         }
 
         cb(ctx, iterated, (char*)item, hnd->block_size);
 
-        ptr += hnd->block_size;
         ++iterated;
     }
 }
