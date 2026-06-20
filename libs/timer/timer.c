@@ -88,14 +88,15 @@ void am_timer_arm(
 bool am_timer_disarm(struct am_timer* timer, struct am_timer_event* event) {
     AM_ASSERT(timer);
     AM_ASSERT(event);
-    AM_ASSERT(event->owner == timer);
+    AM_ASSERT((event->owner == NULL) || (event->owner == timer));
 
     timer->crit_enter();
 
-    bool was_armed = am_slist_item_is_linked(&event->item);
-    event->oneshot_ticks = event->interval_ticks = 0;
-    event->disarm_pending = 1;
-    event->owner = NULL;
+    bool was_armed = (event->owner == timer) && !event->disarm_pending;
+    if (event->owner == timer) {
+        event->oneshot_ticks = event->interval_ticks = 0;
+        event->disarm_pending = 1;
+    }
 
     timer->crit_exit();
 
@@ -153,6 +154,7 @@ struct am_timer_event* am_timer_tick_iterator_next(struct am_timer* timer) {
         if (event->disarm_pending) {
             am_slist_iterator_pop(&timer->it);
             event->disarm_pending = 0;
+            event->owner = NULL;
             AM_ASSERT(timer->nevents.running > 0);
             --timer->nevents.running;
             event = NULL;
@@ -169,6 +171,7 @@ struct am_timer_event* am_timer_tick_iterator_next(struct am_timer* timer) {
             event->oneshot_ticks = event->interval_ticks;
         } else {
             am_slist_iterator_pop(&timer->it);
+            event->owner = NULL;
             AM_ASSERT(timer->nevents.running > 0);
             --timer->nevents.running;
         }
