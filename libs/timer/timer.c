@@ -39,6 +39,8 @@
 static void timer_crit_stub(void) {}
 
 void am_timer_ctor(struct am_timer* timer) {
+    AM_ASSERT(timer);
+
     memset(timer, 0, sizeof(*timer));
     timer->crit_enter = timer->crit_exit = timer_crit_stub;
 
@@ -49,8 +51,10 @@ void am_timer_ctor(struct am_timer* timer) {
 void am_timer_register_cbs(
     struct am_timer* timer, void (*crit_enter)(void), void (*crit_exit)(void)
 ) {
+    AM_ASSERT(timer);
     AM_ASSERT(crit_enter);
     AM_ASSERT(crit_exit);
+
     timer->crit_enter = crit_enter;
     timer->crit_exit = crit_exit;
 }
@@ -115,6 +119,8 @@ bool am_timer_is_armed(
 }
 
 void am_timer_tick_iterator_init(struct am_timer* timer) {
+    AM_ASSERT(timer);
+
     am_slist_iterator_ctor(&timer->events, &timer->it);
 
     timer->crit_enter();

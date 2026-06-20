@@ -57,8 +57,8 @@ struct am_timer {
     struct am_slist events_pend;
     /** number of timer events */
     struct {
-        int16_t pend;    /**< armed pending timer events count */
-        int16_t running; /**< armed timer events count */
+        int pend;    /**< armed pending timer events count */
+        int running; /**< armed timer events count */
     } nevents;
 
     /** Armed events iterator. */
@@ -88,7 +88,7 @@ struct am_timer_event {
     /**
      * the timer event was disarmed and pending removal from timer event list
      */
-    unsigned disarm_pending : 1;
+    uint32_t disarm_pending : 1;
 };
 
 /** Time event with context. */
@@ -210,6 +210,8 @@ void am_timer_arm(
 /**
  * Disarm timer event.
  *
+ * The disarmed event is only marked for removal with this function.
+ * The actual removal happens on next tick.
  * It is fine to disarm an already disarmed timer event.
  *
  * @param timer   the timer state
@@ -235,6 +237,9 @@ bool am_timer_is_armed(
 
 /**
  * Check if timer state has armed timer events.
+ *
+ * Any pending timer events scheduled for removal by am_timer_disarm()
+ * but not yet removed will cause this function to return false.
  *
  * The function is to be called from a critical section.
  *

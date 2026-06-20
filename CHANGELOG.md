@@ -21,6 +21,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Add synchronous event handling API and an example application to show its usage
 - Add ticker API to PAL
 - Add `am_event_queue_flush_unsafe()`
+- Add more asserts to `libs/timer` implementation
 
 ### Fixed
 
