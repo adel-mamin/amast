@@ -32,6 +32,7 @@ Key Features
 
    - Critical sections managed using user-defined enter/exit callbacks.
    - Safe timer operations across concurrent tasks and/or ISRs.
+   - The application must ensure the tick iterator is driven from one ticker context.
 
 4. **Dynamic and Static Timer Allocation**:
 
@@ -44,13 +45,13 @@ Design Considerations
 
 1. **Timer Events**:
 
-   Timer events ``am_event_timer`` encapsulate the details of scheduled
+   Timer events ``am_timer_event`` encapsulate the details of scheduled
    operations. Each timer event includes:
 
    - Shot time: Number of ticks after which the event is fired.
    - Interval: Period between successive event firings (0 for one-shot events).
 
-   The extended timer events ``am_event_timer_x`` inherit from ``am_event_timer``
+   The extended timer events ``am_timer_event_x`` inherit from ``am_timer_event``
    and add event specific context pointer.
 
 3. **Critical Section Management**:
