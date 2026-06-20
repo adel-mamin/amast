@@ -194,10 +194,10 @@ struct am_timer_event* am_timer_tick_iterator_next(struct am_timer* timer);
  * @param event     the timer event
  * @param ticks     number of ticks before the event fires.
  *                  The valid range is [0, 2^32[.
- *                  A Value of 0 is normalized to 1, so the event fires on the
+ *                  A value of 0 is normalized to 1, so the event fires on the
  *                  next tick.
  * @param interval  the timer event is to be re-sent in these many ticks
- *                  after the event is sent for the fist time.
+ *                  after the event is sent for the first time.
  *                  The valid range [0, 2^31[. Note that the range
  *                  is two times smaller than the range of the ticks.
  *                  Can be 0, in which case the timer event is one shot.
