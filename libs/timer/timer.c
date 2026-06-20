@@ -63,7 +63,7 @@ void am_timer_arm(
 ) {
     AM_ASSERT(timer);
     AM_ASSERT(event);
-    AM_ASSERT(ticks > 0);
+    AM_ASSERT((event->owner == NULL) || (event->owner == timer));
     AM_ASSERT(interval < UINT32_MAX / 2);
 
     timer->crit_enter();
@@ -71,6 +71,7 @@ void am_timer_arm(
     event->oneshot_ticks = AM_MAX(ticks, 1);
     event->interval_ticks = interval & (uint32_t)0x7FFFFFFF;
     event->disarm_pending = 0;
+    event->owner = timer;
 
     if (!am_slist_item_is_linked(&event->item)) {
         am_slist_push_back(&timer->events_pend, &event->item);
@@ -83,12 +84,14 @@ void am_timer_arm(
 bool am_timer_disarm(struct am_timer* timer, struct am_timer_event* event) {
     AM_ASSERT(timer);
     AM_ASSERT(event);
+    AM_ASSERT(event->owner == timer);
 
     timer->crit_enter();
 
     bool was_armed = am_slist_item_is_linked(&event->item);
     event->oneshot_ticks = event->interval_ticks = 0;
     event->disarm_pending = 1;
+    event->owner = NULL;
 
     timer->crit_exit();
 

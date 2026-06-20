@@ -76,6 +76,9 @@ struct am_timer_event {
     /** to link timer events together */
     struct am_slist_item item;
 
+    /** the timer event owner */
+    struct am_timer* owner;
+
     /** the timer event is sent after this many ticks */
     uint32_t oneshot_ticks;
 
