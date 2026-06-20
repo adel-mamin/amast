@@ -108,10 +108,12 @@ bool am_timer_is_armed(
 ) {
     AM_ASSERT(timer);
     AM_ASSERT(event);
+    AM_ASSERT((event->owner == NULL) || (event->owner == timer));
 
     timer->crit_enter();
 
-    bool armed = am_slist_item_is_linked(&event->item);
+    bool armed =
+        (event->owner == timer) && am_slist_item_is_linked(&event->item);
     bool disarm_pending = event->disarm_pending;
 
     timer->crit_exit();
@@ -128,8 +130,7 @@ void am_timer_tick_iterator_init(struct am_timer* timer) {
 
     if (!am_slist_is_empty(&timer->events_pend)) {
         am_slist_append(&timer->events, &timer->events_pend);
-        timer->nevents.running =
-            (int16_t)(timer->nevents.running + timer->nevents.pend);
+        timer->nevents.running += timer->nevents.pend;
         timer->nevents.pend = 0;
     }
 
@@ -197,9 +198,10 @@ uint32_t am_timer_get_ticks(
 ) {
     AM_ASSERT(timer);
     AM_ASSERT(event);
+    AM_ASSERT((event->owner == NULL) || (event->owner == timer));
 
     timer->crit_enter();
-    uint32_t ticks = event->oneshot_ticks;
+    uint32_t ticks = (event->owner == timer) ? event->oneshot_ticks : 0;
     timer->crit_exit();
 
     return ticks;
