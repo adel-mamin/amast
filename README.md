@@ -39,54 +39,52 @@ Here is the full implementation of the FSM:
 #define EVT_B (AM_EVT_USER + 1)
 
 struct app {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/fsm.html#fsm-coding-rules
-     */
     struct am_fsm fsm;
     /* app data */
 } app;
 
 static enum am_rc state_b(struct app *me, const struct am_event *event);
 
-static enum am_rc state_a(struct app *me, const struct am_event *event) {
+static enum am_rc state_a(struct am_fsm *fsm, const struct am_event *event) {
+    struct app* me = AM_CONTAINER_OF(fsm, struct app, fsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("state_a entry\n");
-        return AM_FSM_HANDLED();
+        return AM_FSM_HANDLED(fsm);
 
     case AM_EVT_EXIT:
         am_printf("state_a exit\n");
-        return AM_FSM_HANDLED();
+        return AM_FSM_HANDLED(fsm);
 
     case EVT_B:
-        return AM_FSM_TRAN(state_b);
+        return AM_FSM_TRAN(fsm, state_b);
     }
-    return AM_FSM_HANDLED();
+    return AM_FSM_HANDLED(fsm);
 }
 
-static enum am_rc state_b(struct app *me, const struct am_event *event) {
+static enum am_rc state_b(struct am_fsm *fsm, const struct am_event *event) {
+    struct app* me = AM_CONTAINER_OF(fsm, struct app, fsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("state_b entry\n");
-        return AM_FSM_HANDLED();
+        return AM_FSM_HANDLED(fsm);
 
     case AM_EVT_EXIT:
         am_printf("state_b exit\n");
-        return AM_FSM_HANDLED();
+        return AM_FSM_HANDLED(fsm);
 
     case EVT_A:
-        return AM_FSM_TRAN(state_a);
+        return AM_FSM_TRAN(fsm, state_a);
     }
-    return AM_FSM_HANDLED();
+    return AM_FSM_HANDLED(fsm);
 }
 
-static enum am_rc init(struct app *me, const struct am_event *event) {
-    return AM_FSM_TRAN(state_a);
+static enum am_rc init(struct am_fsm *fsm, const struct am_event *event) {
+    return AM_FSM_TRAN(fsm, state_a);
 }
 
 int main(void) {
-    am_fsm_ctor(&app.fsm, AM_FSM_STATE_CTOR(init));
+    am_fsm_ctor(&app.fsm, init);
     am_fsm_init(&app.fsm, /*init_event=*/NULL);
     am_fsm_dispatch(&app.fsm, &(struct am_event){.id = EVT_B});
     am_fsm_dispatch(&app.fsm, &(struct am_event){.id = EVT_A});

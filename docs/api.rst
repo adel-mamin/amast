@@ -420,8 +420,6 @@ The source code of the corresponding header file is in `fsm.h <https://github.co
 
 .. doxygentypedef:: am_fsm_state_fn
 
-.. doxygendefine:: AM_FSM_STATE_CTOR
-
 .. doxygenstruct:: am_fsm
 
 .. doxygendefine:: AM_FSM_HANDLED

@@ -37,7 +37,7 @@
 
 am_fsm_state_fn am_fsm_get_state(const struct am_fsm* fsm) {
     AM_ASSERT(fsm);
-    return AM_FSM_STATE_CTOR(fsm->state);
+    return fsm->state;
 }
 
 /**

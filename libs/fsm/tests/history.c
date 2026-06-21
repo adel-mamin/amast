@@ -47,104 +47,106 @@ static struct oven_fsm m_oven_fsm;
 /* test transition to FSM history */
 
 static enum am_rc oven_fsm_open(
-    struct oven_fsm* me, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 );
-static enum am_rc oven_fsm_on(
-    struct oven_fsm* me, const struct am_event* event
-);
+static enum am_rc oven_fsm_on(struct am_fsm* fsm, const struct am_event* event);
 static enum am_rc oven_fsm_off(
-    struct oven_fsm* me, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 );
 
 static bool oven_fsm_is_open(void) { return false; }
 
 static enum am_rc oven_fsm_open(
-    struct oven_fsm* me, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
+    struct oven_fsm* me = AM_CONTAINER_OF(fsm, struct oven_fsm, fsm);
     switch (event->id) {
     case FSM_EVT_ON:
         me->history = am_fsm_get_state(&me->fsm);
-        return AM_FSM_HANDLED();
+        return AM_FSM_HANDLED(fsm);
 
     case FSM_EVT_OFF:
         me->history = am_fsm_get_state(&me->fsm);
-        return AM_FSM_HANDLED();
+        return AM_FSM_HANDLED(fsm);
 
     case FSM_EVT_CLOSE:
-        return AM_FSM_TRAN(me->history);
+        return AM_FSM_TRAN(fsm, me->history);
 
     default:
         break;
     }
-    return AM_FSM_HANDLED();
+    return AM_FSM_HANDLED(fsm);
 }
 
 static enum am_rc oven_fsm_on(
-    struct oven_fsm* me, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
+    struct oven_fsm* me = AM_CONTAINER_OF(fsm, struct oven_fsm, fsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         me->history = am_fsm_get_state(&me->fsm);
-        return AM_FSM_HANDLED();
+        return AM_FSM_HANDLED(fsm);
 
     case FSM_EVT_OFF:
-        return AM_FSM_TRAN(oven_fsm_off);
+        return AM_FSM_TRAN(fsm, oven_fsm_off);
 
     case FSM_EVT_OPEN:
-        return AM_FSM_TRAN(oven_fsm_open);
+        return AM_FSM_TRAN(fsm, oven_fsm_open);
 
     default:
         break;
     }
-    return AM_FSM_HANDLED();
+    return AM_FSM_HANDLED(fsm);
 }
 
 static enum am_rc oven_fsm_off(
-    struct oven_fsm* me, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
+    struct oven_fsm* me = AM_CONTAINER_OF(fsm, struct oven_fsm, fsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         me->history = am_fsm_get_state(&me->fsm);
-        return AM_FSM_HANDLED();
+        return AM_FSM_HANDLED(fsm);
 
     case FSM_EVT_ON:
-        return AM_FSM_TRAN(oven_fsm_on);
+        return AM_FSM_TRAN(fsm, oven_fsm_on);
 
     case FSM_EVT_OPEN:
-        return AM_FSM_TRAN(oven_fsm_open);
+        return AM_FSM_TRAN(fsm, oven_fsm_open);
 
     default:
         break;
     }
-    return AM_FSM_HANDLED();
+    return AM_FSM_HANDLED(fsm);
 }
 
 static enum am_rc oven_fsm_init(
-    struct oven_fsm* me, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
     (void)event;
-    me->history = AM_FSM_STATE_CTOR(oven_fsm_off);
-    return AM_FSM_TRAN(oven_fsm_is_open() ? oven_fsm_open : oven_fsm_off);
+    struct oven_fsm* me = AM_CONTAINER_OF(fsm, struct oven_fsm, fsm);
+    me->history = oven_fsm_off;
+    return AM_FSM_TRAN(fsm, oven_fsm_is_open() ? oven_fsm_open : oven_fsm_off);
 }
 
 static void test_oven_fsm(void) {
     struct oven_fsm* me = &m_oven_fsm;
-    am_fsm_ctor(&me->fsm, AM_FSM_STATE_CTOR(oven_fsm_init));
+    am_fsm_ctor(&me->fsm, oven_fsm_init);
 
     am_fsm_init(&me->fsm, /*init_event=*/NULL);
-    AM_ASSERT(am_fsm_is_in(&me->fsm, AM_FSM_STATE_CTOR(oven_fsm_off)));
+    AM_ASSERT(am_fsm_is_in(&me->fsm, oven_fsm_off));
 
     struct am_event e1 = {.id = FSM_EVT_ON};
     am_fsm_dispatch(&me->fsm, &e1);
-    AM_ASSERT(am_fsm_is_in(&me->fsm, AM_FSM_STATE_CTOR(oven_fsm_on)));
+    AM_ASSERT(am_fsm_is_in(&me->fsm, oven_fsm_on));
 
     struct am_event e2 = {.id = FSM_EVT_OPEN};
     am_fsm_dispatch(&me->fsm, &e2);
-    AM_ASSERT(am_fsm_is_in(&me->fsm, AM_FSM_STATE_CTOR(oven_fsm_open)));
+    AM_ASSERT(am_fsm_is_in(&me->fsm, oven_fsm_open));
 
     struct am_event e3 = {.id = FSM_EVT_CLOSE};
     am_fsm_dispatch(&me->fsm, &e3);
-    AM_ASSERT(am_fsm_is_in(&me->fsm, AM_FSM_STATE_CTOR(oven_fsm_on)));
+    AM_ASSERT(am_fsm_is_in(&me->fsm, oven_fsm_on));
 }
 
 int main(void) {

@@ -45,54 +45,57 @@ static struct redisp_fsm m_redisp_fsm;
 /* test AM_FSM_TRAN_REDISPATCH() */
 
 static enum am_rc redisp_fsm_s1(
-    struct redisp_fsm* me, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 );
 static enum am_rc redisp_fsm_s2(
-    struct redisp_fsm* me, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 );
 
 static enum am_rc redisp_fsm_s1(
-    struct redisp_fsm* me, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
+    struct redisp_fsm* me = AM_CONTAINER_OF(fsm, struct redisp_fsm, fsm);
     switch (event->id) {
     case FSM_EVT_A:
-        return AM_FSM_TRAN_REDISPATCH(redisp_fsm_s2);
+        return AM_FSM_TRAN_REDISPATCH(fsm, redisp_fsm_s2);
     case FSM_EVT_B:
         me->b_handled = 1;
-        return AM_FSM_HANDLED();
+        return AM_FSM_HANDLED(fsm);
     default:
         break;
     }
-    return AM_FSM_HANDLED();
+    return AM_FSM_HANDLED(fsm);
 }
 
 static enum am_rc redisp_fsm_s2(
-    struct redisp_fsm* me, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
+    struct redisp_fsm* me = AM_CONTAINER_OF(fsm, struct redisp_fsm, fsm);
     switch (event->id) {
     case FSM_EVT_A:
         me->a_handled = 1;
-        return AM_FSM_HANDLED();
+        return AM_FSM_HANDLED(fsm);
     case FSM_EVT_B:
-        return AM_FSM_TRAN_REDISPATCH(redisp_fsm_s1);
+        return AM_FSM_TRAN_REDISPATCH(fsm, redisp_fsm_s1);
     default:
         break;
     }
-    return AM_FSM_HANDLED();
+    return AM_FSM_HANDLED(fsm);
 }
 
 static enum am_rc redisp_fsm_sinit(
-    struct redisp_fsm* me, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
     (void)event;
+    struct redisp_fsm* me = AM_CONTAINER_OF(fsm, struct redisp_fsm, fsm);
     me->a_handled = 0;
     me->b_handled = 0;
-    return AM_FSM_TRAN(redisp_fsm_s1);
+    return AM_FSM_TRAN(fsm, redisp_fsm_s1);
 }
 
 static void redispatch_fsm(void) {
     struct redisp_fsm* me = &m_redisp_fsm;
-    am_fsm_ctor(&me->fsm, AM_FSM_STATE_CTOR(redisp_fsm_sinit));
+    am_fsm_ctor(&me->fsm, redisp_fsm_sinit);
 
     am_fsm_init(&me->fsm, /*init_event=*/NULL);
     AM_ASSERT(0 == me->a_handled);
@@ -101,12 +104,12 @@ static void redispatch_fsm(void) {
     static const struct am_event e1 = {.id = FSM_EVT_A};
     am_fsm_dispatch(&me->fsm, &e1);
     AM_ASSERT(1 == me->a_handled);
-    AM_ASSERT(am_fsm_is_in(&me->fsm, AM_FSM_STATE_CTOR(redisp_fsm_s2)));
+    AM_ASSERT(am_fsm_is_in(&me->fsm, redisp_fsm_s2));
 
     static const struct am_event e2 = {.id = FSM_EVT_B};
     am_fsm_dispatch(&me->fsm, &e2);
     AM_ASSERT(1 == me->b_handled);
-    AM_ASSERT(am_fsm_is_in(&me->fsm, AM_FSM_STATE_CTOR(redisp_fsm_s1)));
+    AM_ASSERT(am_fsm_is_in(&me->fsm, redisp_fsm_s1));
 }
 
 int main(void) {

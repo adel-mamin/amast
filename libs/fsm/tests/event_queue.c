@@ -76,8 +76,8 @@ static struct am_fsmq am_fsmq_;
 
 static struct am_fsm* am_fsmq = &am_fsmq_.fsm;
 
-static enum am_rc fsmq_a(struct am_fsmq* me, const struct am_event* event);
-static enum am_rc fsmq_b(struct am_fsmq* me, const struct am_event* event);
+static enum am_rc fsmq_a(struct am_fsm* fsm, const struct am_event* event);
+static enum am_rc fsmq_b(struct am_fsm* fsm, const struct am_event* event);
 
 static bool fsmq_handle(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
@@ -99,9 +99,9 @@ static void fsmq_commit(void) {
     }
 }
 
-static enum am_rc fsmq_init(struct am_fsmq* me, const struct am_event* event) {
+static enum am_rc fsmq_init(struct am_fsm* fsm, const struct am_event* event) {
     (void)event;
-    return AM_FSM_TRAN(fsmq_a);
+    return AM_FSM_TRAN(fsm, fsmq_a);
 }
 
 static void fsmq_ctor(
@@ -109,7 +109,7 @@ static void fsmq_ctor(
     struct am_event_alloc* alloc
 ) {
     struct am_fsmq* me = &am_fsmq_;
-    am_fsm_ctor(&me->fsm, AM_FSM_STATE_CTOR(fsmq_init));
+    am_fsm_ctor(&me->fsm, fsmq_init);
     me->log = log;
     me->alloc = alloc;
 
@@ -118,35 +118,37 @@ static void fsmq_ctor(
     am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool), alloc);
 }
 
-static enum am_rc fsmq_a(struct am_fsmq* me, const struct am_event* event) {
+static enum am_rc fsmq_a(struct am_fsm* fsm, const struct am_event* event) {
+    struct am_fsmq* me = AM_CONTAINER_OF(fsm, struct am_fsmq, fsm);
     switch (event->id) {
     case AM_EVT_A: {
         me->log("a-A;");
         const struct am_event* e =
             am_event_allocate(me->alloc, /*id=*/AM_EVT_B, sizeof(*e));
         am_event_queue_push_back(&me->event_queue, e);
-        return AM_FSM_TRAN(fsmq_b);
+        return AM_FSM_TRAN(fsm, fsmq_b);
     }
     default:
         break;
     }
-    return AM_FSM_HANDLED();
+    return AM_FSM_HANDLED(fsm);
 }
 
-static enum am_rc fsmq_b(struct am_fsmq* me, const struct am_event* event) {
+static enum am_rc fsmq_b(struct am_fsm* fsm, const struct am_event* event) {
+    struct am_fsmq* me = AM_CONTAINER_OF(fsm, struct am_fsmq, fsm);
     switch (event->id) {
     case AM_EVT_B: {
         me->log("b-B;");
-        return AM_FSM_HANDLED();
+        return AM_FSM_HANDLED(fsm);
     }
     case AM_EVT_C: {
         me->log("b-C;");
-        return AM_FSM_HANDLED();
+        return AM_FSM_HANDLED(fsm);
     }
     default:
         break;
     }
-    return AM_FSM_HANDLED();
+    return AM_FSM_HANDLED(fsm);
 }
 
 int main(void) {

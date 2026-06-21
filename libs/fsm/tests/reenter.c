@@ -45,36 +45,37 @@ static struct reenter_fsm m_reenter_fsm;
 /* test FSM state re-enter operation */
 
 static enum am_rc reenter_fsm_s(
-    struct reenter_fsm* me, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
+    struct reenter_fsm* me = AM_CONTAINER_OF(fsm, struct reenter_fsm, fsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         me->log("s-AM_EVT_ENTRY;");
         break;
     case AM_EVT_USER:
         me->log("s-AM_EVT_USER;");
-        return AM_FSM_TRAN(reenter_fsm_s);
+        return AM_FSM_TRAN(fsm, reenter_fsm_s);
     case AM_EVT_EXIT:
         me->log("s-AM_EVT_EXIT;");
         break;
     default:
         break;
     }
-    return AM_FSM_HANDLED();
+    return AM_FSM_HANDLED(fsm);
 }
 
 static enum am_rc reenter_fsm_init(
-    struct reenter_fsm* me, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
     (void)event;
-    return AM_FSM_TRAN(reenter_fsm_s);
+    return AM_FSM_TRAN(fsm, reenter_fsm_s);
 }
 
 static void reenter_fsm_ctor(
     AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)
 ) {
     struct reenter_fsm* me = &m_reenter_fsm;
-    am_fsm_ctor(&me->fsm, AM_FSM_STATE_CTOR(reenter_fsm_init));
+    am_fsm_ctor(&me->fsm, reenter_fsm_init);
     me->log = log;
 }
 

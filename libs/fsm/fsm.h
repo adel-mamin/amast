@@ -47,23 +47,16 @@ struct am_fsm;
  *
  * @param fsm    the FSM
  * @param event  the event to handle
- * @retval AM_RC_CORO_BUSY  - event was handled (no propagation to superstate)
- * @retval AM_RC_CORO_DONE  - event was handled (no propagation to superstate)
- * @retval AM_RC_HANDLED     - event was handled (no propagation to superstate)
- * @retval AM_RC_TRAN        - event caused state transition
+ *
+ * @retval AM_RC_CORO_BUSY       - event was handled
+ * @retval AM_RC_CORO_DONE       - event was handled
+ * @retval AM_RC_HANDLED         - event was handled
+ * @retval AM_RC_TRAN            - event caused state transition
  * @retval AM_RC_TRAN_REDISPATCH - event caused state transition and redispatch
  */
 typedef enum am_rc (*am_fsm_state_fn)(
     struct am_fsm* fsm, const struct am_event* event
 );
-
-/**
- * Construct FSM state from FSM event handler.
- *
- * @param s  the FSM event handler
- * @return constructed FSM state structure
- */
-#define AM_FSM_STATE_CTOR(s) ((am_fsm_state_fn)(s))
 
 /**
  * FSM descriptor.
@@ -88,14 +81,7 @@ struct am_fsm {
  *
  * Used as a default return value from FSM event handlers.
  */
-#define AM_FSM_HANDLED() AM_RC_HANDLED
-
-/**
- * Helper macro.
- *
- * Not to be used directly.
- */
-#define AM_FSM_SET_(s) (((struct am_fsm*)me)->state = (am_fsm_state_fn)(s))
+#define AM_FSM_HANDLED(fsm) AM_RC_HANDLED
 
 /**
  * Event processing is over. Transition is taken.
@@ -103,15 +89,9 @@ struct am_fsm {
  * It should never be returned in response to
  * #AM_EVT_ENTRY or #AM_EVT_EXIT events.
  *
- * AM_FSM_TRAN(s) is converted to
- *
- * @code{.c}
- * (((struct am_fsm *)me)->state = (am_fsm_state_fn)(s), AM_RC_TRAN)
- * @endcode
- *
- * @param s  the new state of type #am_fsm_state_fn
+ * @param fn  the new state of type #am_fsm_state_fn
  */
-#define AM_FSM_TRAN(s) (AM_FSM_SET_(s), AM_RC_TRAN)
+#define AM_FSM_TRAN(fsm, fn) ((fsm)->state = (fn), AM_RC_TRAN)
 
 /**
  * Same event redispatch is requested. Transition is taken.
@@ -121,15 +101,10 @@ struct am_fsm {
  * Do not redispatch the same event more than once within same
  * am_fsm_dispatch() call.
  *
- * AM_FSM_TRAN_REDISPATCH(s) is converted to
- *
- * @code{.c}
- * (((struct am_fsm *)me)->state = (am_fsm_state_fn)(s), AM_RC_TRAN_REDISPATCH)
- * @endcode
- *
- * @param s  the new state of type #am_fsm_state_fn
+ * @param fn  the new state of type #am_fsm_state_fn
  */
-#define AM_FSM_TRAN_REDISPATCH(s) (AM_FSM_SET_(s), AM_RC_TRAN_REDISPATCH)
+#define AM_FSM_TRAN_REDISPATCH(fsm, fn) \
+    ((fsm)->state = (fn), AM_RC_TRAN_REDISPATCH)
 
 #ifdef __cplusplus
 extern "C" {
@@ -172,7 +147,7 @@ am_fsm_state_fn am_fsm_get_state(const struct am_fsm* fsm);
  * @param fsm    the FSM to construct
  *
  * @param state  the initial state of the FSM object.
- *               The initial state must return AM_FSM_TRAN(s).
+ *               The initial state must return AM_FSM_TRAN(fsm, s).
  */
 void am_fsm_ctor(struct am_fsm* fsm, am_fsm_state_fn state);
 

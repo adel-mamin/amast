@@ -43,8 +43,6 @@ Introduction
 This FSM (Finite State Machine) library provides a lightweight API for defining,
 creating, and managing state machines in C. The library includes support for
 state transitions, entry/exit actions, and event handling.
-It also provides a debugging mechanism through the "spy" callback,
-allowing users to observe events as they pass through the state machine.
 This library is ideal for applications that require structured and manageable
 state control in an embedded system or other C-based environments.
 
@@ -107,7 +105,7 @@ The library supports two main types of state transitions:
 Both type of state transitions are used within state handlers to initiate
 a transition, updating the FSM's state and returning control to the dispatcher.
 
-If state handler function returns **AM_FSM_TRAN_REDISPATCH(target_state)**,
+If state handler function returns **AM_FSM_TRAN_REDISPATCH(fsm, target_state)**,
 then the transition is executed first and then the same event is
 dispatched to the new current state. This is a convenience feature,
 that allows FSM to handle the event in the state that expects it.
@@ -134,20 +132,16 @@ Example:
     am_fsm_ctor(&my_fsm, initial_state);
     am_fsm_init(&my_fsm, NULL); /* initiates with no event */
 
-The initial state must always return **AM_FSM_TRAN(new_state)** macro
+The initial state must always return **AM_FSM_TRAN(fsm, new_state)** macro
 to proceed to the appropriate active state.
 
 FSM Coding Rules
 ================
 
 1. FSM states must be represented by event handlers of type :cpp:type:`am_fsm_state_fn`.
-2. The name of the first argument of all user event handler functions
-   must be **me**.
-3. For convenience instead of using **struct am_fsm *me** the first argument
-   can point to a user structure. In this case the user structure
-   must have **struct** :cpp:struct:`am_fsm` instance as its first field.
-   For example, the first argument can be **struct foo *me**, where
-   **struct foo** is defined like this:
+2. If the :cpp:struct:`am_fsm` instance is embedded in a user structure,
+   use :c:macro:`AM_CONTAINER_OF` inside the state handler to access user data.
+   For example:
 
 .. code-block:: C
 
@@ -156,15 +150,23 @@ FSM Coding Rules
        ...
    };
 
-4. Each user event handler should be implemented as a switch-case of handled
-   events.
-5. Avoid placing any code with side effects outside of the switch-case of
+   static enum am_rc foo_state(struct am_fsm *fsm, const struct am_event *event) {
+       struct foo *me = AM_CONTAINER_OF(fsm, struct foo, fsm);
+       ...
+       return AM_FSM_HANDLED(fsm);
+   }
+
+3. Each user event handler should be implemented as a switch-case of handled
+   events. To report that an event is handled, return :c:macro:`AM_FSM_HANDLED()`.
+   To initiate a transition, return :c:macro:`AM_FSM_TRAN()` or
+   :c:macro:`AM_FSM_TRAN_REDISPATCH()`.
+4. Avoid placing any code with side effects outside of the switch-case of
    event handlers.
-6. Processing of :c:macro:`AM_EVT_ENTRY` and :c:macro:`AM_EVT_EXIT` events should
+5. Processing of :c:macro:`AM_EVT_ENTRY` and :c:macro:`AM_EVT_EXIT` events should
    not trigger state transitions. It means that user event handlers should
    not return :c:macro:`AM_FSM_TRAN()` or :c:macro:`AM_FSM_TRAN_REDISPATCH()` for
    these events.
-7. Processing of :c:macro:`AM_EVT_ENTRY` and :c:macro:`AM_EVT_EXIT` events should be
+6. Processing of :c:macro:`AM_EVT_ENTRY` and :c:macro:`AM_EVT_EXIT` events should be
    done at the top of the corresponding event handler for better readability.
 
 FSM Initialization
@@ -221,14 +223,15 @@ The user code stores the current state in a local variable of type
        ...
    };
    ...
-   static enum am_rc A(struct foo *me, const struct event *event) {
+   static enum am_rc A(struct am_fsm *fsm, const struct event *event) {
+       struct foo* me = AM_CONTAINER_OF(fsm, struct foo, fsm);
        switch (event->id) {
        case AM_EVT_ENTRY:
            me->history = am_fsm_state(&me->fsm);
-           return AM_FSM_HANDLED();
+           return AM_FSM_HANDLED(fsm);
        ...
        }
-       return AM_FSM_HANDLED();
+       return AM_FSM_HANDLED(fsm);
    }
 
 Then the transition to the state *C* happens, which is then followed by a request
@@ -237,13 +240,14 @@ in **me->history** it can be done by doing this:
 
 .. code-block:: C
 
-   static enum am_rc C(struct foo *me, const struct event *event) {
+   static enum am_rc C(struct am_fsm *fsm, const struct event *event) {
+       struct foo* me = AM_CONTAINER_OF(fsm, struct foo, fsm);
        switch (event->id) {
        case FSM_EVT_E4:
-           return AM_FSM_TRAN(me->history);
+           return AM_FSM_TRAN(fsm, me->history);
        ...
        }
-       return AM_FSM_HANDLED();
+       return AM_FSM_HANDLED(fsm);
    }
 
 As you can see the state *C* does not need to specify the previous
