@@ -80,7 +80,7 @@ static enum am_rc publish_sinit(
 static void publish_create(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
     struct test_publish* me = &m_publish;
     am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_create(&me->hsm, am_hsm_state(publish_sinit));
+    am_hsm_create(&me->hsm, am_hsm_state_make(publish_sinit));
     me->log = log;
 }
 

@@ -124,7 +124,7 @@ static void hsmq_create(
     struct am_event_alloc* alloc
 ) {
     struct am_hsmq* me = &am_hsmq_;
-    am_hsm_create(&me->hsm, am_hsm_state(hsmq_sinit));
+    am_hsm_create(&me->hsm, am_hsm_state_make(hsmq_sinit));
     me->log = log;
     me->alloc = alloc;
 

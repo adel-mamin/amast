@@ -209,7 +209,7 @@ static enum am_rc init(struct am_hsm* hsm, const struct am_event *event) {
 }
 
 int main(void) {
-    am_hsm_create(&app.hsm, am_hsm_state(init));
+    am_hsm_create(&app.hsm, am_hsm_state_make(init));
     am_hsm_init(&app.hsm, /*init_event=*/NULL);
     am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_B});
     am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_A});
@@ -317,7 +317,7 @@ static enum am_rc app_init(struct am_hsm* hsm, const struct am_event *event) {
 static void app_create(struct app *me, struct am_timer *timer) {
     memset(me, 0, sizeof(*me));
     am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_create(&me->hsm, am_hsm_state(app_init));
+    am_hsm_create(&me->hsm, am_hsm_state_make(app_init));
     me->timer = timer;
     me->timeout = am_timer_event_create_x(APP_EVT_TIMER, &me->ao);
     me->ticks = am_time_get_ticks_from_ms(AM_TIMEBASE_DEFAULT, 1000);

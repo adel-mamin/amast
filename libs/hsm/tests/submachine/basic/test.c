@@ -127,38 +127,38 @@ static enum am_rc bs_init(struct am_hsm* hsm, const struct am_event* evt) {
 
 static void test_basic_sm(void) {
     struct basic_sm* me = &m_basic_sm;
-    am_hsm_create(&me->hsm, am_hsm_state(bs_init));
+    am_hsm_create(&me->hsm, am_hsm_state_make(bs_init));
 
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
-    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state(bs_s)));
+    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state_make(bs_s)));
 
     {
         struct am_event e = {.id = FOO};
         am_hsm_dispatch(&me->hsm, &e);
-        AM_ASSERT(am_hsm_is_in(&me->hsm, am_hsm_state_i(bs_s1, S1_0)));
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, am_hsm_state_i(bs_s1, S1_1)));
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state(bs_s2)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, am_hsm_state_make_i(bs_s1, S1_0)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, am_hsm_state_make_i(bs_s1, S1_1)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state_make(bs_s2)));
     }
     {
         struct am_event e = {.id = BAZ};
         am_hsm_dispatch(&me->hsm, &e);
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, am_hsm_state_i(bs_s1, S1_0)));
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, am_hsm_state_i(bs_s1, S1_1)));
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state(bs_s)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, am_hsm_state_make_i(bs_s1, S1_0)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, am_hsm_state_make_i(bs_s1, S1_1)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state_make(bs_s)));
     }
     {
         struct am_event e = {.id = BAR};
         am_hsm_dispatch(&me->hsm, &e);
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, am_hsm_state_i(bs_s1, S1_0)));
-        AM_ASSERT(am_hsm_is_in(&me->hsm, am_hsm_state_i(bs_s1, S1_1)));
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state(bs_s3)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, am_hsm_state_make_i(bs_s1, S1_0)));
+        AM_ASSERT(am_hsm_is_in(&me->hsm, am_hsm_state_make_i(bs_s1, S1_1)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state_make(bs_s3)));
     }
     {
         struct am_event e = {.id = BAZ};
         am_hsm_dispatch(&me->hsm, &e);
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, am_hsm_state_i(bs_s1, S1_0)));
-        AM_ASSERT(!am_hsm_is_in(&me->hsm, am_hsm_state_i(bs_s1, S1_1)));
-        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state(bs_s)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, am_hsm_state_make_i(bs_s1, S1_0)));
+        AM_ASSERT(!am_hsm_is_in(&me->hsm, am_hsm_state_make_i(bs_s1, S1_1)));
+        AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state_make(bs_s)));
     }
 }
 

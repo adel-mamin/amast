@@ -158,7 +158,7 @@ extern "C" {
  *
  * @return HSM state descriptor with submachine instance 0.
  */
-static inline struct am_hsm_state am_hsm_state(am_hsm_state_fn fn) {
+static inline struct am_hsm_state am_hsm_state_make(am_hsm_state_fn fn) {
     return (struct am_hsm_state){.fn = fn, .instance = 0};
 }
 
@@ -170,7 +170,7 @@ static inline struct am_hsm_state am_hsm_state(am_hsm_state_fn fn) {
  *
  * @return HSM state descriptor with submachine instance @p instance.
  */
-static inline struct am_hsm_state am_hsm_state_i(
+static inline struct am_hsm_state am_hsm_state_make_i(
     am_hsm_state_fn fn, uint8_t instance
 ) {
     return (struct am_hsm_state){.fn = fn, .instance = instance};
@@ -358,8 +358,8 @@ bool am_hsm_is_in(struct am_hsm* hsm, struct am_hsm_state state);
  * Check whether an HSM's active state is exactly equal to a state.
  *
  * This check is not hierarchical. For example, if the active state is S1, and
- * S1 is a substate of S, then am_hsm_state_is_eq(hsm, am_hsm_state(S1)) is
- * true, but am_hsm_state_is_eq(hsm, am_hsm_state(S)) is false.
+ * S1 is a substate of S, then am_hsm_state_is_eq(hsm, am_hsm_state_make(S1)) is
+ * true, but am_hsm_state_is_eq(hsm, am_hsm_state_make(S)) is false.
  *
  * @param hsm    HSM to query.
  * @param state  State to compare against the active state.

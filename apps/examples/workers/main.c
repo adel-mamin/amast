@@ -133,7 +133,7 @@ static void worker_create(
 ) {
     memset(me, 0, sizeof(*me));
     am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_create(&me->hsm, am_hsm_state(worker_init));
+    am_hsm_create(&me->hsm, am_hsm_state_make(worker_init));
     me->id = id;
     me->alloc = alloc;
 }
@@ -253,7 +253,7 @@ static void balancer_create(
     memset(me, 0, sizeof(*me));
     me->ncpus = ncpus;
     am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_create(&me->hsm, am_hsm_state(balancer_init));
+    am_hsm_create(&me->hsm, am_hsm_state_make(balancer_init));
 
     me->workers = workers;
     me->nworkers = nworkers;

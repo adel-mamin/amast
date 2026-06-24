@@ -115,7 +115,7 @@ static enum am_rc coro_top(struct am_hsm* hsm, const struct am_event* event) {
     }
     case CORO_EVT_SWITCH_MODE: {
         am_printff("\b");
-        if (am_hsm_is_in(hsm, am_hsm_state(coro_regular))) {
+        if (am_hsm_is_in(hsm, am_hsm_state_make(coro_regular))) {
             return am_hsm_tran(hsm, coro_off);
         }
         return am_hsm_tran(hsm, coro_regular);
@@ -273,7 +273,7 @@ static void coro_create(struct coro* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
 
     am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_create(&me->hsm, am_hsm_state(coro_init));
+    am_hsm_create(&me->hsm, am_hsm_state_make(coro_init));
 
     me->timer = timer;
     me->timeout = am_timer_event_create_x(CORO_EVT_TIMER, &me->ao);

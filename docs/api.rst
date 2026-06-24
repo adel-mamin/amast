@@ -375,13 +375,15 @@ The source code of the corresponding header file is in `hsm.h <https://github.co
 
 .. doxygentypedef:: am_hsm_state_fn
 
-.. doxygenfunction:: am_hsm_state
+.. doxygenfunction:: am_hsm_state_make
 
-.. doxygenfunction:: am_hsm_state_i
+.. doxygenfunction:: am_hsm_state_make_i
 
 .. doxygendefine:: AM_HSM_HIERARCHY_DEPTH_MAX
 
 .. doxygenstruct:: am_hsm
+
+.. doxygenstruct:: am_hsm_state
 
 .. doxygenfunction:: am_hsm_handled
 

@@ -114,17 +114,17 @@ static enum am_rc cs_s(struct am_hsm* hsm, const struct am_event* event) {
     const uint8_t instance = am_hsm_get_instance(hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state(cs_s)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make(cs_s)));
         me->log("s/%d-ENTRY;", instance);
         return am_hsm_handled(hsm);
 
     case AM_EVT_EXIT:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state(cs_s)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make(cs_s)));
         me->log("s/%d-EXIT;", instance);
         return am_hsm_handled(hsm);
 
     case AM_EVT_INIT:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state(cs_s)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make(cs_s)));
         me->log("s/%d-INIT;", instance);
         return am_hsm_tran_i(hsm, cs_s111, SM_2);
 
@@ -139,17 +139,17 @@ static enum am_rc cs_s1(struct am_hsm* hsm, const struct am_event* event) {
     const uint8_t instance = am_hsm_get_instance(hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s1, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s1, instance)));
         me->log("s1/%d-ENTRY;", instance);
         return am_hsm_handled(hsm);
 
     case AM_EVT_EXIT:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s1, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s1, instance)));
         me->log("s1/%d-EXIT;", instance);
         return am_hsm_handled(hsm);
 
     case AM_EVT_INIT:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s1, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s1, instance)));
         me->log("s1/%d-INIT;", instance);
         return am_hsm_tran_i(hsm, cs_s111, instance);
 
@@ -187,17 +187,17 @@ static enum am_rc cs_s11(struct am_hsm* hsm, const struct am_event* event) {
     const uint8_t instance = am_hsm_get_instance(hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s11, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s11, instance)));
         me->log("s11/%d-ENTRY;", instance);
         return am_hsm_handled(hsm);
 
     case AM_EVT_EXIT:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s11, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s11, instance)));
         me->log("s11/%d-EXIT;", instance);
         return am_hsm_handled(hsm);
 
     case AM_EVT_INIT:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s11, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s11, instance)));
         me->log("s11/%d-INIT;", instance);
         return am_hsm_handled(hsm);
 
@@ -224,17 +224,17 @@ static enum am_rc cs_s111(struct am_hsm* hsm, const struct am_event* event) {
     const uint8_t instance = am_hsm_get_instance(hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s111, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s111, instance)));
         me->log("s111/%d-ENTRY;", instance);
         return am_hsm_handled(hsm);
 
     case AM_EVT_EXIT:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s111, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s111, instance)));
         me->log("s111/%d-EXIT;", instance);
         return am_hsm_handled(hsm);
 
     case AM_EVT_INIT:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s111, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s111, instance)));
         me->log("s111/%d-INIT;", instance);
         return am_hsm_handled(hsm);
 
@@ -253,17 +253,17 @@ static enum am_rc cs_s12(struct am_hsm* hsm, const struct am_event* event) {
     const uint8_t instance = am_hsm_get_instance(hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s12, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s12, instance)));
         me->log("s12/%d-ENTRY;", instance);
         return am_hsm_handled(hsm);
 
     case AM_EVT_EXIT:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s12, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s12, instance)));
         me->log("s12/%d-EXIT;", instance);
         return am_hsm_handled(hsm);
 
     case AM_EVT_INIT:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s12, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s12, instance)));
         me->log("s12/%d-INIT;", instance);
         return am_hsm_tran_i(hsm, cs_s121, instance);
 
@@ -290,17 +290,17 @@ static enum am_rc cs_s121(struct am_hsm* hsm, const struct am_event* event) {
     const uint8_t instance = am_hsm_get_instance(hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s121, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s121, instance)));
         me->log("s121/%d-ENTRY;", instance);
         return am_hsm_handled(hsm);
 
     case AM_EVT_EXIT:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s121, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s121, instance)));
         me->log("s121/%d-EXIT;", instance);
         return am_hsm_handled(hsm);
 
     case AM_EVT_INIT:
-        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_i(cs_s121, instance)));
+        AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state_make_i(cs_s121, instance)));
         me->log("s121/%d-INIT;", instance);
         return am_hsm_handled(hsm);
 
@@ -327,7 +327,7 @@ static enum am_rc complex_sm_init(
 
 void complex_sm_create(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
     struct complex_sm* me = &m_complex_sm;
-    am_hsm_create(&me->hsm, am_hsm_state(complex_sm_init));
+    am_hsm_create(&me->hsm, am_hsm_state_make(complex_sm_init));
     me->log = log;
 }
 

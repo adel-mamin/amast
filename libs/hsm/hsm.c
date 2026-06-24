@@ -215,7 +215,7 @@ static void hsm_transition(
         return;
     }
 
-    struct am_hsm_state until = am_hsm_state(am_hsm_top);
+    struct am_hsm_state until = am_hsm_state_make(am_hsm_top);
     hsm_build(hsm, &path, /*from=*/&dst, &until, /*till=*/&src);
     const struct am_hsm_state* end = &path.state[path.len - 1];
     if ((end->fn == src.fn) && (end->instance == src.instance)) {
@@ -381,9 +381,9 @@ void am_hsm_destroy(struct am_hsm* hsm) {
     AM_ASSERT(hsm->state_fn);
 
     if (hsm->init_called) {
-        hsm_exit(hsm, /*until=*/am_hsm_state(am_hsm_top));
+        hsm_exit(hsm, /*until=*/am_hsm_state_make(am_hsm_top));
     }
-    hsm_set_state(hsm, am_hsm_state(am_hsm_top));
+    hsm_set_state(hsm, am_hsm_state_make(am_hsm_top));
     hsm->create_called = hsm->init_called = false;
 }
 
@@ -398,7 +398,7 @@ void am_hsm_init(struct am_hsm* hsm, const struct am_event* init_event) {
 
     struct am_hsm_state dst = hsm_get_state(hsm);
     struct am_hsm_path path;
-    struct am_hsm_state until = am_hsm_state(am_hsm_top);
+    struct am_hsm_state until = am_hsm_state_make(am_hsm_top);
     hsm_set_state(hsm, state);
     hsm_build(hsm, &path, /*from=*/&dst, &until, /*till=*/NULL);
     hsm_enter_and_init(hsm, &path);
