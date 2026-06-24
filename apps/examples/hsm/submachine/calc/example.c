@@ -155,7 +155,7 @@ int main(void) {
     }
 
 end:
-    am_hsm_dtor(calc);
+    am_hsm_destroy(calc);
     calc_print();
 
     return 0;

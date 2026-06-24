@@ -103,7 +103,7 @@ int main(void) {
         timer_proc(&timer, &hub);
     }
 
-    am_pal_dtor();
+    am_pal_destroy();
 
     return 0;
 }

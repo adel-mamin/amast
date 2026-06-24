@@ -114,7 +114,7 @@ int main(void) {
         test_print(c);
     }
     m_log_buf[0] = '\0';
-    am_hsm_dtor(complex);
+    am_hsm_destroy(complex);
     test_print('*');
 
     return 0;

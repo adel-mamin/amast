@@ -486,7 +486,7 @@ void* am_pal_create(void* arg) {
     return NULL;
 }
 
-void am_pal_dtor(void) {
+void am_pal_destroy(void) {
     if (init_complete_mutex_acquired_) {
         am_mutex_unlock(init_complete_mutex_);
         init_complete_mutex_acquired_ = false;

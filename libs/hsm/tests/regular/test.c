@@ -109,7 +109,7 @@ static void test_regular(void) {
         m_regular_log_buf[0] = '\0';
     }
 
-    am_hsm_dtor(regular_get_obj());
+    am_hsm_destroy(regular_get_obj());
 
     {
         static const char* out = "s211-EXIT;s21-EXIT;s2-EXIT;s-EXIT;";

@@ -189,7 +189,7 @@ int main(void) {
         m_fsmq_log_buf[0] = '\0';
     }
 
-    am_fsm_dtor(am_fsmq);
+    am_fsm_destroy(am_fsmq);
 
     /* make sure there is no memory leak */
     AM_ASSERT(1 == am_event_alloc_get_nfree(&alloc, /*index=*/0));

@@ -375,7 +375,7 @@ void am_hsm_create(struct am_hsm* hsm, struct am_hsm_state state) {
     hsm->create_called = true;
 }
 
-void am_hsm_dtor(struct am_hsm* hsm) {
+void am_hsm_destroy(struct am_hsm* hsm) {
     AM_ASSERT(hsm);
     AM_ASSERT(hsm->create_called); /* was am_hsm_create() called? */
     AM_ASSERT(hsm->state_fn);

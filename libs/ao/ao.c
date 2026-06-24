@@ -181,7 +181,7 @@ void am_ao_state_create(const struct am_ao_state_cfg* cfg) {
     am_event_register_crit(me->crit_enter, me->crit_exit);
 }
 
-void am_ao_state_dtor(void) {}
+void am_ao_state_destroy(void) {}
 
 void am_ao_crash_dump_event_queues_unsafe(
     int num,

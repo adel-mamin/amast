@@ -57,7 +57,7 @@ void am_event_queue_create(
     queue->alloc = alloc;
 }
 
-void am_event_queue_dtor(struct am_event_queue* queue) {
+void am_event_queue_destroy(struct am_event_queue* queue) {
     AM_ASSERT(queue);
     AM_ASSERT(am_event_queue_is_empty_unsafe(queue));
     memset(queue, 0, sizeof(*queue));

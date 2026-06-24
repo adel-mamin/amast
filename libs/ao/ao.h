@@ -493,7 +493,7 @@ void am_ao_state_create(const struct am_ao_state_cfg* cfg);
 /**
  * Active object library state destructor.
  */
-void am_ao_state_dtor(void);
+void am_ao_state_destroy(void);
 
 /**
  * Subscribe active object to @p event ID.

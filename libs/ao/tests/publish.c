@@ -144,9 +144,9 @@ static void test_publish(void) {
 
     AM_ASSERT('\0' == m_publish.log_buf[0]);
 
-    am_ao_state_dtor();
+    am_ao_state_destroy();
 
-    am_pal_dtor();
+    am_pal_destroy();
 }
 
 int main(void) {

@@ -134,7 +134,7 @@ void am_fsm_create(struct am_fsm* fsm, const am_fsm_state_fn state) {
     fsm->state = state;
 }
 
-void am_fsm_dtor(struct am_fsm* fsm) {
+void am_fsm_destroy(struct am_fsm* fsm) {
     AM_ASSERT(fsm);
     AM_ASSERT(fsm->state); /* was am_fsm_create() called? */
     fsm_exit(fsm);

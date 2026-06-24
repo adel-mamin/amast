@@ -184,7 +184,7 @@ void am_fsm_create(struct am_fsm* fsm, am_fsm_state_fn state);
  *
  * @param fsm  FSM object to destruct.
  */
-void am_fsm_dtor(struct am_fsm* fsm);
+void am_fsm_destroy(struct am_fsm* fsm);
 
 /**
  * Perform an FSM initial transition.

@@ -366,9 +366,9 @@ int main(void) {
 
     am_ticker_stop(ticker);
 
-    am_ao_state_dtor();
+    am_ao_state_destroy();
 
-    am_pal_dtor();
+    am_pal_destroy();
 
     return EXIT_SUCCESS;
 }

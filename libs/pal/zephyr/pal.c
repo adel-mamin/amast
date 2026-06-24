@@ -78,7 +78,7 @@ void* am_pal_create(void* arg) {
     return NULL;
 }
 
-void am_pal_dtor(void) {
+void am_pal_destroy(void) {
     for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
         struct am_mutex* mutex = &mutexes_[i];
         if (mutex->valid) {

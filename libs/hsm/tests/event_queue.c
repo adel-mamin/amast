@@ -207,7 +207,7 @@ int main(void) {
         m_hsmq_log_buf[0] = '\0';
     }
 
-    am_hsm_dtor(am_hsmq);
+    am_hsm_destroy(am_hsmq);
 
     /* make sure there is no memory leak */
     AM_ASSERT(1 == am_event_alloc_get_nfree(&alloc, /*index=*/0));

@@ -104,7 +104,7 @@ void am_event_queue_create(
  *
  * @param queue  the queue
  */
-void am_event_queue_dtor(struct am_event_queue* queue);
+void am_event_queue_destroy(struct am_event_queue* queue);
 
 /**
  * Push event to the back of event queue (eXtended version).

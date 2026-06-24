@@ -57,7 +57,7 @@ static void dtor_fsm(void) {
     struct dtor_fsm* me = &m_dtor_fsm;
     am_fsm_create(&me->fsm, dtor_fsm_sinit);
     am_fsm_init(&me->fsm, /*init_event=*/NULL);
-    am_fsm_dtor(&me->fsm);
+    am_fsm_destroy(&me->fsm);
     AM_ASSERT(am_fsm_is_in(&me->fsm, NULL));
 }
 

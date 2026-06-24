@@ -17,6 +17,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Prune critical section use from onesize memory allocator
 - Renamed async to coro
 - Rework coroutine library API to use explicit coroutine state pointer
+- Rename `ctor` to `create` in all APIs
+- Rename `dtor` to `destroy` in all APIs
 
 ### Added
 

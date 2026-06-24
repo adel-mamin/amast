@@ -72,7 +72,7 @@ extern "C" {
 void* am_pal_create(void* arg);
 
 /** PAL destructor. */
-void am_pal_dtor(void);
+void am_pal_destroy(void);
 
 /**
  * Enter critical section.

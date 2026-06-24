@@ -155,7 +155,7 @@ void am_ao_stop(struct am_ao* ao) {
     me->crit_enter();
 
     am_event_queue_flush_unsafe(&ao->event_queue);
-    am_event_queue_dtor(&ao->event_queue);
+    am_event_queue_destroy(&ao->event_queue);
 
     me->aos[ao->prio.ao] = NULL;
 

@@ -232,7 +232,7 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_queue_create
 
-.. doxygenfunction:: am_event_queue_dtor
+.. doxygenfunction:: am_event_queue_destroy
 
 .. doxygenfunction:: am_event_queue_is_valid
 
@@ -409,7 +409,7 @@ The source code of the corresponding header file is in `hsm.h <https://github.co
 
 .. doxygenfunction:: am_hsm_create
 
-.. doxygenfunction:: am_hsm_dtor
+.. doxygenfunction:: am_hsm_destroy
 
 .. doxygenfunction:: am_hsm_init
 
@@ -442,7 +442,7 @@ The source code of the corresponding header file is in `fsm.h <https://github.co
 
 .. doxygenfunction:: am_fsm_create
 
-.. doxygenfunction:: am_fsm_dtor
+.. doxygenfunction:: am_fsm_destroy
 
 .. doxygenfunction:: am_fsm_init
 
@@ -501,7 +501,7 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygenfunction:: am_ao_state_create
 
-.. doxygenfunction:: am_ao_state_dtor
+.. doxygenfunction:: am_ao_state_destroy
 
 .. doxygenfunction:: am_ao_subscribe
 
@@ -549,7 +549,7 @@ The source code of the corresponding header file is in `pal.h <https://github.co
 
 .. doxygenfunction:: am_pal_create
 
-.. doxygenfunction:: am_pal_dtor
+.. doxygenfunction:: am_pal_destroy
 
 .. doxygenfunction:: am_crit_enter
 

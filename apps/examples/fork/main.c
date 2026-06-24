@@ -291,9 +291,9 @@ int main(int argc, const char* argv[]) {
         am_ao_run_all();
     }
 
-    am_ao_state_dtor();
+    am_ao_state_destroy();
 
-    am_pal_dtor();
+    am_pal_destroy();
 
     return EXIT_SUCCESS;
 }

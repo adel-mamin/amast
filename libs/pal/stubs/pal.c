@@ -38,7 +38,7 @@ void* am_pal_create(void* arg) {
     return NULL;
 }
 
-void am_pal_dtor(void) {}
+void am_pal_destroy(void) {}
 
 void am_on_idle(void) {}
 
