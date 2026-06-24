@@ -74,6 +74,10 @@ struct am_fsm {
     uint8_t dispatch_in_progress : 1;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Finish event processing without triggering a state transition.
  *
@@ -125,10 +129,6 @@ static inline enum am_rc am_fsm_tran_redispatch(
     fsm->state = fn;
     return AM_RC_TRAN_REDISPATCH;
 }
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Synchronously dispatch an event to an FSM.

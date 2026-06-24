@@ -145,6 +145,10 @@ struct am_hsm {
     uint8_t dispatch_in_progress : 1;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Make an HSM state descriptor for the default submachine instance.
  *
@@ -321,10 +325,6 @@ static inline enum am_rc am_hsm_super_i(
     hsm->state_instance = hsm->instance = instance;
     return AM_RC_SUPER;
 }
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Synchronously dispatch an event to an HSM.
