@@ -202,10 +202,10 @@ the event is consumed by :cpp:func:`am_hsm_top()`.
 the ultimate event propagation termination point.
 
 To inform the library that an event is handled the event handler function
-must return :c:macro:`am_hsm_handled()`.
+must return :cpp:func:`am_hsm_handled()`.
 
 To inform the library that an event is passed to superstate the event
-handler function must return :c:macro:`am_hsm_super()`, which provides the
+handler function must return :cpp:func:`am_hsm_super()`, which provides the
 name of the superstate event handler.
 
 State Transition
@@ -258,18 +258,18 @@ the init event is sent to *s1*. Please note that the state *s1* is not exited in
 this case.
 
 To initiate a transition the state handler function must return
-:c:macro:`am_hsm_tran()` or :c:macro:`am_hsm_tran_redispatch()` pointing
+:cpp:func:`am_hsm_tran()` or :cpp:func:`am_hsm_tran_redispatch()` pointing
 to target state.
 
-If state handler function returns :c:macro:`am_hsm_tran_redispatch()` pointing
+If state handler function returns :cpp:func:`am_hsm_tran_redispatch()` pointing
 to target state, then the transition is executed first and then the same event is
 dispatched to the new current state in the same :cpp:func:`am_hsm_dispatch()` call.
 This is a convenience feature, that allows HSM to handle the event in
 the state that expects it.
 
 HSM states cannot initiate state transitions when processing entry and exit
-events. This means that the HSM states cannot return :c:macro:`am_hsm_tran()`
-or :c:macro:`am_hsm_tran_redispatch()` pointing to target state.
+events. This means that the HSM states cannot return :cpp:func:`am_hsm_tran()`
+or :cpp:func:`am_hsm_tran_redispatch()` pointing to target state.
 
 Initial State Transition
 ========================
@@ -298,7 +298,7 @@ In addition to regular states every HSM must declare the initial state,
 which the HSM library invokes to execute the topmost initial transition.
 
 The initial state is entered, when calling :cpp:func:`am_hsm_init()` function.
-The initial state must always return :c:macro:`am_hsm_tran()` pointing to
+The initial state must always return :cpp:func:`am_hsm_tran()` pointing to
 target state.
 
 The transition from the initial state to the target state is done by
@@ -311,7 +311,7 @@ HSM Initialization
 HSM initialization is divided into the following two steps for increased
 flexibility and better control of the initialization timeline:
 
-1. the state machine constructor (:cpp:func:`am_hsm_ctor()`)
+1. the state machine constructor (:cpp:func:`am_hsm_create()`)
 2. the top-most initial transition (:cpp:func:`am_hsm_init()`).
 
 HSM Topology
@@ -320,7 +320,7 @@ HSM Topology
 HSM library discovers the user HSM topology at run time by sending
 :c:macro:`AM_EVT_EMPTY` event to state event handlers.
 The state event handlers should always return
-:c:macro:`am_hsm_super()` in response.
+:cpp:func:`am_hsm_super()` in response.
 
 HSM Coding Rules
 ================
@@ -355,12 +355,12 @@ HSM Coding Rules
 6. Processing of :c:macro:`AM_EVT_ENTRY`
    and :c:macro:`AM_EVT_EXIT` events should
    not trigger state transitions. It means that user event handlers should
-   not return :c:macro:`am_hsm_tran()` or :c:macro:`am_hsm_tran_redispatch()` for
+   not return :cpp:func:`am_hsm_tran()` or :cpp:func:`am_hsm_tran_redispatch()` for
    these events.
 7. Processing of :c:macro:`AM_EVT_INIT`
    event can optionally only trigger transition by returning the result of
-   :c:macro:`am_hsm_tran()` macro.
-   The use of :c:macro:`am_hsm_tran_redispatch()` is not allowed in this case.
+   :cpp:func:`am_hsm_tran()` macro.
+   The use of :cpp:func:`am_hsm_tran_redispatch()` is not allowed in this case.
 8. Processing of :c:macro:`AM_EVT_INIT`
    event can optionally only trigger transition to a substate of the state triggering
    the transition.
@@ -510,7 +510,7 @@ Here is how it is coded in pseudocode:
    }
 
 Please note that any transitions between states within submachines as well as
-all references to any submachine state via :c:macro:`am_hsm_super()`  must be done
+all references to any submachine state via :cpp:func:`am_hsm_super()`  must be done
 with explicit specification of state instance, which can be retrieved by
 calling :cpp:func:`am_hsm_get_instance()` API.
 
@@ -597,7 +597,7 @@ The HSM topology:
 
 The test steps:
 
-1. Construct the HSM by calling **hsmq_ctor()**.
+1. Construct the HSM by calling **hsmq_create()**.
    The HSM construction includes the HSM event queue setup.
 2. Initialize the HSM. The init state transition activates **hsmq_s1**.
 3. Enter the cycle of injection of external events with ID listed in
@@ -778,7 +778,7 @@ on the reception of the event **A**.
 HSM Event Redispatch
 --------------------
 
-Demonstrates the use of event redispatch with the :c:macro:`am_hsm_tran_redispatch()` macro.
+Demonstrates the use of event redispatch with the :cpp:func:`am_hsm_tran_redispatch()` macro.
 
 The source code is in `redispatch.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/redispatch.c>`_.
 
@@ -806,7 +806,7 @@ The HSM topology:
     @enduml
 
 Notice in the source code how event **A** is re-dispatched to a new state **s2**
-using :c:macro:`am_hsm_tran_redispatch()` macro and then handled in the new state.
+using :cpp:func:`am_hsm_tran_redispatch()` macro and then handled in the new state.
 
 Same happens with the event **B** in the state **s2**.
 

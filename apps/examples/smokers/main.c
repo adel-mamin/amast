@@ -203,7 +203,7 @@ static enum am_rc smoker_init(
     return am_hsm_tran(hsm, smoker_idle);
 }
 
-static void smoker_ctor(
+static void smoker_create(
     struct smoker* me,
     int id,
     unsigned resource,
@@ -211,13 +211,13 @@ static void smoker_ctor(
     struct am_event_alloc* alloc
 ) {
     memset(me, 0, sizeof(*me));
-    am_hsm_ctor(&me->hsm, am_hsm_state(smoker_init));
-    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_create(&me->hsm, am_hsm_state(smoker_init));
+    am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     me->id = id;
     me->resource_own = me->resource_acquired = resource;
 
     me->timer = timer;
-    me->done = am_timer_event_ctor_x(EVT_DONE_SMOKING_TIMER, &me->ao);
+    me->done = am_timer_event_create_x(EVT_DONE_SMOKING_TIMER, &me->ao);
 
     me->alloc = alloc;
 }
@@ -343,15 +343,15 @@ static enum am_rc agent_init(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_tran(hsm, agent_proc);
 }
 
-static void agent_ctor(
+static void agent_create(
     struct agent* me, struct am_timer* timer, struct am_event_alloc* alloc
 ) {
     memset(me, 0, sizeof(*me));
-    am_hsm_ctor(&me->hsm, am_hsm_state(agent_init));
-    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_create(&me->hsm, am_hsm_state(agent_init));
+    am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
 
     me->timer = timer;
-    me->timeout = am_timer_event_ctor_x(EVT_TIMEOUT, &me->ao);
+    me->timeout = am_timer_event_create_x(EVT_TIMEOUT, &me->ao);
 
     me->alloc = alloc;
 }
@@ -374,10 +374,10 @@ static void ticker_cb(void* param) {
 AM_ALIGNOF_DEFINE(events_t);
 
 int main(void) {
-    am_pal_ctor(/*arg=*/NULL);
+    am_pal_create(/*arg=*/NULL);
 
     struct am_timer timer;
-    am_timer_ctor(&timer);
+    am_timer_create(&timer);
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
@@ -399,15 +399,15 @@ int main(void) {
     struct am_ao_state_cfg cfg = {
         .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
     };
-    am_ao_state_ctor(&cfg);
+    am_ao_state_create(&cfg);
 
     struct smoker smokers[AM_SMOKERS_NUM_MAX];
     struct agent agent;
 
-    agent_ctor(&agent, &timer, &alloc);
+    agent_create(&agent, &timer, &alloc);
     static const unsigned resource[] = {PAPER, TOBACCO, FIRE};
     for (int i = 0; i < AM_COUNTOF(resource); ++i) {
-        smoker_ctor(&smokers[i], i, resource[i], &timer, &alloc);
+        smoker_create(&smokers[i], i, resource[i], &timer, &alloc);
     }
 
     const struct am_event* queue_agent[2 * AM_SMOKERS_NUM_MAX];

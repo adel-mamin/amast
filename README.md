@@ -84,7 +84,7 @@ static enum am_rc init(struct am_fsm *fsm, const struct am_event *event) {
 }
 
 int main(void) {
-    am_fsm_ctor(&app.fsm, init);
+    am_fsm_create(&app.fsm, init);
     am_fsm_init(&app.fsm, /*init_event=*/NULL);
     am_fsm_dispatch(&app.fsm, &(struct am_event){.id = EVT_B});
     am_fsm_dispatch(&app.fsm, &(struct am_event){.id = EVT_A});
@@ -209,7 +209,7 @@ static enum am_rc init(struct am_hsm* hsm, const struct am_event *event) {
 }
 
 int main(void) {
-    am_hsm_ctor(&app.hsm, am_hsm_state(init));
+    am_hsm_create(&app.hsm, am_hsm_state(init));
     am_hsm_init(&app.hsm, /*init_event=*/NULL);
     am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_B});
     am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_A});
@@ -314,12 +314,12 @@ static enum am_rc app_init(struct am_hsm* hsm, const struct am_event *event) {
     return am_hsm_tran(hsm, app_state_a);
 }
 
-static void app_ctor(struct app *me, struct am_timer *timer) {
+static void app_create(struct app *me, struct am_timer *timer) {
     memset(me, 0, sizeof(*me));
-    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, am_hsm_state(app_init));
+    am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_create(&me->hsm, am_hsm_state(app_init));
     me->timer = timer;
-    me->timeout = am_timer_event_ctor_x(APP_EVT_TIMER, &me->ao);
+    me->timeout = am_timer_event_create_x(APP_EVT_TIMER, &me->ao);
     me->ticks = am_time_get_ticks_from_ms(AM_TIMEBASE_DEFAULT, 1000);
 }
 
@@ -349,10 +349,10 @@ static void input_task(void *param) {
 }
 
 int main(void) {
-    am_pal_ctor(/*arg=*/NULL);
+    am_pal_create(/*arg=*/NULL);
 
     struct am_timer timer;
-    am_timer_ctor(&timer);
+    am_timer_create(&timer);
 
     /* event publish/subscribe memory */
     struct am_event_subscribe_list pubsub_list[APP_EVT_PUB_MAX];
@@ -361,10 +361,10 @@ int main(void) {
     struct am_ao_state_cfg cfg = {
         .crit_enter = am_crit_enter, .crit_exit = am_crit_exit
     };
-    am_ao_state_ctor(&cfg);
+    am_ao_state_create(&cfg);
 
     struct app m;
-    app_ctor(&m, &timer);
+    app_create(&m, &timer);
 
     /* active object incoming events queue */
     const struct am_event *m_queue[2];

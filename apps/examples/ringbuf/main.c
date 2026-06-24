@@ -56,10 +56,10 @@ static void ticker_cb(void* param) {
 }
 
 static void test_ringbuf_threading(void) {
-    am_pal_ctor(/*arg=*/NULL);
+    am_pal_create(/*arg=*/NULL);
 
     struct am_timer timer;
-    am_timer_ctor(&timer);
+    am_timer_create(&timer);
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
@@ -69,12 +69,12 @@ static void test_ringbuf_threading(void) {
 
     const uint8_t data[] = {0, 1, 2, 3, 4, 5, 6, 7};
 
-    am_ringbuf_ctor(&ringbuf, buf, AM_COUNTOF(buf));
+    am_ringbuf_create(&ringbuf, buf, AM_COUNTOF(buf));
 
-    am_ao_state_ctor(/*cfg=*/NULL);
+    am_ao_state_create(/*cfg=*/NULL);
 
-    ringbuf_reader_ctor(&ringbuf, &timer, data, (int)sizeof(data));
-    ringbuf_writer_ctor(&ringbuf, &timer, data, (int)sizeof(data));
+    ringbuf_reader_create(&ringbuf, &timer, data, (int)sizeof(data));
+    ringbuf_writer_create(&ringbuf, &timer, data, (int)sizeof(data));
 
     const struct am_event* queue_reader[1];
     am_ao_start(

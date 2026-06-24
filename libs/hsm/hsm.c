@@ -367,30 +367,30 @@ struct am_hsm_state am_hsm_get_state(const struct am_hsm* hsm) {
     return hsm_get_state(hsm);
 }
 
-void am_hsm_ctor(struct am_hsm* hsm, struct am_hsm_state state) {
+void am_hsm_create(struct am_hsm* hsm, struct am_hsm_state state) {
     AM_ASSERT(hsm);
     AM_ASSERT(state.fn);
     memset(hsm, 0, sizeof(*hsm));
     hsm_set_state(hsm, state);
-    hsm->ctor_called = true;
+    hsm->create_called = true;
 }
 
 void am_hsm_dtor(struct am_hsm* hsm) {
     AM_ASSERT(hsm);
-    AM_ASSERT(hsm->ctor_called); /* was am_hsm_ctor() called? */
+    AM_ASSERT(hsm->create_called); /* was am_hsm_create() called? */
     AM_ASSERT(hsm->state_fn);
 
     if (hsm->init_called) {
         hsm_exit(hsm, /*until=*/am_hsm_state(am_hsm_top));
     }
     hsm_set_state(hsm, am_hsm_state(am_hsm_top));
-    hsm->ctor_called = hsm->init_called = false;
+    hsm->create_called = hsm->init_called = false;
 }
 
 void am_hsm_init(struct am_hsm* hsm, const struct am_event* init_event) {
     AM_ASSERT(hsm);
-    AM_ASSERT(hsm->ctor_called);  /* was am_hsm_ctor() called? */
-    AM_ASSERT(!hsm->init_called); /* double init? */
+    AM_ASSERT(hsm->create_called); /* was am_hsm_create() called? */
+    AM_ASSERT(!hsm->init_called);  /* double init? */
 
     struct am_hsm_state state = hsm_get_state(hsm);
     enum am_rc rc = hsm->state_fn(hsm, init_event);

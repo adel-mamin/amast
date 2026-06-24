@@ -59,7 +59,7 @@ void am_event_alloc_add_pool(
         .block_size = block_size,
         .alignment = alignment
     };
-    am_onesize_ctor(&alloc->pools[alloc->npools], &cfg);
+    am_onesize_create(&alloc->pools[alloc->npools], &cfg);
 
     ++alloc->npools;
 }

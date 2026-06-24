@@ -119,18 +119,18 @@ static enum am_rc hsmq_sinit(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_tran(hsm, hsmq_s1);
 }
 
-static void hsmq_ctor(
+static void hsmq_create(
     AM_PRINTF(1, 0) void (*log)(const char* fmt, ...),
     struct am_event_alloc* alloc
 ) {
     struct am_hsmq* me = &am_hsmq_;
-    am_hsm_ctor(&me->hsm, am_hsm_state(hsmq_sinit));
+    am_hsm_create(&me->hsm, am_hsm_state(hsmq_sinit));
     me->log = log;
     me->alloc = alloc;
 
     /* setup HSM event queue */
     static const struct am_event* pool[2];
-    am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool), alloc);
+    am_event_queue_create(&me->event_queue, pool, AM_COUNTOF(pool), alloc);
 }
 
 static enum am_rc hsmq_s1(struct am_hsm* hsm, const struct am_event* event) {
@@ -186,7 +186,7 @@ int main(void) {
 
     am_event_async_init(/*sub=*/NULL, /*nsub=*/0, &alloc);
 
-    hsmq_ctor(hsmq_log, &alloc);
+    hsmq_create(hsmq_log, &alloc);
 
     m_hsmq_log_buf[0] = '\0';
     am_hsm_init(am_hsmq, /*init_event=*/NULL);

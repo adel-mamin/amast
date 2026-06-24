@@ -52,7 +52,7 @@ static void test_coro_local_continuation(void) {
     int state = 0;
     struct am_coro me;
 
-    am_coro_ctor(&me);
+    am_coro_create(&me);
 
     am_coro_reentrant(&me, &reent, &state);
     AM_ASSERT(!am_coro_is_busy(&me) && (reent == 1) && (state == 1));
@@ -77,7 +77,7 @@ static int am_coro_empty(struct am_coro* me, int* reent) {
 
 static void test_coro_empty(void) {
     struct am_coro me;
-    am_coro_ctor(&me);
+    am_coro_create(&me);
 
     int reent = 0;
     am_coro_empty(&me, &reent);
@@ -98,7 +98,7 @@ static int am_coro_wait_ready(struct am_coro* me, int* reent, int ready) {
 
 static void test_coro_wait_ready(void) {
     struct am_coro me;
-    am_coro_ctor(&me);
+    am_coro_create(&me);
 
     int ready = 0;
     int reent = 0;
@@ -127,8 +127,8 @@ static void test_coro_yield(void) {
     struct am_coro me1;
     struct am_coro me2;
 
-    am_coro_ctor(&me1);
-    am_coro_ctor(&me2);
+    am_coro_create(&me1);
+    am_coro_create(&me2);
 
     int state = 0;
     am_coro_yield(&me1, &state);
@@ -155,7 +155,7 @@ static int am_coro_exit(struct am_coro* me, int* state) {
 
 static void test_coro_exit(void) {
     struct am_coro me;
-    am_coro_ctor(&me);
+    am_coro_create(&me);
 
     int state = 0;
     am_coro_exit(&me, &state);
@@ -204,8 +204,8 @@ static void test_coro_call_chain(void) {
         struct am_coro_chain* me1 = &test_coro_chain[0];
         struct am_coro_chain* me2 = &test_coro_chain[1];
 
-        am_coro_ctor(&me1->coro);
-        am_coro_ctor(&me2->coro);
+        am_coro_create(&me1->coro);
+        am_coro_create(&me2->coro);
 
         am_coro_call_1(me1);
         AM_ASSERT(am_coro_is_busy(&me1->coro));

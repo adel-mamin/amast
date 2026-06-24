@@ -146,12 +146,12 @@ static enum am_rc progress_init(
     return am_hsm_tran(hsm, progress_top);
 }
 
-static void progress_ctor(struct progress* me, struct am_timer* timer) {
-    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, am_hsm_state(progress_init));
+static void progress_create(struct progress* me, struct am_timer* timer) {
+    am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_create(&me->hsm, am_hsm_state(progress_init));
 
     me->timer = timer;
-    me->progress = am_timer_event_ctor_x(EVT_PROGRESS_TICK, &me->ao);
+    me->progress = am_timer_event_create_x(EVT_PROGRESS_TICK, &me->ao);
 }
 
 static void ticker_task(void* param) {
@@ -214,7 +214,7 @@ static void job_task(const void* param) {
 }
 
 int main(int argc, const char* argv[]) {
-    am_pal_ctor(/*arg=*/NULL);
+    am_pal_create(/*arg=*/NULL);
 
     if (argc < 2) {
         (void)fprintf(stderr, "Usage: %s <program> [args...]\n", argv[0]);
@@ -222,7 +222,7 @@ int main(int argc, const char* argv[]) {
     }
 
     struct am_timer timer;
-    am_timer_ctor(&timer);
+    am_timer_create(&timer);
 
     struct am_event_alloc alloc;
     am_event_alloc_init(&alloc);
@@ -247,10 +247,10 @@ int main(int argc, const char* argv[]) {
     struct am_ao_state_cfg cfg = {
         .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
     };
-    am_ao_state_ctor(&cfg);
+    am_ao_state_create(&cfg);
 
     struct progress m;
-    progress_ctor(&m, &timer);
+    progress_create(&m, &timer);
 
     static const struct am_event* m_queue[EVT_MAX];
 

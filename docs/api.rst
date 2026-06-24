@@ -65,13 +65,13 @@ The source code of the corresponding header file is in `slist.h <https://github.
 
 .. doxygenstruct:: am_slist_iterator
 
-.. doxygenfunction:: am_slist_ctor
+.. doxygenfunction:: am_slist_create
 
 .. doxygenfunction:: am_slist_is_empty
 
 .. doxygenfunction:: am_slist_item_is_linked
 
-.. doxygenfunction:: am_slist_item_ctor
+.. doxygenfunction:: am_slist_item_create
 
 .. doxygenfunction:: am_slist_push_after
 
@@ -97,7 +97,7 @@ The source code of the corresponding header file is in `slist.h <https://github.
 
 .. doxygenfunction:: am_slist_append
 
-.. doxygenfunction:: am_slist_iterator_ctor
+.. doxygenfunction:: am_slist_iterator_create
 
 .. doxygenfunction:: am_slist_iterator_next
 
@@ -135,7 +135,7 @@ The source code of the corresponding header file is in `ringbuf.h <https://githu
 
 .. doxygenstruct:: am_ringbuf
 
-.. doxygenfunction:: am_ringbuf_ctor
+.. doxygenfunction:: am_ringbuf_create
 
 .. doxygenfunction:: am_ringbuf_get_read_ptr
 
@@ -169,7 +169,7 @@ The source code of the corresponding header file is in `onesize.h <https://githu
 .. doxygenstruct:: am_onesize_cfg
    :members:
 
-.. doxygenfunction:: am_onesize_ctor
+.. doxygenfunction:: am_onesize_create
 
 .. doxygenfunction:: am_onesize_allocate_x
 
@@ -230,7 +230,7 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_async_init
 
-.. doxygenfunction:: am_event_queue_ctor
+.. doxygenfunction:: am_event_queue_create
 
 .. doxygenfunction:: am_event_queue_dtor
 
@@ -315,11 +315,11 @@ The source code of the corresponding header file is in `timer.h <https://github.
 
 .. doxygenstruct:: am_timer_event_x
 
-.. doxygenfunction:: am_timer_ctor
+.. doxygenfunction:: am_timer_create
 
-.. doxygenfunction:: am_timer_event_ctor
+.. doxygenfunction:: am_timer_event_create
 
-.. doxygenfunction:: am_timer_event_ctor_x
+.. doxygenfunction:: am_timer_event_create_x
 
 .. doxygenfunction:: am_timer_register_cbs
 
@@ -362,7 +362,7 @@ The source code of the corresponding header file is in `async.h <https://github.
 
 .. doxygenfunction:: am_coro_is_busy
 
-.. doxygenfunction:: am_coro_ctor
+.. doxygenfunction:: am_coro_create
 
 .. _hsm_api:
 
@@ -407,7 +407,7 @@ The source code of the corresponding header file is in `hsm.h <https://github.co
 
 .. doxygenfunction:: am_hsm_get_state
 
-.. doxygenfunction:: am_hsm_ctor
+.. doxygenfunction:: am_hsm_create
 
 .. doxygenfunction:: am_hsm_dtor
 
@@ -440,7 +440,7 @@ The source code of the corresponding header file is in `fsm.h <https://github.co
 
 .. doxygenfunction:: am_fsm_get_state
 
-.. doxygenfunction:: am_fsm_ctor
+.. doxygenfunction:: am_fsm_create
 
 .. doxygenfunction:: am_fsm_dtor
 
@@ -493,13 +493,13 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygenfunction:: am_ao_post_lifo
 
-.. doxygenfunction:: am_ao_ctor
+.. doxygenfunction:: am_ao_create
 
 .. doxygenfunction:: am_ao_start
 
 .. doxygenfunction:: am_ao_stop
 
-.. doxygenfunction:: am_ao_state_ctor
+.. doxygenfunction:: am_ao_state_create
 
 .. doxygenfunction:: am_ao_state_dtor
 
@@ -547,7 +547,7 @@ The source code of the corresponding header file is in `pal.h <https://github.co
 .. doxygenstruct:: am_ticker_cfg
    :members:
 
-.. doxygenfunction:: am_pal_ctor
+.. doxygenfunction:: am_pal_create
 
 .. doxygenfunction:: am_pal_dtor
 

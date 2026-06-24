@@ -172,14 +172,14 @@ am_fsm_state_fn am_fsm_get_state(const struct am_fsm* fsm);
  * @param fsm    FSM object to construct.
  * @param state  Initial state/event handler function of @p fsm.
  */
-void am_fsm_ctor(struct am_fsm* fsm, am_fsm_state_fn state);
+void am_fsm_create(struct am_fsm* fsm, am_fsm_state_fn state);
 
 /**
  * Destruct an FSM object.
  *
  * Exits the current state.
  *
- * The FSM is not usable after this call. Call am_fsm_ctor() before using the
+ * The FSM is not usable after this call. Call am_fsm_create() before using the
  * FSM again.
  *
  * @param fsm  FSM object to destruct.
@@ -189,7 +189,7 @@ void am_fsm_dtor(struct am_fsm* fsm);
 /**
  * Perform an FSM initial transition.
  *
- * Calls the initial state handler set by am_fsm_ctor() with @p init_event and
+ * Calls the initial state handler set by am_fsm_create() with @p init_event and
  * performs the initial transition.
  *
  * @param fsm         FSM to initialize.

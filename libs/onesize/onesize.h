@@ -83,7 +83,9 @@ extern "C" {
  * @param hnd  the allocator
  * @param cfg  configuration
  */
-void am_onesize_ctor(struct am_onesize* hnd, const struct am_onesize_cfg* cfg);
+void am_onesize_create(
+    struct am_onesize* hnd, const struct am_onesize_cfg* cfg
+);
 
 /**
  * Allocate memory block of configured block size (eXtended version).

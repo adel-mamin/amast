@@ -37,7 +37,7 @@
 #include "ao/ao.h"
 #include "state.h"
 
-void am_ao_state_ctor_(void) {}
+void am_ao_state_create_(void) {}
 
 static bool am_ao_handle(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
@@ -109,13 +109,13 @@ void am_ao_start(
     const struct am_event* init_event
 ) {
     AM_ASSERT(ao);
-    AM_ASSERT(ao->ctor_called);
+    AM_ASSERT(ao->create_called);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(prio));
     AM_ASSERT(queue);
     AM_ASSERT(queue_size > 0);
 
     struct am_ao_state* me = &am_ao_state_;
-    am_event_queue_ctor(&ao->event_queue, queue, queue_size, me->alloc);
+    am_event_queue_create(&ao->event_queue, queue, queue_size, me->alloc);
 
     ao->prio = prio;
     ao->name = name;
@@ -161,7 +161,7 @@ void am_ao_stop(struct am_ao* ao) {
 
     AM_ATOMIC_FETCH_ADD(&me->aos_cnt, -1);
 
-    ao->ctor_called = false;
+    ao->create_called = false;
 
     AM_ATOMIC_STORE_N(&ao->running, false);
 

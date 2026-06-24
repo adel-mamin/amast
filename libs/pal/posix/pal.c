@@ -466,7 +466,7 @@ int am_printff(const char* fmt, ...) {
 
 void am_pal_flush(void) { fflush(stdout); }
 
-void* am_pal_ctor(void* arg) {
+void* am_pal_create(void* arg) {
     (void)arg;
     struct am_task* task = &task_main_;
 

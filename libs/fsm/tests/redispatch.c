@@ -95,7 +95,7 @@ static enum am_rc redisp_fsm_sinit(
 
 static void redispatch_fsm(void) {
     struct redisp_fsm* me = &m_redisp_fsm;
-    am_fsm_ctor(&me->fsm, redisp_fsm_sinit);
+    am_fsm_create(&me->fsm, redisp_fsm_sinit);
 
     am_fsm_init(&me->fsm, /*init_event=*/NULL);
     AM_ASSERT(0 == me->a_handled);

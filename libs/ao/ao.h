@@ -112,8 +112,8 @@ struct am_ao {
     struct am_ao_prio prio;
     /** User AO init event */
     const struct am_event* init_event;
-    /** safety net to catch missing am_ao_ctor() call */
-    bool ctor_called;
+    /** safety net to catch missing am_ao_create() call */
+    bool create_called;
     /** am_ao_start() call was made for the AO */
     bool running;
 };
@@ -433,7 +433,7 @@ void am_ao_post_lifo(struct am_ao* ao, const struct am_event* event);
  * @param event_handler  the event handler
  * @param ctx            the event handler context
  */
-void am_ao_ctor(
+void am_ao_create(
     struct am_ao* ao, am_ao_fn init_handler, am_ao_fn event_handler, void* ctx
 );
 
@@ -488,7 +488,7 @@ void am_ao_stop(struct am_ao* ao);
  *             The active object library makes an internal copy of
  *             the configuration. Can be NULL.
  */
-void am_ao_state_ctor(const struct am_ao_state_cfg* cfg);
+void am_ao_state_create(const struct am_ao_state_cfg* cfg);
 
 /**
  * Active object library state destructor.

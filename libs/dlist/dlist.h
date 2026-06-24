@@ -39,7 +39,7 @@
  * List iterator traverse direction.
  *
  * Used together with list iterator API
- * am_dlist_iterator_ctor() to specify the direction
+ * am_dlist_iterator_create() to specify the direction
  * in which doubly linked list iterator traverses the list.
  */
 enum am_dlist_direction {
@@ -115,7 +115,7 @@ extern "C" {
  *
  * @param list  the list
  */
-void am_dlist_ctor(struct am_dlist* list);
+void am_dlist_create(struct am_dlist* list);
 
 /**
  * Check if list is empty.
@@ -144,7 +144,7 @@ bool am_dlist_item_is_linked(const struct am_dlist_item* item);
  *
  * @param item  list item to construct
  */
-void am_dlist_item_ctor(struct am_dlist_item* item);
+void am_dlist_item_create(struct am_dlist_item* item);
 
 /**
  * Give next item after the given one.
@@ -309,7 +309,7 @@ struct am_dlist_item* am_dlist_find(
  * @param dir   the direction, at which the iteration is going to be done,
  *              when am_dlist_iterator_next() is used.
  */
-void am_dlist_iterator_ctor(
+void am_dlist_iterator_create(
     struct am_dlist* list,
     struct am_dlist_iterator* it,
     enum am_dlist_direction dir
@@ -323,7 +323,7 @@ void am_dlist_iterator_ctor(
  * the list were visited, the next invocation of the function returns NULL.
  * The current visited item can only be popped with am_dlist_iterator_pop().
  *
- * @param it  the iterator constructed by am_dlist_iterator_ctor()
+ * @param it  the iterator constructed by am_dlist_iterator_create()
  *
  * @return the visited item or NULL, if the iteration is over
  *         The item is not popped from the list.
@@ -337,7 +337,7 @@ struct am_dlist_item* am_dlist_iterator_next(struct am_dlist_iterator* it);
  * At least one am_dlist_iterator_next() is expected for the iterator before
  * this function is called. Otherwise the behavior is undefined. The only valid
  * operation possible after this call is am_dlist_iterator_next() or
- * am_dlist_iterator_ctor(). Otherwise the behavior is undefined.
+ * am_dlist_iterator_create(). Otherwise the behavior is undefined.
  *
  * @param it  the iterator
  *

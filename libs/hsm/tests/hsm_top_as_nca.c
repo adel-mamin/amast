@@ -71,7 +71,7 @@ static enum am_rc nca_init(struct am_hsm* hsm, const struct am_event* event) {
 
 static void test_am_hsm_top_as_nca(void) {
     struct am_hsm* hsm = &m_test_nca;
-    am_hsm_ctor(hsm, am_hsm_state(nca_init));
+    am_hsm_create(hsm, am_hsm_state(nca_init));
 
     am_hsm_init(hsm, /*init_event=*/NULL);
     AM_ASSERT(am_hsm_is_in(hsm, am_hsm_state(nca_s11)));

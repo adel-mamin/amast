@@ -84,7 +84,7 @@ static void test_am_event_queue(const int capacity, const int rdwr_num) {
     const struct am_event* pool[capacity];
 
     struct am_event_queue q;
-    am_event_queue_ctor(&q, pool, capacity, &alloc);
+    am_event_queue_create(&q, pool, capacity, &alloc);
     AM_ASSERT(am_event_queue_is_empty(&q));
 
     if (!rdwr_num) {

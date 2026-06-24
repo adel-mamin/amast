@@ -86,7 +86,7 @@ System Integration
 The module integrates seamlessly into systems requiring efficient data
 handling. Key integration points include:
 
-- **Initialization**: Use ``am_ringbuf_ctor`` to configure the buffer descriptor
+- **Initialization**: Use ``am_ringbuf_create`` to configure the buffer descriptor
   and associate it with the preallocated memory.
 - **Data Handling**: Retrieve read and write pointers using
   ``am_ringbuf_get_read_ptr`` and ``am_ringbuf_get_write_ptr``, then manage data

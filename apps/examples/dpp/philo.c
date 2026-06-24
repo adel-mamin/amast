@@ -155,7 +155,7 @@ static enum am_rc philo_init(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_tran(hsm, philo_thinking);
 }
 
-void philo_ctor(
+void philo_create(
     int id,
     struct am_ao* table,
     struct am_timer* timer,
@@ -169,12 +169,12 @@ void philo_ctor(
     memset(me, 0, sizeof(*me));
     me->cnt = 0;
     me->id = id;
-    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, am_hsm_state(philo_init));
+    am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_create(&me->hsm, am_hsm_state(philo_init));
 
     me->table = table;
     me->timer = timer;
-    me->timeout = am_timer_event_ctor_x(EVT_TIMEOUT, &me->ao);
+    me->timeout = am_timer_event_create_x(EVT_TIMEOUT, &me->ao);
     me->alloc = alloc;
 }
 

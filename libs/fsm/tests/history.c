@@ -128,7 +128,7 @@ static enum am_rc oven_fsm_init(
 
 static void test_oven_fsm(void) {
     struct oven_fsm* me = &m_oven_fsm;
-    am_fsm_ctor(&me->fsm, oven_fsm_init);
+    am_fsm_create(&me->fsm, oven_fsm_init);
 
     am_fsm_init(&me->fsm, /*init_event=*/NULL);
     AM_ASSERT(am_fsm_is_in(&me->fsm, oven_fsm_off));

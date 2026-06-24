@@ -50,8 +50,8 @@ struct am_event_queue {
     struct am_event_alloc* alloc; /**< the event allocator */
 
     unsigned full : 1; /**< queue is full */
-    /** safety net to catch missing am_event_queue_ctor() call */
-    unsigned ctor_called : 1;
+    /** safety net to catch missing am_event_queue_create() call */
+    unsigned create_called : 1;
 };
 
 /** Event queue handling policy. */
@@ -90,7 +90,7 @@ extern "C" {
  * @param nevents  the number of event pointers in \a events
  * @param alloc    the event memory allocator
  */
-void am_event_queue_ctor(
+void am_event_queue_create(
     struct am_event_queue* queue,
     const struct am_event* events[],
     int nevents,

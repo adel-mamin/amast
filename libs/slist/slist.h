@@ -113,7 +113,7 @@ extern "C" {
  *
  * @param list  the list
  */
-void am_slist_ctor(struct am_slist* list);
+void am_slist_create(struct am_slist* list);
 
 /**
  * Check if list is empty.
@@ -142,7 +142,7 @@ bool am_slist_item_is_linked(const struct am_slist_item* item);
  *
  * @param item  the list item to construct.
  */
-void am_slist_item_ctor(struct am_slist_item* item);
+void am_slist_item_create(struct am_slist_item* item);
 
 /**
  * Push new item after the item, which is already in list.
@@ -304,7 +304,7 @@ void am_slist_append(struct am_slist* to, struct am_slist* from);
  * @param list  the list
  * @param it    the iterator to be constructed
  */
-void am_slist_iterator_ctor(
+void am_slist_iterator_create(
     struct am_slist* list, struct am_slist_iterator* it
 );
 
@@ -318,7 +318,7 @@ void am_slist_iterator_ctor(
  *
  * The current visited item can only be popped with am_slist_iterator_pop().
  *
- * @param it  the iterator constructed by am_slist_iterator_ctor()
+ * @param it  the iterator constructed by am_slist_iterator_create()
  * @return the visited item or NULL, if the iteration is over.
  *         The item is not popped from the list.
  */
@@ -334,7 +334,7 @@ struct am_slist_item* am_slist_iterator_next(struct am_slist_iterator* it);
  * before this function is called. Otherwise the behavior is undefined.
  *
  * The valid operations possible after this call are am_slist_iterator_next()
- * or am_slist_iterator_ctor(). Otherwise the behavior is undefined.
+ * or am_slist_iterator_create(). Otherwise the behavior is undefined.
  *
  * @param it  the iterator
  *

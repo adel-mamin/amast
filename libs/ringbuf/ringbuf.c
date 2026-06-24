@@ -35,7 +35,7 @@
 #include "common/macros.h"
 #include "ringbuf/ringbuf.h"
 
-void am_ringbuf_ctor(struct am_ringbuf* rb, void* buf, int buf_size) {
+void am_ringbuf_create(struct am_ringbuf* rb, void* buf, int buf_size) {
     AM_ASSERT(rb);
     AM_ASSERT(buf);
     AM_ASSERT(buf_size > 0);

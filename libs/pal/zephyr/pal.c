@@ -71,7 +71,7 @@ struct am_task {
 static struct am_task am_task_main_ = {0};
 static struct am_task am_tasks_[AM_TASK_NUM_MAX] = {0};
 
-void* am_pal_ctor(void* arg) {
+void* am_pal_create(void* arg) {
     (void)arg;
     am_pal_spinlock_ = (struct k_spinlock){};
     init_complete_mutex_ = am_mutex_create();

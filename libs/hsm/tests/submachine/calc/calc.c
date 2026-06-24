@@ -563,9 +563,9 @@ static enum am_rc calc_init(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_tran(hsm, calc_on);
 }
 
-void calc_ctor(void (*log)(const char* fmt, ...)) {
+void calc_create(void (*log)(const char* fmt, ...)) {
     struct calc* me = &m_calc;
-    am_hsm_ctor(&me->hsm, am_hsm_state(calc_init));
+    am_hsm_create(&me->hsm, am_hsm_state(calc_init));
     me->log = log;
 }
 

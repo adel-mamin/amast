@@ -64,7 +64,7 @@ Macros
 Functions
 ---------
 
-- **void am_coro_ctor(struct am_coro *me)**
+- **void am_coro_create(struct am_coro *me)**
 
   Initializes an ``struct am_coro`` structure by setting its ``state`` field
   to ``AM_CORO_STATE_INIT``. This prepares the structure to be used in

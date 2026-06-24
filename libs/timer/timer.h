@@ -114,7 +114,7 @@ extern "C" {
  *
  * @param timer  the timer state
  */
-void am_timer_ctor(struct am_timer* timer);
+void am_timer_create(struct am_timer* timer);
 
 /**
  * Timer event constructor.
@@ -123,7 +123,7 @@ void am_timer_ctor(struct am_timer* timer);
  *
  * @return the constructed event
  */
-static inline struct am_timer_event am_timer_event_ctor(uint16_t id) {
+static inline struct am_timer_event am_timer_event_create(uint16_t id) {
     return (struct am_timer_event){.event = {.id = id}};
 }
 
@@ -135,7 +135,7 @@ static inline struct am_timer_event am_timer_event_ctor(uint16_t id) {
  *
  * @return the constructed event
  */
-static inline struct am_timer_event_x am_timer_event_ctor_x(
+static inline struct am_timer_event_x am_timer_event_create_x(
     uint16_t id, void* ctx
 ) {
     struct am_timer_event_x e = {0};

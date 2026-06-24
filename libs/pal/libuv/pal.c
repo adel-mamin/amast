@@ -105,7 +105,7 @@ static int am_pal_id_from_index(int index) {
     return index + 1;
 }
 
-void* am_pal_ctor(void* arg) {
+void* am_pal_create(void* arg) {
     if (arg) {
         loop_ = (uv_loop_t*)arg;
     } else {

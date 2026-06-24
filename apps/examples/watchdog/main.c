@@ -103,14 +103,14 @@ static enum am_rc watched_init(
     return am_hsm_tran(hsm, watched_proc);
 }
 
-static void watched_ctor(
+static void watched_create(
     struct watched* me, struct am_timer* timer, struct am_ao* wdt
 ) {
     memset(me, 0, sizeof(*me));
-    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, am_hsm_state(watched_init));
+    am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_create(&me->hsm, am_hsm_state(watched_init));
     me->timer = timer;
-    me->feed = am_timer_event_ctor_x(EVT_WATCHED_TIMEOUT, &me->ao);
+    me->feed = am_timer_event_create_x(EVT_WATCHED_TIMEOUT, &me->ao);
     me->wdt = wdt;
 }
 
@@ -144,12 +144,12 @@ static enum am_rc wdt_init(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_tran(hsm, wdt_proc);
 }
 
-static void wdt_ctor(struct wdt* me, struct am_timer* timer) {
+static void wdt_create(struct wdt* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
-    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, am_hsm_state(wdt_init));
+    am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_create(&me->hsm, am_hsm_state(wdt_init));
     me->timer = timer;
-    me->bark = am_timer_event_ctor_x(EVT_WDT_BARK, &me->ao);
+    me->bark = am_timer_event_create_x(EVT_WDT_BARK, &me->ao);
 }
 
 static void ticker_cb(void* param) {
@@ -168,20 +168,20 @@ static void ticker_cb(void* param) {
 }
 
 int main(void) {
-    am_pal_ctor(/*arg=*/NULL);
+    am_pal_create(/*arg=*/NULL);
 
     struct am_timer timer;
-    am_timer_ctor(&timer);
+    am_timer_create(&timer);
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
-    am_ao_state_ctor(/*cfg=*/NULL);
+    am_ao_state_create(/*cfg=*/NULL);
 
     struct wdt wdt;
-    wdt_ctor(&wdt, &timer);
+    wdt_create(&wdt, &timer);
 
     struct watched watched;
-    watched_ctor(&watched, &timer, &wdt.ao);
+    watched_create(&watched, &timer, &wdt.ao);
 
     const struct am_event* queue_watched[1];
     am_ao_start(

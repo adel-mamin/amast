@@ -69,7 +69,7 @@ extern "C" {
  *
  * @return Platform specific handler. Can be NULL.
  */
-void* am_pal_ctor(void* arg);
+void* am_pal_create(void* arg);
 
 /** PAL destructor. */
 void am_pal_dtor(void);

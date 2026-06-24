@@ -200,8 +200,8 @@ static enum am_rc coro_regular(
     struct coro* me = AM_CONTAINER_OF(hsm, struct coro, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_coro_ctor(&me->coro);
-        am_coro_ctor(&me->coro_blinking_green);
+        am_coro_create(&me->coro);
+        am_coro_create(&me->coro_blinking_green);
         am_ao_post_fifo(&me->ao, &am_evt_start);
         return am_hsm_handled(hsm);
     }
@@ -223,7 +223,7 @@ static enum am_rc coro_off(struct am_hsm* hsm, const struct am_event* event) {
     struct coro* me = AM_CONTAINER_OF(hsm, struct coro, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_coro_ctor(&me->coro);
+        am_coro_create(&me->coro);
         am_ao_post_fifo(&me->ao, &am_evt_start);
         return am_hsm_handled(hsm);
     }
@@ -269,14 +269,14 @@ static enum am_rc coro_init(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_tran(hsm, coro_top);
 }
 
-static void coro_ctor(struct coro* me, struct am_timer* timer) {
+static void coro_create(struct coro* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
 
-    am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, am_hsm_state(coro_init));
+    am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_create(&me->hsm, am_hsm_state(coro_init));
 
     me->timer = timer;
-    me->timeout = am_timer_event_ctor_x(CORO_EVT_TIMER, &me->ao);
+    me->timeout = am_timer_event_create_x(CORO_EVT_TIMER, &me->ao);
 }
 
 static void ticker_cb(void* param) {
@@ -319,19 +319,19 @@ static void input_task(void* param) {
 }
 
 int main(void) {
-    am_pal_ctor(/*arg=*/NULL);
+    am_pal_create(/*arg=*/NULL);
 
     struct am_event_subscribe_list pubsub_list[CORO_EVT_PUB_MAX];
     am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), /*alloc=*/NULL);
 
-    am_ao_state_ctor(/*cfg=*/NULL);
+    am_ao_state_create(/*cfg=*/NULL);
 
     struct am_timer timer;
-    am_timer_ctor(&timer);
+    am_timer_create(&timer);
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
     struct coro m;
-    coro_ctor(&m, &timer);
+    coro_create(&m, &timer);
 
     const struct am_event* queue[2];
 

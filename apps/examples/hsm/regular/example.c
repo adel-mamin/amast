@@ -55,7 +55,7 @@ static void test_print(int c) {
 }
 
 int main(void) {
-    regular_ctor(test_log);
+    regular_create(test_log);
 
     printf(AM_COLOR_BLUE_BOLD);
     printf("Type event [A,B,C,D,E,F,G,H,I] (T to terminate)\n");

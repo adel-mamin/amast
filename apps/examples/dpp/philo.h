@@ -34,7 +34,7 @@
 #define PHILO_NUM 5
 
 struct am_ao* philo_get_obj(int id);
-void philo_ctor(
+void philo_create(
     int id,
     struct am_ao* table,
     struct am_timer* timer,

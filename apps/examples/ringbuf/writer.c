@@ -91,7 +91,7 @@ static void ringbuf_writer_event_handler(
     }
 }
 
-void ringbuf_writer_ctor(
+void ringbuf_writer_create(
     struct am_ringbuf* ringbuf,
     struct am_timer* timer,
     const uint8_t* data,
@@ -100,7 +100,7 @@ void ringbuf_writer_ctor(
     struct ringbuf_writer* me = &m_ringbuf_writer;
     memset(me, 0, sizeof(*me));
     me->len = 1;
-    am_ao_ctor(
+    am_ao_create(
         &me->ao,
         (am_ao_fn)ringbuf_writer_init_handler,
         (am_ao_fn)ringbuf_writer_event_handler,
@@ -110,7 +110,7 @@ void ringbuf_writer_ctor(
     me->data = data;
     me->datalen = len;
     me->timer = timer;
-    me->wait = am_timer_event_ctor_x(AM_EVT_RINGBUF_WAIT, &me->ao);
+    me->wait = am_timer_event_create_x(AM_EVT_RINGBUF_WAIT, &me->ao);
 }
 
 struct am_ao* ringbuf_writer_get_obj(void) { return &m_ringbuf_writer.ao; }

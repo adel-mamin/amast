@@ -97,9 +97,9 @@ State Transition
 
 The library supports two main types of state transitions:
 
-1. Standard Transition (:c:macro:`am_fsm_tran()`):
+1. Standard Transition (:cpp:func:`am_fsm_tran()`):
    Moves directly from the current state to the new state.
-2. Redispatch Transition (:c:macro:`am_fsm_tran_redispatch()`):
+2. Redispatch Transition (:cpp:func:`am_fsm_tran_redispatch()`):
    Transitions to a new state and redispatches the event for further processing.
 
 Both type of state transitions are used within state handlers to initiate
@@ -117,7 +117,7 @@ Initial State
 =============
 
 The initial state of the FSM is provided during the FSM’s construction
-using the :cpp:func:`am_fsm_ctor()` function.
+using the :cpp:func:`am_fsm_create()` function.
 
 This state is set to handle any initial setup required by the FSM and
 ensures that the FSM begins with a predictable configuration.
@@ -129,7 +129,7 @@ Example:
 .. code:: c
 
     struct am_fsm my_fsm;
-    am_fsm_ctor(&my_fsm, initial_state);
+    am_fsm_create(&my_fsm, initial_state);
     am_fsm_init(&my_fsm, NULL); /* initiates with no event */
 
 The initial state must always return **am_fsm_tran(fsm, new_state)** macro
@@ -157,14 +157,14 @@ FSM Coding Rules
    }
 
 3. Each user event handler should be implemented as a switch-case of handled
-   events. To report that an event is handled, return :c:macro:`am_fsm_handled()`.
-   To initiate a transition, return :c:macro:`am_fsm_tran()` or
-   :c:macro:`am_fsm_tran_redispatch()`.
+   events. To report that an event is handled, return :cpp:func:`am_fsm_handled()`.
+   To initiate a transition, return :cpp:func:`am_fsm_tran()` or
+   :cpp:func:`am_fsm_tran_redispatch()`.
 4. Avoid placing any code with side effects outside of the switch-case of
    event handlers.
 5. Processing of :c:macro:`AM_EVT_ENTRY` and :c:macro:`AM_EVT_EXIT` events should
    not trigger state transitions. It means that user event handlers should
-   not return :c:macro:`am_fsm_tran()` or :c:macro:`am_fsm_tran_redispatch()` for
+   not return :cpp:func:`am_fsm_tran()` or :cpp:func:`am_fsm_tran_redispatch()` for
    these events.
 6. Processing of :c:macro:`AM_EVT_ENTRY` and :c:macro:`AM_EVT_EXIT` events should be
    done at the top of the corresponding event handler for better readability.
@@ -175,7 +175,7 @@ FSM Initialization
 FSM initialization is divided into the following two steps for increased
 flexibility and better control of the initialization timeline:
 
-1. the state machine constructor (:cpp:func:`am_fsm_ctor()`)
+1. the state machine constructor (:cpp:func:`am_fsm_create()`)
 2. the initial transition (:cpp:func:`am_fsm_init()`).
 
 Transition To History

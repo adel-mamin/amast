@@ -104,18 +104,18 @@ static enum am_rc fsmq_init(struct am_fsm* fsm, const struct am_event* event) {
     return am_fsm_tran(fsm, fsmq_a);
 }
 
-static void fsmq_ctor(
+static void fsmq_create(
     AM_PRINTF(1, 0) void (*log)(const char* fmt, ...),
     struct am_event_alloc* alloc
 ) {
     struct am_fsmq* me = &am_fsmq_;
-    am_fsm_ctor(&me->fsm, fsmq_init);
+    am_fsm_create(&me->fsm, fsmq_init);
     me->log = log;
     me->alloc = alloc;
 
     /* setup FSM event queue */
     static const struct am_event* pool[2];
-    am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool), alloc);
+    am_event_queue_create(&me->event_queue, pool, AM_COUNTOF(pool), alloc);
 }
 
 static enum am_rc fsmq_a(struct am_fsm* fsm, const struct am_event* event) {
@@ -171,7 +171,7 @@ int main(void) {
 
     am_event_async_init(/*sub=*/NULL, /*nsub=*/0, &alloc);
 
-    fsmq_ctor(fsmq_log, &alloc);
+    fsmq_create(fsmq_log, &alloc);
 
     m_fsmq_log_buf[0] = '\0';
     am_fsm_init(am_fsmq, /*init_event=*/NULL);

@@ -85,7 +85,7 @@ bool am_ao_post_fifo_x(
     struct am_ao* ao, const struct am_event* event, int margin
 ) {
     AM_ASSERT(ao);
-    AM_ASSERT(AM_ATOMIC_LOAD_N(&ao->ctor_called));
+    AM_ASSERT(AM_ATOMIC_LOAD_N(&ao->create_called));
     AM_ASSERT(AM_ATOMIC_LOAD_N(&ao->running));
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
@@ -104,7 +104,7 @@ bool am_ao_post_lifo_x(
     struct am_ao* ao, const struct am_event* event, int margin
 ) {
     AM_ASSERT(ao);
-    AM_ASSERT(AM_ATOMIC_LOAD_N(&ao->ctor_called));
+    AM_ASSERT(AM_ATOMIC_LOAD_N(&ao->create_called));
     AM_ASSERT(AM_ATOMIC_LOAD_N(&ao->running));
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
@@ -142,7 +142,7 @@ void am_ao_unsubscribe_all(const struct am_ao* ao) {
     am_event_async_unsubscribe_all(ao->prio.ao);
 }
 
-void am_ao_ctor(
+void am_ao_create(
     struct am_ao* ao, am_ao_fn init_handler, am_ao_fn event_handler, void* ctx
 ) {
     AM_ASSERT(ao);
@@ -153,14 +153,14 @@ void am_ao_ctor(
     ao->user_init_handler = init_handler;
     ao->user_event_handler = event_handler;
     ao->ctx = ctx;
-    ao->ctor_called = true;
+    ao->create_called = true;
 }
 
-void am_ao_state_ctor(const struct am_ao_state_cfg* cfg) {
+void am_ao_state_create(const struct am_ao_state_cfg* cfg) {
     struct am_ao_state* me = &am_ao_state_;
     memset(me, 0, sizeof(*me));
 
-    am_ao_state_ctor_();
+    am_ao_state_create_();
 
     AM_ATOMIC_STORE_N(&me->init_complete, false);
 

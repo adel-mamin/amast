@@ -95,7 +95,7 @@ static void test_container_of(void) {
 }
 
 static void test_throttle(void) {
-    struct am_throttle throttle = AM_THROTTLE_CTOR();
+    struct am_throttle throttle = AM_THROTTLE_CREATE();
     int i = 0;
     if (am_throttle_allow(&throttle, 1, /*now_ms=*/0)) {
         ++i;

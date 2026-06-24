@@ -121,27 +121,27 @@ static int loopback_test_init(
 }
 
 int main(void) {
-    am_pal_ctor(/*arg=*/NULL);
+    am_pal_create(/*arg=*/NULL);
 
     am_event_async_init(/*sub=*/NULL, /*nsub=*/0, /*alloc=*/NULL);
 
-    am_ao_state_ctor(/*cfg=*/NULL);
+    am_ao_state_create(/*cfg=*/NULL);
 
-    am_ao_ctor(
+    am_ao_create(
         &m_loopback.ao,
         (am_ao_fn)am_hsm_init,
         (am_ao_fn)am_hsm_dispatch,
         &m_loopback
     );
-    am_hsm_ctor(&m_loopback.hsm, am_hsm_state(loopback_init));
+    am_hsm_create(&m_loopback.hsm, am_hsm_state(loopback_init));
 
-    am_ao_ctor(
+    am_ao_create(
         &m_loopback_test.ao,
         (am_ao_fn)am_hsm_init,
         (am_ao_fn)am_hsm_dispatch,
         &m_loopback_test
     );
-    am_hsm_ctor(&m_loopback_test.hsm, am_hsm_state(loopback_test_init));
+    am_hsm_create(&m_loopback_test.hsm, am_hsm_state(loopback_test_init));
 
     am_ao_start(
         &m_loopback.ao,
