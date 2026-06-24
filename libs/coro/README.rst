@@ -44,19 +44,19 @@ Macros
 
   Ends the coroutine function/block.
 
-- **AM_CORO_AWAIT(cond)**
+- **AM_CORO_AWAIT(me, cond)**
 
   Awaits a specified condition ``cond`` before proceeding with execution.
   If the condition is not met, the function/block returns and can be re-entered later.
   This allows the coroutine function/block to wait for external conditions without blocking.
 
-- **AM_CORO_CALL(func)**
+- **AM_CORO_CALL(me, func)**
 
   Call an coroutine function and evaluate its return value.
   Returns, if the coroutine function call return value is not ``AM_RC_ASYNC_DONE``,
   in which case the function call is evaluated again on next invocation.
 
-- **AM_CORO_YIELD()**
+- **AM_CORO_YIELD(me)**
 
   Yields control back to the caller without completing the function/block
   This enables the coroutine function/block to be resumed later from this point.
