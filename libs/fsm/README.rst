@@ -97,15 +97,15 @@ State Transition
 
 The library supports two main types of state transitions:
 
-1. Standard Transition (:c:macro:`AM_FSM_TRAN()`):
+1. Standard Transition (:c:macro:`am_fsm_tran()`):
    Moves directly from the current state to the new state.
-2. Redispatch Transition (:c:macro:`AM_FSM_TRAN_REDISPATCH()`):
+2. Redispatch Transition (:c:macro:`am_fsm_tran_redispatch()`):
    Transitions to a new state and redispatches the event for further processing.
 
 Both type of state transitions are used within state handlers to initiate
 a transition, updating the FSM's state and returning control to the dispatcher.
 
-If state handler function returns **AM_FSM_TRAN_REDISPATCH(fsm, target_state)**,
+If state handler function returns **am_fsm_tran_redispatch(fsm, target_state)**,
 then the transition is executed first and then the same event is
 dispatched to the new current state. This is a convenience feature,
 that allows FSM to handle the event in the state that expects it.
@@ -132,7 +132,7 @@ Example:
     am_fsm_ctor(&my_fsm, initial_state);
     am_fsm_init(&my_fsm, NULL); /* initiates with no event */
 
-The initial state must always return **AM_FSM_TRAN(fsm, new_state)** macro
+The initial state must always return **am_fsm_tran(fsm, new_state)** macro
 to proceed to the appropriate active state.
 
 FSM Coding Rules
@@ -153,18 +153,18 @@ FSM Coding Rules
    static enum am_rc foo_state(struct am_fsm *fsm, const struct am_event *event) {
        struct foo *me = AM_CONTAINER_OF(fsm, struct foo, fsm);
        ...
-       return AM_FSM_HANDLED(fsm);
+       return am_fsm_handled(fsm);
    }
 
 3. Each user event handler should be implemented as a switch-case of handled
-   events. To report that an event is handled, return :c:macro:`AM_FSM_HANDLED()`.
-   To initiate a transition, return :c:macro:`AM_FSM_TRAN()` or
-   :c:macro:`AM_FSM_TRAN_REDISPATCH()`.
+   events. To report that an event is handled, return :c:macro:`am_fsm_handled()`.
+   To initiate a transition, return :c:macro:`am_fsm_tran()` or
+   :c:macro:`am_fsm_tran_redispatch()`.
 4. Avoid placing any code with side effects outside of the switch-case of
    event handlers.
 5. Processing of :c:macro:`AM_EVT_ENTRY` and :c:macro:`AM_EVT_EXIT` events should
    not trigger state transitions. It means that user event handlers should
-   not return :c:macro:`AM_FSM_TRAN()` or :c:macro:`AM_FSM_TRAN_REDISPATCH()` for
+   not return :c:macro:`am_fsm_tran()` or :c:macro:`am_fsm_tran_redispatch()` for
    these events.
 6. Processing of :c:macro:`AM_EVT_ENTRY` and :c:macro:`AM_EVT_EXIT` events should be
    done at the top of the corresponding event handler for better readability.
@@ -228,10 +228,10 @@ The user code stores the current state in a local variable of type
        switch (event->id) {
        case AM_EVT_ENTRY:
            me->history = am_fsm_state(&me->fsm);
-           return AM_FSM_HANDLED(fsm);
+           return am_fsm_handled(fsm);
        ...
        }
-       return AM_FSM_HANDLED(fsm);
+       return am_fsm_handled(fsm);
    }
 
 Then the transition to the state *C* happens, which is then followed by a request
@@ -244,10 +244,10 @@ in **me->history** it can be done by doing this:
        struct foo* me = AM_CONTAINER_OF(fsm, struct foo, fsm);
        switch (event->id) {
        case FSM_EVT_E4:
-           return AM_FSM_TRAN(fsm, me->history);
+           return am_fsm_tran(fsm, me->history);
        ...
        }
-       return AM_FSM_HANDLED(fsm);
+       return am_fsm_handled(fsm);
    }
 
 As you can see the state *C* does not need to specify the previous

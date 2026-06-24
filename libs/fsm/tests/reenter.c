@@ -54,21 +54,21 @@ static enum am_rc reenter_fsm_s(
         break;
     case AM_EVT_USER:
         me->log("s-AM_EVT_USER;");
-        return AM_FSM_TRAN(fsm, reenter_fsm_s);
+        return am_fsm_tran(fsm, reenter_fsm_s);
     case AM_EVT_EXIT:
         me->log("s-AM_EVT_EXIT;");
         break;
     default:
         break;
     }
-    return AM_FSM_HANDLED(fsm);
+    return am_fsm_handled(fsm);
 }
 
 static enum am_rc reenter_fsm_init(
     struct am_fsm* fsm, const struct am_event* event
 ) {
     (void)event;
-    return AM_FSM_TRAN(fsm, reenter_fsm_s);
+    return am_fsm_tran(fsm, reenter_fsm_s);
 }
 
 static void reenter_fsm_ctor(

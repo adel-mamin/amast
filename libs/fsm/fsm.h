@@ -27,7 +27,7 @@
 /**
  * @file
  *
- * Finite State Machine (FSM) libary API declaration.
+ * Finite State Machine (FSM) library API declaration.
  */
 
 #ifndef AM_FSM_H_INCLUDED
@@ -39,20 +39,21 @@
 #include "common/types.h"
 #include "event/event_common.h"
 
-/** Forward declaration. */
+/** Forward declaration of FSM descriptor. */
 struct am_fsm;
 
 /**
- * FSM state (event handler) function type.
+ * FSM state/event handler function type.
  *
- * @param fsm    the FSM
- * @param event  the event to handle
+ * @param fsm    FSM that receives @p event.
+ * @param event  Event to handle.
  *
- * @retval AM_RC_CORO_BUSY       - event was handled
- * @retval AM_RC_CORO_DONE       - event was handled
- * @retval AM_RC_HANDLED         - event was handled
- * @retval AM_RC_TRAN            - event caused state transition
- * @retval AM_RC_TRAN_REDISPATCH - event caused state transition and redispatch
+ * @retval AM_RC_CORO_BUSY         Event was handled.
+ * @retval AM_RC_CORO_DONE         Event was handled.
+ * @retval AM_RC_HANDLED           Event was handled.
+ * @retval AM_RC_TRAN              Event caused a state transition.
+ * @retval AM_RC_TRAN_REDISPATCH   Event caused a state transition and the same
+ *                                 event shall be redispatched.
  */
 typedef enum am_rc (*am_fsm_state_fn)(
     struct am_fsm* fsm, const struct am_event* event
@@ -61,116 +62,138 @@ typedef enum am_rc (*am_fsm_state_fn)(
 /**
  * FSM descriptor.
  *
- * None of the fields of the descriptor are to be accessed directly
- * by user code. The only purpose of exposing it is to allow user
- * code to reserve memory for it.
+ * None of the fields of the descriptor should be accessed directly by user
+ * code. The descriptor is exposed only so user code can reserve memory for it.
  */
 struct am_fsm {
-    /** Active state. */
+    /** Active state/event handler function. */
     am_fsm_state_fn state;
-    /** Safety net to catch missing am_fsm_init() call. */
+    /** Safety net to catch a missing am_fsm_init() call. */
     uint8_t init_called : 1;
-    /** Safety net to catch erroneous reentrant am_fsm_dispatch() call. */
+    /** Safety net to catch an erroneous reentrant am_fsm_dispatch() call. */
     uint8_t dispatch_in_progress : 1;
 };
 
 /**
- * Event processing is over.
+ * Finish event processing without triggering a state transition.
  *
- * No transition is taken.
+ * Use this as a return value from a state handler that handled an event.
  *
- * Used as a default return value from FSM event handlers.
+ * @param fsm  FSM that is processing the event.
+ *
+ * @retval AM_RC_HANDLED  Event was handled.
  */
-#define AM_FSM_HANDLED(fsm) AM_RC_HANDLED
+static inline enum am_rc am_fsm_handled(struct am_fsm* fsm) {
+    (void)fsm;
+    return AM_RC_HANDLED;
+}
 
 /**
- * Event processing is over. Transition is taken.
+ * Trigger a transition to another state.
  *
- * It should never be returned in response to
- * #AM_EVT_ENTRY or #AM_EVT_EXIT events.
+ * It should never be returned in response to #AM_EVT_ENTRY or #AM_EVT_EXIT
+ * events.
  *
- * @param fn  the new state of type #am_fsm_state_fn
+ * @param fsm  FSM that is processing the event.
+ * @param fn   Target FSM state/event handler function.
+ *
+ * @retval AM_RC_TRAN  State transition was triggered.
  */
-#define AM_FSM_TRAN(fsm, fn) ((fsm)->state = (fn), AM_RC_TRAN)
+static inline enum am_rc am_fsm_tran(struct am_fsm* fsm, am_fsm_state_fn fn) {
+    fsm->state = fn;
+    return AM_RC_TRAN;
+}
 
 /**
- * Same event redispatch is requested. Transition is taken.
+ * Trigger a transition and request redispatch of the same event.
  *
- * It should never be returned for #AM_EVT_ENTRY or #AM_EVT_EXIT events.
+ * It should never be returned in response to #AM_EVT_ENTRY or #AM_EVT_EXIT
+ * events.
  *
- * Do not redispatch the same event more than once within same
+ * Do not redispatch the same event more than once within the same
  * am_fsm_dispatch() call.
  *
- * @param fn  the new state of type #am_fsm_state_fn
+ * @param fsm  FSM that is processing the event.
+ * @param fn   Target FSM state/event handler function.
+ *
+ * @retval AM_RC_TRAN_REDISPATCH  State transition was triggered and the same
+ *                                event shall be redispatched.
  */
-#define AM_FSM_TRAN_REDISPATCH(fsm, fn) \
-    ((fsm)->state = (fn), AM_RC_TRAN_REDISPATCH)
+static inline enum am_rc am_fsm_tran_redispatch(
+    struct am_fsm* fsm, am_fsm_state_fn fn
+) {
+    fsm->state = fn;
+    return AM_RC_TRAN_REDISPATCH;
+}
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * Synchronous dispatch of event to a given FSM.
+ * Synchronously dispatch an event to an FSM.
  *
- * @param fsm    the FSM
- * @param event  the event to dispatch
+ * The caller retains ownership of @p event. Do not free the event from user
+ * state handlers.
+ *
+ * @param fsm    FSM to dispatch @p event to.
+ * @param event  Event to dispatch.
  */
 void am_fsm_dispatch(struct am_fsm* fsm, const struct am_event* event);
 
 /**
- * Check whether FSM is in a given state.
+ * Check whether an FSM is in a given state.
  *
- * Use sparingly to check states of other state machine(s) as
- * it breaks encapsulation.
+ * Use sparingly to check states of other state machines, because it breaks
+ * encapsulation.
  *
- * @param fsm     the FSM
- * @param state   the state to check
+ * @param fsm    FSM to query.
+ * @param state  State to check.
  *
- * @retval false  not in the state
- * @retval true   in the state
+ * @retval true   @p fsm is in @p state.
+ * @retval false  @p fsm is not in @p state.
  */
 bool am_fsm_is_in(const struct am_fsm* fsm, am_fsm_state_fn state);
 
 /**
- * Get FSM's active state.
+ * Get an FSM's active state.
  *
- * @param fsm  the FSM
+ * @param fsm  FSM to query.
  *
- * @return the active state
+ * @return Active FSM state/event handler function.
  */
 am_fsm_state_fn am_fsm_get_state(const struct am_fsm* fsm);
 
 /**
- * FSM constructor.
+ * Construct an FSM object.
  *
- * @param fsm    the FSM to construct
+ * The initial state handler must return am_fsm_tran().
  *
- * @param state  the initial state of the FSM object.
- *               The initial state must return AM_FSM_TRAN(fsm, s).
+ * @param fsm    FSM object to construct.
+ * @param state  Initial state/event handler function of @p fsm.
  */
 void am_fsm_ctor(struct am_fsm* fsm, am_fsm_state_fn state);
 
 /**
- * FSM destructor.
+ * Destruct an FSM object.
  *
- * Exits current state.
+ * Exits the current state.
  *
- * The FSM is not usable after this call.
- * Call am_fsm_ctor() to construct the FSM again.
+ * The FSM is not usable after this call. Call am_fsm_ctor() before using the
+ * FSM again.
  *
- * @param fsm  the FSM to destruct
+ * @param fsm  FSM object to destruct.
  */
 void am_fsm_dtor(struct am_fsm* fsm);
 
 /**
- * Perform FSM initial transition.
+ * Perform an FSM initial transition.
  *
- * Calls the initial state set by am_fsm_ctor() with the provided
- * optional init event and performs the initial transition.
+ * Calls the initial state handler set by am_fsm_ctor() with @p init_event and
+ * performs the initial transition.
  *
- * @param fsm         the FSM to init
- * @param init_event  the init event. Can be NULL.
+ * @param fsm         FSM to initialize.
+ * @param init_event  Initial event, or NULL.
  */
 void am_fsm_init(struct am_fsm* fsm, const struct am_event* init_event);
 

@@ -12,6 +12,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Add `struct am_event_handler` structure to encapsulate event handler with its context
 - Rework event library
 - Rework HSM library to use functions instead of macros
+- Rework FSM library to use functions instead of macros
 - Simplify ticker tasks in all examples
 - Prune critical section use from onesize memory allocator
 - Renamed async to coro

@@ -50,16 +50,16 @@ static enum am_rc state_a(struct am_fsm *fsm, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("state_a entry\n");
-        return AM_FSM_HANDLED(fsm);
+        return am_fsm_handled(fsm);
 
     case AM_EVT_EXIT:
         am_printf("state_a exit\n");
-        return AM_FSM_HANDLED(fsm);
+        return am_fsm_handled(fsm);
 
     case EVT_B:
-        return AM_FSM_TRAN(fsm, state_b);
+        return am_fsm_tran(fsm, state_b);
     }
-    return AM_FSM_HANDLED(fsm);
+    return am_fsm_handled(fsm);
 }
 
 static enum am_rc state_b(struct am_fsm *fsm, const struct am_event *event) {
@@ -67,20 +67,20 @@ static enum am_rc state_b(struct am_fsm *fsm, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("state_b entry\n");
-        return AM_FSM_HANDLED(fsm);
+        return am_fsm_handled(fsm);
 
     case AM_EVT_EXIT:
         am_printf("state_b exit\n");
-        return AM_FSM_HANDLED(fsm);
+        return am_fsm_handled(fsm);
 
     case EVT_A:
-        return AM_FSM_TRAN(fsm, state_a);
+        return am_fsm_tran(fsm, state_a);
     }
-    return AM_FSM_HANDLED(fsm);
+    return am_fsm_handled(fsm);
 }
 
 static enum am_rc init(struct am_fsm *fsm, const struct am_event *event) {
-    return AM_FSM_TRAN(fsm, state_a);
+    return am_fsm_tran(fsm, state_a);
 }
 
 int main(void) {

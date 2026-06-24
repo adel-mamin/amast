@@ -25,7 +25,6 @@
  */
 
 #include <stddef.h>
-#include <stdbool.h>
 
 #include "common/macros.h"
 #include "common/types.h"
@@ -54,8 +53,6 @@ static enum am_rc oven_fsm_off(
     struct am_fsm* fsm, const struct am_event* event
 );
 
-static bool oven_fsm_is_open(void) { return false; }
-
 static enum am_rc oven_fsm_open(
     struct am_fsm* fsm, const struct am_event* event
 ) {
@@ -63,19 +60,19 @@ static enum am_rc oven_fsm_open(
     switch (event->id) {
     case FSM_EVT_ON:
         me->history = am_fsm_get_state(&me->fsm);
-        return AM_FSM_HANDLED(fsm);
+        return am_fsm_handled(fsm);
 
     case FSM_EVT_OFF:
         me->history = am_fsm_get_state(&me->fsm);
-        return AM_FSM_HANDLED(fsm);
+        return am_fsm_handled(fsm);
 
     case FSM_EVT_CLOSE:
-        return AM_FSM_TRAN(fsm, me->history);
+        return am_fsm_tran(fsm, me->history);
 
     default:
         break;
     }
-    return AM_FSM_HANDLED(fsm);
+    return am_fsm_handled(fsm);
 }
 
 static enum am_rc oven_fsm_on(
@@ -85,18 +82,18 @@ static enum am_rc oven_fsm_on(
     switch (event->id) {
     case AM_EVT_ENTRY:
         me->history = am_fsm_get_state(&me->fsm);
-        return AM_FSM_HANDLED(fsm);
+        return am_fsm_handled(fsm);
 
     case FSM_EVT_OFF:
-        return AM_FSM_TRAN(fsm, oven_fsm_off);
+        return am_fsm_tran(fsm, oven_fsm_off);
 
     case FSM_EVT_OPEN:
-        return AM_FSM_TRAN(fsm, oven_fsm_open);
+        return am_fsm_tran(fsm, oven_fsm_open);
 
     default:
         break;
     }
-    return AM_FSM_HANDLED(fsm);
+    return am_fsm_handled(fsm);
 }
 
 static enum am_rc oven_fsm_off(
@@ -106,18 +103,18 @@ static enum am_rc oven_fsm_off(
     switch (event->id) {
     case AM_EVT_ENTRY:
         me->history = am_fsm_get_state(&me->fsm);
-        return AM_FSM_HANDLED(fsm);
+        return am_fsm_handled(fsm);
 
     case FSM_EVT_ON:
-        return AM_FSM_TRAN(fsm, oven_fsm_on);
+        return am_fsm_tran(fsm, oven_fsm_on);
 
     case FSM_EVT_OPEN:
-        return AM_FSM_TRAN(fsm, oven_fsm_open);
+        return am_fsm_tran(fsm, oven_fsm_open);
 
     default:
         break;
     }
-    return AM_FSM_HANDLED(fsm);
+    return am_fsm_handled(fsm);
 }
 
 static enum am_rc oven_fsm_init(
@@ -126,7 +123,7 @@ static enum am_rc oven_fsm_init(
     (void)event;
     struct oven_fsm* me = AM_CONTAINER_OF(fsm, struct oven_fsm, fsm);
     me->history = oven_fsm_off;
-    return AM_FSM_TRAN(fsm, oven_fsm_is_open() ? oven_fsm_open : oven_fsm_off);
+    return am_fsm_tran(fsm, oven_fsm_off);
 }
 
 static void test_oven_fsm(void) {

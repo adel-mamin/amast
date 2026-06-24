@@ -428,11 +428,11 @@ The source code of the corresponding header file is in `fsm.h <https://github.co
 
 .. doxygenstruct:: am_fsm
 
-.. doxygendefine:: AM_FSM_HANDLED
+.. doxygenfunction:: am_fsm_handled
 
-.. doxygendefine:: AM_FSM_TRAN
+.. doxygenfunction:: am_fsm_tran
 
-.. doxygendefine:: AM_FSM_TRAN_REDISPATCH
+.. doxygenfunction:: am_fsm_tran_redispatch
 
 .. doxygenfunction:: am_fsm_dispatch
 

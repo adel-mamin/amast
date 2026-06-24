@@ -42,7 +42,7 @@ struct redisp_fsm {
 
 static struct redisp_fsm m_redisp_fsm;
 
-/* test AM_FSM_TRAN_REDISPATCH() */
+/* test am_fsm_tran_redispatch() */
 
 static enum am_rc redisp_fsm_s1(
     struct am_fsm* fsm, const struct am_event* event
@@ -57,14 +57,14 @@ static enum am_rc redisp_fsm_s1(
     struct redisp_fsm* me = AM_CONTAINER_OF(fsm, struct redisp_fsm, fsm);
     switch (event->id) {
     case FSM_EVT_A:
-        return AM_FSM_TRAN_REDISPATCH(fsm, redisp_fsm_s2);
+        return am_fsm_tran_redispatch(fsm, redisp_fsm_s2);
     case FSM_EVT_B:
         me->b_handled = 1;
-        return AM_FSM_HANDLED(fsm);
+        return am_fsm_handled(fsm);
     default:
         break;
     }
-    return AM_FSM_HANDLED(fsm);
+    return am_fsm_handled(fsm);
 }
 
 static enum am_rc redisp_fsm_s2(
@@ -74,13 +74,13 @@ static enum am_rc redisp_fsm_s2(
     switch (event->id) {
     case FSM_EVT_A:
         me->a_handled = 1;
-        return AM_FSM_HANDLED(fsm);
+        return am_fsm_handled(fsm);
     case FSM_EVT_B:
-        return AM_FSM_TRAN_REDISPATCH(fsm, redisp_fsm_s1);
+        return am_fsm_tran_redispatch(fsm, redisp_fsm_s1);
     default:
         break;
     }
-    return AM_FSM_HANDLED(fsm);
+    return am_fsm_handled(fsm);
 }
 
 static enum am_rc redisp_fsm_sinit(
@@ -90,7 +90,7 @@ static enum am_rc redisp_fsm_sinit(
     struct redisp_fsm* me = AM_CONTAINER_OF(fsm, struct redisp_fsm, fsm);
     me->a_handled = 0;
     me->b_handled = 0;
-    return AM_FSM_TRAN(fsm, redisp_fsm_s1);
+    return am_fsm_tran(fsm, redisp_fsm_s1);
 }
 
 static void redispatch_fsm(void) {

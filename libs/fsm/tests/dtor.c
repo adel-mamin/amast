@@ -43,14 +43,14 @@ static struct dtor_fsm m_dtor_fsm;
 static enum am_rc dtor_fsm_s(struct am_fsm* fsm, const struct am_event* event) {
     (void)fsm;
     (void)event;
-    return AM_FSM_HANDLED(fsm);
+    return am_fsm_handled(fsm);
 }
 
 static enum am_rc dtor_fsm_sinit(
     struct am_fsm* fsm, const struct am_event* event
 ) {
     (void)event;
-    return AM_FSM_TRAN(fsm, dtor_fsm_s);
+    return am_fsm_tran(fsm, dtor_fsm_s);
 }
 
 static void dtor_fsm(void) {

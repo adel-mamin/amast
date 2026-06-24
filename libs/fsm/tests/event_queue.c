@@ -101,7 +101,7 @@ static void fsmq_commit(void) {
 
 static enum am_rc fsmq_init(struct am_fsm* fsm, const struct am_event* event) {
     (void)event;
-    return AM_FSM_TRAN(fsm, fsmq_a);
+    return am_fsm_tran(fsm, fsmq_a);
 }
 
 static void fsmq_ctor(
@@ -126,12 +126,12 @@ static enum am_rc fsmq_a(struct am_fsm* fsm, const struct am_event* event) {
         const struct am_event* e =
             am_event_allocate(me->alloc, /*id=*/AM_EVT_B, sizeof(*e));
         am_event_queue_push_back(&me->event_queue, e);
-        return AM_FSM_TRAN(fsm, fsmq_b);
+        return am_fsm_tran(fsm, fsmq_b);
     }
     default:
         break;
     }
-    return AM_FSM_HANDLED(fsm);
+    return am_fsm_handled(fsm);
 }
 
 static enum am_rc fsmq_b(struct am_fsm* fsm, const struct am_event* event) {
@@ -139,16 +139,16 @@ static enum am_rc fsmq_b(struct am_fsm* fsm, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_B: {
         me->log("b-B;");
-        return AM_FSM_HANDLED(fsm);
+        return am_fsm_handled(fsm);
     }
     case AM_EVT_C: {
         me->log("b-C;");
-        return AM_FSM_HANDLED(fsm);
+        return am_fsm_handled(fsm);
     }
     default:
         break;
     }
-    return AM_FSM_HANDLED(fsm);
+    return am_fsm_handled(fsm);
 }
 
 int main(void) {
