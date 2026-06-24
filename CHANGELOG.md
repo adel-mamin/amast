@@ -16,6 +16,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Simplify ticker tasks in all examples
 - Prune critical section use from onesize memory allocator
 - Renamed async to coro
+- Rework coroutine library API to use explicit coroutine state pointer
 
 ### Added
 

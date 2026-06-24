@@ -67,14 +67,13 @@ struct am_coro {
  * @param me  pointer to the `struct am_coro` managing the coroutine state
  */
 #define AM_CORO_BEGIN(me) {                                 \
-    struct am_coro *am_coro_ = (struct am_coro *)(me);      \
-    switch (am_coro_->state) {                              \
+    switch ((me)->state) {                                  \
     default:                                                \
         AM_ASSERT(0);                                       \
         break;                                              \
     case AM_CORO_STATE_INIT:                                \
         /* to suppress cppcheck warnings */                 \
-        am_coro_->state = AM_CORO_STATE_INIT
+        (me)->state = AM_CORO_STATE_INIT
 
 /**
  * Mark the end of coroutine function/block.
@@ -92,16 +91,17 @@ struct am_coro {
  *
  * Continues the function execution once the `cond` evaluates to `true`.
  *
+ * @param me  pointer to the `struct am_coro` managing the coroutine state
  * @param cond  the condition to check for continuation
  */
-#define AM_CORO_AWAIT(cond) do {                            \
-            am_coro_->state = __LINE__;                     \
+#define AM_CORO_AWAIT(me, cond) do {                        \
+            (me)->state = __LINE__;                         \
             /* FALLTHROUGH */                               \
         case __LINE__:                                      \
             if (!(cond)) {                                  \
                 return AM_RC_CORO_BUSY;                     \
             }                                               \
-            am_coro_->state = AM_CORO_STATE_INIT;           \
+            (me)->state = AM_CORO_STATE_INIT;               \
     } while (0)
 
 /**
@@ -114,10 +114,11 @@ struct am_coro {
  * if #AM_RC_CORO_BUSY is returned. Otherwise the execution continues
  * on next invocation without the function call.
  *
+ * @param me  pointer to the `struct am_coro` managing the coroutine state
  * @param func  the function to check the return value of
  */
-#define AM_CORO_CALL(func) do {                             \
-            am_coro_->state = __LINE__;                     \
+#define AM_CORO_CALL(me, func) do {                         \
+            (me)->state = __LINE__;                         \
             /* FALLTHROUGH */                               \
         case __LINE__: {                                    \
             enum am_rc rc_ = (func);                        \
@@ -125,7 +126,7 @@ struct am_coro {
                 return AM_RC_CORO_BUSY;                     \
             }                                               \
             AM_ASSERT(AM_RC_CORO_DONE == rc_);              \
-            am_coro_->state = AM_CORO_STATE_INIT;           \
+            (me)->state = AM_CORO_STATE_INIT;               \
         }                                                   \
     } while (0)
 
@@ -135,12 +136,14 @@ struct am_coro {
  * Allows the coroutine function/block to yield.
  *
  * Control resumes after this point, when the function is called again.
+ *
+ * @param me  pointer to the `struct am_coro` managing the coroutine state
  */
-#define AM_CORO_YIELD() do {                                \
-            am_coro_->state = __LINE__;                     \
+#define AM_CORO_YIELD(me) do {                              \
+            (me)->state = __LINE__;                         \
             return AM_RC_CORO_BUSY;                         \
         case __LINE__:                                      \
-            am_coro_->state = AM_CORO_STATE_INIT;           \
+            (me)->state = AM_CORO_STATE_INIT;               \
     } while (0)
 
 /* clang-format on */

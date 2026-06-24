@@ -89,7 +89,7 @@ static void test_coro_empty(void) {
 static int am_coro_wait_ready(struct am_coro* me, int* reent, int ready) {
     AM_CORO_BEGIN(me);
     ++(*reent);
-    AM_CORO_AWAIT(ready);
+    AM_CORO_AWAIT(me, ready);
     ++(*reent);
     AM_CORO_END();
 
@@ -116,7 +116,7 @@ static void test_coro_wait_ready(void) {
 static int am_coro_yield(struct am_coro* me, int* state) {
     AM_CORO_BEGIN(me);
     (*state) = 1;
-    AM_CORO_YIELD();
+    AM_CORO_YIELD(me);
     (*state) = 2;
     AM_CORO_END();
 
@@ -175,9 +175,11 @@ static enum am_rc am_coro_call_1(struct am_coro_chain* me);
 static enum am_rc am_coro_call_2(struct am_coro_chain* me);
 
 static enum am_rc am_coro_call_1(struct am_coro_chain* me) {
-    AM_CORO_BEGIN(me);
-    AM_CORO_CALL(am_coro_call_2(&test_coro_chain[1]));
-    AM_CORO_AWAIT(me->ready);
+    struct am_coro* coro = &me->coro;
+
+    AM_CORO_BEGIN(coro);
+    AM_CORO_CALL(coro, am_coro_call_2(&test_coro_chain[1]));
+    AM_CORO_AWAIT(coro, me->ready);
     me->foo = 1;
     AM_CORO_END();
 
@@ -185,8 +187,10 @@ static enum am_rc am_coro_call_1(struct am_coro_chain* me) {
 }
 
 static enum am_rc am_coro_call_2(struct am_coro_chain* me) {
-    AM_CORO_BEGIN(me);
-    AM_CORO_AWAIT(me->ready);
+    struct am_coro* coro = &me->coro;
+
+    AM_CORO_BEGIN(coro);
+    AM_CORO_AWAIT(coro, me->ready);
     me->foo = 1;
     AM_CORO_END();
 

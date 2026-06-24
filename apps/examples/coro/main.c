@@ -145,17 +145,18 @@ static enum am_rc coro_exiting(
 }
 
 static enum am_rc coro_blinking_green(struct coro* me) {
-    AM_CORO_BEGIN(&me->coro_blinking_green);
+    struct am_coro* coro = &me->coro_blinking_green;
+    AM_CORO_BEGIN(coro);
 
     /* blinking green */
     for (me->i = 0; me->i < 4; ++me->i) {
         am_printff("\b" AM_COLOR_BLACK AM_SOLID_BLOCK "\b");
         am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/700, 0);
-        AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
+        AM_CORO_AWAIT(coro, !am_timer_is_armed(me->timer, &me->timeout.event));
 
         am_printff(AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/700, 0);
-        AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
+        AM_CORO_AWAIT(coro, !am_timer_is_armed(me->timer, &me->timeout.event));
     }
 
     AM_CORO_END();
@@ -164,26 +165,27 @@ static enum am_rc coro_blinking_green(struct coro* me) {
 }
 
 static enum am_rc coro_regular_(struct coro* me) {
-    AM_CORO_BEGIN(&me->coro);
+    struct am_coro* coro = &me->coro_blinking_green;
+    AM_CORO_BEGIN(coro);
 
     for (;;) {
         /* red */
         am_printff(AM_COLOR_RED AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/2000, 0);
-        AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
+        AM_CORO_AWAIT(coro, !am_timer_is_armed(me->timer, &me->timeout.event));
 
         /* yellow */
         am_printff("\b" AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/1000, 0);
-        AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
+        AM_CORO_AWAIT(coro, !am_timer_is_armed(me->timer, &me->timeout.event));
 
         /* green */
         am_printff("\b" AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
         am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/2000, 0);
-        AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
+        AM_CORO_AWAIT(coro, !am_timer_is_armed(me->timer, &me->timeout.event));
 
         /* blinking green */
-        AM_CORO_CALL(coro_blinking_green(me));
+        AM_CORO_CALL(coro, coro_blinking_green(me));
         am_printff("\b");
     }
 
@@ -231,17 +233,22 @@ static enum am_rc coro_off(struct am_hsm* hsm, const struct am_event* event) {
     }
     case CORO_EVT_START:
     case CORO_EVT_TIMER: {
-        AM_CORO_BEGIN(&me->coro);
+        struct am_coro* coro = &me->coro;
+        AM_CORO_BEGIN(coro);
 
         for (;;) {
             am_printff("\b");
             am_printff(AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
             am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/1000, 0);
-            AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
+            AM_CORO_AWAIT(
+                coro, !am_timer_is_armed(me->timer, &me->timeout.event)
+            );
 
             am_printff("\b" AM_COLOR_BLACK AM_SOLID_BLOCK "\b");
             am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/700, 0);
-            AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
+            AM_CORO_AWAIT(
+                coro, !am_timer_is_armed(me->timer, &me->timeout.event)
+            );
         }
 
         AM_CORO_END();
