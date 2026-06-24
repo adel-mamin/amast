@@ -51,10 +51,6 @@ enum evt {
 };
 
 struct watched {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
-     */
     struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer* timer;
@@ -64,10 +60,6 @@ struct watched {
 };
 
 struct wdt {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
-     */
     struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer* timer;
@@ -80,14 +72,15 @@ static const struct am_event m_evt_wdt_feed = {.id = EVT_WDT_FEED};
 /* 'watched' task */
 
 static enum am_rc watched_proc(
-    struct watched* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct watched* me = AM_CONTAINER_OF(hsm, struct watched, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_timer_arm(
             me->timer, &me->feed.event, AM_FEED_TIMEOUT_MS, AM_FEED_TIMEOUT_MS
         );
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_WATCHED_TIMEOUT: {
         if (me->feeds_num < 3) {
@@ -95,19 +88,19 @@ static enum am_rc watched_proc(
             am_ao_post_fifo(me->wdt, &m_evt_wdt_feed);
             ++me->feeds_num;
         }
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 static enum am_rc watched_init(
-    struct watched* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
-    return AM_HSM_TRAN(watched_proc);
+    return am_hsm_tran(hsm, watched_proc);
 }
 
 static void watched_ctor(
@@ -115,7 +108,7 @@ static void watched_ctor(
 ) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(watched_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(watched_init));
     me->timer = timer;
     me->feed = am_timer_event_ctor_x(EVT_WATCHED_TIMEOUT, &me->ao);
     me->wdt = wdt;
@@ -123,17 +116,18 @@ static void watched_ctor(
 
 /* 'wdt' task */
 
-static enum am_rc wdt_proc(struct wdt* me, const struct am_event* event) {
+static enum am_rc wdt_proc(struct am_hsm* hsm, const struct am_event* event) {
+    struct wdt* me = AM_CONTAINER_OF(hsm, struct wdt, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_timer_arm(me->timer, &me->bark.event, AM_BARK_TIMEOUT_MS, 0);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_WDT_FEED: {
         am_printff("EVT_WDT_FEED received\n");
         /* re-arm bark timer */
         am_timer_arm(me->timer, &me->bark.event, AM_BARK_TIMEOUT_MS, 0);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_WDT_BARK: {
         am_printff("WATCHED TASK FAILED!\n");
@@ -142,18 +136,18 @@ static enum am_rc wdt_proc(struct wdt* me, const struct am_event* event) {
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc wdt_init(struct wdt* me, const struct am_event* event) {
+static enum am_rc wdt_init(struct am_hsm* hsm, const struct am_event* event) {
     (void)event;
-    return AM_HSM_TRAN(wdt_proc);
+    return am_hsm_tran(hsm, wdt_proc);
 }
 
 static void wdt_ctor(struct wdt* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(wdt_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(wdt_init));
     me->timer = timer;
     me->bark = am_timer_event_ctor_x(EVT_WDT_BARK, &me->ao);
 }

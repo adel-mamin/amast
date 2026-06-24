@@ -51,7 +51,7 @@
  * User event handlers should take care of not causing any side effects
  * when called with this event.
  *
- * The event handlers must return the AM_HSM_SUPER() in response
+ * The event handlers must return the am_hsm_super() in response
  * to this event in HSM library.
  */
 #define AM_EVT_EMPTY 0

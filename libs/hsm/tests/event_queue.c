@@ -91,8 +91,8 @@ static struct am_hsmq am_hsmq_;
 
 static struct am_hsm* am_hsmq = &am_hsmq_.hsm;
 
-static enum am_rc hsmq_s1(struct am_hsmq* me, const struct am_event* event);
-static enum am_rc hsmq_s2(struct am_hsmq* me, const struct am_event* event);
+static enum am_rc hsmq_s1(struct am_hsm* hsm, const struct am_event* event);
+static enum am_rc hsmq_s2(struct am_hsm* hsm, const struct am_event* event);
 
 static bool hsmq_dispatch(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
@@ -114,9 +114,9 @@ static void hsmq_commit(void) {
     }
 }
 
-static enum am_rc hsmq_sinit(struct am_hsmq* me, const struct am_event* event) {
+static enum am_rc hsmq_sinit(struct am_hsm* hsm, const struct am_event* event) {
     (void)event;
-    return AM_HSM_TRAN(hsmq_s1);
+    return am_hsm_tran(hsm, hsmq_s1);
 }
 
 static void hsmq_ctor(
@@ -124,7 +124,7 @@ static void hsmq_ctor(
     struct am_event_alloc* alloc
 ) {
     struct am_hsmq* me = &am_hsmq_;
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(hsmq_sinit));
+    am_hsm_ctor(&me->hsm, am_hsm_state(hsmq_sinit));
     me->log = log;
     me->alloc = alloc;
 
@@ -133,35 +133,37 @@ static void hsmq_ctor(
     am_event_queue_ctor(&me->event_queue, pool, AM_COUNTOF(pool), alloc);
 }
 
-static enum am_rc hsmq_s1(struct am_hsmq* me, const struct am_event* event) {
+static enum am_rc hsmq_s1(struct am_hsm* hsm, const struct am_event* event) {
+    struct am_hsmq* me = AM_CONTAINER_OF(hsm, struct am_hsmq, hsm);
     switch (event->id) {
     case AM_EVT_A: {
         me->log("a-A;");
         const struct am_event* e =
             am_event_allocate(me->alloc, /*id=*/AM_EVT_B, sizeof(*e));
         am_event_queue_push_back(&me->event_queue, e);
-        return AM_HSM_TRAN(hsmq_s2);
+        return am_hsm_tran(hsm, hsmq_s2);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc hsmq_s2(struct am_hsmq* me, const struct am_event* event) {
+static enum am_rc hsmq_s2(struct am_hsm* hsm, const struct am_event* event) {
+    struct am_hsmq* me = AM_CONTAINER_OF(hsm, struct am_hsmq, hsm);
     switch (event->id) {
     case AM_EVT_B: {
         me->log("b-B;");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case AM_EVT_C: {
         me->log("b-C;");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 int main(void) {

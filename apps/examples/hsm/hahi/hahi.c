@@ -72,105 +72,105 @@ struct hahi_event {
     int ch;
 };
 
-static enum am_rc hahi_top(struct hahi* me, const struct am_event* event);
-static enum am_rc hahi_h(struct hahi* me, const struct am_event* event);
-static enum am_rc hahi_a(struct hahi* me, const struct am_event* event);
-static enum am_rc hahi_i(struct hahi* me, const struct am_event* event);
-static enum am_rc hahi_idle(struct hahi* me, const struct am_event* event);
+static enum am_rc hahi_top(struct am_hsm* hsm, const struct am_event* event);
+static enum am_rc hahi_h(struct am_hsm* hsm, const struct am_event* event);
+static enum am_rc hahi_a(struct am_hsm* hsm, const struct am_event* event);
+static enum am_rc hahi_i(struct am_hsm* hsm, const struct am_event* event);
+static enum am_rc hahi_idle(struct am_hsm* hsm, const struct am_event* event);
 
-static enum am_rc hahi_top(struct hahi* me, const struct am_event* event) {
+static enum am_rc hahi_top(struct am_hsm* hsm, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_INIT:
-        return AM_HSM_TRAN(hahi_idle);
+        return am_hsm_tran(hsm, hahi_idle);
 
     case HAHI_EVT_USER_INPUT: {
         const struct hahi_event* evt = (const struct hahi_event*)event;
         if ('!' == evt->ch) {
             printf("'reset'\n");
-            return AM_HSM_TRAN(hahi_top);
+            return am_hsm_tran(hsm, hahi_top);
         }
         printf("'unknown'\n");
-        return AM_HSM_TRAN(hahi_idle);
+        return am_hsm_tran(hsm, hahi_idle);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc hahi_idle(struct hahi* me, const struct am_event* event) {
+static enum am_rc hahi_idle(struct am_hsm* hsm, const struct am_event* event) {
     switch (event->id) {
     case HAHI_EVT_USER_INPUT: {
         const struct hahi_event* evt = (const struct hahi_event*)event;
         if ('h' == evt->ch) {
-            return AM_HSM_TRAN(hahi_h);
+            return am_hsm_tran(hsm, hahi_h);
         }
         break;
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(hahi_top);
+    return am_hsm_super(hsm, hahi_top);
 }
 
-static enum am_rc hahi_h(struct hahi* me, const struct am_event* event) {
+static enum am_rc hahi_h(struct am_hsm* hsm, const struct am_event* event) {
     switch (event->id) {
     case HAHI_EVT_USER_INPUT: {
         const struct hahi_event* evt = (const struct hahi_event*)event;
         if ('a' == evt->ch) {
-            return AM_HSM_TRAN(hahi_a);
+            return am_hsm_tran(hsm, hahi_a);
         }
         if ('i' == evt->ch) {
-            return AM_HSM_TRAN(hahi_i);
+            return am_hsm_tran(hsm, hahi_i);
         }
         break;
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(hahi_top);
+    return am_hsm_super(hsm, hahi_top);
 }
 
-static enum am_rc hahi_a(struct hahi* me, const struct am_event* event) {
+static enum am_rc hahi_a(struct am_hsm* hsm, const struct am_event* event) {
     switch (event->id) {
     case HAHI_EVT_USER_INPUT: {
         const struct hahi_event* evt = (const struct hahi_event*)event;
         if ('\n' == evt->ch) {
             printf("'ha'\n");
-            return AM_HSM_TRAN(hahi_idle);
+            return am_hsm_tran(hsm, hahi_idle);
         }
         break;
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(hahi_top);
+    return am_hsm_super(hsm, hahi_top);
 }
 
-static enum am_rc hahi_i(struct hahi* me, const struct am_event* event) {
+static enum am_rc hahi_i(struct am_hsm* hsm, const struct am_event* event) {
     switch (event->id) {
     case HAHI_EVT_USER_INPUT: {
         const struct hahi_event* evt = (const struct hahi_event*)event;
         if ('\n' == evt->ch) {
             printf("'hi'\n");
-            return AM_HSM_TRAN(hahi_idle);
+            return am_hsm_tran(hsm, hahi_idle);
         }
         break;
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(hahi_top);
+    return am_hsm_super(hsm, hahi_top);
 }
 
-static enum am_rc hahi_init(struct hahi* me, const struct am_event* event) {
+static enum am_rc hahi_init(struct am_hsm* hsm, const struct am_event* event) {
     (void)event;
-    return AM_HSM_TRAN(hahi_idle);
+    return am_hsm_tran(hsm, hahi_idle);
 }
 
 int main(void) {
     struct hahi m;
-    am_hsm_ctor(&m.hsm, AM_HSM_STATE_CTOR(hahi_init));
+    am_hsm_ctor(&m.hsm, am_hsm_state(hahi_init));
     am_hsm_init(&m.hsm, /*init_event=*/NULL);
 
     int ch = 0;

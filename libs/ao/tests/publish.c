@@ -43,10 +43,6 @@
 #define AM_AO_EVT_PUB_MAX (AM_EVT_PUB + 1)
 
 struct test_publish {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
-     */
     struct am_hsm hsm;
     struct am_ao ao;
     AM_PRINTF(1, 0) void (*log)(const char* fmt, ...);
@@ -60,31 +56,31 @@ static const struct am_event* m_queue_publish[1];
 
 static char m_event_pool[1][16] AM_ALIGNED(AM_ALIGN_MAX);
 
-static enum am_rc publish_s(
-    struct test_publish* me, const struct am_event* event
-) {
+static enum am_rc publish_s(struct am_hsm* hsm, const struct am_event* event) {
+    struct test_publish* me = AM_CONTAINER_OF(hsm, struct test_publish, hsm);
     switch (event->id) {
     case AM_EVT_PUB:
         me->log("s-PUB;");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 static enum am_rc publish_sinit(
-    struct test_publish* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
+    struct test_publish* me = AM_CONTAINER_OF(hsm, struct test_publish, hsm);
     am_ao_subscribe(&me->ao, AM_EVT_PUB);
-    return AM_HSM_TRAN(publish_s);
+    return am_hsm_tran(hsm, publish_s);
 }
 
 static void publish_ctor(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
     struct test_publish* me = &m_publish;
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(publish_sinit));
+    am_hsm_ctor(&me->hsm, am_hsm_state(publish_sinit));
     me->log = log;
 }
 

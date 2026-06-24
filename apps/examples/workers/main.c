@@ -75,10 +75,6 @@ typedef union events {
 } events_t;
 
 struct worker {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
-     */
     struct am_hsm hsm;
     struct am_ao ao;
     int id;
@@ -95,7 +91,10 @@ static void work(int cycles) {
     }
 }
 
-static enum am_rc worker_proc(struct worker* me, const struct am_event* event) {
+static enum am_rc worker_proc(
+    struct am_hsm* hsm, const struct am_event* event
+) {
+    struct worker* me = AM_CONTAINER_OF(hsm, struct worker, hsm);
     switch (event->id) {
     case EVT_JOB_REQ: {
         const struct job_req* req = AM_CAST(const struct job_req*, event);
@@ -106,24 +105,27 @@ static enum am_rc worker_proc(struct worker* me, const struct am_event* event) {
         );
         done->worker = me->id;
         am_ao_publish(&done->event);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_STOP: {
         am_ao_publish(&m_evt_stopped);
         am_ao_stop(&me->ao);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc worker_init(struct worker* me, const struct am_event* event) {
+static enum am_rc worker_init(
+    struct am_hsm* hsm, const struct am_event* event
+) {
     (void)event;
+    struct worker* me = AM_CONTAINER_OF(hsm, struct worker, hsm);
     am_ao_subscribe(&me->ao, EVT_JOB_REQ);
     am_ao_subscribe(&me->ao, EVT_STOP);
-    return AM_HSM_TRAN(worker_proc);
+    return am_hsm_tran(hsm, worker_proc);
 }
 
 static void worker_ctor(
@@ -131,16 +133,12 @@ static void worker_ctor(
 ) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(worker_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(worker_init));
     me->id = id;
     me->alloc = alloc;
 }
 
 struct balancer {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
-     */
     struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer* timer;
@@ -165,12 +163,13 @@ static void balancer_check_stats(const struct balancer* me) {
 }
 
 static enum am_rc balancer_stopping(
-    struct balancer* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct balancer* me = AM_CONTAINER_OF(hsm, struct balancer, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_ao_publish_exclude(&m_evt_stop, &me->ao);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case EVT_STOPPED: {
         ++me->nstops;
@@ -181,22 +180,23 @@ static enum am_rc balancer_stopping(
             balancer_check_stats(me);
             am_ao_stop(&me->ao);
         }
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 static enum am_rc balancer_proc(
-    struct balancer* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct balancer* me = AM_CONTAINER_OF(hsm, struct balancer, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_timer_arm(me->timer, &me->timeout.event, AM_TIMEOUT_MS, 0);
         am_ao_post_fifo(&me->ao, &m_evt_start);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_START: {
         struct job_req* req = AM_CAST(
@@ -206,10 +206,10 @@ static enum am_rc balancer_proc(
         req->work = work;
         req->cycles = AM_WORKER_LOAD_CYCLES;
         am_ao_publish_exclude(&req->event, &me->ao);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_TIMEOUT:
-        return AM_HSM_TRAN(balancer_stopping);
+        return am_hsm_tran(hsm, balancer_stopping);
 
     case EVT_JOB_DONE: {
         const struct job_done* done = (const struct job_done*)event;
@@ -223,21 +223,23 @@ static enum am_rc balancer_proc(
         req->cycles = AM_WORKER_LOAD_CYCLES;
         am_ao_post_fifo(&me->workers[done->worker].ao, &req->event);
         ++me->stats[done->worker];
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 static enum am_rc balancer_init(
-    struct balancer* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
+
+    struct balancer* me = AM_CONTAINER_OF(hsm, struct balancer, hsm);
     am_ao_subscribe(&me->ao, EVT_JOB_DONE);
     am_ao_subscribe(&me->ao, EVT_STOPPED);
-    return AM_HSM_TRAN(balancer_proc);
+    return am_hsm_tran(hsm, balancer_proc);
 }
 
 static void balancer_ctor(
@@ -251,7 +253,7 @@ static void balancer_ctor(
     memset(me, 0, sizeof(*me));
     me->ncpus = ncpus;
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(balancer_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(balancer_init));
 
     me->workers = workers;
     me->nworkers = nworkers;

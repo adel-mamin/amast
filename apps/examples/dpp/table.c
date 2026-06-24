@@ -41,10 +41,6 @@
 enum { PHILO_DONE, PHILO_HUNGRY, PHILO_EATING };
 
 static struct table {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
-     */
     struct am_hsm hsm;
     struct am_ao ao;
     int philo[PHILO_NUM];
@@ -113,20 +109,21 @@ static void table_serve(struct table* me, int philo) {
 }
 
 static enum am_rc table_stopping(
-    struct table* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct table* me = AM_CONTAINER_OF(hsm, struct table, hsm);
     switch (event->id) {
     case EVT_STOPPED: {
         ++me->nstops;
         if (me->nstops == PHILO_NUM) {
             am_ao_stop(&me->ao);
         }
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 static bool table_sessions_are_over(const struct table* me) {
@@ -134,8 +131,9 @@ static bool table_sessions_are_over(const struct table* me) {
 }
 
 static enum am_rc table_serving(
-    struct table* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct table* me = AM_CONTAINER_OF(hsm, struct table, hsm);
     switch (event->id) {
     case EVT_HUNGRY: {
         const struct hungry* hungry = (const struct hungry*)event;
@@ -144,12 +142,12 @@ static enum am_rc table_serving(
             table_serve(me, hungry->philo);
             if (table_sessions_are_over(me)) {
                 am_ao_publish(&event_stop_);
-                return AM_HSM_TRAN(table_stopping);
+                return am_hsm_tran(hsm, table_stopping);
             }
-            return AM_HSM_HANDLED();
+            return am_hsm_handled(hsm);
         }
         philo_mark_hungry(hungry->philo);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_DONE: {
         const struct done* done = (const struct done*)event;
@@ -170,20 +168,21 @@ static enum am_rc table_serving(
         }
         if (table_sessions_are_over(me)) {
             am_ao_publish(&event_stop_);
-            return AM_HSM_TRAN(table_stopping);
+            return am_hsm_tran(hsm, table_stopping);
         }
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc table_init(struct table* me, const struct am_event* event) {
+static enum am_rc table_init(struct am_hsm* hsm, const struct am_event* event) {
     (void)event;
+    struct table* me = AM_CONTAINER_OF(hsm, struct table, hsm);
     am_ao_subscribe(&me->ao, EVT_DONE);
-    return AM_HSM_TRAN(table_serving);
+    return am_hsm_tran(hsm, table_serving);
 }
 
 void table_ctor(int nsessions, struct am_event_alloc* alloc) {
@@ -195,7 +194,7 @@ void table_ctor(int nsessions, struct am_event_alloc* alloc) {
     me->nsessions = nsessions;
     me->alloc = alloc;
 
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(table_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(table_init));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
 }
 

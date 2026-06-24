@@ -51,19 +51,11 @@ static const struct am_event* m_queue_loopback[1];
 static const struct am_event* m_queue_loopback_test[1];
 
 static struct loopback {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
-     */
     struct am_hsm hsm;
     struct am_ao ao;
 } m_loopback;
 
 static struct loopback_test {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
-     */
     struct am_hsm hsm;
     struct am_ao ao;
     int cnt;
@@ -71,35 +63,37 @@ static struct loopback_test {
 
 static struct am_event event_shutdown_ = {.id = AM_EVT_SHUTDOWN};
 
-static int loopback_proc(struct loopback* me, const struct am_event* event) {
+static int loopback_proc(struct am_hsm* hsm, const struct am_event* event) {
+    struct loopback* me = AM_CONTAINER_OF(hsm, struct loopback, hsm);
     switch (event->id) {
     case AM_EVT_MIN:
         AM_ASSERT(am_ao_get_own_prio() == AM_AO_PRIO_HIGH);
         am_ao_post_fifo(&m_loopback_test.ao, event);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case AM_EVT_SHUTDOWN:
         am_ao_stop(&me->ao);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static int loopback_init(struct loopback* me, const struct am_event* event) {
+static int loopback_init(struct am_hsm* hsm, const struct am_event* event) {
     (void)event;
-    return AM_HSM_TRAN(loopback_proc);
+    return am_hsm_tran(hsm, loopback_proc);
 }
 
 static int loopback_test_proc(
-    struct loopback_test* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct loopback_test* me = AM_CONTAINER_OF(hsm, struct loopback_test, hsm);
     switch (event->id) {
     case AM_EVT_START_TEST:
         am_ao_post_fifo(&m_loopback.ao, &m_min_event);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case AM_EVT_MIN:
         AM_ASSERT(am_ao_get_own_prio() == AM_AO_PRIO_MAX);
@@ -107,22 +101,23 @@ static int loopback_test_proc(
         if (100 == me->cnt) {
             am_ao_post_fifo(&m_loopback.ao, &event_shutdown_);
             am_ao_stop(&me->ao);
-            return AM_HSM_HANDLED();
+            return am_hsm_handled(hsm);
         }
         am_ao_post_fifo(&m_loopback.ao, event);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 static int loopback_test_init(
-    struct loopback_test* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
+    struct loopback_test* me = AM_CONTAINER_OF(hsm, struct loopback_test, hsm);
     am_ao_post_fifo(&me->ao, &m_start_test_event);
-    return AM_HSM_TRAN(loopback_test_proc);
+    return am_hsm_tran(hsm, loopback_test_proc);
 }
 
 int main(void) {
@@ -138,7 +133,7 @@ int main(void) {
         (am_ao_fn)am_hsm_dispatch,
         &m_loopback
     );
-    am_hsm_ctor(&m_loopback.hsm, AM_HSM_STATE_CTOR(loopback_init));
+    am_hsm_ctor(&m_loopback.hsm, am_hsm_state(loopback_init));
 
     am_ao_ctor(
         &m_loopback_test.ao,
@@ -146,7 +141,7 @@ int main(void) {
         (am_ao_fn)am_hsm_dispatch,
         &m_loopback_test
     );
-    am_hsm_ctor(&m_loopback_test.hsm, AM_HSM_STATE_CTOR(loopback_test_init));
+    am_hsm_ctor(&m_loopback_test.hsm, am_hsm_state(loopback_test_init));
 
     am_ao_start(
         &m_loopback.ao,

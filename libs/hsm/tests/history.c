@@ -25,7 +25,6 @@
  */
 
 #include <stddef.h>
-#include <stdbool.h>
 
 #include "common/macros.h"
 #include "common/types.h"
@@ -47,110 +46,112 @@ static struct oven_hsm m_oven_hsm;
 /* test transition to HSM history */
 
 static enum am_rc oven_hsm_open(
-    struct oven_hsm* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 );
 static enum am_rc oven_hsm_closed(
-    struct oven_hsm* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 );
-static enum am_rc oven_hsm_on(
-    struct oven_hsm* me, const struct am_event* event
-);
+static enum am_rc oven_hsm_on(struct am_hsm* hsm, const struct am_event* event);
 static enum am_rc oven_hsm_off(
-    struct oven_hsm* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 );
-
-static bool oven_hsm_is_open(void) { return false; }
 
 static enum am_rc oven_hsm_open(
-    struct oven_hsm* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct oven_hsm* me = AM_CONTAINER_OF(hsm, struct oven_hsm, hsm);
     switch (event->id) {
     case HSM_EVT_OFF:
-        me->history = AM_HSM_STATE_CTOR(oven_hsm_off);
-        return AM_HSM_HANDLED();
+        me->history = am_hsm_state(oven_hsm_off);
+        return am_hsm_handled(hsm);
 
     case HSM_EVT_CLOSE:
-        return AM_HSM_TRAN(oven_hsm_closed);
+        return am_hsm_tran(hsm, oven_hsm_closed);
 
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 static enum am_rc oven_hsm_closed(
-    struct oven_hsm* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct oven_hsm* me = AM_CONTAINER_OF(hsm, struct oven_hsm, hsm);
     switch (event->id) {
     case AM_EVT_INIT:
-        return AM_HSM_TRAN(me->history.fn);
+        return am_hsm_tran(hsm, me->history.fn);
 
     case HSM_EVT_OPEN:
-        return AM_HSM_TRAN(oven_hsm_open);
+        return am_hsm_tran(hsm, oven_hsm_open);
 
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 static enum am_rc oven_hsm_on(
-    struct oven_hsm* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct oven_hsm* me = AM_CONTAINER_OF(hsm, struct oven_hsm, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
-        me->history = am_hsm_get_state(&me->hsm);
-        return AM_HSM_HANDLED();
+        me->history = am_hsm_get_state(hsm);
+        return am_hsm_handled(hsm);
 
     case HSM_EVT_OFF:
-        return AM_HSM_TRAN(oven_hsm_off);
+        return am_hsm_tran(hsm, oven_hsm_off);
 
     default:
         break;
     }
-    return AM_HSM_SUPER(oven_hsm_closed);
+    return am_hsm_super(hsm, oven_hsm_closed);
 }
 
 static enum am_rc oven_hsm_off(
-    struct oven_hsm* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct oven_hsm* me = AM_CONTAINER_OF(hsm, struct oven_hsm, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
-        me->history = am_hsm_get_state(&me->hsm);
-        return AM_HSM_HANDLED();
+        me->history = am_hsm_get_state(hsm);
+        return am_hsm_handled(hsm);
 
     case HSM_EVT_ON:
-        return AM_HSM_TRAN(oven_hsm_on);
+        return am_hsm_tran(hsm, oven_hsm_on);
 
     default:
         break;
     }
-    return AM_HSM_SUPER(oven_hsm_closed);
+    return am_hsm_super(hsm, oven_hsm_closed);
 }
 
 static enum am_rc oven_hsm_init(
-    struct oven_hsm* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
-    me->history = AM_HSM_STATE_CTOR(oven_hsm_off);
-    return AM_HSM_TRAN(oven_hsm_is_open() ? oven_hsm_open : oven_hsm_closed);
+
+    struct oven_hsm* me = AM_CONTAINER_OF(hsm, struct oven_hsm, hsm);
+    me->history = am_hsm_state(oven_hsm_off);
+    return am_hsm_tran(hsm, oven_hsm_closed);
 }
 
 static void test_oven_hsm(void) {
     struct oven_hsm* me = &m_oven_hsm;
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(oven_hsm_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(oven_hsm_init));
 
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
-    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(oven_hsm_off)));
+    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state(oven_hsm_off)));
 
     am_hsm_dispatch(&me->hsm, &(struct am_event){.id = HSM_EVT_ON});
-    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(oven_hsm_on)));
+    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state(oven_hsm_on)));
 
     am_hsm_dispatch(&me->hsm, &(struct am_event){.id = HSM_EVT_OPEN});
-    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(oven_hsm_open)));
+    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state(oven_hsm_open)));
 
     am_hsm_dispatch(&me->hsm, &(struct am_event){.id = HSM_EVT_CLOSE});
-    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, AM_HSM_STATE_CTOR(oven_hsm_on)));
+    AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state(oven_hsm_on)));
 }
 
 int main(void) {

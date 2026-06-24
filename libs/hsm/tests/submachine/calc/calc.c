@@ -28,6 +28,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <math.h>
+#include <stdint.h>
 
 #include "common/macros.h"
 #include "common/types.h"
@@ -57,53 +58,58 @@ struct calc {
 
 static struct calc m_calc;
 
-static enum am_rc calc_on(struct calc* me, const struct am_event* event);
-static enum am_rc calc_off(struct calc* me, const struct am_event* event);
+static enum am_rc calc_on(struct am_hsm* hsm, const struct am_event* event);
+static enum am_rc calc_off(struct am_hsm* hsm, const struct am_event* event);
 
-static enum am_rc calc_result(struct calc* me, const struct am_event* event);
+static enum am_rc calc_result(struct am_hsm* hsm, const struct am_event* event);
 
-static enum am_rc calc_data(struct calc* me, const struct am_event* event);
-static enum am_rc calc_data_nan(struct calc* me, const struct am_event* event);
-static enum am_rc calc_data_nan_point(
-    struct calc* me, const struct am_event* event
+static enum am_rc calc_data(struct am_hsm* hsm, const struct am_event* event);
+static enum am_rc calc_data_nan(
+    struct am_hsm* hsm, const struct am_event* event
 );
-static enum am_rc calc_data_num(struct calc* me, const struct am_event* event);
+static enum am_rc calc_data_nan_point(
+    struct am_hsm* hsm, const struct am_event* event
+);
+static enum am_rc calc_data_num(
+    struct am_hsm* hsm, const struct am_event* event
+);
 static enum am_rc calc_data_num_int(
-    struct calc* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 );
 static enum am_rc calc_data_num_int_zero(
-    struct calc* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 );
 static enum am_rc calc_data_num_int_point(
-    struct calc* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 );
 static enum am_rc calc_data_num_point_frac(
-    struct calc* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 );
 static enum am_rc calc_data_num_int_point_frac(
-    struct calc* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 );
 
 static enum am_rc calc_op_entered(
-    struct calc* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 );
 
-static enum am_rc calc_on(struct calc* me, const struct am_event* event) {
+static enum am_rc calc_on(struct am_hsm* hsm, const struct am_event* event) {
+    struct calc* me = AM_CONTAINER_OF(hsm, struct calc, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
         memset(me->data, 0, sizeof(me->data));
         me->op = '\0';
         me->result = NAN;
         me->result_valid = false;
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_CANCEL: {
         me->log("on-CANCEL;");
-        return AM_HSM_TRAN(calc_on);
+        return am_hsm_tran(hsm, calc_on);
     }
     case EVT_OFF: {
         me->log("on-OFF;");
-        return AM_HSM_TRAN(calc_off);
+        return am_hsm_tran(hsm, calc_off);
     }
     case EVT_OP: {
         me->log("on-OP;");
@@ -111,33 +117,36 @@ static enum am_rc calc_on(struct calc* me, const struct am_event* event) {
         if ('-' == e->data) {
             me->data[DATA_0].data[0] = '-';
             me->data[DATA_0].len = 1;
-            return AM_HSM_TRAN(calc_data_nan, DATA_0);
+            return am_hsm_tran_i(hsm, calc_data_nan, DATA_0);
         }
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_DIGIT_0: {
         me->log("on-0;");
         me->data[DATA_0].data[0] = '0';
         me->data[DATA_0].len = 1;
-        return AM_HSM_TRAN(calc_data_num_int_zero, DATA_0);
+        return am_hsm_tran_i(hsm, calc_data_num_int_zero, DATA_0);
     }
     case EVT_DIGIT_1_9: {
         me->log("on-1_9;");
-        return AM_HSM_TRAN_REDISPATCH(calc_data_num_int, DATA_0);
+        return am_hsm_tran_redispatch_i(hsm, calc_data_num_int, DATA_0);
     }
     case EVT_POINT: {
         me->log("on-POINT;");
         me->data[DATA_0].data[0] = '.';
         me->data[DATA_0].len = 1;
-        return AM_HSM_TRAN(calc_data_nan_point, DATA_0);
+        return am_hsm_tran_i(hsm, calc_data_nan_point, DATA_0);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc calc_result(struct calc* me, const struct am_event* event) {
+static enum am_rc calc_result(
+    struct am_hsm* hsm, const struct am_event* event
+) {
+    struct calc* me = AM_CONTAINER_OF(hsm, struct calc, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
         double data_0 = strtod(me->data[0].data, /*endptr=*/NULL);
@@ -161,7 +170,7 @@ static enum am_rc calc_result(struct calc* me, const struct am_event* event) {
             break;
         }
         me->result_valid = true;
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_OP:
     case EVT_DIGIT_0:
@@ -178,35 +187,38 @@ static enum am_rc calc_result(struct calc* me, const struct am_event* event) {
     default:
         break;
     }
-    return AM_HSM_SUPER(calc_on);
+    return am_hsm_super(hsm, calc_on);
 }
 
 static const struct am_hsm_state m_tt[] = {
-    [DATA_0] = {.fn = (am_hsm_state_fn)calc_on},
-    [DATA_1] = {.fn = (am_hsm_state_fn)calc_op_entered}
+    [DATA_0] = {.fn = calc_on}, [DATA_1] = {.fn = calc_op_entered}
 };
 
-static enum am_rc calc_data(struct calc* me, const struct am_event* event) {
-    int instance = am_hsm_get_instance(&me->hsm);
+static enum am_rc calc_data(struct am_hsm* hsm, const struct am_event* event) {
+    struct calc* me = AM_CONTAINER_OF(hsm, struct calc, hsm);
+    const uint8_t instance = am_hsm_get_instance(hsm);
     switch (event->id) {
     case EVT_OP: {
         me->log("data/%d-OP;", instance);
         if (DATA_1 == instance) {
-            return AM_HSM_HANDLED();
+            return am_hsm_handled(hsm);
         }
         const struct calc_event* e = (const struct calc_event*)event;
         me->op = e->data;
-        me->data[DATA_0].history = am_hsm_get_state(&me->hsm);
-        return AM_HSM_TRAN(calc_op_entered);
+        me->data[DATA_0].history = am_hsm_get_state(hsm);
+        return am_hsm_tran(hsm, calc_op_entered);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(calc_on);
+    return am_hsm_super(hsm, calc_on);
 }
 
-static enum am_rc calc_data_nan(struct calc* me, const struct am_event* event) {
-    int instance = am_hsm_get_instance(&me->hsm);
+static enum am_rc calc_data_nan(
+    struct am_hsm* hsm, const struct am_event* event
+) {
+    struct calc* me = AM_CONTAINER_OF(hsm, struct calc, hsm);
+    const uint8_t instance = am_hsm_get_instance(hsm);
     struct data* data = &me->data[instance];
 
     switch (event->id) {
@@ -215,189 +227,200 @@ static enum am_rc calc_data_nan(struct calc* me, const struct am_event* event) {
         data->data[0] = '\0';
         data->len = 0;
         if (DATA_1 == instance) {
-            return AM_HSM_TRAN(calc_op_entered);
+            return am_hsm_tran(hsm, calc_op_entered);
         }
-        return AM_HSM_TRAN(calc_on);
+        return am_hsm_tran(hsm, calc_on);
     }
     case EVT_DIGIT_0: {
         me->log("nan/%d-0;", instance);
         data->data[data->len++] = '0';
-        return AM_HSM_TRAN(calc_data_num_int_zero, instance);
+        return am_hsm_tran_i(hsm, calc_data_num_int_zero, instance);
     }
     case EVT_DIGIT_1_9: {
         me->log("nan/%d-1_9;", instance);
-        return AM_HSM_TRAN_REDISPATCH(calc_data_num_int, instance);
+        return am_hsm_tran_redispatch_i(hsm, calc_data_num_int, instance);
     }
     case EVT_POINT: {
         me->log("nan/%d-POINT;", instance);
         data->data[data->len++] = '.';
-        return AM_HSM_TRAN(calc_data_nan_point, instance);
+        return am_hsm_tran_i(hsm, calc_data_nan_point, instance);
     }
     case EVT_OP: {
         me->log("nan/%d-OP;", instance);
         if (data->len) {
-            return AM_HSM_HANDLED();
+            return am_hsm_handled(hsm);
         }
         const struct calc_event* e = (const struct calc_event*)event;
         if ('-' == e->data) {
             data->data[0] = '-';
             data->len = 1;
         }
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(calc_data, instance);
+    return am_hsm_super_i(hsm, calc_data, instance);
 }
 
 static enum am_rc calc_data_nan_point(
-    struct calc* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
-    int instance = am_hsm_get_instance(&me->hsm);
+    struct calc* me = AM_CONTAINER_OF(hsm, struct calc, hsm);
+    const uint8_t instance = am_hsm_get_instance(hsm);
     switch (event->id) {
     case EVT_DEL: {
         me->log("nan_point/%d-DEL;", instance);
         struct data* data = &me->data[instance];
         data->data[--data->len] = '\0';
         if (data->len) {
-            return AM_HSM_TRAN(calc_data_nan, instance);
+            return am_hsm_tran_i(hsm, calc_data_nan, instance);
         }
         if (DATA_1 == instance) {
-            return AM_HSM_TRAN(calc_op_entered);
+            return am_hsm_tran(hsm, calc_op_entered);
         }
-        return AM_HSM_TRAN(calc_on);
+        return am_hsm_tran(hsm, calc_on);
     }
     case EVT_DIGIT_0:
     case EVT_DIGIT_1_9: {
         me->log("nan_point/%d-0_9;", instance);
-        return AM_HSM_TRAN_REDISPATCH(calc_data_num_point_frac, instance);
+        return am_hsm_tran_redispatch_i(
+            hsm, calc_data_num_point_frac, instance
+        );
     }
     case EVT_POINT: {
         me->log("nan_point/%d-POINT;", instance);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_OP: {
         me->log("nan_point/%d-OP;", instance);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(calc_data_nan, instance);
+    return am_hsm_super_i(hsm, calc_data_nan, instance);
 }
 
-static enum am_rc calc_data_num(struct calc* me, const struct am_event* event) {
-    int instance = am_hsm_get_instance(&me->hsm);
+static enum am_rc calc_data_num(
+    struct am_hsm* hsm, const struct am_event* event
+) {
+    struct calc* me = AM_CONTAINER_OF(hsm, struct calc, hsm);
+    const uint8_t instance = am_hsm_get_instance(hsm);
     struct data* data = &me->data[instance];
     switch (event->id) {
     case EVT_DIGIT_0: {
         me->log("num/%d-0;", instance);
         data->data[data->len++] = '0';
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_DIGIT_1_9: {
         me->log("num/%d-1_9;", instance);
         const struct calc_event* e = (const struct calc_event*)event;
         data->data[data->len++] = e->data;
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_POINT: {
         AM_ASSERT(0);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_EQUAL: {
         if (DATA_1 == instance) {
-            return AM_HSM_TRAN(calc_result);
+            return am_hsm_tran(hsm, calc_result);
         }
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(calc_data, instance);
+    return am_hsm_super_i(hsm, calc_data, instance);
 }
 
 static enum am_rc calc_data_num_int(
-    struct calc* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
-    int instance = am_hsm_get_instance(&me->hsm);
+    struct calc* me = AM_CONTAINER_OF(hsm, struct calc, hsm);
+    const uint8_t instance = am_hsm_get_instance(hsm);
     struct data* data = &me->data[instance];
     switch (event->id) {
     case EVT_DIGIT_0: {
         me->log("int/%d-0;", instance);
         data->data[data->len++] = '0';
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_DIGIT_1_9: {
         me->log("int/%d-1_9;", instance);
         const struct calc_event* e = (const struct calc_event*)event;
         data->data[data->len++] = e->data;
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_POINT: {
         me->log("int/%d-POINT;", instance);
         data->data[data->len++] = '.';
-        return AM_HSM_TRAN(calc_data_num_int_point, instance);
+        return am_hsm_tran_i(hsm, calc_data_num_int_point, instance);
     }
     case EVT_DEL: {
         me->log("int/%d-DEL;", instance);
         data->data[--data->len] = '\0';
         if (0 == data->len) {
-            return AM_HSM_TRAN(m_tt[instance].fn);
+            return am_hsm_tran(hsm, m_tt[instance].fn);
         }
         if (1 == data->len) {
             if ('-' == data->data[0]) {
-                return AM_HSM_TRAN(calc_data_nan, instance);
+                return am_hsm_tran_i(hsm, calc_data_nan, instance);
             }
             if ('0' == data->data[0]) {
-                return AM_HSM_TRAN(calc_data_num_int_zero, instance);
+                return am_hsm_tran_i(hsm, calc_data_num_int_zero, instance);
             }
-            return AM_HSM_HANDLED();
+            return am_hsm_handled(hsm);
         }
         if (2 == data->len) {
             if (('-' == data->data[0]) && ('0' == data->data[1])) {
-                return AM_HSM_TRAN(calc_data_num_int_zero, instance);
+                return am_hsm_tran_i(hsm, calc_data_num_int_zero, instance);
             }
-            return AM_HSM_HANDLED();
+            return am_hsm_handled(hsm);
         }
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(calc_data_num, instance);
+    return am_hsm_super_i(hsm, calc_data_num, instance);
 }
 
 static enum am_rc calc_data_num_int_zero(
-    struct calc* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
-    int instance = am_hsm_get_instance(&me->hsm);
+    struct calc* me = AM_CONTAINER_OF(hsm, struct calc, hsm);
+    const uint8_t instance = am_hsm_get_instance(hsm);
     switch (event->id) {
     case EVT_DIGIT_0: {
         me->log("int_zero/%d-0;", instance);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_DIGIT_1_9: {
         me->log("int_zero/%d-1_9;", instance);
-        return AM_HSM_TRAN_REDISPATCH(calc_data_num_int, instance);
+        return am_hsm_tran_redispatch_i(hsm, calc_data_num_int, instance);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(calc_data_num_int, instance);
+    return am_hsm_super_i(hsm, calc_data_num_int, instance);
 }
 
 static enum am_rc calc_data_num_int_point(
-    struct calc* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
-    int instance = am_hsm_get_instance(&me->hsm);
+    struct calc* me = AM_CONTAINER_OF(hsm, struct calc, hsm);
+    const uint8_t instance = am_hsm_get_instance(hsm);
     struct data* data = &me->data[instance];
     switch (event->id) {
     case EVT_DIGIT_0:
     case EVT_DIGIT_1_9: {
         me->log("int_point/%d-0_9;", instance);
-        return AM_HSM_TRAN_REDISPATCH(calc_data_num_int_point_frac, instance);
+        return am_hsm_tran_redispatch_i(
+            hsm, calc_data_num_int_point_frac, instance
+        );
     }
     case EVT_DEL: {
         me->log("int_point/%d-DEL;", instance);
@@ -405,59 +428,61 @@ static enum am_rc calc_data_num_int_point(
         char c = data->data[data->len];
         data->data[data->len] = '\0';
         if ('.' == c) {
-            return AM_HSM_TRAN(calc_data_num_int, instance);
+            return am_hsm_tran_i(hsm, calc_data_num_int, instance);
         }
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_POINT: {
         me->log("int_point/%d-POINT;", instance);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(calc_data_num_int, instance);
+    return am_hsm_super_i(hsm, calc_data_num_int, instance);
 }
 
 static enum am_rc calc_data_num_int_point_frac(
-    struct calc* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
-    int instance = am_hsm_get_instance(&me->hsm);
+    struct calc* me = AM_CONTAINER_OF(hsm, struct calc, hsm);
+    const uint8_t instance = am_hsm_get_instance(hsm);
     struct data* data = &me->data[instance];
     switch (event->id) {
     case EVT_DIGIT_0: {
         me->log("int_point_frac/%d-0;", instance);
         data->data[data->len++] = '0';
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_DIGIT_1_9: {
         me->log("int_point_frac/%d-1_9;", instance);
         const struct calc_event* e = (const struct calc_event*)event;
         data->data[data->len++] = e->data;
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(calc_data_num_int_point, instance);
+    return am_hsm_super_i(hsm, calc_data_num_int_point, instance);
 }
 
 static enum am_rc calc_data_num_point_frac(
-    struct calc* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
-    int instance = am_hsm_get_instance(&me->hsm);
+    struct calc* me = AM_CONTAINER_OF(hsm, struct calc, hsm);
+    const uint8_t instance = am_hsm_get_instance(hsm);
     struct data* data = &me->data[instance];
     switch (event->id) {
     case EVT_DIGIT_0: {
         me->log("point_frac/%d-0;", instance);
         data->data[data->len++] = '0';
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_DIGIT_1_9: {
         me->log("point_frac/%d-1_9;", instance);
         const struct calc_event* e = (const struct calc_event*)event;
         data->data[data->len++] = e->data;
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_DEL: {
         me->log("point_frac/%d-DEL;", instance);
@@ -466,22 +491,23 @@ static enum am_rc calc_data_num_point_frac(
         AM_ASSERT(data->len);
         char c = data->data[data->len - 1];
         if ('.' == c) {
-            return AM_HSM_TRAN(calc_data_nan_point, instance);
+            return am_hsm_tran_i(hsm, calc_data_nan_point, instance);
         }
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_POINT: {
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(calc_data_num, instance);
+    return am_hsm_super_i(hsm, calc_data_num, instance);
 }
 
 static enum am_rc calc_op_entered(
-    struct calc* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct calc* me = AM_CONTAINER_OF(hsm, struct calc, hsm);
     switch (event->id) {
     case EVT_OP: {
         me->log("op-OP;");
@@ -489,58 +515,57 @@ static enum am_rc calc_op_entered(
         if ('-' == e->data) {
             me->data[DATA_1].data[0] = '-';
             me->data[DATA_1].len = 1;
-            return AM_HSM_TRAN(calc_data_nan, DATA_1);
+            return am_hsm_tran_i(hsm, calc_data_nan, DATA_1);
         }
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_DEL: {
         me->log("op-DEL;");
         me->op = '\0';
-        return AM_HSM_TRAN(me->data[DATA_0].history.fn, DATA_0);
+        return am_hsm_tran_i(hsm, me->data[DATA_0].history.fn, DATA_0);
     }
     case EVT_DIGIT_0: {
         me->log("op-0;");
         me->data[DATA_1].data[0] = '0';
         me->data[DATA_1].len = 1;
-        return AM_HSM_TRAN_REDISPATCH(calc_data_num_int_zero, DATA_1);
+        return am_hsm_tran_redispatch_i(hsm, calc_data_num_int_zero, DATA_1);
     }
     case EVT_DIGIT_1_9: {
         me->log("op-1_9;");
-        return AM_HSM_TRAN_REDISPATCH(calc_data_num_int, DATA_1);
+        return am_hsm_tran_redispatch_i(hsm, calc_data_num_int, DATA_1);
     }
     case EVT_POINT: {
         me->log("op-POINT;");
         me->data[DATA_1].data[0] = '.';
         me->data[DATA_1].len = 1;
-        return AM_HSM_TRAN(calc_data_nan_point, DATA_1);
+        return am_hsm_tran_i(hsm, calc_data_nan_point, DATA_1);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(calc_on);
+    return am_hsm_super(hsm, calc_on);
 }
 
-static enum am_rc calc_off(struct calc* me, const struct am_event* event) {
+static enum am_rc calc_off(struct am_hsm* hsm, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_ENTRY: {
         exit(0);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc calc_init(struct calc* me, const struct am_event* event) {
+static enum am_rc calc_init(struct am_hsm* hsm, const struct am_event* event) {
     (void)event;
-    AM_ASSERT(me);
-    return AM_HSM_TRAN(calc_on);
+    return am_hsm_tran(hsm, calc_on);
 }
 
 void calc_ctor(void (*log)(const char* fmt, ...)) {
     struct calc* me = &m_calc;
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(calc_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(calc_init));
     me->log = log;
 }
 

@@ -202,10 +202,10 @@ the event is consumed by :cpp:func:`am_hsm_top()`.
 the ultimate event propagation termination point.
 
 To inform the library that an event is handled the event handler function
-must return :c:macro:`AM_HSM_HANDLED()`.
+must return :c:macro:`am_hsm_handled()`.
 
 To inform the library that an event is passed to superstate the event
-handler function must return :c:macro:`AM_HSM_SUPER()`, which provides the
+handler function must return :c:macro:`am_hsm_super()`, which provides the
 name of the superstate event handler.
 
 State Transition
@@ -258,18 +258,18 @@ the init event is sent to *s1*. Please note that the state *s1* is not exited in
 this case.
 
 To initiate a transition the state handler function must return
-:c:macro:`AM_HSM_TRAN()` or :c:macro:`AM_HSM_TRAN_REDISPATCH()` pointing
+:c:macro:`am_hsm_tran()` or :c:macro:`am_hsm_tran_redispatch()` pointing
 to target state.
 
-If state handler function returns :c:macro:`AM_HSM_TRAN_REDISPATCH()` pointing
+If state handler function returns :c:macro:`am_hsm_tran_redispatch()` pointing
 to target state, then the transition is executed first and then the same event is
 dispatched to the new current state in the same :cpp:func:`am_hsm_dispatch()` call.
 This is a convenience feature, that allows HSM to handle the event in
 the state that expects it.
 
 HSM states cannot initiate state transitions when processing entry and exit
-events. This means that the HSM states cannot return :c:macro:`AM_HSM_TRAN()`
-or :c:macro:`AM_HSM_TRAN_REDISPATCH()` pointing to target state.
+events. This means that the HSM states cannot return :c:macro:`am_hsm_tran()`
+or :c:macro:`am_hsm_tran_redispatch()` pointing to target state.
 
 Initial State Transition
 ========================
@@ -298,7 +298,7 @@ In addition to regular states every HSM must declare the initial state,
 which the HSM library invokes to execute the topmost initial transition.
 
 The initial state is entered, when calling :cpp:func:`am_hsm_init()` function.
-The initial state must always return :c:macro:`AM_HSM_TRAN()` pointing to
+The initial state must always return :c:macro:`am_hsm_tran()` pointing to
 target state.
 
 The transition from the initial state to the target state is done by
@@ -320,7 +320,7 @@ HSM Topology
 HSM library discovers the user HSM topology at run time by sending
 :c:macro:`AM_EVT_EMPTY` event to state event handlers.
 The state event handlers should always return
-:c:macro:`AM_HSM_SUPER()` in response.
+:c:macro:`am_hsm_super()` in response.
 
 HSM Coding Rules
 ================
@@ -355,12 +355,12 @@ HSM Coding Rules
 6. Processing of :c:macro:`AM_EVT_ENTRY`
    and :c:macro:`AM_EVT_EXIT` events should
    not trigger state transitions. It means that user event handlers should
-   not return :c:macro:`AM_HSM_TRAN()` or :c:macro:`AM_HSM_TRAN_REDISPATCH()` for
+   not return :c:macro:`am_hsm_tran()` or :c:macro:`am_hsm_tran_redispatch()` for
    these events.
 7. Processing of :c:macro:`AM_EVT_INIT`
    event can optionally only trigger transition by returning the result of
-   :c:macro:`AM_HSM_TRAN()` macro.
-   The use of :c:macro:`AM_HSM_TRAN_REDISPATCH()` is not allowed in this case.
+   :c:macro:`am_hsm_tran()` macro.
+   The use of :c:macro:`am_hsm_tran_redispatch()` is not allowed in this case.
 8. Processing of :c:macro:`AM_EVT_INIT`
    event can optionally only trigger transition to a substate of the state triggering
    the transition.
@@ -394,11 +394,11 @@ of type **struct** :cpp:struct:`am_hsm_state`. This is done with:
    static enum am_rc s11(struct foo *me, const struct event *event) {
        switch (event->id) {
        case AM_EVT_ENTRY:
-           me->history  = am_hsm_get_state(&me->hsm);
-           return AM_HSM_HANDLED();
+           me->history  = am_hsm_get_state(hsm);
+           return am_hsm_handled(hsm);
        ...
        }
-       return AM_HSM_SUPER(A);
+       return am_hsm_super(hsm, A);
    }
 
 Then the transition to state *s2* happens, which is then followed by a request
@@ -410,10 +410,10 @@ in **me->history** the transition can be achieved by doing this:
    static enum am_rc s2(struct foo *me, const struct event *event) {
        switch (event->id) {
        case HSM_EVT_FOO:
-           return AM_HSM_TRAN(me->history.fn, me->history.instance);
+           return am_hsm_tran(hsm, me->history.fn, me->history.instance);
        ...
        }
-       return AM_HSM_SUPER(am_hsm_top);
+       return am_hsm_super(hsm, am_hsm_top);
    }
 
 So, that is essentially all about it.
@@ -473,44 +473,44 @@ Here is how it is coded in pseudocode:
    static enum am_rc s(struct sm *me, const struct event *event) {
        switch (event->id) {
        case FOO:
-           return AM_HSM_TRAN(s1, /*instance=*/S1_0);
+           return am_hsm_tran(hsm, s1, /*instance=*/S1_0);
        case BAR:
-           return AM_HSM_TRAN(s1, /*instance=*/S1_1);
+           return am_hsm_tran(hsm, s1, /*instance=*/S1_1);
        case BAZ:
-           return AM_HSM_TRAN(s);
+           return am_hsm_tran(hsm, s);
        ...
        }
-       return AM_HSM_SUPER(am_hsm_top);
+       return am_hsm_super(hsm, am_hsm_top);
    }
 
    static enum am_rc s1(struct sm *me, const struct event *event) {
        switch (event->id) {
        case AM_EVT_INIT: {
            static const struct am_hsm_state tt[] = {
-               [S1_0] = {.fn = (am_hsm_state_fn)s2},
-               [S1_1] = {.fn = (am_hsm_state_fn)s3}
+               [S1_0] = {.fn = s2},
+               [S1_1] = {.fn = s3}
            };
-           int instance = am_hsm_get_instance(&me->hsm);
+           uint8_t instance = am_hsm_get_instance(hsm);
            AM_ASSERT(instance < AM_COUNTOF(tt));
-           return AM_HSM_TRAN(tt[instance].fn);
+           return am_hsm_tran(hsm, tt[instance].fn);
        }
        ...
        }
-       return AM_HSM_SUPER(s);
+       return am_hsm_super(hsm, s);
    }
 
    static enum am_rc s2(struct sm *me, const struct event *event) {
        ...
-       return AM_HSM_SUPER(s1, S1_0);
+       return am_hsm_super(hsm, s1, S1_0);
    }
 
    static enum am_rc s3(struct sm *me, const struct event *event) {
        ...
-       return AM_HSM_SUPER(s1, S1_1);
+       return am_hsm_super(hsm, s1, S1_1);
    }
 
 Please note that any transitions between states within submachines as well as
-all references to any submachine state via :c:macro:`AM_HSM_SUPER()`  must be done
+all references to any submachine state via :c:macro:`am_hsm_super()`  must be done
 with explicit specification of state instance, which can be retrieved by
 calling :cpp:func:`am_hsm_get_instance()` API.
 
@@ -778,7 +778,7 @@ on the reception of the event **A**.
 HSM Event Redispatch
 --------------------
 
-Demonstrates the use of event redispatch with the :c:macro:`AM_HSM_TRAN_REDISPATCH()` macro.
+Demonstrates the use of event redispatch with the :c:macro:`am_hsm_tran_redispatch()` macro.
 
 The source code is in `redispatch.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/redispatch.c>`_.
 
@@ -806,7 +806,7 @@ The HSM topology:
     @enduml
 
 Notice in the source code how event **A** is re-dispatched to a new state **s2**
-using :c:macro:`AM_HSM_TRAN_REDISPATCH()` macro and then handled in the new state.
+using :c:macro:`am_hsm_tran_redispatch()` macro and then handled in the new state.
 
 Same happens with the event **B** in the state **s2**.
 

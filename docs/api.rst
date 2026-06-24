@@ -375,21 +375,27 @@ The source code of the corresponding header file is in `hsm.h <https://github.co
 
 .. doxygentypedef:: am_hsm_state_fn
 
-.. doxygenstruct:: am_hsm_state
+.. doxygenfunction:: am_hsm_state
 
-.. doxygendefine:: AM_HSM_STATE_CTOR
+.. doxygenfunction:: am_hsm_state_i
 
 .. doxygendefine:: AM_HSM_HIERARCHY_DEPTH_MAX
 
 .. doxygenstruct:: am_hsm
 
-.. doxygendefine:: AM_HSM_HANDLED
+.. doxygenfunction:: am_hsm_handled
 
-.. doxygendefine:: AM_HSM_TRAN
+.. doxygenfunction:: am_hsm_tran
 
-.. doxygendefine:: AM_HSM_TRAN_REDISPATCH
+.. doxygenfunction:: am_hsm_tran_i
 
-.. doxygendefine:: AM_HSM_SUPER
+.. doxygenfunction:: am_hsm_tran_redispatch
+
+.. doxygenfunction:: am_hsm_tran_redispatch_i
+
+.. doxygenfunction:: am_hsm_super
+
+.. doxygenfunction:: am_hsm_super_i
 
 .. doxygenfunction:: am_hsm_dispatch
 

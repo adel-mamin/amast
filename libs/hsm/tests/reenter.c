@@ -47,65 +47,67 @@ static struct reenter_hsm m_reenter_hsm;
 /* test HSM state re-enter operation */
 
 static enum am_rc reenter_hsm_s1(
-    struct reenter_hsm* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 );
 
 static enum am_rc reenter_hsm_s(
-    struct reenter_hsm* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct reenter_hsm* me = AM_CONTAINER_OF(hsm, struct reenter_hsm, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         me->log("s-ENTRY;");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     case AM_EVT_INIT:
-        return AM_HSM_TRAN(reenter_hsm_s1);
+        return am_hsm_tran(hsm, reenter_hsm_s1);
     case HSM_EVT_A:
         me->log("s-EVT_A;");
-        return AM_HSM_TRAN(reenter_hsm_s);
+        return am_hsm_tran(hsm, reenter_hsm_s);
     case AM_EVT_EXIT:
         me->log("s-EXIT;");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 static enum am_rc reenter_hsm_s1(
-    struct reenter_hsm* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct reenter_hsm* me = AM_CONTAINER_OF(hsm, struct reenter_hsm, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         me->log("s1-ENTRY;");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
         break;
     case HSM_EVT_B:
         me->log("s1-EVT_B;");
-        return AM_HSM_TRAN(reenter_hsm_s1);
+        return am_hsm_tran(hsm, reenter_hsm_s1);
     case HSM_EVT_C:
         me->log("s1-EVT_C;");
-        return AM_HSM_TRAN(reenter_hsm_s);
+        return am_hsm_tran(hsm, reenter_hsm_s);
     case AM_EVT_EXIT:
         me->log("s1-EXIT;");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     default:
         break;
     }
-    return AM_HSM_SUPER(reenter_hsm_s);
+    return am_hsm_super(hsm, reenter_hsm_s);
 }
 
 static enum am_rc reenter_hsm_init(
-    struct reenter_hsm* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
-    return AM_HSM_TRAN(reenter_hsm_s);
+    return am_hsm_tran(hsm, reenter_hsm_s);
 }
 
 static void reenter_hsm_ctor(
     AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)
 ) {
     struct reenter_hsm* me = &m_reenter_hsm;
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(reenter_hsm_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(reenter_hsm_init));
     me->log = log;
     me->log_buf[0] = '\0';
 }

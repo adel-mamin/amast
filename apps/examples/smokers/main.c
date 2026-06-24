@@ -84,10 +84,6 @@ static const struct am_event m_evt_stop = {.id = EVT_STOP};
 static const struct am_event m_evt_stopped = {.id = EVT_STOPPED};
 
 struct smoker {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
-     */
     struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer* timer;
@@ -107,42 +103,46 @@ static int rand_012(void) {
     return (int)((unsigned)(next / 65536) % 3);
 }
 
-static enum am_rc smoker_top(struct smoker* me, const struct am_event* event);
-static enum am_rc smoker_idle(struct smoker* me, const struct am_event* event);
+static enum am_rc smoker_top(struct am_hsm* hsm, const struct am_event* event);
+static enum am_rc smoker_idle(struct am_hsm* hsm, const struct am_event* event);
 static enum am_rc smoker_smoking(
-    struct smoker* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 );
 static enum am_rc smoker_stopping(
-    struct smoker* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 );
 
 static enum am_rc smoker_stopping(
-    struct smoker* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct smoker* me = AM_CONTAINER_OF(hsm, struct smoker, hsm);
     switch (event->id) {
     case EVT_STOP: {
         am_ao_publish(&m_evt_stopped);
         am_ao_stop(&me->ao);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc smoker_top(struct smoker* me, const struct am_event* event) {
+static enum am_rc smoker_top(struct am_hsm* hsm, const struct am_event* event) {
     switch (event->id) {
     case EVT_STOP: {
-        return AM_HSM_TRAN_REDISPATCH(smoker_stopping);
+        return am_hsm_tran_redispatch(hsm, smoker_stopping);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc smoker_idle(struct smoker* me, const struct am_event* event) {
+static enum am_rc smoker_idle(
+    struct am_hsm* hsm, const struct am_event* event
+) {
+    struct smoker* me = AM_CONTAINER_OF(hsm, struct smoker, hsm);
     switch (event->id) {
     case EVT_RESOURCE: {
         const struct resource* e = (const struct resource*)event;
@@ -152,31 +152,32 @@ static enum am_rc smoker_idle(struct smoker* me, const struct am_event* event) {
         }
         me->resource_acquired |= e->resource;
         if (me->resource_acquired == (PAPER | TOBACCO | FIRE)) {
-            return AM_HSM_TRAN(smoker_smoking);
+            return am_hsm_tran(hsm, smoker_smoking);
         }
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(smoker_top);
+    return am_hsm_super(hsm, smoker_top);
 }
 
 static enum am_rc smoker_smoking(
-    struct smoker* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct smoker* me = AM_CONTAINER_OF(hsm, struct smoker, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_timer_arm(me->timer, &me->done.event, /*ticks=*/20, /*interval=*/0);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case AM_EVT_EXIT:
         am_timer_disarm(me->timer, &me->done.event);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case EVT_RESOURCE:
         AM_ASSERT(0);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case EVT_DONE_SMOKING_TIMER: {
         struct done_smoking* e = (struct done_smoking*)am_event_allocate(
@@ -184,19 +185,22 @@ static enum am_rc smoker_smoking(
         );
         e->smoker_id = me->id;
         am_ao_publish(&e->event);
-        return AM_HSM_TRAN(smoker_idle);
+        return am_hsm_tran(hsm, smoker_idle);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(smoker_top);
+    return am_hsm_super(hsm, smoker_top);
 }
 
-static enum am_rc smoker_init(struct smoker* me, const struct am_event* event) {
+static enum am_rc smoker_init(
+    struct am_hsm* hsm, const struct am_event* event
+) {
     (void)event;
+    struct smoker* me = AM_CONTAINER_OF(hsm, struct smoker, hsm);
     am_ao_subscribe(&me->ao, EVT_RESOURCE);
     am_ao_subscribe(&me->ao, EVT_STOP);
-    return AM_HSM_TRAN(smoker_idle);
+    return am_hsm_tran(hsm, smoker_idle);
 }
 
 static void smoker_ctor(
@@ -207,7 +211,7 @@ static void smoker_ctor(
     struct am_event_alloc* alloc
 ) {
     memset(me, 0, sizeof(*me));
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(smoker_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(smoker_init));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
     me->id = id;
     me->resource_own = me->resource_acquired = resource;
@@ -245,12 +249,13 @@ static void agent_check_stats(const struct agent* me) {
 }
 
 static enum am_rc agent_stopping(
-    struct agent* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct agent* me = AM_CONTAINER_OF(hsm, struct agent, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_ao_publish_exclude(&m_evt_stop, &me->ao);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case EVT_STOPPED: {
         ++me->nstops;
@@ -261,12 +266,12 @@ static enum am_rc agent_stopping(
             agent_check_stats(me);
             am_ao_stop(&me->ao);
         }
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 static void publish_resource(const struct agent* me, unsigned resource) {
@@ -300,12 +305,13 @@ static void publish_resources(struct agent* me) {
     me->resource_id++;
 }
 
-static enum am_rc agent_proc(struct agent* me, const struct am_event* event) {
+static enum am_rc agent_proc(struct am_hsm* hsm, const struct am_event* event) {
+    struct agent* me = AM_CONTAINER_OF(hsm, struct agent, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_timer_arm(me->timer, &me->timeout.event, AM_TIMEOUT_MS, 0);
         am_ao_post_fifo(&me->ao, &m_evt_start);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_DONE_SMOKING: {
         const struct done_smoking* done = (const struct done_smoking*)event;
@@ -313,33 +319,35 @@ static enum am_rc agent_proc(struct agent* me, const struct am_event* event) {
         AM_ASSERT(done->smoker_id < AM_COUNTOF(me->stats));
         ++me->stats[done->smoker_id];
         publish_resources(me);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_START: {
         publish_resources(me);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case EVT_TIMEOUT:
-        return AM_HSM_TRAN(agent_stopping);
+        return am_hsm_tran(hsm, agent_stopping);
 
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc agent_init(struct agent* me, const struct am_event* event) {
+static enum am_rc agent_init(struct am_hsm* hsm, const struct am_event* event) {
     (void)event;
+
+    struct agent* me = AM_CONTAINER_OF(hsm, struct agent, hsm);
     am_ao_subscribe(&me->ao, EVT_DONE_SMOKING);
     am_ao_subscribe(&me->ao, EVT_STOPPED);
-    return AM_HSM_TRAN(agent_proc);
+    return am_hsm_tran(hsm, agent_proc);
 }
 
 static void agent_ctor(
     struct agent* me, struct am_timer* timer, struct am_event_alloc* alloc
 ) {
     memset(me, 0, sizeof(*me));
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(agent_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(agent_init));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
 
     me->timer = timer;

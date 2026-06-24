@@ -70,8 +70,8 @@ struct test_defer {
 
 static struct test_defer m_test_defer;
 
-static enum am_rc defer_s1(struct test_defer* me, const struct am_event* event);
-static enum am_rc defer_s2(struct test_defer* me, const struct am_event* event);
+static enum am_rc defer_s1(struct am_hsm* hsm, const struct am_event* event);
+static enum am_rc defer_s2(struct am_hsm* hsm, const struct am_event* event);
 
 static bool defer_push_front(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);
@@ -83,46 +83,44 @@ static bool defer_push_front(void* ctx, const struct am_event* event) {
     return true;
 }
 
-static enum am_rc defer_s1(
-    struct test_defer* me, const struct am_event* event
-) {
+static enum am_rc defer_s1(struct am_hsm* hsm, const struct am_event* event) {
+    struct test_defer* me = AM_CONTAINER_OF(hsm, struct test_defer, hsm);
     switch (event->id) {
     case AM_EVT_EXIT:
         (void)am_event_queue_pop_front_with_cb(
             &me->defer_queue, defer_push_front, me
         );
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     case HSM_EVT_A:
         me->log("s1-A;");
         am_event_queue_push_back(&me->defer_queue, event);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     case HSM_EVT_B:
         me->log("s1-B;");
-        return AM_HSM_TRAN(defer_s2);
+        return am_hsm_tran(hsm, defer_s2);
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc defer_s2(
-    struct test_defer* me, const struct am_event* event
-) {
+static enum am_rc defer_s2(struct am_hsm* hsm, const struct am_event* event) {
+    struct test_defer* me = AM_CONTAINER_OF(hsm, struct test_defer, hsm);
     switch (event->id) {
     case HSM_EVT_A:
         me->log("s2-A;");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 static enum am_rc defer_sinit(
-    struct test_defer* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
-    return AM_HSM_TRAN(defer_s1);
+    return am_hsm_tran(hsm, defer_s1);
 }
 
 static void defer_ctor(
@@ -130,7 +128,7 @@ static void defer_ctor(
     struct am_event_alloc* alloc
 ) {
     struct test_defer* me = &m_test_defer;
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(defer_sinit));
+    am_hsm_ctor(&me->hsm, am_hsm_state(defer_sinit));
     me->log = log;
 
     /* setup HSM event queue */

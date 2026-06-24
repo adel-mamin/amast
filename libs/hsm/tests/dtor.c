@@ -54,29 +54,27 @@ static struct dtor_hsm m_dtor_hsm;
 
 /* test am_hsm_dtor() */
 
-static enum am_rc dtor_s(struct dtor_hsm* me, const struct am_event* event) {
+static enum am_rc dtor_s(struct am_hsm* hsm, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_EXIT:
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc dtor_sinit(
-    struct dtor_hsm* me, const struct am_event* event
-) {
+static enum am_rc dtor_sinit(struct am_hsm* hsm, const struct am_event* event) {
     (void)event;
-    return AM_HSM_TRAN(dtor_s);
+    return am_hsm_tran(hsm, dtor_s);
 }
 
 static void dtor_hsm(void) {
     struct dtor_hsm* me = &m_dtor_hsm;
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(dtor_sinit));
+    am_hsm_ctor(&me->hsm, am_hsm_state(dtor_sinit));
     am_hsm_init(&me->hsm, /*init_event=*/NULL);
     am_hsm_dtor(&me->hsm);
-    AM_ASSERT(am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(am_hsm_top)));
+    AM_ASSERT(am_hsm_is_in(&me->hsm, am_hsm_state(am_hsm_top)));
 }
 
 int main(void) {

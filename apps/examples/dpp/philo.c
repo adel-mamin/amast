@@ -38,10 +38,6 @@
 #include "philo.h"
 
 static struct philo {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
-     */
     struct am_hsm hsm;
     struct am_ao ao;
     int id;
@@ -54,35 +50,41 @@ static struct philo {
 
 static struct am_event event_stopped_ = {.id = EVT_STOPPED};
 
-static enum am_rc philo_top(struct philo* me, const struct am_event* event);
+static enum am_rc philo_top(struct am_hsm* hsm, const struct am_event* event);
 static enum am_rc philo_thinking(
-    struct philo* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 );
-static enum am_rc philo_hungry(struct philo* me, const struct am_event* event);
-static enum am_rc philo_eating(struct philo* me, const struct am_event* event);
+static enum am_rc philo_hungry(
+    struct am_hsm* hsm, const struct am_event* event
+);
+static enum am_rc philo_eating(
+    struct am_hsm* hsm, const struct am_event* event
+);
 
-static enum am_rc philo_top(struct philo* me, const struct am_event* event) {
+static enum am_rc philo_top(struct am_hsm* hsm, const struct am_event* event) {
+    struct philo* me = AM_CONTAINER_OF(hsm, struct philo, hsm);
     switch (event->id) {
     case EVT_STOP:
         am_timer_disarm(me->timer, &me->timeout.event);
         am_ao_post_fifo(me->table, &event_stopped_);
         am_ao_stop(&me->ao);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 static enum am_rc philo_thinking(
-    struct philo* me, const struct am_event* event
+    struct am_hsm* hsm, const struct am_event* event
 ) {
+    struct philo* me = AM_CONTAINER_OF(hsm, struct philo, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("philo %d is thinking\n", me->id);
         ++me->cnt;
         am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/20, 0);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case EVT_TIMEOUT: {
         struct hungry* msg = (struct hungry*)am_event_allocate(
@@ -90,39 +92,45 @@ static enum am_rc philo_thinking(
         );
         msg->philo = me->id;
         am_ao_post_fifo(me->table, &msg->event);
-        return AM_HSM_TRAN(philo_hungry);
+        return am_hsm_tran(hsm, philo_hungry);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(philo_top);
+    return am_hsm_super(hsm, philo_top);
 }
 
-static enum am_rc philo_hungry(struct philo* me, const struct am_event* event) {
+static enum am_rc philo_hungry(
+    struct am_hsm* hsm, const struct am_event* event
+) {
+    struct philo* me = AM_CONTAINER_OF(hsm, struct philo, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("philo %d is hungry\n", me->id);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case EVT_EAT: {
         const struct eat* eat = (const struct eat*)event;
         if (eat->philo == me->id) {
-            return AM_HSM_TRAN(philo_eating);
+            return am_hsm_tran(hsm, philo_eating);
         }
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(philo_top);
+    return am_hsm_super(hsm, philo_top);
 }
 
-static enum am_rc philo_eating(struct philo* me, const struct am_event* event) {
+static enum am_rc philo_eating(
+    struct am_hsm* hsm, const struct am_event* event
+) {
+    struct philo* me = AM_CONTAINER_OF(hsm, struct philo, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("philo %d is eating\n", me->id);
         am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/20, 0);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case EVT_TIMEOUT: {
         am_printf("philo %d publishing DONE\n", me->id);
@@ -131,19 +139,20 @@ static enum am_rc philo_eating(struct philo* me, const struct am_event* event) {
         );
         msg->philo = me->id;
         am_ao_publish(AM_CAST(const struct am_event*, msg));
-        return AM_HSM_TRAN(philo_thinking);
+        return am_hsm_tran(hsm, philo_thinking);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(philo_top);
+    return am_hsm_super(hsm, philo_top);
 }
 
-static enum am_rc philo_init(struct philo* me, const struct am_event* event) {
+static enum am_rc philo_init(struct am_hsm* hsm, const struct am_event* event) {
+    struct philo* me = AM_CONTAINER_OF(hsm, struct philo, hsm);
     (void)event;
     am_ao_subscribe(&me->ao, EVT_EAT);
     am_ao_subscribe(&me->ao, EVT_STOP);
-    return AM_HSM_TRAN(philo_thinking);
+    return am_hsm_tran(hsm, philo_thinking);
 }
 
 void philo_ctor(
@@ -161,7 +170,7 @@ void philo_ctor(
     me->cnt = 0;
     me->id = id;
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(philo_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(philo_init));
 
     me->table = table;
     me->timer = timer;

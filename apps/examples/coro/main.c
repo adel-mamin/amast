@@ -88,10 +88,6 @@ enum {
 };
 
 struct coro {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
-     */
     struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer* timer;
@@ -103,42 +99,49 @@ struct coro {
 
 static const struct am_event am_evt_start = {.id = CORO_EVT_START};
 
-static enum am_rc coro_top(struct coro* me, const struct am_event* event);
-static enum am_rc coro_regular(struct coro* me, const struct am_event* event);
-static enum am_rc coro_off(struct coro* me, const struct am_event* event);
-static enum am_rc coro_exiting(struct coro* me, const struct am_event* event);
+static enum am_rc coro_top(struct am_hsm* hsm, const struct am_event* event);
+static enum am_rc coro_regular(
+    struct am_hsm* hsm, const struct am_event* event
+);
+static enum am_rc coro_off(struct am_hsm* hsm, const struct am_event* event);
+static enum am_rc coro_exiting(
+    struct am_hsm* hsm, const struct am_event* event
+);
 
-static enum am_rc coro_top(struct coro* me, const struct am_event* event) {
+static enum am_rc coro_top(struct am_hsm* hsm, const struct am_event* event) {
     switch (event->id) {
     case AM_EVT_INIT: {
-        return AM_HSM_TRAN(coro_regular);
+        return am_hsm_tran(hsm, coro_regular);
     }
     case CORO_EVT_SWITCH_MODE: {
         am_printff("\b");
-        if (am_hsm_is_in(&me->hsm, AM_HSM_STATE_CTOR(coro_regular))) {
-            return AM_HSM_TRAN(coro_off);
+        if (am_hsm_is_in(hsm, am_hsm_state(coro_regular))) {
+            return am_hsm_tran(hsm, coro_off);
         }
-        return AM_HSM_TRAN(coro_regular);
+        return am_hsm_tran(hsm, coro_regular);
     }
     case CORO_EVT_EXIT: {
-        return AM_HSM_TRAN_REDISPATCH(coro_exiting);
+        return am_hsm_tran_redispatch(hsm, coro_exiting);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc coro_exiting(struct coro* me, const struct am_event* event) {
+static enum am_rc coro_exiting(
+    struct am_hsm* hsm, const struct am_event* event
+) {
+    struct coro* me = AM_CONTAINER_OF(hsm, struct coro, hsm);
     switch (event->id) {
     case CORO_EVT_EXIT: {
         am_ao_stop(&me->ao);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 static enum am_rc coro_blinking_green(struct coro* me) {
@@ -189,17 +192,20 @@ static enum am_rc coro_regular_(struct coro* me) {
     return AM_RC_CORO_DONE;
 }
 
-static enum am_rc coro_regular(struct coro* me, const struct am_event* event) {
+static enum am_rc coro_regular(
+    struct am_hsm* hsm, const struct am_event* event
+) {
+    struct coro* me = AM_CONTAINER_OF(hsm, struct coro, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_coro_ctor(&me->coro);
         am_coro_ctor(&me->coro_blinking_green);
         am_ao_post_fifo(&me->ao, &am_evt_start);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case AM_EVT_EXIT: {
         am_timer_disarm(me->timer, &me->timeout.event);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case CORO_EVT_START:
     case CORO_EVT_TIMER: {
@@ -208,19 +214,20 @@ static enum am_rc coro_regular(struct coro* me, const struct am_event* event) {
     default:
         break;
     }
-    return AM_HSM_SUPER(coro_top);
+    return am_hsm_super(hsm, coro_top);
 }
 
-static enum am_rc coro_off(struct coro* me, const struct am_event* event) {
+static enum am_rc coro_off(struct am_hsm* hsm, const struct am_event* event) {
+    struct coro* me = AM_CONTAINER_OF(hsm, struct coro, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_coro_ctor(&me->coro);
         am_ao_post_fifo(&me->ao, &am_evt_start);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case AM_EVT_EXIT: {
         am_timer_disarm(me->timer, &me->timeout.event);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     case CORO_EVT_START:
     case CORO_EVT_TIMER: {
@@ -239,26 +246,27 @@ static enum am_rc coro_off(struct coro* me, const struct am_event* event) {
 
         AM_CORO_END();
 
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
     default:
         break;
     }
-    return AM_HSM_SUPER(coro_top);
+    return am_hsm_super(hsm, coro_top);
 }
 
-static enum am_rc coro_init(struct coro* me, const struct am_event* event) {
+static enum am_rc coro_init(struct am_hsm* hsm, const struct am_event* event) {
     (void)event;
+    struct coro* me = AM_CONTAINER_OF(hsm, struct coro, hsm);
     am_ao_subscribe(&me->ao, CORO_EVT_SWITCH_MODE);
     am_ao_subscribe(&me->ao, CORO_EVT_EXIT);
-    return AM_HSM_TRAN(coro_top);
+    return am_hsm_tran(hsm, coro_top);
 }
 
 static void coro_ctor(struct coro* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
 
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(coro_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(coro_init));
 
     me->timer = timer;
     me->timeout = am_timer_event_ctor_x(CORO_EVT_TIMER, &me->ao);

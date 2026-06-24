@@ -143,74 +143,73 @@ Here is the full implementation of the HSM:
 enum { APP_EVT_A = AM_EVT_USER, APP_EVT_B, APP_EVT_C };
 
 struct app {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules
-     */
     struct am_hsm hsm;
     /* app data */
 } app;
 
-static enum am_rc substate_a(struct app *me, const struct am_event *event);
-static enum am_rc substate_b(struct app *me, const struct am_event *event);
+static enum am_rc substate_a(struct am_hsm* hsm, const struct am_event *event);
+static enum am_rc substate_b(struct am_hsm* hsm, const struct am_event *event);
 
-static enum am_rc superstate(struct app *me, const struct am_event *event) {
+static enum am_rc superstate(struct am_hsm* hsm, const struct am_event *event) {
+    struct app* me = AM_CONTAINER_OF(hsm, struct app, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("superstate entry\n");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case AM_EVT_EXIT:
         am_printf("superstate exit\n");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case AM_EVT_INIT:
-        return AM_HSM_TRAN(substate_a);
+        return am_hsm_tran(hsm, substate_a);
 
     case APP_EVT_C:
-        return AM_HSM_TRAN(substate_b);
+        return am_hsm_tran(hsm, substate_b);
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(am_hsm_top);
 }
 
-static enum am_rc substate_a(struct app *me, const struct am_event *event) {
+static enum am_rc substate_a(struct am_hsm* hsm, const struct am_event *event) {
+    struct app* me = AM_CONTAINER_OF(hsm, struct app, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("substate_a entry\n");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case AM_EVT_EXIT:
         am_printf("substate_a exit\n");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case APP_EVT_B:
-        return AM_HSM_TRAN(substate_b);
+        return am_hsm_tran(hsm, substate_b);
     }
-    return AM_HSM_SUPER(superstate);
+    return am_hsm_super(hsm, superstate);
 }
 
-static enum am_rc substate_b(struct app *me, const struct am_event *event) {
+static enum am_rc substate_b(struct am_hsm* hsm, const struct am_event *event) {
+    struct app* me = AM_CONTAINER_OF(hsm, struct app, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("substate_b entry\n");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case AM_EVT_EXIT:
         am_printf("substate_b exit\n");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case APP_EVT_A:
-        return AM_HSM_TRAN(substate_a);
+        return am_hsm_tran(hsm, substate_a);
     }
-    return AM_HSM_SUPER(superstate);
+    return am_hsm_super(hsm, superstate);
 }
 
-static enum am_rc init(struct app *me, const struct am_event *event) {
-    return AM_HSM_TRAN(superstate);
+static enum am_rc init(struct am_hsm* hsm, const struct am_event *event) {
+    return am_hsm_tran(hsm, superstate);
 }
 
 int main(void) {
-    am_hsm_ctor(&app.hsm, AM_HSM_STATE_CTOR(init));
+    am_hsm_ctor(&app.hsm, am_hsm_state(init));
     am_hsm_init(&app.hsm, /*init_event=*/NULL);
     am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_B});
     am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_A});
@@ -264,10 +263,6 @@ enum {
 };
 
 struct app {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
-     */
     struct am_hsm hsm;
     struct am_ao ao;
     struct am_timer *timer;
@@ -275,52 +270,54 @@ struct app {
     int ticks;
 };
 
-static enum am_rc app_state_a(struct app *me, const struct am_event *event);
-static enum am_rc app_state_b(struct app *me, const struct am_event *event);
+static enum am_rc app_state_a(struct am_hsm* hsm, const struct am_event *event);
+static enum am_rc app_state_b(struct am_hsm* hsm, const struct am_event *event);
 
-static enum am_rc app_state_a(struct app *me, const struct am_event *event) {
+static enum am_rc app_state_a(struct am_hsm* hsm, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("state A\n");
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case APP_EVT_SWITCH_MODE:
-        return AM_HSM_TRAN(app_state_b);
+        return am_hsm_tran(hsm, app_state_b);
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc app_state_b(struct app *me, const struct am_event *event) {
+static enum am_rc app_state_b(struct am_hsm* hsm, const struct am_event *event) {
+    struct app* me = AM_CONTAINER_OF(hsm, struct app, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("state B\n");
         am_timer_arm(me->timer, &me->timeout.event, me->ticks, /*interval=*/0);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case AM_EVT_EXIT:
         am_timer_disarm(me->timer, &me->timeout.event);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
 
     case APP_EVT_SWITCH_MODE:
-        return AM_HSM_TRAN(app_state_a);
+        return am_hsm_tran(hsm, app_state_a);
 
     case APP_EVT_TIMER:
         am_printf("timer\n");
         am_timer_arm(me->timer, &me->timeout.event, me->ticks, /*interval=*/0);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc app_init(struct app *me, const struct am_event *event) {
+static enum am_rc app_init(struct am_hsm* hsm, const struct am_event *event) {
+    struct app* me = AM_CONTAINER_OF(hsm, struct app, hsm);
     am_ao_subscribe(&me->ao, APP_EVT_SWITCH_MODE);
-    return AM_HSM_TRAN(app_state_a);
+    return am_hsm_tran(hsm, app_state_a);
 }
 
 static void app_ctor(struct app *me, struct am_timer *timer) {
     memset(me, 0, sizeof(*me));
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(app_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(app_init));
     me->timer = timer;
     me->timeout = am_timer_event_ctor_x(APP_EVT_TIMER, &me->ao);
     me->ticks = am_time_get_ticks_from_ms(AM_TIMEBASE_DEFAULT, 1000);

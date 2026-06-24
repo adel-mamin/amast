@@ -41,15 +41,12 @@
 static const struct am_event* m_queue_test[1];
 
 static struct test {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
-     */
     struct am_hsm hsm;
     struct am_ao ao;
 } m_test;
 
-static int test_proc(struct test* me, const struct am_event* event) {
+static int test_proc(struct am_hsm* hsm, const struct am_event* event) {
+    struct test* me = AM_CONTAINER_OF(hsm, struct test, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
         static const struct am_event stop = {.id = AM_EVT_SELF_STOP};
@@ -58,16 +55,16 @@ static int test_proc(struct test* me, const struct am_event* event) {
     }
     case AM_EVT_SELF_STOP:
         am_ao_stop(&me->ao);
-        return AM_HSM_HANDLED();
+        return am_hsm_handled(hsm);
     default:
         break;
     }
-    return AM_HSM_SUPER(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
-static int test_init(struct test* me, const struct am_event* event) {
+static int test_init(struct am_hsm* hsm, const struct am_event* event) {
     (void)event;
-    return AM_HSM_TRAN(test_proc);
+    return am_hsm_tran(hsm, test_proc);
 }
 
 static void start_ao(void) {
@@ -89,7 +86,7 @@ int main(void) {
 
     struct test* me = &m_test;
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(test_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(test_init));
     start_ao();
 
     while (am_ao_get_cnt() > 0) {
@@ -97,7 +94,7 @@ int main(void) {
     }
 
     am_ao_ctor(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_ctor(&me->hsm, AM_HSM_STATE_CTOR(test_init));
+    am_hsm_ctor(&me->hsm, am_hsm_state(test_init));
     start_ao();
 
     while (am_ao_get_cnt() > 0) {
