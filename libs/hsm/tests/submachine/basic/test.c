@@ -129,7 +129,7 @@ static void test_basic_sm(void) {
     struct basic_sm* me = &m_basic_sm;
     am_hsm_create(&me->hsm, am_hsm_state_make(bs_init));
 
-    am_hsm_init(&me->hsm, /*init_event=*/NULL);
+    am_hsm_start(&me->hsm, /*init_event=*/NULL);
     AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state_make(bs_s)));
 
     {

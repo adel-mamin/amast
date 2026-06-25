@@ -141,7 +141,7 @@ static void test_oven_hsm(void) {
     struct oven_hsm* me = &m_oven_hsm;
     am_hsm_create(&me->hsm, am_hsm_state_make(oven_hsm_init));
 
-    am_hsm_init(&me->hsm, /*init_event=*/NULL);
+    am_hsm_start(&me->hsm, /*init_event=*/NULL);
     AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state_make(oven_hsm_off)));
 
     am_hsm_dispatch(&me->hsm, &(struct am_event){.id = HSM_EVT_ON});

@@ -387,7 +387,7 @@ void am_hsm_destroy(struct am_hsm* hsm) {
     hsm->create_called = hsm->init_called = false;
 }
 
-void am_hsm_init(struct am_hsm* hsm, const struct am_event* init_event) {
+void am_hsm_start(struct am_hsm* hsm, const struct am_event* init_event) {
     AM_ASSERT(hsm);
     AM_ASSERT(hsm->create_called); /* was am_hsm_create() called? */
     AM_ASSERT(!hsm->init_called);  /* double init? */

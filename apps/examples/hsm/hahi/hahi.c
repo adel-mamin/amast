@@ -171,7 +171,7 @@ static enum am_rc hahi_init(struct am_hsm* hsm, const struct am_event* event) {
 int main(void) {
     struct hahi m;
     am_hsm_create(&m.hsm, am_hsm_state_make(hahi_init));
-    am_hsm_init(&m.hsm, /*init_event=*/NULL);
+    am_hsm_start(&m.hsm, /*init_event=*/NULL);
 
     int ch = 0;
     while ((ch = getc(stdin)) != EOF) {

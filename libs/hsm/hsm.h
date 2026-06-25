@@ -139,7 +139,7 @@ struct am_hsm {
     uint8_t hierarchy_level : AM_HSM_HIERARCHY_LEVEL_BITS;
     /** Safety net to catch a missing am_hsm_create() call. */
     uint8_t create_called : 1;
-    /** Safety net to catch a missing am_hsm_init() call. */
+    /** Safety net to catch a missing am_hsm_start() call. */
     uint8_t init_called : 1;
     /** Safety net to catch an erroneous reentrant am_hsm_dispatch() call. */
     uint8_t dispatch_in_progress : 1;
@@ -426,7 +426,7 @@ void am_hsm_destroy(struct am_hsm* hsm);
  * @param hsm         HSM to initialize.
  * @param init_event  Initial event, or NULL.
  */
-void am_hsm_init(struct am_hsm* hsm, const struct am_event* init_event);
+void am_hsm_start(struct am_hsm* hsm, const struct am_event* init_event);
 
 /**
  * Ultimate top superstate of every HSM.

@@ -413,7 +413,7 @@ The source code of the corresponding header file is in `hsm.h <https://github.co
 
 .. doxygenfunction:: am_hsm_destroy
 
-.. doxygenfunction:: am_hsm_init
+.. doxygenfunction:: am_hsm_start
 
 .. doxygenfunction:: am_hsm_top
 

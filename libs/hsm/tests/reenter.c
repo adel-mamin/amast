@@ -126,7 +126,7 @@ static void test_reenter_hsm(void) {
 
     struct reenter_hsm* me = &m_reenter_hsm;
 
-    am_hsm_init(&me->hsm, /*init_event=*/NULL);
+    am_hsm_start(&me->hsm, /*init_event=*/NULL);
 
     {
         const char* out = "s-ENTRY;s1-ENTRY;";

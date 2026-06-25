@@ -53,7 +53,7 @@ static void test_calc(void) {
 
     struct am_hsm* calc = calc_get_obj();
 
-    am_hsm_init(calc, /*init_event=*/NULL);
+    am_hsm_start(calc, /*init_event=*/NULL);
 
     /* NOLINTBEGIN(clang-analyzer-optin.performance.Padding) */
     struct test {

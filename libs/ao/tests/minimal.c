@@ -129,7 +129,7 @@ int main(void) {
 
     am_ao_create(
         &m_loopback.ao,
-        (am_ao_fn)am_hsm_init,
+        (am_ao_fn)am_hsm_start,
         (am_ao_fn)am_hsm_dispatch,
         &m_loopback
     );
@@ -137,7 +137,7 @@ int main(void) {
 
     am_ao_create(
         &m_loopback_test.ao,
-        (am_ao_fn)am_hsm_init,
+        (am_ao_fn)am_hsm_start,
         (am_ao_fn)am_hsm_dispatch,
         &m_loopback_test
     );

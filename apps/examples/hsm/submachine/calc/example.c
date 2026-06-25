@@ -110,7 +110,7 @@ int main(void) {
     printf(AM_COLOR_RESET);
 
     struct am_hsm* calc = calc_get_obj();
-    am_hsm_init(calc, /*init_event=*/NULL);
+    am_hsm_start(calc, /*init_event=*/NULL);
     calc_print();
 
     static const char* blank = " ";

@@ -189,7 +189,7 @@ int main(void) {
     hsmq_create(hsmq_log, &alloc);
 
     m_hsmq_log_buf[0] = '\0';
-    am_hsm_init(am_hsmq, /*init_event=*/NULL);
+    am_hsm_start(am_hsmq, /*init_event=*/NULL);
 
     static const struct hsmq_test {
         uint16_t event;

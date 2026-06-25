@@ -297,12 +297,12 @@ Initial State
 In addition to regular states every HSM must declare the initial state,
 which the HSM library invokes to execute the topmost initial transition.
 
-The initial state is entered, when calling :cpp:func:`am_hsm_init()` function.
+The initial state is entered, when calling :cpp:func:`am_hsm_start()` function.
 The initial state must always return :cpp:func:`am_hsm_tran()` pointing to
 target state.
 
 The transition from the initial state to the target state is done by
-the time :cpp:func:`am_hsm_init()` exits.
+the time :cpp:func:`am_hsm_start()` exits.
 
 
 HSM Initialization
@@ -312,7 +312,7 @@ HSM initialization is divided into the following two steps for increased
 flexibility and better control of the initialization timeline:
 
 1. the state machine constructor (:cpp:func:`am_hsm_create()`)
-2. the top-most initial transition (:cpp:func:`am_hsm_init()`).
+2. the top-most initial transition (:cpp:func:`am_hsm_start()`).
 
 HSM Topology
 ============

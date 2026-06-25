@@ -195,7 +195,7 @@ static void test_defer(void) {
     defer_create(defer_hsm_log, &alloc);
 
     struct test_defer* me = &m_test_defer;
-    am_hsm_init(&me->hsm, /*init_event=*/NULL);
+    am_hsm_start(&me->hsm, /*init_event=*/NULL);
 
     static const struct test {
         int event;

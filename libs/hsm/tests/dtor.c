@@ -72,7 +72,7 @@ static enum am_rc dtor_sinit(struct am_hsm* hsm, const struct am_event* event) {
 static void dtor_hsm(void) {
     struct dtor_hsm* me = &m_dtor_hsm;
     am_hsm_create(&me->hsm, am_hsm_state_make(dtor_sinit));
-    am_hsm_init(&me->hsm, /*init_event=*/NULL);
+    am_hsm_start(&me->hsm, /*init_event=*/NULL);
     am_hsm_destroy(&me->hsm);
     AM_ASSERT(am_hsm_is_in(&me->hsm, am_hsm_state_make(am_hsm_top)));
 }

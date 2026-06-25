@@ -57,7 +57,7 @@ static void test_regular(void) {
     regular_create(test_log);
 
     struct am_hsm* hsm = regular_get_obj();
-    am_hsm_init(hsm, /*init_event=*/NULL);
+    am_hsm_start(hsm, /*init_event=*/NULL);
 
     {
         const char* out =

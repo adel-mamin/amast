@@ -169,7 +169,9 @@ void philo_create(
     memset(me, 0, sizeof(*me));
     me->cnt = 0;
     me->id = id;
-    am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_ao_create(
+        &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
+    );
     am_hsm_create(&me->hsm, am_hsm_state_make(philo_init));
 
     me->table = table;

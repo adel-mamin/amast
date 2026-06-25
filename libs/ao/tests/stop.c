@@ -85,7 +85,9 @@ int main(void) {
     am_ao_state_create(/*cfg=*/NULL);
 
     struct test* me = &m_test;
-    am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_ao_create(
+        &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
+    );
     am_hsm_create(&me->hsm, am_hsm_state_make(test_init));
     start_ao();
 
@@ -93,7 +95,9 @@ int main(void) {
         am_ao_run_all();
     }
 
-    am_ao_create(&me->ao, (am_ao_fn)am_hsm_init, (am_ao_fn)am_hsm_dispatch, me);
+    am_ao_create(
+        &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
+    );
     am_hsm_create(&me->hsm, am_hsm_state_make(test_init));
     start_ao();
 

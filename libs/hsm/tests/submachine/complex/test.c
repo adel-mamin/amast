@@ -56,7 +56,7 @@ static void test_submachine(void) {
 
     struct am_hsm* complex = complex_get_obj();
 
-    am_hsm_init(complex, /*init_event=*/NULL);
+    am_hsm_start(complex, /*init_event=*/NULL);
 
     {
         const char* out =

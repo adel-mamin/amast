@@ -64,7 +64,7 @@ int main(void) {
     m_log_buf[0] = '\0';
 
     struct am_hsm* complex = complex_get_obj();
-    am_hsm_init(complex, /*init_event=*/NULL);
+    am_hsm_start(complex, /*init_event=*/NULL);
     test_print('*');
 
     static const char* blank = "        ";
