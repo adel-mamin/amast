@@ -73,8 +73,8 @@ static void test_ringbuf_threading(void) {
 
     am_ao_state_init(/*cfg=*/NULL);
 
-    ringbuf_reader_create(&ringbuf, &timer, data, (int)sizeof(data));
-    ringbuf_writer_create(&ringbuf, &timer, data, (int)sizeof(data));
+    ringbuf_reader_init(&ringbuf, &timer, data, (int)sizeof(data));
+    ringbuf_writer_init(&ringbuf, &timer, data, (int)sizeof(data));
 
     const struct am_event* queue_reader[1];
     am_ao_start(

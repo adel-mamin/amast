@@ -110,7 +110,7 @@ extern "C" {
 #endif
 
 /**
- * Timer state constructor.
+ * Timer state initialization.
  *
  * @param timer  the timer state
  */

@@ -55,7 +55,7 @@ static void test_print(int c) {
 }
 
 int main(void) {
-    complex_sm_create(test_log);
+    complex_sm_init(test_log);
 
     printf(AM_COLOR_BLUE_BOLD);
     printf("Type event [A,B,C,D,E,F,G,H] (T to terminate)\n");

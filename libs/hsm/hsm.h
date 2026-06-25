@@ -396,11 +396,11 @@ uint8_t am_hsm_get_instance(const struct am_hsm* hsm);
 struct am_hsm_state am_hsm_get_state(const struct am_hsm* hsm);
 
 /**
- * Construct an HSM object.
+ * Initialize an HSM object.
  *
  * The initial state handler must return am_hsm_tran() or am_hsm_tran_i().
  *
- * @param hsm    HSM object to construct.
+ * @param hsm    HSM object to initialize.
  * @param state  Initial state descriptor of @p hsm.
  */
 void am_hsm_init(struct am_hsm* hsm, struct am_hsm_state state);

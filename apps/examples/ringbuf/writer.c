@@ -91,7 +91,7 @@ static void ringbuf_writer_event_handler(
     }
 }
 
-void ringbuf_writer_create(
+void ringbuf_writer_init(
     struct am_ringbuf* ringbuf,
     struct am_timer* timer,
     const uint8_t* data,

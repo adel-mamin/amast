@@ -63,7 +63,7 @@ extern "C" {
 #endif
 
 /**
- * Construct ring buffer.
+ * Initialize ring buffer.
  *
  * Must be called before calling any other ring buffer API.
  *

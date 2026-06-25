@@ -58,7 +58,7 @@ Design Considerations
 2. **Configuration Options**:
 
    - Customizable block size and alignment settings are defined during
-     construction.
+     initialization.
 
 3. **Diagnostics**:
 

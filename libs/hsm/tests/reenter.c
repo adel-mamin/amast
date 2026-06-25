@@ -96,18 +96,18 @@ static enum am_rc reenter_hsm_s1(
     return am_hsm_super(hsm, reenter_hsm_s);
 }
 
-static enum am_rc reenter_hsm_init(
+static enum am_rc reenter_hsm_initial(
     struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
     return am_hsm_tran(hsm, reenter_hsm_s);
 }
 
-static void reenter_hsm_create(
+static void reenter_hsm_init(
     AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)
 ) {
     struct reenter_hsm* me = &m_reenter_hsm;
-    am_hsm_init(&me->hsm, am_hsm_state_make(reenter_hsm_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(reenter_hsm_initial));
     me->log = log;
     me->log_buf[0] = '\0';
 }
@@ -122,7 +122,7 @@ static AM_PRINTF(1, 0) void reenter_hsm_log(const char* fmt, ...) {
 }
 
 static void test_reenter_hsm(void) {
-    reenter_hsm_create(reenter_hsm_log);
+    reenter_hsm_init(reenter_hsm_log);
 
     struct reenter_hsm* me = &m_reenter_hsm;
 

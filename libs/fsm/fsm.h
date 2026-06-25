@@ -165,11 +165,11 @@ bool am_fsm_is_in(const struct am_fsm* fsm, am_fsm_state_fn state);
 am_fsm_state_fn am_fsm_get_state(const struct am_fsm* fsm);
 
 /**
- * Construct an FSM object.
+ * Initialize an FSM object.
  *
  * The initial state handler must return am_fsm_tran().
  *
- * @param fsm    FSM object to construct.
+ * @param fsm    FSM object to initialize.
  * @param state  Initial state/event handler function of @p fsm.
  */
 void am_fsm_init(struct am_fsm* fsm, am_fsm_state_fn state);

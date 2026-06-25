@@ -50,7 +50,7 @@ static AM_PRINTF(1, 0) void cpl_test_log(const char* fmt, ...) {
 /* Test submachines. */
 
 static void test_submachine(void) {
-    complex_sm_create(cpl_test_log);
+    complex_sm_init(cpl_test_log);
 
     m_complex_sm_log_buf[0] = '\0';
 

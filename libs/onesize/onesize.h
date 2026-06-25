@@ -48,8 +48,8 @@ struct am_onesize {
     struct am_slist fl; /**< list of non-allocated memory blocks (free list) */
     int nfree;          /**< current number of blocks in free list */
     int ntotal;         /**< total number of blocks */
-    int nfree_min;      /**< minimum free blocks observed since construction */
-    int nbump;          /**< bump index */
+    int nfree_min; /**< minimum free blocks observed since initialization */
+    int nbump;     /**< bump index */
 };
 
 /** Onesize configuration. */
@@ -71,7 +71,7 @@ extern "C" {
 #endif
 
 /**
- * Construct a new onesize allocator.
+ * Initialize a new onesize allocator.
  *
  * Allocation requests up to block size bytes from onesize configuration are
  * rounded up to block size bytes and served from a singly-linked

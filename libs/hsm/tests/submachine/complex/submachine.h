@@ -29,7 +29,7 @@
 
 #include "common/compiler.h"
 
-void complex_sm_create(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...));
+void complex_sm_init(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...));
 struct am_hsm* complex_get_obj(void);
 
 #endif /* SUBMACHINE_H_INCLUDED */

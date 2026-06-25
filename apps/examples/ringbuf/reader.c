@@ -99,7 +99,7 @@ static void ringbuf_reader_event_handler(
     }
 }
 
-void ringbuf_reader_create(
+void ringbuf_reader_init(
     struct am_ringbuf* ringbuf,
     struct am_timer* timer,
     const uint8_t* data,

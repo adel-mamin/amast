@@ -63,7 +63,7 @@ extern "C" {
 #endif
 
 /**
- * PAL constructor.
+ * PAL initialization.
  *
  * @param arg  platform specific handler. Can be NULL.
  *

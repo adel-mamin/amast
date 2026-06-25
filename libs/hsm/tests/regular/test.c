@@ -54,7 +54,7 @@ static AM_PRINTF(1, 0) void test_log(const char* fmt, ...) {
  */
 
 static void test_regular(void) {
-    regular_create(test_log);
+    regular_init(test_log);
 
     struct am_hsm* hsm = regular_get_obj();
     am_hsm_start(hsm, /*init_event=*/NULL);

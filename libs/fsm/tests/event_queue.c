@@ -99,17 +99,19 @@ static void fsmq_commit(void) {
     }
 }
 
-static enum am_rc fsmq_init(struct am_fsm* fsm, const struct am_event* event) {
+static enum am_rc fsmq_initial(
+    struct am_fsm* fsm, const struct am_event* event
+) {
     (void)event;
     return am_fsm_tran(fsm, fsmq_a);
 }
 
-static void fsmq_create(
+static void fsmq_init(
     AM_PRINTF(1, 0) void (*log)(const char* fmt, ...),
     struct am_event_alloc* alloc
 ) {
     struct am_fsmq* me = &am_fsmq_;
-    am_fsm_init(&me->fsm, fsmq_init);
+    am_fsm_init(&me->fsm, fsmq_initial);
     me->log = log;
     me->alloc = alloc;
 
@@ -171,7 +173,7 @@ int main(void) {
 
     am_event_async_init(/*sub=*/NULL, /*nsub=*/0, &alloc);
 
-    fsmq_create(fsmq_log, &alloc);
+    fsmq_init(fsmq_log, &alloc);
 
     m_fsmq_log_buf[0] = '\0';
     am_fsm_start(am_fsmq, /*init_event=*/NULL);

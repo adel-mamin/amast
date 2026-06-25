@@ -147,7 +147,9 @@ static enum am_rc philo_eating(
     return am_hsm_super(hsm, philo_top);
 }
 
-static enum am_rc philo_init(struct am_hsm* hsm, const struct am_event* event) {
+static enum am_rc philo_initial(
+    struct am_hsm* hsm, const struct am_event* event
+) {
     struct philo* me = AM_CONTAINER_OF(hsm, struct philo, hsm);
     (void)event;
     am_ao_subscribe(&me->ao, EVT_EAT);
@@ -155,7 +157,7 @@ static enum am_rc philo_init(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_tran(hsm, philo_thinking);
 }
 
-void philo_create(
+void philo_init(
     int id,
     struct am_ao* table,
     struct am_timer* timer,
@@ -170,7 +172,7 @@ void philo_create(
     me->cnt = 0;
     me->id = id;
     am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_init(&me->hsm, am_hsm_state_make(philo_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(philo_initial));
 
     me->table = table;
     me->timer = timer;

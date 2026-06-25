@@ -64,18 +64,18 @@ static enum am_rc reenter_fsm_s(
     return am_fsm_handled(fsm);
 }
 
-static enum am_rc reenter_fsm_init(
+static enum am_rc reenter_fsm_initial(
     struct am_fsm* fsm, const struct am_event* event
 ) {
     (void)event;
     return am_fsm_tran(fsm, reenter_fsm_s);
 }
 
-static void reenter_fsm_create(
+static void reenter_fsm_init(
     AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)
 ) {
     struct reenter_fsm* me = &m_reenter_fsm;
-    am_fsm_init(&me->fsm, reenter_fsm_init);
+    am_fsm_init(&me->fsm, reenter_fsm_initial);
     me->log = log;
 }
 
@@ -89,7 +89,7 @@ static AM_PRINTF(1, 0) void reenter_fsm_log(const char* fmt, ...) {
 }
 
 static void test_reenter_fsm(void) {
-    reenter_fsm_create(reenter_fsm_log);
+    reenter_fsm_init(reenter_fsm_log);
 
     struct reenter_fsm* me = &m_reenter_fsm;
 

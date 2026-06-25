@@ -154,9 +154,9 @@ int main(void) {
     am_ao_state_init(&cfg);
 
     for (int i = 0; i < PHILO_NUM; ++i) {
-        philo_create(i, table_get_obj(), &timer, &alloc);
+        philo_init(i, table_get_obj(), &timer, &alloc);
     }
-    table_create(/*nsessions=*/100, &alloc);
+    table_init(/*nsessions=*/100, &alloc);
 
     const struct am_event* queue_table[2 * PHILO_NUM];
 

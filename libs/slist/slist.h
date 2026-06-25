@@ -107,7 +107,7 @@ extern "C" {
 #endif
 
 /**
- * Construct singly linked list.
+ * Initialize singly linked list.
  *
  * Must be called before calling any other singly linked list API functions.
  *
@@ -136,11 +136,11 @@ bool am_slist_is_empty(const struct am_slist* list);
 bool am_slist_item_is_linked(const struct am_slist_item* item);
 
 /**
- * Construct list item.
+ * Initialize list item.
  *
  * Initializes the list item as not being part to any list.
  *
- * @param item  the list item to construct.
+ * @param item  the list item to initialize.
  */
 void am_slist_item_init(struct am_slist_item* item);
 
@@ -289,12 +289,12 @@ struct am_slist_item* am_slist_next_item(
 void am_slist_append(struct am_slist* to, struct am_slist* from);
 
 /**
- * Construct new iterator.
+ * Initialize new iterator.
  *
  * Must be called before calling am_slist_iterator_next().
  *
  * If the iterator was already used to traverse the list once, then
- * it must be re-constructed by calling this function in order to
+ * it must be re-initialized by calling this function in order to
  * be used with am_slist_iterator_next() again.
  *
  * The only valid operation with the iterator after this one is
@@ -302,7 +302,7 @@ void am_slist_append(struct am_slist* to, struct am_slist* from);
  * Otherwise the behavior is undefined.
  *
  * @param list  the list
- * @param it    the iterator to be constructed
+ * @param it    the iterator to be initialized
  */
 void am_slist_iterator_init(
     struct am_slist* list, struct am_slist_iterator* it
@@ -318,7 +318,7 @@ void am_slist_iterator_init(
  *
  * The current visited item can only be popped with am_slist_iterator_pop().
  *
- * @param it  the iterator constructed by am_slist_iterator_init()
+ * @param it  the iterator initialized by am_slist_iterator_init()
  * @return the visited item or NULL, if the iteration is over.
  *         The item is not popped from the list.
  */

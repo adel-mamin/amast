@@ -68,7 +68,7 @@ static enum am_rc publish_s(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc publish_sinit(
+static enum am_rc publish_initial(
     struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
@@ -77,10 +77,10 @@ static enum am_rc publish_sinit(
     return am_hsm_tran(hsm, publish_s);
 }
 
-static void publish_create(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
+static void publish_init(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
     struct test_publish* me = &m_publish;
     am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_init(&me->hsm, am_hsm_state_make(publish_sinit));
+    am_hsm_init(&me->hsm, am_hsm_state_make(publish_initial));
     me->log = log;
 }
 
@@ -113,7 +113,7 @@ static void test_publish(void) {
     };
     am_ao_state_init(&cfg);
 
-    publish_create(publish_log);
+    publish_init(publish_log);
 
     am_ao_start(
         m_me,

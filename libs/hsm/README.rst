@@ -311,7 +311,7 @@ HSM Initialization
 HSM initialization is divided into the following two steps for increased
 flexibility and better control of the initialization timeline:
 
-1. the state machine constructor (:cpp:func:`am_hsm_init()`)
+1. the state machine initialization (:cpp:func:`am_hsm_init()`)
 2. the top-most initial transition (:cpp:func:`am_hsm_start()`).
 
 HSM Topology
@@ -597,8 +597,8 @@ The HSM topology:
 
 The test steps:
 
-1. Construct the HSM by calling **hsmq_create()**.
-   The HSM construction includes the HSM event queue setup.
+1. Initialize the HSM by calling **hsmq_init()**.
+   The HSM initialization includes the HSM event queue setup.
 2. Initialize the HSM. The init state transition activates **hsmq_s1**.
 3. Enter the cycle of injection of external events with ID listed in
    **in[]** array: **AM_EVT_A** and **AM_EVT_C**.

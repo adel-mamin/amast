@@ -193,7 +193,7 @@ static enum am_rc smoker_smoking(
     return am_hsm_super(hsm, smoker_top);
 }
 
-static enum am_rc smoker_init(
+static enum am_rc smoker_initial(
     struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
@@ -203,7 +203,7 @@ static enum am_rc smoker_init(
     return am_hsm_tran(hsm, smoker_idle);
 }
 
-static void smoker_create(
+static void smoker_init(
     struct smoker* me,
     int id,
     unsigned resource,
@@ -211,7 +211,7 @@ static void smoker_create(
     struct am_event_alloc* alloc
 ) {
     memset(me, 0, sizeof(*me));
-    am_hsm_init(&me->hsm, am_hsm_state_make(smoker_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(smoker_initial));
     am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
     me->id = id;
     me->resource_own = me->resource_acquired = resource;
@@ -334,7 +334,9 @@ static enum am_rc agent_proc(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc agent_init(struct am_hsm* hsm, const struct am_event* event) {
+static enum am_rc agent_initial(
+    struct am_hsm* hsm, const struct am_event* event
+) {
     (void)event;
 
     struct agent* me = AM_CONTAINER_OF(hsm, struct agent, hsm);
@@ -343,11 +345,11 @@ static enum am_rc agent_init(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_tran(hsm, agent_proc);
 }
 
-static void agent_create(
+static void agent_init(
     struct agent* me, struct am_timer* timer, struct am_event_alloc* alloc
 ) {
     memset(me, 0, sizeof(*me));
-    am_hsm_init(&me->hsm, am_hsm_state_make(agent_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(agent_initial));
     am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
 
     me->timer = timer;
@@ -404,10 +406,10 @@ int main(void) {
     struct smoker smokers[AM_SMOKERS_NUM_MAX];
     struct agent agent;
 
-    agent_create(&agent, &timer, &alloc);
+    agent_init(&agent, &timer, &alloc);
     static const unsigned resource[] = {PAPER, TOBACCO, FIRE};
     for (int i = 0; i < AM_COUNTOF(resource); ++i) {
-        smoker_create(&smokers[i], i, resource[i], &timer, &alloc);
+        smoker_init(&smokers[i], i, resource[i], &timer, &alloc);
     }
 
     const struct am_event* queue_agent[2 * AM_SMOKERS_NUM_MAX];

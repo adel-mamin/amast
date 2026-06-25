@@ -116,19 +116,19 @@ static enum am_rc defer_s2(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc defer_sinit(
+static enum am_rc defer_initial(
     struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
     return am_hsm_tran(hsm, defer_s1);
 }
 
-static void defer_create(
+static void defer_init(
     AM_PRINTF(1, 0) void (*log)(const char* fmt, ...),
     struct am_event_alloc* alloc
 ) {
     struct test_defer* me = &m_test_defer;
-    am_hsm_init(&me->hsm, am_hsm_state_make(defer_sinit));
+    am_hsm_init(&me->hsm, am_hsm_state_make(defer_initial));
     me->log = log;
 
     /* setup HSM event queue */
@@ -192,7 +192,7 @@ static void test_defer(void) {
 
     am_event_async_init(/*sub=*/NULL, /*nsub=*/0, &alloc);
 
-    defer_create(defer_hsm_log, &alloc);
+    defer_init(defer_hsm_log, &alloc);
 
     struct test_defer* me = &m_test_defer;
     am_hsm_start(&me->hsm, /*init_event=*/NULL);

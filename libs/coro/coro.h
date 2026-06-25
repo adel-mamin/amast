@@ -153,12 +153,12 @@ extern "C" {
 #endif
 
 /**
- * Construct coroutine state.
+ * Initialize coroutine state.
  *
  * Sets the coroutine state to #AM_CORO_STATE_INIT
  * preparing it for use in coroutine operation.
  *
- * @param me  the coroutine state to construct
+ * @param me  the coroutine state to initialize
  */
 static inline void am_coro_init(struct am_coro* me) {
     me->state = AM_CORO_STATE_INIT;

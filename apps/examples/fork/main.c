@@ -136,7 +136,7 @@ static enum am_rc progress_top(
     return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc progress_init(
+static enum am_rc progress_initial(
     struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
@@ -146,9 +146,9 @@ static enum am_rc progress_init(
     return am_hsm_tran(hsm, progress_top);
 }
 
-static void progress_create(struct progress* me, struct am_timer* timer) {
+static void progress_init(struct progress* me, struct am_timer* timer) {
     am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_init(&me->hsm, am_hsm_state_make(progress_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(progress_initial));
 
     me->timer = timer;
     me->progress = am_timer_event_create_x(EVT_PROGRESS_TICK, &me->ao);
@@ -249,13 +249,13 @@ int main(int argc, const char* argv[]) {
     };
     am_ao_state_init(&cfg);
 
-    struct progress m;
-    progress_create(&m, &timer);
+    struct progress progress;
+    progress_init(&progress, &timer);
 
     static const struct am_event* m_queue[EVT_MAX];
 
     am_ao_start(
-        &m.ao,
+        &progress.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_LOW, .task = AM_AO_PRIO_LOW},
         /*queue=*/m_queue,
         /*queue_size=*/AM_COUNTOF(m_queue),

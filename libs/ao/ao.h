@@ -418,9 +418,9 @@ bool am_ao_post_lifo_x(
 void am_ao_post_lifo(struct am_ao* ao, const struct am_event* event);
 
 /**
- * Active object constructor.
+ * Active object initialization.
  *
- * @param ao             the active object to construct
+ * @param ao             the active object to initialize
  * @param init_handler   the init event handler
  *                       The init event handler is run once on the start of
  *                       the active object, when the event queue is already
@@ -482,7 +482,7 @@ void am_ao_start(
 void am_ao_stop(struct am_ao* ao);
 
 /**
- * Active object library state constructor.
+ * Active object library state initialization.
  *
  * @param cfg  active object library configuration
  *             The active object library makes an internal copy of

@@ -118,7 +118,7 @@ static enum am_rc worker_proc(
     return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc worker_init(
+static enum am_rc worker_initial(
     struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
@@ -128,12 +128,12 @@ static enum am_rc worker_init(
     return am_hsm_tran(hsm, worker_proc);
 }
 
-static void worker_create(
+static void worker_init(
     struct worker* me, int id, struct am_event_alloc* alloc
 ) {
     memset(me, 0, sizeof(*me));
     am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_init(&me->hsm, am_hsm_state_make(worker_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(worker_initial));
     me->id = id;
     me->alloc = alloc;
 }
@@ -231,7 +231,7 @@ static enum am_rc balancer_proc(
     return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc balancer_init(
+static enum am_rc balancer_initial(
     struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
@@ -242,7 +242,7 @@ static enum am_rc balancer_init(
     return am_hsm_tran(hsm, balancer_proc);
 }
 
-static void balancer_create(
+static void balancer_init(
     struct balancer* me,
     int ncpus,
     struct am_timer* timer,
@@ -253,7 +253,7 @@ static void balancer_create(
     memset(me, 0, sizeof(*me));
     me->ncpus = ncpus;
     am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_init(&me->hsm, am_hsm_state_make(balancer_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(balancer_initial));
 
     me->workers = workers;
     me->nworkers = nworkers;
@@ -318,11 +318,11 @@ int main(void) {
     struct balancer balancer;
     struct worker workers[AM_WORKERS_NUM_MAX];
 
-    balancer_create(
+    balancer_init(
         &balancer, ncpus, &timer, workers, AM_COUNTOF(workers), &alloc
     );
     for (int i = 0; i < ncpus; ++i) {
-        worker_create(&workers[i], /*id=*/i, &alloc);
+        worker_init(&workers[i], /*id=*/i, &alloc);
     }
 
     const struct am_event* queue_balancer[AM_WORKERS_NUM_MAX];

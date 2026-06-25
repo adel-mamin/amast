@@ -178,14 +178,16 @@ static enum am_rc table_serving(
     return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc table_init(struct am_hsm* hsm, const struct am_event* event) {
+static enum am_rc table_initial(
+    struct am_hsm* hsm, const struct am_event* event
+) {
     (void)event;
     struct table* me = AM_CONTAINER_OF(hsm, struct table, hsm);
     am_ao_subscribe(&me->ao, EVT_DONE);
     return am_hsm_tran(hsm, table_serving);
 }
 
-void table_create(int nsessions, struct am_event_alloc* alloc) {
+void table_init(int nsessions, struct am_event_alloc* alloc) {
     struct table* me = &m_table;
     memset(me, 0, sizeof(*me));
     for (int i = 0; i < AM_COUNTOF(me->philo); ++i) {
@@ -194,7 +196,7 @@ void table_create(int nsessions, struct am_event_alloc* alloc) {
     me->nsessions = nsessions;
     me->alloc = alloc;
 
-    am_hsm_init(&me->hsm, am_hsm_state_make(table_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(table_initial));
     am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
 }
 

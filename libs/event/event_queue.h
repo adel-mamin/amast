@@ -83,7 +83,7 @@ extern "C" {
 #endif
 
 /**
- * Construct event queue with a array of event pointers.
+ * Initialized event queue with a array of event pointers.
  *
  * @param queue    the queue
  * @param events   the array of event pointers
@@ -270,7 +270,7 @@ enum am_rc am_event_queue_pop_front_with_cb(
 );
 
 /**
- * Check if constructor was called for event queue.
+ * Check if initialization was called for event queue.
  *
  * Thread safe.
  *

@@ -96,19 +96,19 @@ static enum am_rc watched_proc(
     return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc watched_init(
+static enum am_rc watched_initial(
     struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
     return am_hsm_tran(hsm, watched_proc);
 }
 
-static void watched_create(
+static void watched_init(
     struct watched* me, struct am_timer* timer, struct am_ao* wdt
 ) {
     memset(me, 0, sizeof(*me));
     am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_init(&me->hsm, am_hsm_state_make(watched_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(watched_initial));
     me->timer = timer;
     me->feed = am_timer_event_create_x(EVT_WATCHED_TIMEOUT, &me->ao);
     me->wdt = wdt;
@@ -139,15 +139,17 @@ static enum am_rc wdt_proc(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc wdt_init(struct am_hsm* hsm, const struct am_event* event) {
+static enum am_rc wdt_initial(
+    struct am_hsm* hsm, const struct am_event* event
+) {
     (void)event;
     return am_hsm_tran(hsm, wdt_proc);
 }
 
-static void wdt_create(struct wdt* me, struct am_timer* timer) {
+static void wdt_init(struct wdt* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
     am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_init(&me->hsm, am_hsm_state_make(wdt_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(wdt_initial));
     me->timer = timer;
     me->bark = am_timer_event_create_x(EVT_WDT_BARK, &me->ao);
 }
@@ -178,10 +180,10 @@ int main(void) {
     am_ao_state_init(/*cfg=*/NULL);
 
     struct wdt wdt;
-    wdt_create(&wdt, &timer);
+    wdt_init(&wdt, &timer);
 
     struct watched watched;
-    watched_create(&watched, &timer, &wdt.ao);
+    watched_init(&watched, &timer, &wdt.ao);
 
     const struct am_event* queue_watched[1];
     am_ao_start(

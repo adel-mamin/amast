@@ -44,7 +44,7 @@ struct am_throttle {
 };
 
 /** The throttle state constructor */
-#define AM_THROTTLE_CREATE(throttle) (struct am_throttle){.initialized = 0}
+#define AM_THROTTLE_CREATE() (struct am_throttle){.initialized = 0}
 
 #ifdef __cplusplus
 extern "C" {

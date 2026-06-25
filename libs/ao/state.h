@@ -85,7 +85,7 @@ void am_ao_notify(const struct am_ao* ao);
 void am_ao_notify_unsafe(const struct am_ao* ao);
 
 /**
- * Internal active object library state constructor.
+ * Internal active object library state initialization.
  * Has different implementation for cooperative and preemptive
  * active object library builds.
  */

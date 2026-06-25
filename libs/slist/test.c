@@ -44,7 +44,7 @@ struct test_slist {
 
 static struct test_slist test_slist[10];
 
-static void test_slist_create(struct am_slist* data) {
+static void test_slist_init(struct am_slist* data) {
     am_slist_init(data);
     for (int i = 0; i < AM_COUNTOF(test_slist); ++i) {
         test_slist[i].data = i;
@@ -52,7 +52,7 @@ static void test_slist_create(struct am_slist* data) {
 }
 
 static void test_am_slist_empty(void) {
-    test_slist_create(&slist);
+    test_slist_init(&slist);
 
     AM_ASSERT(am_slist_is_empty(&slist));
 
@@ -64,7 +64,7 @@ static void test_am_slist_empty(void) {
 }
 
 static void test_am_slist_push_after(void) {
-    test_slist_create(&slist);
+    test_slist_init(&slist);
 
     am_slist_push_front(&slist, &test_slist[0].hdr);
 
@@ -81,7 +81,7 @@ static void test_am_slist_push_after(void) {
 }
 
 static void test_am_slist_push_after_2(void) {
-    test_slist_create(&slist);
+    test_slist_init(&slist);
 
     am_slist_push_back(&slist, &test_slist[0].hdr);
     am_slist_push_back(&slist, &test_slist[1].hdr);
@@ -97,7 +97,7 @@ static void test_am_slist_push_after_2(void) {
 }
 
 static void test_am_slist_push_after_3(void) {
-    test_slist_create(&slist);
+    test_slist_init(&slist);
 
     am_slist_push_back(&slist, &test_slist[0].hdr);
     am_slist_push_back(&slist, &test_slist[2].hdr);
@@ -113,7 +113,7 @@ static void test_am_slist_push_after_3(void) {
 }
 
 static void test_am_slist_pop(void) {
-    test_slist_create(&slist);
+    test_slist_init(&slist);
 
     am_slist_push_front(&slist, &test_slist[2].hdr);
     am_slist_push_front(&slist, &test_slist[1].hdr);
@@ -136,7 +136,7 @@ static bool predicate_slist(void* context, struct am_slist_item* item) {
 }
 
 static void test_am_slist_find(void) {
-    test_slist_create(&slist);
+    test_slist_init(&slist);
 
     am_slist_push_front(&slist, &test_slist[2].hdr);
     am_slist_push_front(&slist, &test_slist[1].hdr);
@@ -158,7 +158,7 @@ static void test_am_slist_find(void) {
 }
 
 static void test_am_slist_owns(void) {
-    test_slist_create(&slist);
+    test_slist_init(&slist);
 
     for (int i = 0; i < 2; ++i) {
         am_slist_push_front(&slist, &test_slist[i].hdr);
@@ -171,7 +171,7 @@ static void test_am_slist_owns(void) {
 }
 
 static void test_am_slist_iterator(void) {
-    test_slist_create(&slist);
+    test_slist_init(&slist);
 
     struct am_slist_iterator it;
     am_slist_iterator_init(&slist, &it);

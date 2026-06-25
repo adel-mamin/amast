@@ -261,7 +261,9 @@ static enum am_rc coro_off(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_super(hsm, coro_top);
 }
 
-static enum am_rc coro_init(struct am_hsm* hsm, const struct am_event* event) {
+static enum am_rc coro_initial(
+    struct am_hsm* hsm, const struct am_event* event
+) {
     (void)event;
     struct coro* me = AM_CONTAINER_OF(hsm, struct coro, hsm);
     am_ao_subscribe(&me->ao, CORO_EVT_SWITCH_MODE);
@@ -269,11 +271,11 @@ static enum am_rc coro_init(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_tran(hsm, coro_top);
 }
 
-static void coro_create(struct coro* me, struct am_timer* timer) {
+static void coro_init(struct coro* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
 
     am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_init(&me->hsm, am_hsm_state_make(coro_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(coro_initial));
 
     me->timer = timer;
     me->timeout = am_timer_event_create_x(CORO_EVT_TIMER, &me->ao);
@@ -330,17 +332,17 @@ int main(void) {
     am_timer_init(&timer);
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
-    struct coro m;
-    coro_create(&m, &timer);
+    struct coro coro;
+    coro_init(&coro, &timer);
 
-    const struct am_event* queue[2];
+    const struct am_event* event_queue[2];
 
     /* traffic lights controlling active object */
     am_ao_start(
-        &m.ao,
+        &coro.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/queue,
-        /*queue_size=*/AM_COUNTOF(queue),
+        /*queue=*/event_queue,
+        /*queue_size=*/AM_COUNTOF(event_queue),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"coro",
@@ -356,7 +358,7 @@ int main(void) {
         /*init=*/NULL,
         /*entry=*/input_task,
         /*flags=*/AM_TASK_FLAG_WAIT_INIT,
-        /*arg=*/&m
+        /*arg=*/&coro
     );
 
     int ticker = am_ticker_create(&(struct am_ticker_cfg){

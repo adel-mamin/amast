@@ -102,7 +102,7 @@ static bool calc_set_event_id(struct calc_event* e, char c) {
 static void calc_log(const char* fmt, ...) { (void)fmt; }
 
 int main(void) {
-    calc_create(calc_log);
+    calc_init(calc_log);
 
     printf(AM_COLOR_BLUE_BOLD);
     printf("Interactive calculator.\n");

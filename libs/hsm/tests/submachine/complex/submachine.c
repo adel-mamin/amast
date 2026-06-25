@@ -314,7 +314,7 @@ static enum am_rc cs_s121(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_super_i(hsm, cs_s12, instance);
 }
 
-static enum am_rc complex_sm_init(
+static enum am_rc complex_sm_initial(
     struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
@@ -325,9 +325,9 @@ static enum am_rc complex_sm_init(
     return am_hsm_tran_i(hsm, cs_s1, SM_1);
 }
 
-void complex_sm_create(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
+void complex_sm_init(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
     struct complex_sm* me = &m_complex_sm;
-    am_hsm_init(&me->hsm, am_hsm_state_make(complex_sm_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(complex_sm_initial));
     me->log = log;
 }
 

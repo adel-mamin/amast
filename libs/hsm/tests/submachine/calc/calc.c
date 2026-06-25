@@ -558,14 +558,16 @@ static enum am_rc calc_off(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc calc_init(struct am_hsm* hsm, const struct am_event* event) {
+static enum am_rc calc_initial(
+    struct am_hsm* hsm, const struct am_event* event
+) {
     (void)event;
     return am_hsm_tran(hsm, calc_on);
 }
 
-void calc_create(void (*log)(const char* fmt, ...)) {
+void calc_init(void (*log)(const char* fmt, ...)) {
     struct calc* me = &m_calc;
-    am_hsm_init(&me->hsm, am_hsm_state_make(calc_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(calc_initial));
     me->log = log;
 }
 

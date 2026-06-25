@@ -53,7 +53,7 @@ static enum am_rc r_s211(struct am_hsm* hsm, const struct am_event* event);
 static enum am_rc r_s1(struct am_hsm* hsm, const struct am_event* event);
 static enum am_rc r_s11(struct am_hsm* hsm, const struct am_event* event);
 
-static enum am_rc regular_init(
+static enum am_rc regular_initial(
     struct am_hsm* hsm, const struct am_event* event
 ) {
     (void)event;
@@ -378,9 +378,9 @@ static enum am_rc r_s211(struct am_hsm* hsm, const struct am_event* event) {
     return am_hsm_super(hsm, r_s21);
 }
 
-void regular_create(void (*log)(const char* fmt, ...)) {
+void regular_init(void (*log)(const char* fmt, ...)) {
     struct regular* me = &m_regular;
-    am_hsm_init(&me->hsm, am_hsm_state_make(regular_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(regular_initial));
     me->log = log;
 }
 

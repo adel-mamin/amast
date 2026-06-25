@@ -39,13 +39,13 @@
 #define AM_EVT_RINGBUF_WRITE (AM_EVT_USER + 1)
 #define AM_EVT_RINGBUF_WAIT (AM_EVT_USER + 2)
 
-void ringbuf_reader_create(
+void ringbuf_reader_init(
     struct am_ringbuf* ringbuf,
     struct am_timer* timer,
     const uint8_t* data,
     int len
 );
-void ringbuf_writer_create(
+void ringbuf_writer_init(
     struct am_ringbuf* ringbuf,
     struct am_timer* timer,
     const uint8_t* data,
