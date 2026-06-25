@@ -125,7 +125,7 @@ static void test_calc(void) {
     bool result_valid = calc_get_result(calc, &result);
     AM_ASSERT(result_valid && AM_DOUBLE_EQ(0.9, result, 1e-9));
 
-    am_hsm_destroy(calc);
+    am_hsm_deinit(calc);
 }
 
 int main(void) {

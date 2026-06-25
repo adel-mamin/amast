@@ -52,7 +52,7 @@ struct dtor_hsm {
 
 static struct dtor_hsm m_dtor_hsm;
 
-/* test am_hsm_destroy() */
+/* test am_hsm_deinit() */
 
 static enum am_rc dtor_s(struct am_hsm* hsm, const struct am_event* event) {
     switch (event->id) {
@@ -73,7 +73,7 @@ static void dtor_hsm(void) {
     struct dtor_hsm* me = &m_dtor_hsm;
     am_hsm_init(&me->hsm, am_hsm_state_make(dtor_sinit));
     am_hsm_start(&me->hsm, /*init_event=*/NULL);
-    am_hsm_destroy(&me->hsm);
+    am_hsm_deinit(&me->hsm);
     AM_ASSERT(am_hsm_is_in(&me->hsm, am_hsm_state_make(am_hsm_top)));
 }
 

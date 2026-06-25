@@ -662,7 +662,7 @@ expected patterns stored in **struct test::out**.
 HSM Destructor
 --------------
 
-Tests :cpp:func:`am_hsm_destroy()` API.
+Tests :cpp:func:`am_hsm_deinit()` API.
 
 The source code is in `dtor.c <https://github.com/adel-mamin/amast/blob/main/libs/hsm/tests/dtor.c>`_.
 
@@ -685,7 +685,7 @@ The HSM topology:
 The test steps:
 
 1. Initialize the HSM. The init state transition activates **s**.
-2. Call :cpp:func:`am_hsm_destroy()` for the HSM and check if it destructs the HSM.
+2. Call :cpp:func:`am_hsm_deinit()` for the HSM and check if it destructs the HSM.
 
 HSM History
 -----------

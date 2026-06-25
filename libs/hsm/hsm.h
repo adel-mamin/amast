@@ -415,7 +415,7 @@ void am_hsm_init(struct am_hsm* hsm, struct am_hsm_state state);
  *
  * @param hsm  HSM object to destruct.
  */
-void am_hsm_destroy(struct am_hsm* hsm);
+void am_hsm_deinit(struct am_hsm* hsm);
 
 /**
  * Perform an HSM initial transition.

@@ -116,7 +116,7 @@ static void test_submachine(void) {
 
     {
         static const char* dest = "s111/2-EXIT;s11/2-EXIT;s1/2-EXIT;s/0-EXIT;";
-        am_hsm_destroy(complex);
+        am_hsm_deinit(complex);
         AM_ASSERT(0 == strncmp(m_complex_sm_log_buf, dest, strlen(dest)));
         m_complex_sm_log_buf[0] = '\0';
     }

@@ -21,6 +21,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Rename `dtor` to `destroy` in all APIs
 - Rename `am_hsm_init()` to `am_hsm_start()`
 - Rename `am_hsm_create()` to `am_hsm_init()`
+- Rename `am_hsm_destroy()` to `am_hsm_deinit()`
 
 ### Added
 

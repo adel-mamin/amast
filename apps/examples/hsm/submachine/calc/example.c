@@ -155,7 +155,7 @@ int main(void) {
     }
 
 end:
-    am_hsm_destroy(calc);
+    am_hsm_deinit(calc);
     calc_print();
 
     return 0;
