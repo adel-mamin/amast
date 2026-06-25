@@ -367,13 +367,13 @@ int main(void) {
     app_init(&app, &timer);
 
     /* active object incoming events queue */
-    const struct am_event *m_queue[2];
+    const struct am_event *event_queue[2];
 
     am_ao_start(
         &app.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/m_queue,
-        /*queue_size=*/AM_COUNTOF(m_queue),
+        /*queue=*/event_queue,
+        /*queue_size=*/AM_COUNTOF(event_queue),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"app",
