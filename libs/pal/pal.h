@@ -69,10 +69,10 @@ extern "C" {
  *
  * @return Platform specific handler. Can be NULL.
  */
-void* am_pal_create(void* arg);
+void* am_pal_init(void* arg);
 
 /** PAL destructor. */
-void am_pal_destroy(void);
+void am_pal_deinit(void);
 
 /**
  * Enter critical section.

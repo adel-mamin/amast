@@ -107,9 +107,7 @@ static void watched_create(
     struct watched* me, struct am_timer* timer, struct am_ao* wdt
 ) {
     memset(me, 0, sizeof(*me));
-    am_ao_create(
-        &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
-    );
+    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_init(&me->hsm, am_hsm_state_make(watched_init));
     me->timer = timer;
     me->feed = am_timer_event_create_x(EVT_WATCHED_TIMEOUT, &me->ao);
@@ -148,9 +146,7 @@ static enum am_rc wdt_init(struct am_hsm* hsm, const struct am_event* event) {
 
 static void wdt_create(struct wdt* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
-    am_ao_create(
-        &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
-    );
+    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_init(&me->hsm, am_hsm_state_make(wdt_init));
     me->timer = timer;
     me->bark = am_timer_event_create_x(EVT_WDT_BARK, &me->ao);
@@ -172,14 +168,14 @@ static void ticker_cb(void* param) {
 }
 
 int main(void) {
-    am_pal_create(/*arg=*/NULL);
+    am_pal_init(/*arg=*/NULL);
 
     struct am_timer timer;
-    am_timer_create(&timer);
+    am_timer_init(&timer);
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
-    am_ao_state_create(/*cfg=*/NULL);
+    am_ao_state_init(/*cfg=*/NULL);
 
     struct wdt wdt;
     wdt_create(&wdt, &timer);
@@ -225,9 +221,9 @@ int main(void) {
 
     am_ticker_stop(ticker);
 
-    am_ao_state_destroy();
+    am_ao_state_deinit();
 
-    am_pal_destroy();
+    am_pal_deinit();
 
     return EXIT_SUCCESS;
 }

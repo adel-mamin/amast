@@ -74,10 +74,10 @@ static void event_sync_observe(int handler_id, const struct am_event* event) {
 }
 
 int main(void) {
-    am_pal_create(/*arg=*/NULL);
+    am_pal_init(/*arg=*/NULL);
 
     struct am_timer timer;
-    am_timer_create(&timer);
+    am_timer_init(&timer);
 
     struct am_event_sync_hub hub;
     struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX - AM_EVT_USER];
@@ -103,7 +103,7 @@ int main(void) {
         timer_proc(&timer, &hub);
     }
 
-    am_pal_destroy();
+    am_pal_deinit();
 
     return 0;
 }

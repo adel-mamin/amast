@@ -212,9 +212,7 @@ static void smoker_create(
 ) {
     memset(me, 0, sizeof(*me));
     am_hsm_init(&me->hsm, am_hsm_state_make(smoker_init));
-    am_ao_create(
-        &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
-    );
+    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
     me->id = id;
     me->resource_own = me->resource_acquired = resource;
 
@@ -350,9 +348,7 @@ static void agent_create(
 ) {
     memset(me, 0, sizeof(*me));
     am_hsm_init(&me->hsm, am_hsm_state_make(agent_init));
-    am_ao_create(
-        &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
-    );
+    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
 
     me->timer = timer;
     me->timeout = am_timer_event_create_x(EVT_TIMEOUT, &me->ao);
@@ -378,10 +374,10 @@ static void ticker_cb(void* param) {
 AM_ALIGNOF_DEFINE(events_t);
 
 int main(void) {
-    am_pal_create(/*arg=*/NULL);
+    am_pal_init(/*arg=*/NULL);
 
     struct am_timer timer;
-    am_timer_create(&timer);
+    am_timer_init(&timer);
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
@@ -403,7 +399,7 @@ int main(void) {
     struct am_ao_state_cfg cfg = {
         .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
     };
-    am_ao_state_create(&cfg);
+    am_ao_state_init(&cfg);
 
     struct smoker smokers[AM_SMOKERS_NUM_MAX];
     struct agent agent;
@@ -459,9 +455,9 @@ int main(void) {
 
     am_ticker_stop(ticker);
 
-    am_ao_state_destroy();
+    am_ao_state_deinit();
 
-    am_pal_destroy();
+    am_pal_deinit();
 
     return EXIT_SUCCESS;
 }

@@ -38,7 +38,7 @@
 #include "event_common.h"
 #include "event_queue.h"
 
-void am_event_queue_create(
+void am_event_queue_init(
     struct am_event_queue* queue,
     const struct am_event* events[],
     int nevents,
@@ -53,29 +53,29 @@ void am_event_queue_create(
     queue->events = events;
     queue->capacity = nevents;
     queue->nfree = queue->nfree_min = queue->capacity;
-    queue->create_called = true;
+    queue->init_called = true;
     queue->alloc = alloc;
 }
 
-void am_event_queue_destroy(struct am_event_queue* queue) {
+void am_event_queue_deinit(struct am_event_queue* queue) {
     AM_ASSERT(queue);
     AM_ASSERT(am_event_queue_is_empty_unsafe(queue));
     memset(queue, 0, sizeof(*queue));
 }
 
 bool am_event_queue_is_valid(const struct am_event_queue* queue) {
-    return queue->create_called;
+    return queue->init_called;
 }
 
 bool am_event_queue_is_empty_unsafe(const struct am_event_queue* queue) {
     AM_ASSERT(queue);
-    AM_ASSERT(queue->create_called);
+    AM_ASSERT(queue->init_called);
     return (queue->rd == queue->wr) && !queue->full;
 }
 
 bool am_event_queue_is_empty(const struct am_event_queue* queue) {
     AM_ASSERT(queue);
-    AM_ASSERT(queue->create_called);
+    AM_ASSERT(queue->init_called);
 
     am_event_crit_enter();
     bool empty = am_event_queue_is_empty_unsafe(queue);
@@ -86,13 +86,13 @@ bool am_event_queue_is_empty(const struct am_event_queue* queue) {
 
 int am_event_queue_get_nbusy_unsafe(const struct am_event_queue* queue) {
     AM_ASSERT(queue);
-    AM_ASSERT(queue->create_called);
+    AM_ASSERT(queue->init_called);
     return queue->capacity - queue->nfree;
 }
 
 int am_event_queue_get_capacity(const struct am_event_queue* queue) {
     AM_ASSERT(queue);
-    AM_ASSERT(queue->create_called);
+    AM_ASSERT(queue->init_called);
     return queue->capacity;
 }
 
@@ -100,7 +100,7 @@ const struct am_event* am_event_queue_pop_front_unsafe(
     struct am_event_queue* queue
 ) {
     AM_ASSERT(queue);
-    AM_ASSERT(queue->create_called);
+    AM_ASSERT(queue->init_called);
 
     if (am_event_queue_is_empty_unsafe(queue)) {
         return NULL;
@@ -115,7 +115,7 @@ const struct am_event* am_event_queue_pop_front_unsafe(
 
 const struct am_event* am_event_queue_pop_front(struct am_event_queue* queue) {
     AM_ASSERT(queue);
-    AM_ASSERT(queue->create_called);
+    AM_ASSERT(queue->init_called);
 
     am_event_crit_enter();
     const struct am_event* event = am_event_queue_pop_front_unsafe(queue);
@@ -126,7 +126,7 @@ const struct am_event* am_event_queue_pop_front(struct am_event_queue* queue) {
 
 int am_event_queue_get_nfree_min(const struct am_event_queue* queue) {
     AM_ASSERT(queue);
-    AM_ASSERT(queue->create_called);
+    AM_ASSERT(queue->init_called);
 
     am_event_crit_enter();
     int min = queue->nfree_min;
@@ -166,7 +166,7 @@ enum am_rc am_event_queue_push_unsafe(
     struct am_event_queue_policy policy
 ) {
     AM_ASSERT(queue);
-    AM_ASSERT(queue->create_called);
+    AM_ASSERT(queue->init_called);
     AM_ASSERT(event);
     AM_ASSERT(policy.margin >= 0);
     AM_ASSERT(policy.margin < queue->capacity);

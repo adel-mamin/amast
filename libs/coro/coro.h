@@ -160,7 +160,7 @@ extern "C" {
  *
  * @param me  the coroutine state to construct
  */
-static inline void am_coro_create(struct am_coro* me) {
+static inline void am_coro_init(struct am_coro* me) {
     me->state = AM_CORO_STATE_INIT;
 }
 

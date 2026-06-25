@@ -108,7 +108,7 @@ void ringbuf_reader_create(
     struct ringbuf_reader* me = &m_ringbuf_reader;
     memset(me, 0, sizeof(*me));
     me->len = 1;
-    am_ao_create(
+    am_ao_init(
         &me->ao,
         (am_ao_fn)ringbuf_reader_init_handler,
         (am_ao_fn)ringbuf_reader_event_handler,

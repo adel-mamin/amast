@@ -71,14 +71,14 @@ struct am_task {
 static struct am_task am_task_main_ = {0};
 static struct am_task am_tasks_[AM_TASK_NUM_MAX] = {0};
 
-void* am_pal_create(void* arg) {
+void* am_pal_init(void* arg) {
     (void)arg;
     am_pal_spinlock_ = (struct k_spinlock){};
     init_complete_mutex_ = am_mutex_create();
     return NULL;
 }
 
-void am_pal_destroy(void) {
+void am_pal_deinit(void) {
     for (int i = 0; i < AM_COUNTOF(mutexes_); ++i) {
         struct am_mutex* mutex = &mutexes_[i];
         if (mutex->valid) {

@@ -128,12 +128,12 @@ static void ticker_cb(void* param) {
 }
 
 int main(void) {
-    am_pal_create(/*arg=*/NULL);
+    am_pal_init(/*arg=*/NULL);
 
     am_event_alloc_init(&alloc);
 
     struct am_timer timer;
-    am_timer_create(&timer);
+    am_timer_init(&timer);
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
     struct am_event_subscribe_list pubsub_list[AM_AO_EVT_PUB_MAX];
@@ -151,7 +151,7 @@ int main(void) {
     struct am_ao_state_cfg cfg = {
         .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
     };
-    am_ao_state_create(&cfg);
+    am_ao_state_init(&cfg);
 
     for (int i = 0; i < PHILO_NUM; ++i) {
         philo_create(i, table_get_obj(), &timer, &alloc);
@@ -205,9 +205,9 @@ int main(void) {
 
     am_ticker_stop(ticker);
 
-    am_ao_state_destroy();
+    am_ao_state_deinit();
 
-    am_pal_destroy();
+    am_pal_deinit();
 
     return 0;
 }

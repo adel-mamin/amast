@@ -40,7 +40,7 @@
 
 static struct am_bit_u64 am_ready_aos_ = {0};
 
-void am_ao_state_create_(void) {
+void am_ao_state_init_(void) {
     memset(&am_ready_aos_, 0, sizeof(am_ready_aos_));
 }
 
@@ -125,13 +125,13 @@ void am_ao_start(
     (void)stack_size;
 
     AM_ASSERT(ao);
-    AM_ASSERT(ao->create_called);
+    AM_ASSERT(ao->init_called);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(prio));
     AM_ASSERT(queue);
     AM_ASSERT(queue_size > 0);
 
     struct am_ao_state* me = &am_ao_state_;
-    am_event_queue_create(&ao->event_queue, queue, queue_size, me->alloc);
+    am_event_queue_init(&ao->event_queue, queue, queue_size, me->alloc);
 
     ao->prio = prio;
     ao->name = name;
@@ -168,12 +168,12 @@ void am_ao_stop(struct am_ao* ao) {
     me->crit_enter();
 
     am_event_queue_flush_unsafe(&ao->event_queue);
-    am_event_queue_destroy(&ao->event_queue);
+    am_event_queue_deinit(&ao->event_queue);
     am_bit_u64_clear(&am_ready_aos_, ao->prio.ao);
 
     me->aos[ao->prio.ao] = NULL;
     --me->aos_cnt;
-    ao->create_called = false;
+    ao->init_called = false;
 
     AM_ATOMIC_STORE_N(&ao->running, false);
 

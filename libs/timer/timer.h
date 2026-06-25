@@ -114,7 +114,7 @@ extern "C" {
  *
  * @param timer  the timer state
  */
-void am_timer_create(struct am_timer* timer);
+void am_timer_init(struct am_timer* timer);
 
 /**
  * Timer event constructor.

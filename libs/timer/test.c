@@ -43,7 +43,7 @@ static void test_arm(void) {
     struct am_timer_event test = am_timer_event_create(EVT_TEST);
     struct am_timer_event test2 = am_timer_event_create(EVT_TEST2);
 
-    am_timer_create(&timer);
+    am_timer_init(&timer);
 
     am_timer_arm(&timer, &test, /*ticks=*/1, /*interval=*/0);
     AM_ASSERT(am_timer_is_armed(&timer, &test));

@@ -132,9 +132,7 @@ static void worker_create(
     struct worker* me, int id, struct am_event_alloc* alloc
 ) {
     memset(me, 0, sizeof(*me));
-    am_ao_create(
-        &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
-    );
+    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_init(&me->hsm, am_hsm_state_make(worker_init));
     me->id = id;
     me->alloc = alloc;
@@ -254,9 +252,7 @@ static void balancer_create(
 ) {
     memset(me, 0, sizeof(*me));
     me->ncpus = ncpus;
-    am_ao_create(
-        &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
-    );
+    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_init(&me->hsm, am_hsm_state_make(balancer_init));
 
     me->workers = workers;
@@ -286,10 +282,10 @@ static void ticker_cb(void* param) {
 AM_ALIGNOF_DEFINE(events_t);
 
 int main(void) {
-    am_pal_create(/*arg=*/NULL);
+    am_pal_init(/*arg=*/NULL);
 
     struct am_timer timer;
-    am_timer_create(&timer);
+    am_timer_init(&timer);
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
@@ -311,7 +307,7 @@ int main(void) {
     struct am_ao_state_cfg cfg = {
         .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
     };
-    am_ao_state_create(&cfg);
+    am_ao_state_init(&cfg);
 
     int ncpus = am_get_cpu_count();
     am_printf("Number of CPUs: %d\n", ncpus);
@@ -370,9 +366,9 @@ int main(void) {
 
     am_ticker_stop(ticker);
 
-    am_ao_state_destroy();
+    am_ao_state_deinit();
 
-    am_pal_destroy();
+    am_pal_deinit();
 
     return EXIT_SUCCESS;
 }

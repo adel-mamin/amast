@@ -147,9 +147,7 @@ static enum am_rc progress_init(
 }
 
 static void progress_create(struct progress* me, struct am_timer* timer) {
-    am_ao_create(
-        &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
-    );
+    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_init(&me->hsm, am_hsm_state_make(progress_init));
 
     me->timer = timer;
@@ -216,7 +214,7 @@ static void job_task(const void* param) {
 }
 
 int main(int argc, const char* argv[]) {
-    am_pal_create(/*arg=*/NULL);
+    am_pal_init(/*arg=*/NULL);
 
     if (argc < 2) {
         (void)fprintf(stderr, "Usage: %s <program> [args...]\n", argv[0]);
@@ -224,7 +222,7 @@ int main(int argc, const char* argv[]) {
     }
 
     struct am_timer timer;
-    am_timer_create(&timer);
+    am_timer_init(&timer);
 
     struct am_event_alloc alloc;
     am_event_alloc_init(&alloc);
@@ -249,7 +247,7 @@ int main(int argc, const char* argv[]) {
     struct am_ao_state_cfg cfg = {
         .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
     };
-    am_ao_state_create(&cfg);
+    am_ao_state_init(&cfg);
 
     struct progress m;
     progress_create(&m, &timer);
@@ -293,9 +291,9 @@ int main(int argc, const char* argv[]) {
         am_ao_run_all();
     }
 
-    am_ao_state_destroy();
+    am_ao_state_deinit();
 
-    am_pal_destroy();
+    am_pal_deinit();
 
     return EXIT_SUCCESS;
 }

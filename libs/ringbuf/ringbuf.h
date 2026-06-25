@@ -71,7 +71,7 @@ extern "C" {
  * @param buf       the ring buffer's memory
  * @param buf_size  the ring buffer's memory size [bytes]
  */
-void am_ringbuf_create(struct am_ringbuf* rb, void* buf, int buf_size);
+void am_ringbuf_init(struct am_ringbuf* rb, void* buf, int buf_size);
 
 /**
  * Return ring buffer read data pointer.

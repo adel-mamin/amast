@@ -46,7 +46,7 @@ int main(void) {
         .block_size = sizeof(struct test),
         .alignment = AM_ALIGN_MAX
     };
-    am_onesize_create(&ma, &cfg);
+    am_onesize_init(&ma, &cfg);
 
     AM_ASSERT(am_onesize_get_nfree(&ma) == 2);
 

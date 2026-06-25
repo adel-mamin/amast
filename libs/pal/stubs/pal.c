@@ -33,12 +33,12 @@
 #include "common/compiler.h" /* IWYU pragma: keep */
 #include "pal/pal.h"
 
-void* am_pal_create(void* arg) {
+void* am_pal_init(void* arg) {
     (void)arg;
     return NULL;
 }
 
-void am_pal_destroy(void) {}
+void am_pal_deinit(void) {}
 
 void am_on_idle(void) {}
 

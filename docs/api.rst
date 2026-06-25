@@ -65,13 +65,13 @@ The source code of the corresponding header file is in `slist.h <https://github.
 
 .. doxygenstruct:: am_slist_iterator
 
-.. doxygenfunction:: am_slist_create
+.. doxygenfunction:: am_slist_init
 
 .. doxygenfunction:: am_slist_is_empty
 
 .. doxygenfunction:: am_slist_item_is_linked
 
-.. doxygenfunction:: am_slist_item_create
+.. doxygenfunction:: am_slist_item_init
 
 .. doxygenfunction:: am_slist_push_after
 
@@ -97,7 +97,7 @@ The source code of the corresponding header file is in `slist.h <https://github.
 
 .. doxygenfunction:: am_slist_append
 
-.. doxygenfunction:: am_slist_iterator_create
+.. doxygenfunction:: am_slist_iterator_init
 
 .. doxygenfunction:: am_slist_iterator_next
 
@@ -135,7 +135,7 @@ The source code of the corresponding header file is in `ringbuf.h <https://githu
 
 .. doxygenstruct:: am_ringbuf
 
-.. doxygenfunction:: am_ringbuf_create
+.. doxygenfunction:: am_ringbuf_init
 
 .. doxygenfunction:: am_ringbuf_get_read_ptr
 
@@ -169,7 +169,7 @@ The source code of the corresponding header file is in `onesize.h <https://githu
 .. doxygenstruct:: am_onesize_cfg
    :members:
 
-.. doxygenfunction:: am_onesize_create
+.. doxygenfunction:: am_onesize_init
 
 .. doxygenfunction:: am_onesize_allocate_x
 
@@ -230,9 +230,9 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_async_init
 
-.. doxygenfunction:: am_event_queue_create
+.. doxygenfunction:: am_event_queue_init
 
-.. doxygenfunction:: am_event_queue_destroy
+.. doxygenfunction:: am_event_queue_deinit
 
 .. doxygenfunction:: am_event_queue_is_valid
 
@@ -315,7 +315,7 @@ The source code of the corresponding header file is in `timer.h <https://github.
 
 .. doxygenstruct:: am_timer_event_x
 
-.. doxygenfunction:: am_timer_create
+.. doxygenfunction:: am_timer_init
 
 .. doxygenfunction:: am_timer_event_create
 
@@ -362,7 +362,7 @@ The source code of the corresponding header file is in `async.h <https://github.
 
 .. doxygenfunction:: am_coro_is_busy
 
-.. doxygenfunction:: am_coro_create
+.. doxygenfunction:: am_coro_init
 
 .. _hsm_api:
 
@@ -495,15 +495,15 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygenfunction:: am_ao_post_lifo
 
-.. doxygenfunction:: am_ao_create
+.. doxygenfunction:: am_ao_init
 
 .. doxygenfunction:: am_ao_start
 
 .. doxygenfunction:: am_ao_stop
 
-.. doxygenfunction:: am_ao_state_create
+.. doxygenfunction:: am_ao_state_init
 
-.. doxygenfunction:: am_ao_state_destroy
+.. doxygenfunction:: am_ao_state_deinit
 
 .. doxygenfunction:: am_ao_subscribe
 
@@ -549,9 +549,9 @@ The source code of the corresponding header file is in `pal.h <https://github.co
 .. doxygenstruct:: am_ticker_cfg
    :members:
 
-.. doxygenfunction:: am_pal_create
+.. doxygenfunction:: am_pal_init
 
-.. doxygenfunction:: am_pal_destroy
+.. doxygenfunction:: am_pal_deinit
 
 .. doxygenfunction:: am_crit_enter
 

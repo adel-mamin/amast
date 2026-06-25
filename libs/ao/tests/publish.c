@@ -79,9 +79,7 @@ static enum am_rc publish_sinit(
 
 static void publish_create(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
     struct test_publish* me = &m_publish;
-    am_ao_create(
-        &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
-    );
+    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_init(&me->hsm, am_hsm_state_make(publish_sinit));
     me->log = log;
 }
@@ -95,7 +93,7 @@ static AM_PRINTF(1, 0) void publish_log(const char* fmt, ...) {
 }
 
 static void test_publish(void) {
-    am_pal_create(/*arg=*/NULL);
+    am_pal_init(/*arg=*/NULL);
 
     struct am_event_alloc alloc;
     am_event_alloc_init(&alloc);
@@ -113,7 +111,7 @@ static void test_publish(void) {
     struct am_ao_state_cfg cfg = {
         .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
     };
-    am_ao_state_create(&cfg);
+    am_ao_state_init(&cfg);
 
     publish_create(publish_log);
 
@@ -146,9 +144,9 @@ static void test_publish(void) {
 
     AM_ASSERT('\0' == m_publish.log_buf[0]);
 
-    am_ao_state_destroy();
+    am_ao_state_deinit();
 
-    am_pal_destroy();
+    am_pal_deinit();
 }
 
 int main(void) {

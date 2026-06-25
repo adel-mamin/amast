@@ -111,7 +111,7 @@ void am_onesize_free(struct am_onesize* hnd, const void* ptr) {
 void am_onesize_free_all(struct am_onesize* hnd) {
     AM_ASSERT(hnd);
 
-    am_slist_create(&hnd->fl);
+    am_slist_init(&hnd->fl);
     hnd->nbump = 0;
     hnd->nfree = hnd->ntotal;
 }
@@ -163,9 +163,7 @@ int am_onesize_get_nblocks(const struct am_onesize* hnd) {
     return hnd->ntotal;
 }
 
-void am_onesize_create(
-    struct am_onesize* hnd, const struct am_onesize_cfg* cfg
-) {
+void am_onesize_init(struct am_onesize* hnd, const struct am_onesize_cfg* cfg) {
     AM_ASSERT(hnd);
     AM_ASSERT(cfg);
     AM_ASSERT(cfg->pool.ptr);
@@ -191,5 +189,5 @@ void am_onesize_create(
     hnd->pool_end = (char*)cfg->pool.ptr + (hnd->ntotal * hnd->block_size);
     hnd->nbump = 0;
 
-    am_slist_create(&hnd->fl);
+    am_slist_init(&hnd->fl);
 }

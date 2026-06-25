@@ -134,13 +134,13 @@ static void defer_create(
     /* setup HSM event queue */
     {
         static const struct am_event* pool[2];
-        am_event_queue_create(&me->event_queue, pool, AM_COUNTOF(pool), alloc);
+        am_event_queue_init(&me->event_queue, pool, AM_COUNTOF(pool), alloc);
     }
 
     /* setup HSM defer queue */
     {
         static const struct am_event* pool[2];
-        am_event_queue_create(&me->defer_queue, pool, AM_COUNTOF(pool), alloc);
+        am_event_queue_init(&me->defer_queue, pool, AM_COUNTOF(pool), alloc);
     }
 }
 

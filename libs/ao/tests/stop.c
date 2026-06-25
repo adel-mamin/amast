@@ -81,13 +81,11 @@ static void start_ao(void) {
 }
 
 int main(void) {
-    am_pal_create(/*args=*/NULL);
-    am_ao_state_create(/*cfg=*/NULL);
+    am_pal_init(/*args=*/NULL);
+    am_ao_state_init(/*cfg=*/NULL);
 
     struct test* me = &m_test;
-    am_ao_create(
-        &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
-    );
+    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_init(&me->hsm, am_hsm_state_make(test_init));
     start_ao();
 
@@ -95,9 +93,7 @@ int main(void) {
         am_ao_run_all();
     }
 
-    am_ao_create(
-        &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
-    );
+    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_init(&me->hsm, am_hsm_state_make(test_init));
     start_ao();
 
@@ -105,8 +101,8 @@ int main(void) {
         am_ao_run_all();
     }
 
-    am_ao_state_destroy();
-    am_pal_destroy();
+    am_ao_state_deinit();
+    am_pal_deinit();
 
     return 0;
 }

@@ -41,7 +41,7 @@ static void test_ringbuf_1(void) {
     uint8_t buf[8];
     uint8_t data[] = {1, 2, 3, 4};
 
-    am_ringbuf_create(&rb, buf, AM_COUNTOF(buf));
+    am_ringbuf_init(&rb, buf, AM_COUNTOF(buf));
     for (int i = 1; i <= AM_COUNTOF(data); ++i) {
         {
             int size = am_ringbuf_get_data_size(&rb);

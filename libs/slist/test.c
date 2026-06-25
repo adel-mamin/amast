@@ -45,7 +45,7 @@ struct test_slist {
 static struct test_slist test_slist[10];
 
 static void test_slist_create(struct am_slist* data) {
-    am_slist_create(data);
+    am_slist_init(data);
     for (int i = 0; i < AM_COUNTOF(test_slist); ++i) {
         test_slist[i].data = i;
     }
@@ -174,7 +174,7 @@ static void test_am_slist_iterator(void) {
     test_slist_create(&slist);
 
     struct am_slist_iterator it;
-    am_slist_iterator_create(&slist, &it);
+    am_slist_iterator_init(&slist, &it);
 
     am_slist_push_back(&slist, &test_slist[0].hdr);
     am_slist_push_back(&slist, &test_slist[1].hdr);
@@ -202,13 +202,13 @@ static void test_am_slist_append(void) {
     static struct am_slist slist1;
     static struct am_slist slist2;
 
-    am_slist_create(&slist1);
+    am_slist_init(&slist1);
     for (int i = 0; i < AM_COUNTOF(test_slist1); ++i) {
         test_slist1[i].data = i;
         am_slist_push_back(&slist1, &test_slist1[i].hdr);
     }
 
-    am_slist_create(&slist2);
+    am_slist_init(&slist2);
     for (int i = 0; i < AM_COUNTOF(test_slist2); ++i) {
         test_slist2[i].data = i;
         am_slist_push_back(&slist2, &test_slist2[i].hdr);
@@ -217,7 +217,7 @@ static void test_am_slist_append(void) {
     am_slist_append(&slist1, &slist2);
 
     struct am_slist_iterator it;
-    am_slist_iterator_create(&slist1, &it);
+    am_slist_iterator_init(&slist1, &it);
 
     struct am_slist_item* e = am_slist_iterator_next(&it);
     AM_ASSERT(((struct test_slist*)e)->data == 0);

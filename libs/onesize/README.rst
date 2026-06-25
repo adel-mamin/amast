@@ -81,7 +81,7 @@ System Integration
 The module integrates seamlessly into memory management systems for embedded
 and real-time applications. Key integration points include:
 
-- **Initialization**: Use ``am_onesize_create`` to configure and initialize the
+- **Initialization**: Use ``am_onesize_init`` to configure and initialize the
   allocator.
 - **Memory Allocation**: Allocate memory using ``am_onesize_allocate`` and free
   blocks with ``am_onesize_free``.

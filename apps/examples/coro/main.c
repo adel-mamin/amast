@@ -200,8 +200,8 @@ static enum am_rc coro_regular(
     struct coro* me = AM_CONTAINER_OF(hsm, struct coro, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_coro_create(&me->coro);
-        am_coro_create(&me->coro_blinking_green);
+        am_coro_init(&me->coro);
+        am_coro_init(&me->coro_blinking_green);
         am_ao_post_fifo(&me->ao, &am_evt_start);
         return am_hsm_handled(hsm);
     }
@@ -223,7 +223,7 @@ static enum am_rc coro_off(struct am_hsm* hsm, const struct am_event* event) {
     struct coro* me = AM_CONTAINER_OF(hsm, struct coro, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_coro_create(&me->coro);
+        am_coro_init(&me->coro);
         am_ao_post_fifo(&me->ao, &am_evt_start);
         return am_hsm_handled(hsm);
     }
@@ -272,9 +272,7 @@ static enum am_rc coro_init(struct am_hsm* hsm, const struct am_event* event) {
 static void coro_create(struct coro* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
 
-    am_ao_create(
-        &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
-    );
+    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
     am_hsm_init(&me->hsm, am_hsm_state_make(coro_init));
 
     me->timer = timer;
@@ -321,15 +319,15 @@ static void input_task(void* param) {
 }
 
 int main(void) {
-    am_pal_create(/*arg=*/NULL);
+    am_pal_init(/*arg=*/NULL);
 
     struct am_event_subscribe_list pubsub_list[CORO_EVT_PUB_MAX];
     am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), /*alloc=*/NULL);
 
-    am_ao_state_create(/*cfg=*/NULL);
+    am_ao_state_init(/*cfg=*/NULL);
 
     struct am_timer timer;
-    am_timer_create(&timer);
+    am_timer_init(&timer);
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
     struct coro m;
@@ -375,9 +373,9 @@ int main(void) {
 
     am_ticker_stop(ticker);
 
-    am_ao_state_destroy();
+    am_ao_state_deinit();
 
-    am_pal_destroy();
+    am_pal_deinit();
 
     return 0;
 }

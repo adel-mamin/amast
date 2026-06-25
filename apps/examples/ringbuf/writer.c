@@ -100,7 +100,7 @@ void ringbuf_writer_create(
     struct ringbuf_writer* me = &m_ringbuf_writer;
     memset(me, 0, sizeof(*me));
     me->len = 1;
-    am_ao_create(
+    am_ao_init(
         &me->ao,
         (am_ao_fn)ringbuf_writer_init_handler,
         (am_ao_fn)ringbuf_writer_event_handler,

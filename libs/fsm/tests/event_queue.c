@@ -115,7 +115,7 @@ static void fsmq_create(
 
     /* setup FSM event queue */
     static const struct am_event* pool[2];
-    am_event_queue_create(&me->event_queue, pool, AM_COUNTOF(pool), alloc);
+    am_event_queue_init(&me->event_queue, pool, AM_COUNTOF(pool), alloc);
 }
 
 static enum am_rc fsmq_a(struct am_fsm* fsm, const struct am_event* event) {

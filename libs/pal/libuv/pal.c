@@ -105,7 +105,7 @@ static int am_pal_id_from_index(int index) {
     return index + 1;
 }
 
-void* am_pal_create(void* arg) {
+void* am_pal_init(void* arg) {
     if (arg) {
         loop_ = (uv_loop_t*)arg;
     } else {
@@ -137,7 +137,7 @@ static void close_cb(uv_handle_t* handle, void* arg) {
     uv_close(handle, NULL);
 }
 
-void am_pal_destroy(void) {
+void am_pal_deinit(void) {
     if (init_complete_mutex_acquired_) {
         am_mutex_unlock(init_complete_mutex_);
         init_complete_mutex_acquired_ = false;

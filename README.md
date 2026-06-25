@@ -84,8 +84,8 @@ static enum am_rc init(struct am_fsm *fsm, const struct am_event *event) {
 }
 
 int main(void) {
-    am_fsm_create(&app.fsm, init);
-    am_fsm_init(&app.fsm, /*init_event=*/NULL);
+    am_fsm_init(&app.fsm, init);
+    am_fsm_start(&app.fsm, /*init_event=*/NULL);
     am_fsm_dispatch(&app.fsm, &(struct am_event){.id = EVT_B});
     am_fsm_dispatch(&app.fsm, &(struct am_event){.id = EVT_A});
     return 0;
@@ -209,7 +209,7 @@ static enum am_rc init(struct am_hsm* hsm, const struct am_event *event) {
 }
 
 int main(void) {
-    am_hsm_init(&app.hsm, am_hsm_state_make(init));
+    am_hsm_start(&app.hsm, am_hsm_state_make(init));
     am_hsm_start(&app.hsm, /*init_event=*/NULL);
     am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_B});
     am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_A});
@@ -308,16 +308,16 @@ static enum am_rc app_state_b(struct am_hsm* hsm, const struct am_event *event) 
     return am_hsm_super(hsm, am_hsm_top);
 }
 
-static enum am_rc app_init(struct am_hsm* hsm, const struct am_event *event) {
+static enum am_rc app_initial(struct am_hsm* hsm, const struct am_event *event) {
     struct app* me = AM_CONTAINER_OF(hsm, struct app, hsm);
     am_ao_subscribe(&me->ao, APP_EVT_SWITCH_MODE);
     return am_hsm_tran(hsm, app_state_a);
 }
 
-static void app_create(struct app *me, struct am_timer *timer) {
+static void app_init(struct app *me, struct am_timer *timer) {
     memset(me, 0, sizeof(*me));
-    am_ao_create(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
-    am_hsm_init(&me->hsm, am_hsm_state_make(app_init));
+    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
+    am_hsm_start(&me->hsm, am_hsm_state_make(app_initial));
     me->timer = timer;
     me->timeout = am_timer_event_create_x(APP_EVT_TIMER, &me->ao);
     me->ticks = am_time_get_ticks_from_ms(AM_TIMEBASE_DEFAULT, 1000);
@@ -349,10 +349,10 @@ static void input_task(void *param) {
 }
 
 int main(void) {
-    am_pal_create(/*arg=*/NULL);
+    am_pal_init(/*arg=*/NULL);
 
     struct am_timer timer;
-    am_timer_create(&timer);
+    am_timer_init(&timer);
 
     /* event publish/subscribe memory */
     struct am_event_subscribe_list pubsub_list[APP_EVT_PUB_MAX];
@@ -361,16 +361,16 @@ int main(void) {
     struct am_ao_state_cfg cfg = {
         .crit_enter = am_crit_enter, .crit_exit = am_crit_exit
     };
-    am_ao_state_create(&cfg);
+    am_ao_state_init(&cfg);
 
-    struct app m;
-    app_create(&m, &timer);
+    struct app app;
+    app_init(&app, &timer);
 
     /* active object incoming events queue */
     const struct am_event *m_queue[2];
 
     am_ao_start(
-        &m.ao,
+        &app.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
         /*queue=*/m_queue,
         /*queue_size=*/AM_COUNTOF(m_queue),
@@ -389,7 +389,7 @@ int main(void) {
         /*init=*/NULL,
         /*entry=*/input_task,
         /*flags=*/AM_TASK_FLAG_WAIT_INIT,
-        /*arg=*/&m
+        /*arg=*/&app
     );
 
     int ticker = am_ticker_create(&(struct am_ticker_cfg){
@@ -406,9 +406,9 @@ int main(void) {
 
     am_ticker_stop(ticker);
 
-    am_ao_state_destroy();
+    am_ao_state_deinit();
 
-    am_pal_destroy();
+    am_pal_deinit();
 
     return 0;
 }
