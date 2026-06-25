@@ -209,7 +209,7 @@ static enum am_rc init(struct am_hsm* hsm, const struct am_event *event) {
 }
 
 int main(void) {
-    am_hsm_start(&app.hsm, am_hsm_state_make(init));
+    am_hsm_init(&app.hsm, am_hsm_state_make(init));
     am_hsm_start(&app.hsm, /*init_event=*/NULL);
     am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_B});
     am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_A});
