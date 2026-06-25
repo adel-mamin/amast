@@ -20,6 +20,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Rename `ctor` to `create` in all APIs
 - Rename `dtor` to `destroy` in all APIs
 - Rename `am_hsm_init()` to `am_hsm_start()`
+- Rename `am_hsm_create()` to `am_hsm_init()`
 
 ### Added
 

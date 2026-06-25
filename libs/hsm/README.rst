@@ -311,7 +311,7 @@ HSM Initialization
 HSM initialization is divided into the following two steps for increased
 flexibility and better control of the initialization timeline:
 
-1. the state machine constructor (:cpp:func:`am_hsm_create()`)
+1. the state machine constructor (:cpp:func:`am_hsm_init()`)
 2. the top-most initial transition (:cpp:func:`am_hsm_start()`).
 
 HSM Topology

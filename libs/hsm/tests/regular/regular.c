@@ -380,7 +380,7 @@ static enum am_rc r_s211(struct am_hsm* hsm, const struct am_event* event) {
 
 void regular_create(void (*log)(const char* fmt, ...)) {
     struct regular* me = &m_regular;
-    am_hsm_create(&me->hsm, am_hsm_state_make(regular_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(regular_init));
     me->log = log;
 }
 

@@ -90,7 +90,7 @@ static enum am_rc fsm_dispatch(
 void am_fsm_dispatch(struct am_fsm* fsm, const struct am_event* event) {
     AM_ASSERT(fsm);
     AM_ASSERT(fsm->state);
-    AM_ASSERT(fsm->init_called);
+    AM_ASSERT(fsm->start_called);
     AM_ASSERT(!fsm->dispatch_in_progress);
     AM_ASSERT(event);
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
@@ -139,7 +139,7 @@ void am_fsm_destroy(struct am_fsm* fsm) {
     AM_ASSERT(fsm->state); /* was am_fsm_create() called? */
     fsm_exit(fsm);
     fsm->state = NULL;
-    fsm->init_called = false;
+    fsm->start_called = false;
 }
 
 void am_fsm_init(struct am_fsm* fsm, const struct am_event* init_event) {
@@ -149,5 +149,5 @@ void am_fsm_init(struct am_fsm* fsm, const struct am_event* init_event) {
     enum am_rc rc = fsm->state(fsm, init_event);
     AM_ASSERT(AM_RC_TRAN == rc);
     fsm_enter(fsm, fsm->state);
-    fsm->init_called = true;
+    fsm->start_called = true;
 }

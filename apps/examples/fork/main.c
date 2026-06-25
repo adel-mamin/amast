@@ -150,7 +150,7 @@ static void progress_create(struct progress* me, struct am_timer* timer) {
     am_ao_create(
         &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
     );
-    am_hsm_create(&me->hsm, am_hsm_state_make(progress_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(progress_init));
 
     me->timer = timer;
     me->progress = am_timer_event_create_x(EVT_PROGRESS_TICK, &me->ao);

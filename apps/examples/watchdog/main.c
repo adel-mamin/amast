@@ -110,7 +110,7 @@ static void watched_create(
     am_ao_create(
         &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
     );
-    am_hsm_create(&me->hsm, am_hsm_state_make(watched_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(watched_init));
     me->timer = timer;
     me->feed = am_timer_event_create_x(EVT_WATCHED_TIMEOUT, &me->ao);
     me->wdt = wdt;
@@ -151,7 +151,7 @@ static void wdt_create(struct wdt* me, struct am_timer* timer) {
     am_ao_create(
         &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
     );
-    am_hsm_create(&me->hsm, am_hsm_state_make(wdt_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(wdt_init));
     me->timer = timer;
     me->bark = am_timer_event_create_x(EVT_WDT_BARK, &me->ao);
 }

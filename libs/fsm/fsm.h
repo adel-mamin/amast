@@ -69,7 +69,7 @@ struct am_fsm {
     /** Active state/event handler function. */
     am_fsm_state_fn state;
     /** Safety net to catch a missing am_fsm_init() call. */
-    uint8_t init_called : 1;
+    uint8_t start_called : 1;
     /** Safety net to catch an erroneous reentrant am_fsm_dispatch() call. */
     uint8_t dispatch_in_progress : 1;
 };

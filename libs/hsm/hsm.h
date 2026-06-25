@@ -137,10 +137,10 @@ struct am_hsm {
      * transitions.
      */
     uint8_t hierarchy_level : AM_HSM_HIERARCHY_LEVEL_BITS;
-    /** Safety net to catch a missing am_hsm_create() call. */
-    uint8_t create_called : 1;
-    /** Safety net to catch a missing am_hsm_start() call. */
+    /** Safety net to catch a missing am_hsm_init() call. */
     uint8_t init_called : 1;
+    /** Safety net to catch a missing am_hsm_start() call. */
+    uint8_t start_called : 1;
     /** Safety net to catch an erroneous reentrant am_hsm_dispatch() call. */
     uint8_t dispatch_in_progress : 1;
 };
@@ -403,14 +403,14 @@ struct am_hsm_state am_hsm_get_state(const struct am_hsm* hsm);
  * @param hsm    HSM object to construct.
  * @param state  Initial state descriptor of @p hsm.
  */
-void am_hsm_create(struct am_hsm* hsm, struct am_hsm_state state);
+void am_hsm_init(struct am_hsm* hsm, struct am_hsm_state state);
 
 /**
  * Destruct an HSM object.
  *
  * Exits the current state and all of its superstates up to am_hsm_top().
  *
- * The HSM is not usable after this call. Call am_hsm_create() before using the
+ * The HSM is not usable after this call. Call am_hsm_init() before using the
  * HSM again.
  *
  * @param hsm  HSM object to destruct.
@@ -420,7 +420,7 @@ void am_hsm_destroy(struct am_hsm* hsm);
 /**
  * Perform an HSM initial transition.
  *
- * Calls the initial state handler set by am_hsm_create() with @p init_event and
+ * Calls the initial state handler set by am_hsm_init() with @p init_event and
  * performs the initial transition, including all recursive initial transitions.
  *
  * @param hsm         HSM to initialize.

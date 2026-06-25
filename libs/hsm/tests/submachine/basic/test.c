@@ -127,7 +127,7 @@ static enum am_rc bs_init(struct am_hsm* hsm, const struct am_event* evt) {
 
 static void test_basic_sm(void) {
     struct basic_sm* me = &m_basic_sm;
-    am_hsm_create(&me->hsm, am_hsm_state_make(bs_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(bs_init));
 
     am_hsm_start(&me->hsm, /*init_event=*/NULL);
     AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state_make(bs_s)));

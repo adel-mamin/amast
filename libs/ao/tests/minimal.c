@@ -133,7 +133,7 @@ int main(void) {
         (am_ao_fn)am_hsm_dispatch,
         &m_loopback
     );
-    am_hsm_create(&m_loopback.hsm, am_hsm_state_make(loopback_init));
+    am_hsm_init(&m_loopback.hsm, am_hsm_state_make(loopback_init));
 
     am_ao_create(
         &m_loopback_test.ao,
@@ -141,7 +141,7 @@ int main(void) {
         (am_ao_fn)am_hsm_dispatch,
         &m_loopback_test
     );
-    am_hsm_create(&m_loopback_test.hsm, am_hsm_state_make(loopback_test_init));
+    am_hsm_init(&m_loopback_test.hsm, am_hsm_state_make(loopback_test_init));
 
     am_ao_start(
         &m_loopback.ao,

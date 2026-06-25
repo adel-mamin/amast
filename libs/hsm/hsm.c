@@ -302,7 +302,7 @@ static enum am_rc hsm_dispatch(
 void am_hsm_dispatch(struct am_hsm* hsm, const struct am_event* event) {
     AM_ASSERT(hsm);
     AM_ASSERT(hsm->state_fn);
-    AM_ASSERT(hsm->init_called);
+    AM_ASSERT(hsm->start_called);
     AM_ASSERT(!hsm->dispatch_in_progress);
     AM_ASSERT(event);
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
@@ -367,30 +367,30 @@ struct am_hsm_state am_hsm_get_state(const struct am_hsm* hsm) {
     return hsm_get_state(hsm);
 }
 
-void am_hsm_create(struct am_hsm* hsm, struct am_hsm_state state) {
+void am_hsm_init(struct am_hsm* hsm, struct am_hsm_state state) {
     AM_ASSERT(hsm);
     AM_ASSERT(state.fn);
     memset(hsm, 0, sizeof(*hsm));
     hsm_set_state(hsm, state);
-    hsm->create_called = true;
+    hsm->init_called = true;
 }
 
 void am_hsm_destroy(struct am_hsm* hsm) {
     AM_ASSERT(hsm);
-    AM_ASSERT(hsm->create_called); /* was am_hsm_create() called? */
+    AM_ASSERT(hsm->init_called); /* was am_hsm_init() called? */
     AM_ASSERT(hsm->state_fn);
 
-    if (hsm->init_called) {
+    if (hsm->start_called) {
         hsm_exit(hsm, /*until=*/am_hsm_state_make(am_hsm_top));
     }
     hsm_set_state(hsm, am_hsm_state_make(am_hsm_top));
-    hsm->create_called = hsm->init_called = false;
+    hsm->init_called = hsm->start_called = false;
 }
 
 void am_hsm_start(struct am_hsm* hsm, const struct am_event* init_event) {
     AM_ASSERT(hsm);
-    AM_ASSERT(hsm->create_called); /* was am_hsm_create() called? */
-    AM_ASSERT(!hsm->init_called);  /* double init? */
+    AM_ASSERT(hsm->init_called);   /* was am_hsm_init() called? */
+    AM_ASSERT(!hsm->start_called); /* double init? */
 
     struct am_hsm_state state = hsm_get_state(hsm);
     enum am_rc rc = hsm->state_fn(hsm, init_event);
@@ -402,7 +402,7 @@ void am_hsm_start(struct am_hsm* hsm, const struct am_event* init_event) {
     hsm_set_state(hsm, state);
     hsm_build(hsm, &path, /*from=*/&dst, &until, /*till=*/NULL);
     hsm_enter_and_init(hsm, &path);
-    hsm->init_called = true;
+    hsm->start_called = true;
 }
 
 enum am_rc am_hsm_top(struct am_hsm* hsm, const struct am_event* event) {

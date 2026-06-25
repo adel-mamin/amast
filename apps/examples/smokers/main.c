@@ -211,7 +211,7 @@ static void smoker_create(
     struct am_event_alloc* alloc
 ) {
     memset(me, 0, sizeof(*me));
-    am_hsm_create(&me->hsm, am_hsm_state_make(smoker_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(smoker_init));
     am_ao_create(
         &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
     );
@@ -349,7 +349,7 @@ static void agent_create(
     struct agent* me, struct am_timer* timer, struct am_event_alloc* alloc
 ) {
     memset(me, 0, sizeof(*me));
-    am_hsm_create(&me->hsm, am_hsm_state_make(agent_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(agent_init));
     am_ao_create(
         &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
     );

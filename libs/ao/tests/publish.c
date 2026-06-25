@@ -82,7 +82,7 @@ static void publish_create(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
     am_ao_create(
         &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
     );
-    am_hsm_create(&me->hsm, am_hsm_state_make(publish_sinit));
+    am_hsm_init(&me->hsm, am_hsm_state_make(publish_sinit));
     me->log = log;
 }
 

@@ -88,7 +88,7 @@ int main(void) {
     am_ao_create(
         &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
     );
-    am_hsm_create(&me->hsm, am_hsm_state_make(test_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(test_init));
     start_ao();
 
     while (am_ao_get_cnt() > 0) {
@@ -98,7 +98,7 @@ int main(void) {
     am_ao_create(
         &me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me
     );
-    am_hsm_create(&me->hsm, am_hsm_state_make(test_init));
+    am_hsm_init(&me->hsm, am_hsm_state_make(test_init));
     start_ao();
 
     while (am_ao_get_cnt() > 0) {

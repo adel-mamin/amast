@@ -85,7 +85,7 @@ static enum am_rc redisp_sinit(
 
 static void test_redispatch(void) {
     struct test_redisp* me = &m_test_redisp;
-    am_hsm_create(&me->hsm, am_hsm_state_make(redisp_sinit));
+    am_hsm_init(&me->hsm, am_hsm_state_make(redisp_sinit));
 
     am_hsm_start(&me->hsm, /*init_event=*/NULL);
     AM_ASSERT(0 == me->foo);
