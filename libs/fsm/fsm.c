@@ -127,24 +127,24 @@ bool am_fsm_is_in(const struct am_fsm* fsm, const am_fsm_state_fn state) {
     return fsm->state == state;
 }
 
-void am_fsm_create(struct am_fsm* fsm, const am_fsm_state_fn state) {
+void am_fsm_init(struct am_fsm* fsm, const am_fsm_state_fn state) {
     AM_ASSERT(fsm);
     AM_ASSERT(state);
     memset(fsm, 0, sizeof(*fsm));
     fsm->state = state;
 }
 
-void am_fsm_destroy(struct am_fsm* fsm) {
+void am_fsm_deinit(struct am_fsm* fsm) {
     AM_ASSERT(fsm);
-    AM_ASSERT(fsm->state); /* was am_fsm_create() called? */
+    AM_ASSERT(fsm->state); /* was am_fsm_init() called? */
     fsm_exit(fsm);
     fsm->state = NULL;
     fsm->start_called = false;
 }
 
-void am_fsm_init(struct am_fsm* fsm, const struct am_event* init_event) {
+void am_fsm_start(struct am_fsm* fsm, const struct am_event* init_event) {
     AM_ASSERT(fsm);
-    AM_ASSERT(fsm->state); /* was am_fsm_create() called? */
+    AM_ASSERT(fsm->state); /* was am_fsm_init() called? */
 
     enum am_rc rc = fsm->state(fsm, init_event);
     AM_ASSERT(AM_RC_TRAN == rc);

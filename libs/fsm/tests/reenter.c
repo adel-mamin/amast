@@ -75,7 +75,7 @@ static void reenter_fsm_create(
     AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)
 ) {
     struct reenter_fsm* me = &m_reenter_fsm;
-    am_fsm_create(&me->fsm, reenter_fsm_init);
+    am_fsm_init(&me->fsm, reenter_fsm_init);
     me->log = log;
 }
 
@@ -93,7 +93,7 @@ static void test_reenter_fsm(void) {
 
     struct reenter_fsm* me = &m_reenter_fsm;
 
-    am_fsm_init(&me->fsm, /*init_event=*/NULL);
+    am_fsm_start(&me->fsm, /*init_event=*/NULL);
     am_fsm_dispatch(&me->fsm, &(struct am_event){.id = AM_EVT_USER});
 
     const char* out =

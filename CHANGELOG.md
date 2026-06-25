@@ -22,6 +22,9 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Rename `am_hsm_init()` to `am_hsm_start()`
 - Rename `am_hsm_create()` to `am_hsm_init()`
 - Rename `am_hsm_destroy()` to `am_hsm_deinit()`
+- Rename `am_fsm_init()` to `am_fsm_start()`
+- Rename `am_fsm_create()` to `am_fsm_init()`
+- Rename `am_fsm_destroy()` to `am_fsm_deinit()`
 
 ### Added
 

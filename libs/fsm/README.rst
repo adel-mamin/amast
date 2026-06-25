@@ -117,20 +117,20 @@ Initial State
 =============
 
 The initial state of the FSM is provided during the FSM’s construction
-using the :cpp:func:`am_fsm_create()` function.
+using the :cpp:func:`am_fsm_init()` function.
 
 This state is set to handle any initial setup required by the FSM and
 ensures that the FSM begins with a predictable configuration.
 
-The function :cpp:func:`am_fsm_init()` initiates the FSM with an optional initial event.
+The function :cpp:func:`am_fsm_start()` initiates the FSM with an optional initial event.
 
 Example:
 
 .. code:: c
 
     struct am_fsm my_fsm;
-    am_fsm_create(&my_fsm, initial_state);
-    am_fsm_init(&my_fsm, NULL); /* initiates with no event */
+    am_fsm_init(&my_fsm, initial_state);
+    am_fsm_start(&my_fsm, NULL); /* initiates with no event */
 
 The initial state must always return **am_fsm_tran(fsm, new_state)** macro
 to proceed to the appropriate active state.
@@ -175,8 +175,8 @@ FSM Initialization
 FSM initialization is divided into the following two steps for increased
 flexibility and better control of the initialization timeline:
 
-1. the state machine constructor (:cpp:func:`am_fsm_create()`)
-2. the initial transition (:cpp:func:`am_fsm_init()`).
+1. the state machine constructor (:cpp:func:`am_fsm_init()`)
+2. the initial transition (:cpp:func:`am_fsm_start()`).
 
 Transition To History
 =====================

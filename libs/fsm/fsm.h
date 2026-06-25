@@ -68,7 +68,7 @@ typedef enum am_rc (*am_fsm_state_fn)(
 struct am_fsm {
     /** Active state/event handler function. */
     am_fsm_state_fn state;
-    /** Safety net to catch a missing am_fsm_init() call. */
+    /** Safety net to catch a missing am_fsm_start() call. */
     uint8_t start_called : 1;
     /** Safety net to catch an erroneous reentrant am_fsm_dispatch() call. */
     uint8_t dispatch_in_progress : 1;
@@ -172,30 +172,30 @@ am_fsm_state_fn am_fsm_get_state(const struct am_fsm* fsm);
  * @param fsm    FSM object to construct.
  * @param state  Initial state/event handler function of @p fsm.
  */
-void am_fsm_create(struct am_fsm* fsm, am_fsm_state_fn state);
+void am_fsm_init(struct am_fsm* fsm, am_fsm_state_fn state);
 
 /**
  * Destruct an FSM object.
  *
  * Exits the current state.
  *
- * The FSM is not usable after this call. Call am_fsm_create() before using the
+ * The FSM is not usable after this call. Call am_fsm_init() before using the
  * FSM again.
  *
  * @param fsm  FSM object to destruct.
  */
-void am_fsm_destroy(struct am_fsm* fsm);
+void am_fsm_deinit(struct am_fsm* fsm);
 
 /**
  * Perform an FSM initial transition.
  *
- * Calls the initial state handler set by am_fsm_create() with @p init_event and
+ * Calls the initial state handler set by am_fsm_init() with @p init_event and
  * performs the initial transition.
  *
  * @param fsm         FSM to initialize.
  * @param init_event  Initial event, or NULL.
  */
-void am_fsm_init(struct am_fsm* fsm, const struct am_event* init_event);
+void am_fsm_start(struct am_fsm* fsm, const struct am_event* init_event);
 
 #ifdef __cplusplus
 }

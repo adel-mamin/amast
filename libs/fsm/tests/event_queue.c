@@ -109,7 +109,7 @@ static void fsmq_create(
     struct am_event_alloc* alloc
 ) {
     struct am_fsmq* me = &am_fsmq_;
-    am_fsm_create(&me->fsm, fsmq_init);
+    am_fsm_init(&me->fsm, fsmq_init);
     me->log = log;
     me->alloc = alloc;
 
@@ -174,7 +174,7 @@ int main(void) {
     fsmq_create(fsmq_log, &alloc);
 
     m_fsmq_log_buf[0] = '\0';
-    am_fsm_init(am_fsmq, /*init_event=*/NULL);
+    am_fsm_start(am_fsmq, /*init_event=*/NULL);
 
     static const struct fsmq_test {
         uint16_t event;
@@ -189,7 +189,7 @@ int main(void) {
         m_fsmq_log_buf[0] = '\0';
     }
 
-    am_fsm_destroy(am_fsmq);
+    am_fsm_deinit(am_fsmq);
 
     /* make sure there is no memory leak */
     AM_ASSERT(1 == am_event_alloc_get_nfree(&alloc, /*index=*/0));

@@ -442,11 +442,11 @@ The source code of the corresponding header file is in `fsm.h <https://github.co
 
 .. doxygenfunction:: am_fsm_get_state
 
-.. doxygenfunction:: am_fsm_create
-
-.. doxygenfunction:: am_fsm_destroy
-
 .. doxygenfunction:: am_fsm_init
+
+.. doxygenfunction:: am_fsm_deinit
+
+.. doxygenfunction:: am_fsm_start
 
 .. _ao_api:
 
