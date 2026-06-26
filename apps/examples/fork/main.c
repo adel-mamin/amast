@@ -51,7 +51,6 @@
 #include "common/alignment.h"
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event_async.h"
 #include "event/event_common.h"
 #include "event/event_pool.h"
 #include "timer/timer.h"
@@ -214,7 +213,7 @@ static void job_task(const void* param) {
 }
 
 int main(int argc, const char* argv[]) {
-    am_pal_init(/*arg=*/NULL);
+    am_pal_global_init(/*arg=*/NULL);
 
     if (argc < 2) {
         (void)fprintf(stderr, "Usage: %s <program> [args...]\n", argv[0]);
@@ -223,6 +222,7 @@ int main(int argc, const char* argv[]) {
 
     struct am_timer timer;
     am_timer_init(&timer);
+    am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
     struct am_event_alloc alloc;
     am_event_alloc_init(&alloc);
@@ -240,14 +240,10 @@ int main(int argc, const char* argv[]) {
     );
 
     struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX];
-    am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), &alloc);
-
-    am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
-
-    struct am_ao_state_cfg cfg = {
+    struct am_ao_cfg cfg = {
         .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
     };
-    am_ao_state_init(&cfg);
+    am_ao_global_init(&cfg, pubsub_list, AM_COUNTOF(pubsub_list));
 
     struct progress progress;
     progress_init(&progress, &timer);
@@ -291,9 +287,9 @@ int main(int argc, const char* argv[]) {
         am_ao_run_all();
     }
 
-    am_ao_state_deinit();
+    am_ao_global_deinit();
 
-    am_pal_deinit();
+    am_pal_global_deinit();
 
     return EXIT_SUCCESS;
 }

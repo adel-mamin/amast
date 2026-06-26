@@ -93,7 +93,7 @@ static AM_PRINTF(1, 0) void publish_log(const char* fmt, ...) {
 }
 
 static void test_publish(void) {
-    am_pal_init(/*arg=*/NULL);
+    am_pal_global_init(/*arg=*/NULL);
 
     struct am_event_alloc alloc;
     am_event_alloc_init(&alloc);
@@ -106,12 +106,10 @@ static void test_publish(void) {
     );
 
     struct am_event_subscribe_list m_pubsub_list[AM_AO_EVT_PUB_MAX];
-    am_event_async_init(m_pubsub_list, AM_COUNTOF(m_pubsub_list), &alloc);
-
-    struct am_ao_state_cfg cfg = {
+    struct am_ao_cfg cfg = {
         .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
     };
-    am_ao_state_init(&cfg);
+    am_ao_global_init(&cfg, m_pubsub_list, AM_COUNTOF(m_pubsub_list));
 
     publish_init(publish_log);
 
@@ -144,9 +142,9 @@ static void test_publish(void) {
 
     AM_ASSERT('\0' == m_publish.log_buf[0]);
 
-    am_ao_state_deinit();
+    am_ao_global_deinit();
 
-    am_pal_deinit();
+    am_pal_global_deinit();
 }
 
 int main(void) {

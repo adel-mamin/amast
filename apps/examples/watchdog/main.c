@@ -170,14 +170,14 @@ static void ticker_cb(void* param) {
 }
 
 int main(void) {
-    am_pal_init(/*arg=*/NULL);
+    am_pal_global_init(/*arg=*/NULL);
 
     struct am_timer timer;
     am_timer_init(&timer);
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
-    am_ao_state_init(/*cfg=*/NULL);
+    am_ao_global_init(/*cfg=*/NULL, /*sub=*/NULL, /*nsub=*/0);
 
     struct wdt wdt;
     wdt_init(&wdt, &timer);
@@ -223,9 +223,9 @@ int main(void) {
 
     am_ticker_stop(ticker);
 
-    am_ao_state_deinit();
+    am_ao_global_deinit();
 
-    am_pal_deinit();
+    am_pal_global_deinit();
 
     return EXIT_SUCCESS;
 }

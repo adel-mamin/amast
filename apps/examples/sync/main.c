@@ -74,7 +74,7 @@ static void event_sync_observe(int handler_id, const struct am_event* event) {
 }
 
 int main(void) {
-    am_pal_init(/*arg=*/NULL);
+    am_pal_global_init(/*arg=*/NULL);
 
     struct am_timer timer;
     am_timer_init(&timer);
@@ -103,7 +103,7 @@ int main(void) {
         timer_proc(&timer, &hub);
     }
 
-    am_pal_deinit();
+    am_pal_global_deinit();
 
     return 0;
 }

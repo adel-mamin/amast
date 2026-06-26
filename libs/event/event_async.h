@@ -66,15 +66,15 @@ extern "C" {
  *
  * Thread unsafe.
  */
-void am_event_async_init(
+void am_event_async_global_init(
     struct am_event_subscribe_list* sub, int nsub, struct am_event_alloc* alloc
 );
 
 /**
  * Check whether pub/sub support is enabled for asynchronous events.
  *
- * Pub/sub support is enabled when am_event_async_init() is called with a valid
- * array of subscription lists.
+ * Pub/sub support is enabled when am_event_async_global_init() is called with a
+ * valid array of subscription lists.
  *
  * @return true if pub/sub support is enabled, otherwise false
  */
@@ -85,7 +85,7 @@ bool am_event_async_is_pubsub_enabled(void);
  *
  * The @p event ID must be smaller than the number of elements
  * in the array of subscription lists provided to
- * am_event_async_init().
+ * am_event_async_global_init().
  *
  * @param handler_id  event handler to subscribe
  *                    The ID provided to am_event_async_register_with_id()
@@ -94,7 +94,7 @@ bool am_event_async_is_pubsub_enabled(void);
  * @param event_id    the event ID to subscribe to.
  *                    Must be more or equal to AM_EVT_USER.
  *                    Used to compute an index into the array of subscription
- *                    lists passed to am_event_async_init().
+ *                    lists passed to am_event_async_global_init().
  *                    Passing an event ID beyond the size of the array
  *                    results in an assertion failure.
  */
@@ -105,7 +105,7 @@ void am_event_async_subscribe(int handler_id, int event_id);
  *
  * The @p event ID must be smaller than the number of elements
  * in the array of subscription lists provided to
- * am_event_async_init().
+ * am_event_async_global_init().
  *
  * @param handler_id  event handler to unsubscribe
  *                    The ID provided to am_event_async_register_with_id()
@@ -114,7 +114,7 @@ void am_event_async_subscribe(int handler_id, int event_id);
  * @param event_id    the event ID to unsubscribe from.
  *                    Must be more or equal to AM_EVT_USER.
  *                    Used to compute an index into the array of subscription
- *                    lists passed to am_event_async_init().
+ *                    lists passed to am_event_async_global_init().
  *                    Passing an event ID beyond the size of the array
  *                    results in an assertion failure.
  */

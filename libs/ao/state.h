@@ -89,7 +89,7 @@ void am_ao_notify_unsafe(const struct am_ao* ao);
  * Has different implementation for cooperative and preemptive
  * active object library builds.
  */
-void am_ao_state_init_(void);
+void am_ao_global_init_(void);
 
 /**
  * AO event handler.

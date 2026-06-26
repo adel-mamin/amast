@@ -69,7 +69,6 @@
 #include "common/constants.h"
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event_async.h"
 #include "event/event_common.h"
 #include "timer/timer.h"
 #include "coro/coro.h"
@@ -321,12 +320,10 @@ static void input_task(void* param) {
 }
 
 int main(void) {
-    am_pal_init(/*arg=*/NULL);
+    am_pal_global_init(/*arg=*/NULL);
 
     struct am_event_subscribe_list pubsub_list[CORO_EVT_PUB_MAX];
-    am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), /*alloc=*/NULL);
-
-    am_ao_state_init(/*cfg=*/NULL);
+    am_ao_global_init(/*cfg=*/NULL, pubsub_list, AM_COUNTOF(pubsub_list));
 
     struct am_timer timer;
     am_timer_init(&timer);
@@ -375,9 +372,9 @@ int main(void) {
 
     am_ticker_stop(ticker);
 
-    am_ao_state_deinit();
+    am_ao_global_deinit();
 
-    am_pal_deinit();
+    am_pal_global_deinit();
 
     return 0;
 }

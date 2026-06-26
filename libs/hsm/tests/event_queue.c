@@ -186,7 +186,7 @@ int main(void) {
         AM_ASSERT(1 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
     }
 
-    am_event_async_init(/*sub=*/NULL, /*nsub=*/0, &alloc);
+    am_event_async_global_init(/*sub=*/NULL, /*nsub=*/0, &alloc);
 
     hsmq_init(hsmq_log, &alloc);
 

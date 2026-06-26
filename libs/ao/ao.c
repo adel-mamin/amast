@@ -156,11 +156,13 @@ void am_ao_init(
     ao->init_called = true;
 }
 
-void am_ao_state_init(const struct am_ao_state_cfg* cfg) {
+void am_ao_global_init(
+    const struct am_ao_cfg* cfg, struct am_event_subscribe_list* sub, int nsub
+) {
     struct am_ao_state* me = &am_ao_state_;
     memset(me, 0, sizeof(*me));
 
-    am_ao_state_init_();
+    am_ao_global_init_();
 
     AM_ATOMIC_STORE_N(&me->init_complete, false);
 
@@ -179,9 +181,10 @@ void am_ao_state_init(const struct am_ao_state_cfg* cfg) {
     me->running_ao_prio = AM_AO_PRIO_INVALID;
 
     am_event_register_crit(me->crit_enter, me->crit_exit);
+    am_event_async_global_init(sub, nsub, cfg ? cfg->alloc : NULL);
 }
 
-void am_ao_state_deinit(void) {}
+void am_ao_global_deinit(void) {}
 
 void am_ao_crash_dump_event_queues_unsafe(
     int num,

@@ -466,7 +466,7 @@ int am_printff(const char* fmt, ...) {
 
 void am_pal_flush(void) { fflush(stdout); }
 
-void* am_pal_init(void* arg) {
+void* am_pal_global_init(void* arg) {
     (void)arg;
     struct am_task* task = &task_main_;
 
@@ -486,7 +486,7 @@ void* am_pal_init(void* arg) {
     return NULL;
 }
 
-void am_pal_deinit(void) {
+void am_pal_global_deinit(void) {
     if (init_complete_mutex_acquired_) {
         am_mutex_unlock(init_complete_mutex_);
         init_complete_mutex_acquired_ = false;

@@ -98,7 +98,7 @@ System Integration
 The Event module integrates seamlessly with event-driven systems and RTOS. Key
 integration points include:
 
-- **Initialization**: Use ``am_event_async_init`` to configure the event system
+- **Initialization**: Use ``am_event_async_global_init`` to configure the event system
   and ``am_event_alloc_add_pool`` to add memory pools.
 - **Event Handling**: Allocate events using ``am_event_allocate`` or create
   static events. Push and pop events to/from queues for asynchronous

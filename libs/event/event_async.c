@@ -59,7 +59,7 @@ struct am_event_async_state {
 
 static struct am_event_async_state m_async_state;
 
-void am_event_async_init(
+void am_event_async_global_init(
     struct am_event_subscribe_list* sub, int nsub, struct am_event_alloc* alloc
 ) {
     if (nsub) {

@@ -228,7 +228,7 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygentypedef:: am_event_async_fn
 
-.. doxygenfunction:: am_event_async_init
+.. doxygenfunction:: am_event_async_global_init
 
 .. doxygenfunction:: am_event_queue_init
 
@@ -469,7 +469,7 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygentypedef:: am_ao_fn
 
-.. doxygenstruct:: am_ao_state_cfg
+.. doxygenstruct:: am_ao_cfg
    :members:
 
 .. doxygenstruct:: am_ao_prio
@@ -509,9 +509,9 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygenfunction:: am_ao_stop
 
-.. doxygenfunction:: am_ao_state_init
+.. doxygenfunction:: am_ao_global_init
 
-.. doxygenfunction:: am_ao_state_deinit
+.. doxygenfunction:: am_ao_global_deinit
 
 .. doxygenfunction:: am_ao_subscribe
 
@@ -557,9 +557,9 @@ The source code of the corresponding header file is in `pal.h <https://github.co
 .. doxygenstruct:: am_ticker_cfg
    :members:
 
-.. doxygenfunction:: am_pal_init
+.. doxygenfunction:: am_pal_global_init
 
-.. doxygenfunction:: am_pal_deinit
+.. doxygenfunction:: am_pal_global_deinit
 
 .. doxygenfunction:: am_crit_enter
 

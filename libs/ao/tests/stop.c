@@ -81,8 +81,8 @@ static void start_ao(void) {
 }
 
 int main(void) {
-    am_pal_init(/*args=*/NULL);
-    am_ao_state_init(/*cfg=*/NULL);
+    am_pal_global_init(/*args=*/NULL);
+    am_ao_global_init(/*cfg=*/NULL, /*sub=*/NULL, /*nsub=*/0);
 
     struct test* me = &m_test;
     am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
@@ -101,8 +101,8 @@ int main(void) {
         am_ao_run_all();
     }
 
-    am_ao_state_deinit();
-    am_pal_deinit();
+    am_ao_global_deinit();
+    am_pal_global_deinit();
 
     return 0;
 }

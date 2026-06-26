@@ -344,19 +344,18 @@ static void input_task(void *param) {
 }
 
 int main(void) {
-    am_pal_init(/*arg=*/NULL);
-
-    struct am_timer timer;
-    am_timer_init(&timer);
+    am_pal_global_init(/*arg=*/NULL);
 
     /* event publish/subscribe memory */
     struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX];
-    am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), /*alloc=*/NULL);
-
-    struct am_ao_state_cfg cfg = {
-        .crit_enter = am_crit_enter, .crit_exit = am_crit_exit
+    struct am_ao_cfg cfg = {
+        .crit_enter = am_crit_enter, .crit_exit = am_crit_exit,
+        .alloc = NULL
     };
-    am_ao_state_init(&cfg);
+    am_ao_global_init(&cfg, pubsub_list, AM_COUNTOF(pubsub_list));
+
+    struct am_timer timer;
+    am_timer_init(&timer);
 
     struct app app;
     app_init(&app, &timer);
@@ -401,9 +400,9 @@ int main(void) {
 
     am_ticker_stop(ticker);
 
-    am_ao_state_deinit();
+    am_ao_global_deinit();
 
-    am_pal_deinit();
+    am_pal_global_deinit();
 
     return 0;
 }

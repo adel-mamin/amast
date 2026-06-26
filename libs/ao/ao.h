@@ -117,14 +117,14 @@ struct am_ao {
 };
 
 /** Active object library state configuration. */
-struct am_ao_state_cfg {
+struct am_ao_cfg {
     /**
      * Callback to enter low power mode.
      *
      * The callback is called with critical section being entered
-     * by calling am_ao_state_cfg::crit_enter() to allow
+     * by calling am_ao_cfg::crit_enter() to allow
      * for race condition free transition to low power mode(s).
-     * The am_ao_state_cfg::crit_exit() is called by the library after
+     * The am_ao_cfg::crit_exit() is called by the library after
      * the callback is returned.
      *
      * Do not post or publish events from this callback.
@@ -485,20 +485,24 @@ void am_ao_stop(struct am_ao* ao);
  * @param cfg  active object library configuration
  *             The active object library makes an internal copy of
  *             the configuration. Can be NULL.
+ * @param sub  The event subscribe list. Can be NULL.
+ * @param nsub The size of the event subscribe list.
  */
-void am_ao_state_init(const struct am_ao_state_cfg* cfg);
+void am_ao_global_init(
+    const struct am_ao_cfg* cfg, struct am_event_subscribe_list* sub, int nsub
+);
 
 /**
  * Active object library state de-initialization.
  */
-void am_ao_state_deinit(void);
+void am_ao_global_deinit(void);
 
 /**
  * Subscribe active object to @p event ID.
  *
  * The @p event ID must be smaller than the number of elements
  * in the array of active object subscribe lists provided to
- * am_event_async_init().
+ * am_event_async_global_init().
  *
  * @param ao     active object to subscribe
  * @param event  the event ID to subscribe to
@@ -510,7 +514,7 @@ void am_ao_subscribe(const struct am_ao* ao, int event);
  *
  * The @p event ID must be smaller than the number of elements
  * in the array of active object subscribe lists provided to
- * am_event_async_init().
+ * am_event_async_global_init().
  *
  * @param ao     active object to unsubscribe
  * @param event  the event ID to unsubscribe from

@@ -37,7 +37,7 @@
 #include "ao/ao.h"
 #include "state.h"
 
-void am_ao_state_init_(void) {}
+void am_ao_global_init_(void) {}
 
 static bool am_ao_handle(void* ctx, const struct am_event* event) {
     AM_ASSERT(ctx);

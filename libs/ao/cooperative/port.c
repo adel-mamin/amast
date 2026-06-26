@@ -40,7 +40,7 @@
 
 static struct am_bit_u64 am_ready_aos_ = {0};
 
-void am_ao_state_init_(void) {
+void am_ao_global_init_(void) {
     memset(&am_ready_aos_, 0, sizeof(am_ready_aos_));
 }
 

@@ -69,10 +69,10 @@ extern "C" {
  *
  * @return Platform specific handler. Can be NULL.
  */
-void* am_pal_init(void* arg);
+void* am_pal_global_init(void* arg);
 
 /** PAL de-initialization. */
-void am_pal_deinit(void);
+void am_pal_global_deinit(void);
 
 /**
  * Enter critical section.

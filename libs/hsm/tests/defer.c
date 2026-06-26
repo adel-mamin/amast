@@ -190,7 +190,7 @@ static void test_defer(void) {
         AM_ASSERT(2 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
     }
 
-    am_event_async_init(/*sub=*/NULL, /*nsub=*/0, &alloc);
+    am_event_async_global_init(/*sub=*/NULL, /*nsub=*/0, &alloc);
 
     defer_init(defer_hsm_log, &alloc);
 
