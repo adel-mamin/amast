@@ -35,8 +35,7 @@ Here is the full implementation of the FSM:
 #include "amast_config.h"
 #include "amast.h"
 
-#define EVT_A AM_EVT_USER
-#define EVT_B (AM_EVT_USER + 1)
+enum { EVT_A = AM_EVT_USER, EVT_B };
 
 struct app {
     struct am_fsm fsm;
@@ -140,7 +139,7 @@ Here is the full implementation of the HSM:
 #include "amast_config.h"
 #include "amast.h"
 
-enum { APP_EVT_A = AM_EVT_USER, APP_EVT_B, APP_EVT_C };
+enum { EVT_A = AM_EVT_USER, EVT_B, EVT_C };
 
 struct app {
     struct am_hsm hsm;
@@ -164,7 +163,7 @@ static enum am_rc superstate(struct am_hsm* hsm, const struct am_event *event) {
     case AM_EVT_INIT:
         return am_hsm_tran(hsm, substate_a);
 
-    case APP_EVT_C:
+    case EVT_C:
         return am_hsm_tran(hsm, substate_b);
     }
     return am_hsm_super(am_hsm_top);
@@ -181,7 +180,7 @@ static enum am_rc substate_a(struct am_hsm* hsm, const struct am_event *event) {
         am_printf("substate_a exit\n");
         return am_hsm_handled(hsm);
 
-    case APP_EVT_B:
+    case EVT_B:
         return am_hsm_tran(hsm, substate_b);
     }
     return am_hsm_super(hsm, superstate);
@@ -198,7 +197,7 @@ static enum am_rc substate_b(struct am_hsm* hsm, const struct am_event *event) {
         am_printf("substate_b exit\n");
         return am_hsm_handled(hsm);
 
-    case APP_EVT_A:
+    case EVT_A:
         return am_hsm_tran(hsm, substate_a);
     }
     return am_hsm_super(hsm, superstate);
@@ -211,9 +210,9 @@ static enum am_rc init(struct am_hsm* hsm, const struct am_event *event) {
 int main(void) {
     am_hsm_init(&app.hsm, am_hsm_state_make(init));
     am_hsm_start(&app.hsm, /*init_event=*/NULL);
-    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_B});
-    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_A});
-    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = APP_EVT_C});
+    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = EVT_B});
+    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = EVT_A});
+    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = EVT_C});
     return 0;
 }
 ```
@@ -256,11 +255,7 @@ It demonstrates:
 #include "amast_config.h"
 #include "amast.h"
 
-enum {
-    APP_EVT_SWITCH_MODE = AM_EVT_USER,
-    APP_EVT_PUB_MAX,
-    APP_EVT_TIMER,
-};
+enum { EVT_SWITCH_MODE = AM_EVT_USER, EVT_PUB_MAX, EVT_TIMER };
 
 struct app {
     struct am_hsm hsm;
@@ -279,7 +274,7 @@ static enum am_rc app_state_a(struct am_hsm* hsm, const struct am_event *event) 
         am_printf("state A\n");
         return am_hsm_handled(hsm);
 
-    case APP_EVT_SWITCH_MODE:
+    case EVT_SWITCH_MODE:
         return am_hsm_tran(hsm, app_state_b);
     }
     return am_hsm_super(hsm, am_hsm_top);
@@ -297,10 +292,10 @@ static enum am_rc app_state_b(struct am_hsm* hsm, const struct am_event *event) 
         am_timer_disarm(me->timer, &me->timeout.event);
         return am_hsm_handled(hsm);
 
-    case APP_EVT_SWITCH_MODE:
+    case EVT_SWITCH_MODE:
         return am_hsm_tran(hsm, app_state_a);
 
-    case APP_EVT_TIMER:
+    case EVT_TIMER:
         am_printf("timer\n");
         am_timer_arm(me->timer, &me->timeout.event, me->ticks, /*interval=*/0);
         return am_hsm_handled(hsm);
@@ -310,16 +305,16 @@ static enum am_rc app_state_b(struct am_hsm* hsm, const struct am_event *event) 
 
 static enum am_rc app_initial(struct am_hsm* hsm, const struct am_event *event) {
     struct app* me = AM_CONTAINER_OF(hsm, struct app, hsm);
-    am_ao_subscribe(&me->ao, APP_EVT_SWITCH_MODE);
+    am_ao_subscribe(&me->ao, EVT_SWITCH_MODE);
     return am_hsm_tran(hsm, app_state_a);
 }
 
 static void app_init(struct app *me, struct am_timer *timer) {
     memset(me, 0, sizeof(*me));
+    am_hsm_init(&me->hsm, am_hsm_state_make(app_initial));
     am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
-    am_hsm_start(&me->hsm, am_hsm_state_make(app_initial));
     me->timer = timer;
-    me->timeout = am_timer_event_create_x(APP_EVT_TIMER, &me->ao);
+    me->timeout = am_timer_event_create_x(EVT_TIMER, &me->ao);
     me->ticks = am_time_get_ticks_from_ms(AM_TIMEBASE_DEFAULT, 1000);
 }
 
@@ -342,7 +337,7 @@ static void input_task(void *param) {
     int ch;
     while ((ch = getc(stdin)) != EOF) {
         if ('\n' == ch) {
-            static struct am_event event = {.id = APP_EVT_SWITCH_MODE};
+            static struct am_event event = {.id = EVT_SWITCH_MODE};
             am_ao_publish(&event);
         }
     }
@@ -355,7 +350,7 @@ int main(void) {
     am_timer_init(&timer);
 
     /* event publish/subscribe memory */
-    struct am_event_subscribe_list pubsub_list[APP_EVT_PUB_MAX];
+    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX];
     am_event_async_init(pubsub_list, AM_COUNTOF(pubsub_list), /*alloc=*/NULL);
 
     struct am_ao_state_cfg cfg = {
