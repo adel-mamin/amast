@@ -88,12 +88,12 @@ enum {
 };
 
 struct coro {
-    struct am_hsm hsm;
-    struct am_ao ao;
     struct am_timer* timer;
     struct am_timer_event_x timeout;
     struct am_coro coro;
     struct am_coro coro_blinking_green;
+    struct am_ao ao;
+    struct am_hsm hsm;
     unsigned i;
 };
 
@@ -274,7 +274,7 @@ static enum am_rc coro_initial(
 static void coro_init(struct coro* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
 
-    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
+    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
     am_hsm_init(&me->hsm, am_hsm_state_make(coro_initial));
 
     me->timer = timer;

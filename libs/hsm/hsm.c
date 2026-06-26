@@ -324,6 +324,10 @@ void am_hsm_dispatch(struct am_hsm* hsm, const struct am_event* event) {
     AM_ASSERT(id == event->id); /* cppcheck-suppress knownArgument */
 }
 
+void am_hsm_dispatch_cb(void* hsm, const struct am_event* event) {
+    am_hsm_dispatch((struct am_hsm*)hsm, event);
+}
+
 bool am_hsm_is_in(struct am_hsm* hsm, struct am_hsm_state state) {
     AM_ASSERT(hsm);
     AM_ASSERT(hsm->state_fn);
@@ -403,6 +407,10 @@ void am_hsm_start(struct am_hsm* hsm, const struct am_event* init_event) {
     hsm_build(hsm, &path, /*from=*/&dst, &until, /*till=*/NULL);
     hsm_enter_and_init(hsm, &path);
     hsm->start_called = true;
+}
+
+void am_hsm_start_cb(void* hsm, const struct am_event* init_event) {
+    am_hsm_start((struct am_hsm*)hsm, init_event);
 }
 
 enum am_rc am_hsm_top(struct am_hsm* hsm, const struct am_event* event) {

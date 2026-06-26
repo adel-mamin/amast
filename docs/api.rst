@@ -401,6 +401,8 @@ The source code of the corresponding header file is in `hsm.h <https://github.co
 
 .. doxygenfunction:: am_hsm_dispatch
 
+.. doxygenfunction:: am_hsm_dispatch_cb
+
 .. doxygenfunction:: am_hsm_is_in
 
 .. doxygenfunction:: am_hsm_state_is_eq
@@ -414,6 +416,8 @@ The source code of the corresponding header file is in `hsm.h <https://github.co
 .. doxygenfunction:: am_hsm_deinit
 
 .. doxygenfunction:: am_hsm_start
+
+.. doxygenfunction:: am_hsm_start_cb
 
 .. doxygenfunction:: am_hsm_top
 
@@ -438,6 +442,8 @@ The source code of the corresponding header file is in `fsm.h <https://github.co
 
 .. doxygenfunction:: am_fsm_dispatch
 
+.. doxygenfunction:: am_fsm_dispatch_cb
+
 .. doxygenfunction:: am_fsm_is_in
 
 .. doxygenfunction:: am_fsm_get_state
@@ -447,6 +453,8 @@ The source code of the corresponding header file is in `fsm.h <https://github.co
 .. doxygenfunction:: am_fsm_deinit
 
 .. doxygenfunction:: am_fsm_start
+
+.. doxygenfunction:: am_fsm_start_cb
 
 .. _ao_api:
 

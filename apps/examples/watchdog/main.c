@@ -107,7 +107,7 @@ static void watched_init(
     struct watched* me, struct am_timer* timer, struct am_ao* wdt
 ) {
     memset(me, 0, sizeof(*me));
-    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
+    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
     am_hsm_init(&me->hsm, am_hsm_state_make(watched_initial));
     me->timer = timer;
     me->feed = am_timer_event_create_x(EVT_WATCHED_TIMEOUT, &me->ao);
@@ -148,7 +148,7 @@ static enum am_rc wdt_initial(
 
 static void wdt_init(struct wdt* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
-    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
+    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
     am_hsm_init(&me->hsm, am_hsm_state_make(wdt_initial));
     me->timer = timer;
     me->bark = am_timer_event_create_x(EVT_WDT_BARK, &me->ao);

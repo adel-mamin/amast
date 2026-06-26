@@ -94,10 +94,8 @@ struct am_ao_prio {
     unsigned task : 8;
 };
 
-struct am_ao;
-
 /** Active object event handler */
-typedef void (*am_ao_fn)(struct am_ao* ao, const struct am_event* event);
+typedef void (*am_ao_fn)(void* ctx, const struct am_event* event);
 
 /** The active object. */
 struct am_ao {

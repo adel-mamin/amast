@@ -316,7 +316,7 @@ static enum am_rc app_initial(struct am_hsm* hsm, const struct am_event *event) 
 
 static void app_init(struct app *me, struct am_timer *timer) {
     memset(me, 0, sizeof(*me));
-    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
+    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
     am_hsm_start(&me->hsm, am_hsm_state_make(app_initial));
     me->timer = timer;
     me->timeout = am_timer_event_create_x(APP_EVT_TIMER, &me->ao);

@@ -338,6 +338,14 @@ static inline enum am_rc am_hsm_super_i(
 void am_hsm_dispatch(struct am_hsm* hsm, const struct am_event* event);
 
 /**
+ * Callback-compatible wrapper around am_hsm_dispatch().
+ *
+ * @param hsm    HSM object passed as a void pointer.
+ * @param event  Event to dispatch.
+ */
+void am_hsm_dispatch_cb(void* hsm, const struct am_event* event);
+
+/**
  * Check whether an HSM is in a given state.
  *
  * This check is hierarchical: an HSM is considered to be in its active state
@@ -427,6 +435,14 @@ void am_hsm_deinit(struct am_hsm* hsm);
  * @param init_event  Initial event, or NULL.
  */
 void am_hsm_start(struct am_hsm* hsm, const struct am_event* init_event);
+
+/**
+ * Callback-compatible wrapper around am_hsm_start().
+ *
+ * @param hsm    HSM object passed as a void pointer.
+ * @param event  Event to dispatch.
+ */
+void am_hsm_start_cb(void* hsm, const struct am_event* event);
 
 /**
  * Ultimate top superstate of every HSM.

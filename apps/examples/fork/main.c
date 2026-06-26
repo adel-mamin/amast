@@ -147,7 +147,7 @@ static enum am_rc progress_initial(
 }
 
 static void progress_init(struct progress* me, struct am_timer* timer) {
-    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
+    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
     am_hsm_init(&me->hsm, am_hsm_state_make(progress_initial));
 
     me->timer = timer;

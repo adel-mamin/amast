@@ -41,29 +41,27 @@
 #include "state.h"
 
 struct ringbuf_writer {
-    struct am_ao ao;
     struct am_ringbuf* ringbuf;
     struct am_timer* timer;
     struct am_timer_event_x wait;
     const uint8_t* data;
     int datalen;
     int len;
+    struct am_ao ao;
 };
 
 static struct ringbuf_writer m_ringbuf_writer;
 
 static const struct am_event m_evt_ringbuf_write = {.id = AM_EVT_RINGBUF_WRITE};
 
-static void ringbuf_writer_init_handler(
-    struct ringbuf_writer* me, const struct am_event* event
-) {
+static void init(void* ctx, const struct am_event* event) {
     (void)event;
+    struct ringbuf_writer* me = (struct ringbuf_writer*)ctx;
     am_ao_post_fifo(&me->ao, &m_evt_ringbuf_write);
 }
 
-static void ringbuf_writer_event_handler(
-    struct ringbuf_writer* me, const struct am_event* event
-) {
+static void dispatch(void* ctx, const struct am_event* event) {
+    struct ringbuf_writer* me = (struct ringbuf_writer*)ctx;
     switch (event->id) {
     case AM_EVT_RINGBUF_WAIT:
     case AM_EVT_RINGBUF_WRITE: {
@@ -100,12 +98,7 @@ void ringbuf_writer_init(
     struct ringbuf_writer* me = &m_ringbuf_writer;
     memset(me, 0, sizeof(*me));
     me->len = 1;
-    am_ao_init(
-        &me->ao,
-        (am_ao_fn)ringbuf_writer_init_handler,
-        (am_ao_fn)ringbuf_writer_event_handler,
-        me
-    );
+    am_ao_init(&me->ao, init, dispatch, me);
     me->ringbuf = ringbuf;
     me->data = data;
     me->datalen = len;

@@ -34,6 +34,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Add ticker API to PAL
 - Add `am_event_queue_flush_unsafe()`
 - Add more asserts to `libs/timer` implementation
+- Add `am_hsm_start_cb()` and `am_fsm_start_cb()`
+- Add `am_hsm_dispatch_cb()` and `am_fsm_dispatch_cb()`
 
 ### Fixed
 

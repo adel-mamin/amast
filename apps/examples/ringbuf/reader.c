@@ -44,7 +44,6 @@
 #define AM_TEST_RINGBUF_TOTAL 1000
 
 struct ringbuf_reader {
-    struct am_ao ao;
     int len;
     int total_len;
     struct am_ringbuf* ringbuf;
@@ -52,22 +51,21 @@ struct ringbuf_reader {
     struct am_timer_event_x wait;
     const uint8_t* data;
     int datalen;
+    struct am_ao ao;
 };
 
 static struct ringbuf_reader m_ringbuf_reader;
 
 static const struct am_event m_evt_ringbuf_read = {.id = AM_EVT_RINGBUF_READ};
 
-static void ringbuf_reader_init_handler(
-    struct ringbuf_reader* me, const struct am_event* event
-) {
+static void init(void* ctx, const struct am_event* event) {
     (void)event;
+    struct ringbuf_reader* me = (struct ringbuf_reader*)ctx;
     am_ao_post_fifo(&me->ao, &m_evt_ringbuf_read);
 }
 
-static void ringbuf_reader_event_handler(
-    struct ringbuf_reader* me, const struct am_event* event
-) {
+static void dispatch(void* ctx, const struct am_event* event) {
+    struct ringbuf_reader* me = (struct ringbuf_reader*)ctx;
     switch (event->id) {
     case AM_EVT_RINGBUF_WAIT:
     case AM_EVT_RINGBUF_READ: {
@@ -108,12 +106,7 @@ void ringbuf_reader_init(
     struct ringbuf_reader* me = &m_ringbuf_reader;
     memset(me, 0, sizeof(*me));
     me->len = 1;
-    am_ao_init(
-        &me->ao,
-        (am_ao_fn)ringbuf_reader_init_handler,
-        (am_ao_fn)ringbuf_reader_event_handler,
-        me
-    );
+    am_ao_init(&me->ao, init, dispatch, me);
     me->ringbuf = ringbuf;
     me->timer = timer;
     me->data = data;

@@ -212,7 +212,7 @@ static void smoker_init(
 ) {
     memset(me, 0, sizeof(*me));
     am_hsm_init(&me->hsm, am_hsm_state_make(smoker_initial));
-    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
+    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
     me->id = id;
     me->resource_own = me->resource_acquired = resource;
 
@@ -350,7 +350,7 @@ static void agent_init(
 ) {
     memset(me, 0, sizeof(*me));
     am_hsm_init(&me->hsm, am_hsm_state_make(agent_initial));
-    am_ao_init(&me->ao, (am_ao_fn)am_hsm_start, (am_ao_fn)am_hsm_dispatch, me);
+    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
 
     me->timer = timer;
     me->timeout = am_timer_event_create_x(EVT_TIMEOUT, &me->ao);

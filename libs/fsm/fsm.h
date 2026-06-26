@@ -142,6 +142,14 @@ static inline enum am_rc am_fsm_tran_redispatch(
 void am_fsm_dispatch(struct am_fsm* fsm, const struct am_event* event);
 
 /**
+ * Callback-compatible wrapper around am_fsm_dispatch().
+ *
+ * @param fsm    FSM object passed as a void pointer.
+ * @param event  Event to dispatch.
+ */
+void am_fsm_dispatch_cb(void* fsm, const struct am_event* event);
+
+/**
  * Check whether an FSM is in a given state.
  *
  * Use sparingly to check states of other state machines, because it breaks
@@ -196,6 +204,14 @@ void am_fsm_deinit(struct am_fsm* fsm);
  * @param init_event  Initial event, or NULL.
  */
 void am_fsm_start(struct am_fsm* fsm, const struct am_event* init_event);
+
+/**
+ * Callback-compatible wrapper around am_fsm_start().
+ *
+ * @param fsm    FSM object passed as a void pointer.
+ * @param event  Event to dispatch.
+ */
+void am_fsm_start_cb(void* fsm, const struct am_event* event);
 
 #ifdef __cplusplus
 }

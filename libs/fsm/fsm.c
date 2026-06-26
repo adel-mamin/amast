@@ -122,6 +122,10 @@ void am_fsm_dispatch(struct am_fsm* fsm, const struct am_event* event) {
     AM_ASSERT(id == event->id); /* cppcheck-suppress knownArgument */
 }
 
+void am_fsm_dispatch_cb(void* fsm, const struct am_event* event) {
+    am_fsm_dispatch((struct am_fsm*)fsm, event);
+}
+
 bool am_fsm_is_in(const struct am_fsm* fsm, const am_fsm_state_fn state) {
     AM_ASSERT(fsm);
     return fsm->state == state;
@@ -150,4 +154,8 @@ void am_fsm_start(struct am_fsm* fsm, const struct am_event* init_event) {
     AM_ASSERT(AM_RC_TRAN == rc);
     fsm_enter(fsm, fsm->state);
     fsm->start_called = true;
+}
+
+void am_fsm_start_cb(void* fsm, const struct am_event* init_event) {
+    am_fsm_start((struct am_fsm*)fsm, init_event);
 }
