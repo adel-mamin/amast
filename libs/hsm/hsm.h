@@ -406,14 +406,14 @@ struct am_hsm_state am_hsm_get_state(const struct am_hsm* hsm);
 void am_hsm_init(struct am_hsm* hsm, struct am_hsm_state state);
 
 /**
- * Destruct an HSM object.
+ * De-initialize an HSM object.
  *
  * Exits the current state and all of its superstates up to am_hsm_top().
  *
  * The HSM is not usable after this call. Call am_hsm_init() before using the
  * HSM again.
  *
- * @param hsm  HSM object to destruct.
+ * @param hsm  HSM object to de-initialize.
  */
 void am_hsm_deinit(struct am_hsm* hsm);
 

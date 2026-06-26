@@ -491,7 +491,7 @@ void am_ao_stop(struct am_ao* ao);
 void am_ao_state_init(const struct am_ao_state_cfg* cfg);
 
 /**
- * Active object library state destructor.
+ * Active object library state de-initialization.
  */
 void am_ao_state_deinit(void);
 

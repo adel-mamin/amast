@@ -98,7 +98,7 @@ void am_event_queue_init(
 );
 
 /**
- * Destruct event queue.
+ * De-initialize event queue.
  *
  * The event queue must be empty.
  *

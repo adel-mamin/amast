@@ -175,14 +175,14 @@ am_fsm_state_fn am_fsm_get_state(const struct am_fsm* fsm);
 void am_fsm_init(struct am_fsm* fsm, am_fsm_state_fn state);
 
 /**
- * Destruct an FSM object.
+ * De-initialize an FSM object.
  *
  * Exits the current state.
  *
  * The FSM is not usable after this call. Call am_fsm_init() before using the
  * FSM again.
  *
- * @param fsm  FSM object to destruct.
+ * @param fsm  FSM object to de-initialize.
  */
 void am_fsm_deinit(struct am_fsm* fsm);
 

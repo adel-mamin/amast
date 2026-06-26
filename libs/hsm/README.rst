@@ -659,8 +659,8 @@ The test steps:
 All internal and external transitions in HSM are logged and compared against
 expected patterns stored in **struct test::out**.
 
-HSM Destructor
---------------
+HSM De-initialization
+---------------------
 
 Tests :cpp:func:`am_hsm_deinit()` API.
 
@@ -685,7 +685,7 @@ The HSM topology:
 The test steps:
 
 1. Initialize the HSM. The init state transition activates **s**.
-2. Call :cpp:func:`am_hsm_deinit()` for the HSM and check if it destructs the HSM.
+2. Call :cpp:func:`am_hsm_deinit()` for the HSM and check if it de-initialize the HSM.
 
 HSM History
 -----------

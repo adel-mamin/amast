@@ -71,7 +71,7 @@ extern "C" {
  */
 void* am_pal_init(void* arg);
 
-/** PAL destructor. */
+/** PAL de-initialization. */
 void am_pal_deinit(void);
 
 /**
