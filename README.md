@@ -42,7 +42,7 @@ struct app {
     /* app data */
 } app;
 
-static enum am_rc state_b(struct app *me, const struct am_event *event);
+static enum am_rc state_b(struct am_fsm *me, const struct am_event *event);
 
 static enum am_rc state_a(struct am_fsm *fsm, const struct am_event *event) {
     struct app* me = AM_CONTAINER_OF(fsm, struct app, fsm);
@@ -166,7 +166,7 @@ static enum am_rc superstate(struct am_hsm* hsm, const struct am_event *event) {
     case EVT_C:
         return am_hsm_tran(hsm, substate_b);
     }
-    return am_hsm_super(am_hsm_top);
+    return am_hsm_super(hsm, am_hsm_top);
 }
 
 static enum am_rc substate_a(struct am_hsm* hsm, const struct am_event *event) {
