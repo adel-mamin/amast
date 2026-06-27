@@ -50,7 +50,6 @@ struct test_publish {
 };
 
 static struct test_publish m_publish;
-static struct am_ao* m_me = &m_publish.ao;
 
 static const struct am_event* m_queue_publish[1];
 
@@ -113,8 +112,10 @@ static void test_publish(void) {
 
     publish_init(publish_log);
 
+    struct test_publish* me = &m_publish;
+
     am_ao_start(
-        m_me,
+        &me->ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
         /*queue=*/m_queue_publish,
         /*queue_size=*/AM_COUNTOF(m_queue_publish),
@@ -137,7 +138,7 @@ static void test_publish(void) {
     m_publish.log_buf[0] = '\0';
 
     am_ao_run_all();
-    am_ao_publish_exclude(&event, m_me);
+    am_ao_publish_exclude(&event, &me->ao);
     am_ao_run_all();
 
     AM_ASSERT('\0' == m_publish.log_buf[0]);

@@ -138,8 +138,6 @@ static void worker_init(
 }
 
 struct balancer {
-    struct am_hsm hsm;
-    struct am_ao ao;
     struct am_timer* timer;
     struct am_timer_event_x timeout;
     int ncpus;
@@ -149,6 +147,9 @@ struct balancer {
     int nworkers;
 
     struct am_event_alloc* alloc;
+
+    struct am_hsm hsm;
+    struct am_ao ao;
 };
 
 static void balancer_check_stats(const struct balancer* me) {

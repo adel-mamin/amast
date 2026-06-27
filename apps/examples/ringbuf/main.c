@@ -60,7 +60,6 @@ static void test_ringbuf_threading(void) {
 
     struct am_timer timer;
     am_timer_init(&timer);
-
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
     uint8_t buf[9];

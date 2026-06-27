@@ -90,17 +90,14 @@ static void log_queue(
     );
 }
 
-AM_NORETURN void am_assert_failure(
-    const char* assertion, const char* file, int line
-) {
+AM_NORETURN void am_assert_failure(const char* file, int line) {
     static int nasserts = 0;
     if (AM_ATOMIC_LOAD_N(&nasserts)) {
         __builtin_trap();
     }
     AM_ATOMIC_FETCH_ADD(&nasserts, 1);
     am_printf_unsafe(
-        AM_COLOR_RED "ASSERT: %s (%s:%d)(task %d)\n" AM_COLOR_RESET,
-        assertion,
+        AM_COLOR_RED "ASSERT: (%s:%d)(task %d)\n" AM_COLOR_RESET,
         file,
         line,
         am_task_get_own_id()

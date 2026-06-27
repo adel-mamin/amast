@@ -248,13 +248,13 @@ int main(int argc, const char* argv[]) {
     struct progress progress;
     progress_init(&progress, &timer);
 
-    static const struct am_event* m_queue[EVT_MAX];
+    static const struct am_event* event_queue[EVT_MAX];
 
     am_ao_start(
         &progress.ao,
         (struct am_ao_prio){.ao = AM_AO_PRIO_LOW, .task = AM_AO_PRIO_LOW},
-        /*queue=*/m_queue,
-        /*queue_size=*/AM_COUNTOF(m_queue),
+        /*queue=*/event_queue,
+        /*queue_size=*/AM_COUNTOF(event_queue),
         /*stack=*/NULL,
         /*stack_size=*/0,
         /*name=*/"progress",
