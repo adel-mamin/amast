@@ -33,10 +33,7 @@
 
 #ifdef AM_ASSERT_FAILURE_ENABLED
 
-AM_NORETURN void am_assert_failure(
-    const char* assertion, const char* file, int line
-) {
-    (void)assertion;
+AM_NORETURN void am_assert_failure(const char* file, int line) {
     (void)file;
     (void)line;
     __builtin_trap();
