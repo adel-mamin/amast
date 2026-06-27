@@ -7,6 +7,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+## v0.17.0 - 27-June-2026
+
 ### Changed
 
 - Add `struct am_event_handler` structure to encapsulate event handler with its context
