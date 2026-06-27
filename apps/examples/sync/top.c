@@ -31,14 +31,13 @@
 #include "top.h"
 #include "events.h"
 
-static bool top_event_handler(
-    struct top* top,
-    const struct am_event* event,
-    struct am_event* out,
-    int out_size
+static bool top_proc(
+    void* ctx, const struct am_event* event, void* out, int out_size
 ) {
     (void)out;
     (void)out_size;
+
+    struct top* top = (struct top*)ctx;
 
     switch (event->id) {
     case EVT_COMMIT:
@@ -60,15 +59,14 @@ static bool top_event_handler(
 }
 
 bool top_event_post(struct top* top, const struct am_event* event) {
-    return top_event_handler(top, event, /*out=*/NULL, /*out_size=*/0);
+    return top_proc(top, event, /*out=*/NULL, /*out_size=*/0);
 }
 
 void top_init(struct top* top, struct am_event_sync_hub* hub, int rounds) {
     memset(top, 0, sizeof(*top));
     top->rounds = rounds;
     top->hub = hub;
-    int handler_id =
-        am_event_sync_register(hub, (am_event_sync_fn)top_event_handler, top);
+    int handler_id = am_event_sync_register(hub, top_proc, top);
     am_event_sync_subscribe(hub, handler_id, EVT_JOB_DONE);
 }
 

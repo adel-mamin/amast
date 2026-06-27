@@ -34,14 +34,13 @@
 #include "events.h"
 #include "common/macros.h"
 
-static bool low_event_handler(
-    struct low* low,
-    const struct am_event* event,
-    struct am_event* out,
-    int out_size
+static bool low_proc(
+    void* ctx, const struct am_event* event, void* out, int out_size
 ) {
     (void)out;
     (void)out_size;
+
+    struct low* low = ctx;
 
     switch (event->id) {
     case EVT_JOB_REQ:
@@ -63,12 +62,7 @@ static bool low_event_handler(
 }
 
 bool low_event_post(struct low* low, const struct am_event* event) {
-    return low_event_handler(
-        low,
-        event,
-        /*out=*/NULL,
-        /*out_size=*/0
-    );
+    return low_proc(low, event, /*out=*/NULL, /*out_size=*/0);
 }
 
 void low_init(
@@ -78,8 +72,7 @@ void low_init(
 
     low->hub = hub;
     low->timer = timer;
-    low->handler_id =
-        am_event_sync_register(hub, (am_event_sync_fn)low_event_handler, low);
+    low->handler_id = am_event_sync_register(hub, low_proc, low);
     low->timer_event = am_timer_event_create_x(EVT_TIMEOUT, &low->handler_id);
     low->timeout = am_time_get_ticks_from_ms(AM_TIMEBASE_DEFAULT, 1000);
 
