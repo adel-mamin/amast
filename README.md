@@ -104,7 +104,7 @@ state_a entry
 The FSM API can be found [here](https://amast.readthedocs.io/api.html#fsm).
 The FSM documenation is [here](https://amast.readthedocs.io/fsm.html).
 
-The compiled binary on x86 is about 2.4kB of memory (gcc, `-Os`, `-flto`).
+The compiled binary on x86 is about 2.8kB of memory (gcc, `-Os`, `-flto`).
 
 ### Hierarchical state machine (HSM)
 
@@ -233,7 +233,7 @@ substate_b entry
 The HSM API can be found [here](https://amast.readthedocs.io/api.html#hsm).
 The HSM documenation is [here](https://amast.readthedocs.io/hsm.html).
 
-The compiled binary on x86 is about 4.0kB of memory (gcc, `-Os`, `-flto`).
+The compiled binary on x86 is about 4.8kB of memory (gcc, `-Os`, `-flto`).
 
 ### Active Object
 
@@ -412,7 +412,7 @@ The AO API can be found [here](https://amast.readthedocs.io/api.html#ao).
 The Event API can be found [here](https://amast.readthedocs.io/api.html#event).
 The Timer API can be found [here](https://amast.readthedocs.io/api.html#timer).
 
-The compiled binary on x86 is about 10.6kB of memory (gcc, `-Os`, `-flto`).
+The compiled binary on x86 is about 13.1kB of code memory (gcc, `-Os`, `-flto`).
 
 ## Architecture Diagram
 
