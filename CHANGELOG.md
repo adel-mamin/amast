@@ -7,6 +7,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- HSM documentation
+
 ## v0.17.0 - 27-June-2026
 
 ### Changed
