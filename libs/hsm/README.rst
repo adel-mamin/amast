@@ -265,7 +265,7 @@ pointing to target state.
 If state handler function returns :cpp:func:`am_hsm_tran_redispatch()` or
 :cpp:func:`am_hsm_tran_redispatch_i()` pointing to target state, then the transition
 is executed first and then the same event is dispatched to the new current state
-in the same :cpp:func:`am_hsm_dispatch()` or :cpp:func:`am_hsm_dispatch_i()` call.
+in the same :cpp:func:`am_hsm_dispatch()` call.
 This is a convenience function, that allows HSM to handle the event in
 the state that expects it.
 
