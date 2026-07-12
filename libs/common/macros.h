@@ -99,28 +99,6 @@ AM_NORETURN void am_assert_failure(const char* file, int line);
 /** Join x and y together. */
 #define AM_JOINSTR(x, y) AM_STRINGIFY(x##y)
 
-/** AM_CONCAT() helper. */
-#define AM_CONCAT_(a, b) a##b
-
-/** Concatenate two tokens. */
-#define AM_CONCAT(a, b) AM_CONCAT_(a, b)
-
-/** Make a unique name. */
-#define AM_UNIQUE(name) AM_CONCAT(name, __LINE__)
-
-/** Context used with AM_DO_...() macros */
-struct am_do_ctx {
-    /** previous ms reading */
-    union {
-        uint32_t prev_ms;
-        uint32_t call_cnt;
-    } state;
-    /** init done */
-    unsigned char init_done : 1;
-    /** action done */
-    unsigned char done : 1;
-};
-
 /** Test @p d1 and @p d2 for equality within @p tolerance. */
 #define AM_DOUBLE_EQ(d1, d2, tolerance) (fabs((d1) - (d2)) <= (tolerance))
 
