@@ -137,7 +137,7 @@ static void read_file(struct files* db, const char* fname) {
 
     (void)fclose(file);
 
-    strncpy(db->fnames[db->len], fname, PATH_MAX - 1);
+    str_lcpy(db->fnames[db->len], fname, PATH_MAX);
 }
 
 /* comparator for qsort to sort includes alphabetically */
