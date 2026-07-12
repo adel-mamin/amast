@@ -150,7 +150,6 @@ static enum am_rc substate_a(struct am_hsm* hsm, const struct am_event *event);
 static enum am_rc substate_b(struct am_hsm* hsm, const struct am_event *event);
 
 static enum am_rc superstate(struct am_hsm* hsm, const struct am_event *event) {
-    struct app* me = AM_CONTAINER_OF(hsm, struct app, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("superstate entry\n");
@@ -170,7 +169,6 @@ static enum am_rc superstate(struct am_hsm* hsm, const struct am_event *event) {
 }
 
 static enum am_rc substate_a(struct am_hsm* hsm, const struct am_event *event) {
-    struct app* me = AM_CONTAINER_OF(hsm, struct app, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("substate_a entry\n");
@@ -187,7 +185,6 @@ static enum am_rc substate_a(struct am_hsm* hsm, const struct am_event *event) {
 }
 
 static enum am_rc substate_b(struct am_hsm* hsm, const struct am_event *event) {
-    struct app* me = AM_CONTAINER_OF(hsm, struct app, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("substate_b entry\n");
