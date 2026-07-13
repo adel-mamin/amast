@@ -45,7 +45,6 @@ struct app {
 static enum am_rc state_b(struct am_fsm *me, const struct am_event *event);
 
 static enum am_rc state_a(struct am_fsm *fsm, const struct am_event *event) {
-    struct app* me = AM_CONTAINER_OF(fsm, struct app, fsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("state_a entry\n");
@@ -56,13 +55,13 @@ static enum am_rc state_a(struct am_fsm *fsm, const struct am_event *event) {
         return am_fsm_handled(fsm);
 
     case EVT_B:
+        am_printf("state_a got EVT_B\n");
         return am_fsm_tran(fsm, state_b);
     }
     return am_fsm_handled(fsm);
 }
 
 static enum am_rc state_b(struct am_fsm *fsm, const struct am_event *event) {
-    struct app* me = AM_CONTAINER_OF(fsm, struct app, fsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("state_b entry\n");
@@ -73,6 +72,7 @@ static enum am_rc state_b(struct am_fsm *fsm, const struct am_event *event) {
         return am_fsm_handled(fsm);
 
     case EVT_A:
+        am_printf("state_b got EVT_A\n");
         return am_fsm_tran(fsm, state_a);
     }
     return am_fsm_handled(fsm);
@@ -85,8 +85,12 @@ static enum am_rc init(struct am_fsm *fsm, const struct am_event *event) {
 int main(void) {
     am_fsm_init(&app.fsm, init);
     am_fsm_start(&app.fsm, /*init_event=*/NULL);
+
     am_fsm_dispatch(&app.fsm, &(struct am_event){.id = EVT_B});
     am_fsm_dispatch(&app.fsm, &(struct am_event){.id = EVT_A});
+
+    am_fsm_deinit(&app.fsm);
+
     return 0;
 }
 ```
@@ -95,10 +99,13 @@ The console output:
 
 ```
 state_a entry
+state_a got EVT_B
 state_a exit
 state_b entry
+state_b got EVT_A
 state_b exit
 state_a entry
+state_a exit
 ```
 
 The FSM API can be found [here](https://amast.readthedocs.io/api.html#fsm).
@@ -163,6 +170,7 @@ static enum am_rc superstate(struct am_hsm* hsm, const struct am_event *event) {
         return am_hsm_tran(hsm, substate_a);
 
     case EVT_C:
+        am_printf("superstate got EVT_C\n");
         return am_hsm_tran(hsm, substate_b);
     }
     return am_hsm_super(hsm, am_hsm_top);
@@ -179,6 +187,7 @@ static enum am_rc substate_a(struct am_hsm* hsm, const struct am_event *event) {
         return am_hsm_handled(hsm);
 
     case EVT_B:
+        am_printf("substate_a got EVT_B\n");
         return am_hsm_tran(hsm, substate_b);
     }
     return am_hsm_super(hsm, superstate);
@@ -195,6 +204,7 @@ static enum am_rc substate_b(struct am_hsm* hsm, const struct am_event *event) {
         return am_hsm_handled(hsm);
 
     case EVT_A:
+        am_printf("substate_b got EVT_A\n");
         return am_hsm_tran(hsm, substate_a);
     }
     return am_hsm_super(hsm, superstate);
@@ -207,9 +217,13 @@ static enum am_rc init(struct am_hsm* hsm, const struct am_event *event) {
 int main(void) {
     am_hsm_init(&app.hsm, am_hsm_state_make(init));
     am_hsm_start(&app.hsm, /*init_event=*/NULL);
+
     am_hsm_dispatch(&app.hsm, &(struct am_event){.id = EVT_B});
     am_hsm_dispatch(&app.hsm, &(struct am_event){.id = EVT_A});
     am_hsm_dispatch(&app.hsm, &(struct am_event){.id = EVT_C});
+
+    am_hsm_deinit(&app.hsm);
+
     return 0;
 }
 ```
@@ -219,12 +233,17 @@ The console output:
 ```
 superstate entry
 substate_a entry
+substate_a got EVT_B
+substate_a exit
+substate_b entry
+substate_b got EVT_A
+substate_b exit
+substate_a entry
+superstate got EVT_C
 substate_a exit
 substate_b entry
 substate_b exit
-substate_a entry
-substate_a exit
-substate_b entry
+superstate exit
 ```
 
 The HSM API can be found [here](https://amast.readthedocs.io/api.html#hsm).
