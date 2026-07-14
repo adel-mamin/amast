@@ -227,7 +227,7 @@ The user code stores the current state in a local variable of type
        struct foo* me = AM_CONTAINER_OF(fsm, struct foo, fsm);
        switch (event->id) {
        case AM_EVT_ENTRY:
-           me->history = am_fsm_state(&me->fsm);
+           me->history = am_fsm_get_state(fsm);
            return am_fsm_handled(fsm);
        ...
        }

@@ -390,7 +390,8 @@ in **me->history** the transition can be achieved by doing this:
 
 .. code-block:: C
 
-   static enum am_rc s2(struct foo *me, const struct event *event) {
+   static enum am_rc s2(struct am_hsm *hsm, const struct event *event) {
+       struct foo* me = AM_CONTAINER_OF(hsm, struct foo, hsm);
        switch (event->id) {
        case HSM_EVT_FOO:
            return am_hsm_tran_i(hsm, me->history.fn, me->history.instance);
@@ -453,7 +454,7 @@ Here is how it is coded in pseudocode:
        ...
    };
 
-   static enum am_rc s(struct sm *me, const struct event *event) {
+   static enum am_rc s(struct am_hsm *hsm, const struct event *event) {
        switch (event->id) {
        case FOO:
            return am_hsm_tran_i(hsm, s1, /*instance=*/S1_0);
@@ -466,7 +467,7 @@ Here is how it is coded in pseudocode:
        return am_hsm_super(hsm, am_hsm_top);
    }
 
-   static enum am_rc s1(struct sm *me, const struct event *event) {
+   static enum am_rc s1(struct am_hsm *hsm, const struct event *event) {
        switch (event->id) {
        case AM_EVT_INIT: {
            static const struct am_hsm_state tt[] = {
@@ -482,12 +483,12 @@ Here is how it is coded in pseudocode:
        return am_hsm_super(hsm, s);
    }
 
-   static enum am_rc s2(struct sm *me, const struct event *event) {
+   static enum am_rc s2(struct am_hsm *hsm, const struct event *event) {
        ...
        return am_hsm_super_i(hsm, s1, S1_0);
    }
 
-   static enum am_rc s3(struct sm *me, const struct event *event) {
+   static enum am_rc s3(struct am_hsm *hsm, const struct event *event) {
        ...
        return am_hsm_super_i(hsm, s1, S1_1);
    }
