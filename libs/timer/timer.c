@@ -112,8 +112,8 @@ bool am_timer_is_armed(
 
     timer->crit_enter();
 
-    bool armed =
-        (event->owner == timer) && am_slist_item_is_linked(&event->item);
+    bool is_linked = am_slist_item_is_linked(&event->item);
+    bool armed = is_linked && (event->owner == timer);
     bool disarm_pending = event->disarm_pending;
 
     timer->crit_exit();
