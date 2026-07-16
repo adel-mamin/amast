@@ -521,15 +521,3 @@ If you find any bugs, please report them.
 <a name="license"></a>
 
 Amast is open-sourced software licensed under the [MIT license](LICENSE.md).
-
-## Star History
-
-## Star History
-
-<a href="https://www.star-history.com/?repos=adel-mamin%2Famast&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=adel-mamin/amast&type=date&theme=dark&legend=top-left&sealed_token=msYZGqk9OKtcaqMwGexIYW4ZO8iRDWjCANYKiW_ZIlsNNLwHHuuChMDSDEE37iYmPFiQpv17GrYZTDbCFtFqdqdgsMGxPLWqCkqqJUz22c6qsqtWLYt4Y20X8dPV0vskEp6ptyyECi9QE7JCmNFjNCpiinwh2BJADcq9ey-dkO6hBTnCHvHnjUDD8Um2" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=adel-mamin/amast&type=date&legend=top-left&sealed_token=msYZGqk9OKtcaqMwGexIYW4ZO8iRDWjCANYKiW_ZIlsNNLwHHuuChMDSDEE37iYmPFiQpv17GrYZTDbCFtFqdqdgsMGxPLWqCkqqJUz22c6qsqtWLYt4Y20X8dPV0vskEp6ptyyECi9QE7JCmNFjNCpiinwh2BJADcq9ey-dkO6hBTnCHvHnjUDD8Um2" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=adel-mamin/amast&type=date&legend=top-left&sealed_token=msYZGqk9OKtcaqMwGexIYW4ZO8iRDWjCANYKiW_ZIlsNNLwHHuuChMDSDEE37iYmPFiQpv17GrYZTDbCFtFqdqdgsMGxPLWqCkqqJUz22c6qsqtWLYt4Y20X8dPV0vskEp6ptyyECi9QE7JCmNFjNCpiinwh2BJADcq9ey-dkO6hBTnCHvHnjUDD8Um2" />
- </picture>
-</a>
