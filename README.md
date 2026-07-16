@@ -524,4 +524,10 @@ Amast is open-sourced software licensed under the [MIT license](LICENSE.md).
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=adel-mamin/amast&type=Date)](https://star-history.com/#adel-mamin/amast&Date)
+<a href="https://www.star-history.com/?repos=adel-mamin%2Famast&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=adel-mamin/amast&type=date&theme=dark&legend=top-left&sealed_token=wHMHbJhDjjBtM3PyFsVMMfJwiR6sndtcXNpB0zVc6X931mUp3dPpwIsELzlpimzY0K8IYW_NMPNZ8xHQdEfOTaVz5A42ixRb5oI6HAw6PLdLhhmoqlOnWCKtnX0VDLbVS_xoyJNDtvefe8hGRae-iacsmge0G7xi6aAGPvhJKuQuaQcTgq6KICrxY2eB" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=adel-mamin/amast&type=date&legend=top-left&sealed_token=wHMHbJhDjjBtM3PyFsVMMfJwiR6sndtcXNpB0zVc6X931mUp3dPpwIsELzlpimzY0K8IYW_NMPNZ8xHQdEfOTaVz5A42ixRb5oI6HAw6PLdLhhmoqlOnWCKtnX0VDLbVS_xoyJNDtvefe8hGRae-iacsmge0G7xi6aAGPvhJKuQuaQcTgq6KICrxY2eB" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=adel-mamin/amast&type=date&legend=top-left&sealed_token=wHMHbJhDjjBtM3PyFsVMMfJwiR6sndtcXNpB0zVc6X931mUp3dPpwIsELzlpimzY0K8IYW_NMPNZ8xHQdEfOTaVz5A42ixRb5oI6HAw6PLdLhhmoqlOnWCKtnX0VDLbVS_xoyJNDtvefe8hGRae-iacsmge0G7xi6aAGPvhJKuQuaQcTgq6KICrxY2eB" />
+ </picture>
+</a>
