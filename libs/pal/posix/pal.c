@@ -42,7 +42,6 @@
 #include <pthread.h>
 #include <sys/types.h>
 #include <time.h>
-#include <bits/local_lim.h>
 #include <sched.h>
 #include <features.h>
 #include <unistd.h>
