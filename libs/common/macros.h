@@ -138,20 +138,4 @@ AM_NORETURN void am_assert_failure(const char* file, int line);
  */
 #define AM_VCAST(TYPE, PTR) (((TYPE)(uintptr_t)(const volatile void*)(PTR)))
 
-/**
- * Choose one of two macros.
- *
- * Given:
- *
- * #define BAR1(a) (a)
- * #define BAR2(a, b) (a, b)
- * #define BAR(...) AM_GET_MACRO_2_(__VA_ARGS__, BAR2, BAR1)(__VA_ARGS__)
- *
- * Produces:
- *
- * BAR(a)    expands to BAR1(a)
- * BAR(a, b) expands to BAR2(a, b)
- */
-#define AM_GET_MACRO_2_(_1, _2, NAME, ...) NAME
-
 #endif /* AM_MACROS_H_INCLUDED */

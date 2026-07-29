@@ -30,6 +30,5 @@ EXCLUDE_SYMBOLS        = AM_POOL_BLOCK_SIZEOF \
                          AM_EVENT_POOL_INDEX_MASK \
                          AM_EVENT_ID_LSW_BITS \
                          AM_EVENT_ID_LSW_MASK \
-                         AM_GET_MACRO_2_ \
                          AM_FILE_NAME \
                          AM_STRINGIFY
