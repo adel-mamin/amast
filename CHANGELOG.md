@@ -7,6 +7,11 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- synchronous event handler name to `am_event_sync_register()` API
+- new API `am_event_sync_get_name()`
+
 ## v0.17.2 - 25-July-2026
 
 ### Fixed

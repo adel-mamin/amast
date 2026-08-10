@@ -44,8 +44,9 @@
 #endif
 
 static void am_event_sync_observer_nil(
-    int handler_id, const struct am_event* event
+    struct am_event_sync_hub* hub, int handler_id, const struct am_event* event
 ) {
+    (void)hub;
     (void)handler_id;
     (void)event;
 }
@@ -127,13 +128,17 @@ void am_event_sync_unsubscribe_all(
 }
 
 int am_event_sync_register(
-    struct am_event_sync_hub* hub, am_event_sync_fn fn, void* ctx
+    struct am_event_sync_hub* hub,
+    const char* name,
+    am_event_sync_fn fn,
+    void* ctx
 ) {
     AM_ASSERT(hub);
     AM_ASSERT(fn);
 
     for (int i = 0; i < AM_COUNTOF(hub->handlers); ++i) {
         if (NULL == hub->handlers[i].fn) {
+            hub->handlers[i].name = name;
             hub->handlers[i].fn = fn;
             hub->handlers[i].ctx = ctx;
             return i;
@@ -185,7 +190,7 @@ bool am_event_sync_post_request(
 
     ++hub->recursion_count;
 
-    hub->observer_cb(dest_id, event);
+    hub->observer_cb(hub, dest_id, event);
 
     bool ret = fn(ctx, event, out, out_size);
 
@@ -234,7 +239,7 @@ bool am_event_sync_publish_request(
 
             int handler_id = (8 * i) + msb;
 
-            hub->observer_cb(handler_id, event);
+            hub->observer_cb(hub, handler_id, event);
 
             struct am_event_sync_handler* handler = &hub->handlers[handler_id];
 
@@ -259,4 +264,15 @@ bool am_event_sync_publish(
         /*out=*/NULL,
         /*out_size=*/0
     );
+}
+
+const char* am_event_sync_get_name(
+    struct am_event_sync_hub* hub, int handler_id
+) {
+    AM_ASSERT(hub);
+    AM_ASSERT(handler_id >= 0);
+    AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
+    AM_ASSERT(hub->handlers[handler_id].fn);
+
+    return hub->handlers[handler_id].name;
 }

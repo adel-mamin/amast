@@ -72,7 +72,7 @@ void low_init(
 
     low->hub = hub;
     low->timer = timer;
-    low->handler_id = am_event_sync_register(hub, low_proc, low);
+    low->handler_id = am_event_sync_register(hub, "low", low_proc, low);
     low->timer_event = am_timer_event_create_x(EVT_TIMEOUT, &low->handler_id);
     low->timeout = am_time_get_ticks_from_ms(AM_TIMEBASE_DEFAULT, 1000);
 

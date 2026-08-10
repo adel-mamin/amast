@@ -54,14 +54,18 @@ typedef bool (*am_event_sync_fn)(
     void* ctx, const struct am_event* event, void* out, int out_size
 );
 
+/** Forward declaration. */
+struct am_event_sync_hub;
+
 /**
  * Event handler function type.
  *
+ * @param hub         the synchronous event hub
  * @param handler_id  event handler ID, which receives the event
  * @param event       input event
  */
 typedef void (*am_event_sync_observer_fn)(
-    int handler_id, const struct am_event* event
+    struct am_event_sync_hub* hub, int handler_id, const struct am_event* event
 );
 
 /** Synchronous event hub. */
@@ -73,6 +77,8 @@ struct am_event_sync_hub {
 
     /** Synchronous event handlers */
     struct am_event_sync_handler {
+        /** Event handler name. Can be NULL. */
+        const char* name;
         /** Event handler function */
         am_event_sync_fn fn;
         /** Event handler context */
@@ -186,6 +192,7 @@ void am_event_sync_unsubscribe_all(
  * Register event handler.
  *
  * @param hub  synchronous event hub
+ * @param name the event handler name. Can be NULL.
  * @param fn   the event handler function
  * @param ctx  the event handler function context
  * @return the event handler ID. To be used as a parameter to
@@ -195,7 +202,10 @@ void am_event_sync_unsubscribe_all(
  *         am_event_sync_unregister()
  */
 int am_event_sync_register(
-    struct am_event_sync_hub* hub, am_event_sync_fn fn, void* ctx
+    struct am_event_sync_hub* hub,
+    const char* name,
+    am_event_sync_fn fn,
+    void* ctx
 );
 
 /**
@@ -307,6 +317,17 @@ bool am_event_sync_publish_request(
     const struct am_event* event,
     void* out,
     int out_size
+);
+
+/**
+ * Get name of a synchronous event handler.
+ *
+ * @param hub         the synchronous event hub
+ * @param handler_id  the handler ID, which name to return
+ * @return handler's name. Can be NULL.
+ */
+const char* am_event_sync_get_name(
+    struct am_event_sync_hub* hub, int handler_id
 );
 
 #ifdef __cplusplus

@@ -66,7 +66,7 @@ void top_init(struct top* top, struct am_event_sync_hub* hub, int rounds) {
     memset(top, 0, sizeof(*top));
     top->rounds = rounds;
     top->hub = hub;
-    int handler_id = am_event_sync_register(hub, top_proc, top);
+    int handler_id = am_event_sync_register(hub, "top", top_proc, top);
     am_event_sync_subscribe(hub, handler_id, EVT_JOB_DONE);
 }
 

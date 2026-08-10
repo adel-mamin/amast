@@ -64,11 +64,14 @@ static const char* event_to_str(int event_id) {
     return "UNKN";
 }
 
-static void event_sync_observe(int handler_id, const struct am_event* event) {
+static void event_sync_observe(
+    struct am_event_sync_hub* hub, int handler_id, const struct am_event* event
+) {
     am_printf(
-        "%" PRIu32 " handler_id: %d event: %s\n",
+        "%" PRIu32 " handler_id: %d handler_name: \"%s\" event: %s\n",
         am_time_get_ms(),
         handler_id,
+        am_event_sync_get_name(hub, handler_id),
         event_to_str(event->id)
     );
 }
