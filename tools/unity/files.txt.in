@@ -87,10 +87,6 @@
 @SRC_ROOT@/libs/hsm/tests/regular/regular.c
 @SRC_ROOT@/libs/hsm/tests/regular/test.c
 
-@SRC_ROOT@/libs/crc/crc.h
-@SRC_ROOT@/libs/crc/crc.c
-@SRC_ROOT@/libs/crc/test.c
-
 @SRC_ROOT@/libs/ao/cooperative/port.c
 @SRC_ROOT@/libs/ao/preemptive/port.c
 @SRC_ROOT@/libs/ao/ao.h

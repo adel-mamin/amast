@@ -7,6 +7,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Remove unused source files
+
 ### Added
 
 - synchronous event handler name to `am_event_sync_register()` API

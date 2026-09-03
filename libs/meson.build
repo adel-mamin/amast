@@ -30,11 +30,9 @@ libraries = []
 
 subdir('common')
 subdir('pal')
-subdir('crc')
 subdir('slist')
 subdir('dlist')
 subdir('bit')
-subdir('cobszpe')
 subdir('strlib')
 subdir('onesize')
 subdir('event')
