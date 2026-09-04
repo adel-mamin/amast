@@ -10,6 +10,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Changed
 
 - Remove unused source files
+- Use FSM when applicable in `apps/examples`
 
 ### Added
 

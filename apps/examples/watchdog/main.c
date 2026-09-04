@@ -39,7 +39,7 @@
 #include "timer/timer.h"
 #include "ao/ao.h"
 #include "pal/pal.h"
-#include "hsm/hsm.h"
+#include "fsm/fsm.h"
 
 #define AM_FEED_TIMEOUT_MS 1000
 #define AM_BARK_TIMEOUT_MS (AM_FEED_TIMEOUT_MS + 100)
@@ -51,7 +51,7 @@ enum evt {
 };
 
 struct watched {
-    struct am_hsm hsm;
+    struct am_fsm fsm;
     struct am_ao ao;
     struct am_timer* timer;
     struct am_timer_event_x feed;
@@ -60,7 +60,7 @@ struct watched {
 };
 
 struct wdt {
-    struct am_hsm hsm;
+    struct am_fsm fsm;
     struct am_ao ao;
     struct am_timer* timer;
     struct am_timer_event_x bark;
@@ -72,15 +72,15 @@ static const struct am_event m_evt_wdt_feed = {.id = EVT_WDT_FEED};
 /* 'watched' task */
 
 static enum am_rc watched_proc(
-    struct am_hsm* hsm, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
-    struct watched* me = AM_CONTAINER_OF(hsm, struct watched, hsm);
+    struct watched* me = AM_CONTAINER_OF(fsm, struct watched, fsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_timer_arm(
             me->timer, &me->feed.event, AM_FEED_TIMEOUT_MS, AM_FEED_TIMEOUT_MS
         );
-        return am_hsm_handled(hsm);
+        return am_fsm_handled(fsm);
     }
     case EVT_WATCHED_TIMEOUT: {
         if (me->feeds_num < 3) {
@@ -88,27 +88,27 @@ static enum am_rc watched_proc(
             am_ao_post_fifo(me->wdt, &m_evt_wdt_feed);
             ++me->feeds_num;
         }
-        return am_hsm_handled(hsm);
+        return am_fsm_handled(fsm);
     }
     default:
         break;
     }
-    return am_hsm_super(hsm, am_hsm_top);
+    return am_fsm_handled(fsm);
 }
 
 static enum am_rc watched_initial(
-    struct am_hsm* hsm, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
     (void)event;
-    return am_hsm_tran(hsm, watched_proc);
+    return am_fsm_tran(fsm, watched_proc);
 }
 
 static void watched_init(
     struct watched* me, struct am_timer* timer, struct am_ao* wdt
 ) {
     memset(me, 0, sizeof(*me));
-    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
-    am_hsm_init(&me->hsm, am_hsm_state_make(watched_initial));
+    am_ao_init(&me->ao, am_fsm_start_cb, am_fsm_dispatch_cb, &me->fsm);
+    am_fsm_init(&me->fsm, watched_initial);
     me->timer = timer;
     me->feed = am_timer_event_create_x(EVT_WATCHED_TIMEOUT, &me->ao);
     me->wdt = wdt;
@@ -116,18 +116,18 @@ static void watched_init(
 
 /* 'wdt' task */
 
-static enum am_rc wdt_proc(struct am_hsm* hsm, const struct am_event* event) {
-    struct wdt* me = AM_CONTAINER_OF(hsm, struct wdt, hsm);
+static enum am_rc wdt_proc(struct am_fsm* fsm, const struct am_event* event) {
+    struct wdt* me = AM_CONTAINER_OF(fsm, struct wdt, fsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
         am_timer_arm(me->timer, &me->bark.event, AM_BARK_TIMEOUT_MS, 0);
-        return am_hsm_handled(hsm);
+        return am_fsm_handled(fsm);
     }
     case EVT_WDT_FEED: {
         am_printff("EVT_WDT_FEED received\n");
         /* re-arm bark timer */
         am_timer_arm(me->timer, &me->bark.event, AM_BARK_TIMEOUT_MS, 0);
-        return am_hsm_handled(hsm);
+        return am_fsm_handled(fsm);
     }
     case EVT_WDT_BARK: {
         am_printff("WATCHED TASK FAILED!\n");
@@ -136,20 +136,20 @@ static enum am_rc wdt_proc(struct am_hsm* hsm, const struct am_event* event) {
     default:
         break;
     }
-    return am_hsm_super(hsm, am_hsm_top);
+    return am_fsm_handled(fsm);
 }
 
 static enum am_rc wdt_initial(
-    struct am_hsm* hsm, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
     (void)event;
-    return am_hsm_tran(hsm, wdt_proc);
+    return am_fsm_tran(fsm, wdt_proc);
 }
 
 static void wdt_init(struct wdt* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
-    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
-    am_hsm_init(&me->hsm, am_hsm_state_make(wdt_initial));
+    am_ao_init(&me->ao, am_fsm_start_cb, am_fsm_dispatch_cb, &me->fsm);
+    am_fsm_init(&me->fsm, wdt_initial);
     me->timer = timer;
     me->bark = am_timer_event_create_x(EVT_WDT_BARK, &me->ao);
 }

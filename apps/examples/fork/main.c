@@ -25,7 +25,7 @@
  */
 
 /*
- * Demonstrate integration of HSM with fork().
+ * Demonstrate integration of FSM with fork().
  *
  * 1. take an arbitrary executable with arguments and run it via fork()
  * 2. wait for completion of the executable
@@ -56,7 +56,7 @@
 #include "timer/timer.h"
 #include "ao/ao.h"
 #include "pal/pal.h"
-#include "hsm/hsm.h"
+#include "fsm/fsm.h"
 
 #define PROGRESS_UPDATE_RATE_MS 200
 
@@ -72,7 +72,7 @@ enum fork_evt {
 };
 
 struct progress {
-    struct am_hsm hsm;
+    struct am_fsm fsm;
     struct am_ao ao;
     struct am_timer* timer;
     struct am_timer_event_x progress;
@@ -82,23 +82,23 @@ struct progress {
 };
 
 static enum am_rc progress_done(
-    struct am_hsm* hsm, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
-    const struct progress* me = AM_CONTAINER_OF(hsm, struct progress, hsm);
+    const struct progress* me = AM_CONTAINER_OF(fsm, struct progress, fsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         exit(me->rc);
-        return am_hsm_handled(hsm);
+        return am_fsm_handled(fsm);
     default:
         break;
     }
-    return am_hsm_super(hsm, am_hsm_top);
+    return am_fsm_handled(fsm);
 }
 
 static enum am_rc progress_top(
-    struct am_hsm* hsm, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
-    struct progress* me = AM_CONTAINER_OF(hsm, struct progress, hsm);
+    struct progress* me = AM_CONTAINER_OF(fsm, struct progress, fsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_timer_arm(
@@ -107,47 +107,47 @@ static enum am_rc progress_top(
             PROGRESS_UPDATE_RATE_MS,
             PROGRESS_UPDATE_RATE_MS
         );
-        return am_hsm_handled(hsm);
+        return am_fsm_handled(fsm);
 
     case AM_EVT_EXIT:
         am_timer_disarm(me->timer, &me->progress.event);
         am_printf("\r                  \r"); /* clean the terminal output*/
-        return am_hsm_handled(hsm);
+        return am_fsm_handled(fsm);
 
     case EVT_FORK_SUCCESS:
         me->rc = 0;
-        return am_hsm_tran(hsm, progress_done);
+        return am_fsm_tran(fsm, progress_done);
 
     case EVT_FORK_FAILURE:
         me->rc = -1;
-        return am_hsm_tran(hsm, progress_done);
+        return am_fsm_tran(fsm, progress_done);
 
     case EVT_PROGRESS_TICK: {
         static const char prog[] = {'|', '/', '-', '\\'};
         am_printf("\r%c running %us", prog[me->iprog], me->prog_ms / 1000);
         me->iprog = (me->iprog + 1) % AM_COUNTOF(prog);
         me->prog_ms += PROGRESS_UPDATE_RATE_MS;
-        return am_hsm_handled(hsm);
+        return am_fsm_handled(fsm);
     }
     default:
         break;
     }
-    return am_hsm_super(hsm, am_hsm_top);
+    return am_fsm_handled(fsm);
 }
 
 static enum am_rc progress_initial(
-    struct am_hsm* hsm, const struct am_event* event
+    struct am_fsm* fsm, const struct am_event* event
 ) {
     (void)event;
-    struct progress* me = AM_CONTAINER_OF(hsm, struct progress, hsm);
+    struct progress* me = AM_CONTAINER_OF(fsm, struct progress, fsm);
     am_ao_subscribe(&me->ao, EVT_FORK_SUCCESS);
     am_ao_subscribe(&me->ao, EVT_FORK_FAILURE);
-    return am_hsm_tran(hsm, progress_top);
+    return am_fsm_tran(fsm, progress_top);
 }
 
 static void progress_init(struct progress* me, struct am_timer* timer) {
-    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
-    am_hsm_init(&me->hsm, am_hsm_state_make(progress_initial));
+    am_ao_init(&me->ao, am_fsm_start_cb, am_fsm_dispatch_cb, &me->fsm);
+    am_fsm_init(&me->fsm, progress_initial);
 
     me->timer = timer;
     me->progress = am_timer_event_create_x(EVT_PROGRESS_TICK, &me->ao);

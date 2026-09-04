@@ -139,7 +139,7 @@ fork = executable(
     'fork',
     ['fork' / 'main.c'],
     dependencies: [
-        libhsm_dep,
+        libfsm_dep,
         libcoro_dep,
         libao_preemptive_dep,
         libpal_dep,
@@ -152,7 +152,7 @@ workers = executable(
     'workers',
     ['workers' / 'main.c'],
     dependencies: [
-        libhsm_dep,
+        libfsm_dep,
         libao_preemptive_dep,
         libpal_dep,
         libassert_dep,
@@ -175,7 +175,7 @@ watchdog = executable(
     'watchdog',
     ['watchdog' / 'main.c'],
     dependencies: [
-        libhsm_dep,
+        libfsm_dep,
         libao_preemptive_dep,
         libpal_dep,
         libassert_dep,
