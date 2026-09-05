@@ -26,14 +26,14 @@
 
 libpal_ext_dep = []
 
-if pal == 'stubs'
+if pal_backend == 'stubs'
     subdir('stubs')
-elif pal == 'posix'
+elif pal_backend == 'posix'
     subdir('posix')
-elif pal == 'win'
+elif pal_backend == 'win'
     subdir('win')
-elif pal == 'freertos'
+elif pal_backend == 'freertos'
     subdir('freertos')
-elif pal == 'libuv'
+elif pal_backend == 'libuv'
     subdir('libuv')
 endif

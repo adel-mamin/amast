@@ -70,7 +70,7 @@ dpp_cooperative = executable(
     dependencies: libao_cooperative_dep,
     link_with: libdpp)
 
-if pal != 'stubs'
+if pal_backend != 'stubs'
     test('dpp_preemptive', dpp_preemptive, suite: 'dpp')
     test('dpp_cooperative', dpp_cooperative, suite: 'dpp')
 endif
@@ -101,7 +101,7 @@ ringbuf_cooperative = executable(
     link_with: libringbuf_example,
     dependencies: libao_cooperative_dep)
 
-if pal != 'stubs'
+if pal_backend != 'stubs'
     test('threaded_preemptive', ringbuf_preemptive, suite: 'ringbuf')
     test('threaded_cooperative', ringbuf_cooperative, suite: 'ringbuf')
 endif
@@ -182,7 +182,7 @@ watchdog = executable(
     ]
 )
 
-if pal != 'stubs'
+if pal_backend != 'stubs'
     test('smokers', smokers, suite: 'smokers')
     test('workers', workers, suite: 'workers')
 endif

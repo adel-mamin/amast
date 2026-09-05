@@ -133,7 +133,7 @@ DOXYGEN = find_program('doxygen')
 SPHINX = find_program('sphinx-build')
 
 unit_test = get_option('unit_test')
-pal = get_option('pal')
+pal_backend = get_option('pal_backend')
 
 if unit_test
     add_project_arguments(['-DAMAST_PAL_STUBS'], language: 'c')
