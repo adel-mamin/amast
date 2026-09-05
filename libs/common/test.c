@@ -33,7 +33,7 @@
 
 #include "macros.h"
 #include "alignment.h"
-#include "throttle.h"
+#include "throttler.h"
 
 struct test_align {
     /* cppcheck-suppress unusedStructMember */
@@ -94,25 +94,25 @@ static void test_container_of(void) {
     AM_ASSERT(1 == AM_CONTAINER_OF(bp, struct foo, b)->a);
 }
 
-static void test_throttle(void) {
-    struct am_throttle throttle = AM_THROTTLE_CREATE();
+static void test_throttler(void) {
+    struct am_throttler throttler = AM_THROTTLER_CREATE();
     int i = 0;
-    if (am_throttle_allow(&throttle, 1, /*now_ms=*/0)) {
+    if (am_throttler_allow(&throttler, 1, /*now_ticks=*/0)) {
         ++i;
     }
     AM_ASSERT(1 == i);
 
-    if (am_throttle_allow(&throttle, 1, /*now_ms=*/0)) {
+    if (am_throttler_allow(&throttler, 1, /*now_ticks=*/0)) {
         ++i;
     }
     AM_ASSERT(1 == i);
 
-    if (am_throttle_allow(&throttle, 1, /*now_ms=*/1)) {
+    if (am_throttler_allow(&throttler, 1, /*now_ticks=*/1)) {
         ++i;
     }
     AM_ASSERT(2 == i);
 
-    if (am_throttle_allow(&throttle, 1, /*now_ms=*/1)) {
+    if (am_throttler_allow(&throttler, 1, /*now_ticks=*/1)) {
         ++i;
     }
     AM_ASSERT(2 == i);
@@ -121,7 +121,7 @@ static void test_throttle(void) {
 int main(void) {
     test_align();
     test_container_of();
-    test_throttle();
+    test_throttler();
 
     return 0;
 }

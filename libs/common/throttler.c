@@ -25,23 +25,23 @@
  */
 
 /**
- * Throttle implementation
+ * Throttler implementation
  */
 
-#include "common/throttle.h"
+#include "common/throttler.h"
 
 #include <stdbool.h>
 
-bool am_throttle_allow(
-    struct am_throttle* throttle, uint32_t interval_ms, uint32_t now_ms
+bool am_throttler_allow(
+    struct am_throttler* throttler, uint32_t interval_ticks, uint32_t now_ticks
 ) {
-    if (!throttle->initialized) {
-        throttle->initialized = true;
-        throttle->last_ms = now_ms;
+    if (!throttler->initialized) {
+        throttler->initialized = true;
+        throttler->last_ticks = now_ticks;
         return true;
     }
-    if ((now_ms - throttle->last_ms) >= interval_ms) {
-        throttle->last_ms = now_ms;
+    if ((now_ticks - throttler->last_ticks) >= interval_ticks) {
+        throttler->last_ticks = now_ticks;
         return true;
     }
     return false;

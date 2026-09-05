@@ -34,19 +34,19 @@ libassert = library(
 )
 libassert_dep = declare_dependency(link_with : libassert, include_directories : inc)
 
-libthrottle = library(
-    'throttle',
-    ['throttle.c'],
+libthrottler = library(
+    'throttler',
+    ['throttler.c'],
     include_directories: [inc, '.']
 )
-libthrottle_dep = declare_dependency(link_with : libthrottle, include_directories : inc)
+libthrottler_dep = declare_dependency(link_with : libthrottler, include_directories : inc)
 
 if unit_test
     e = executable(
         'common',
         ['test.c'],
         include_directories: inc,
-        dependencies : [libassert_dep, libthrottle_dep]
+        dependencies : [libassert_dep, libthrottler_dep]
     )
     test('common', e)
 endif

@@ -26,54 +26,54 @@
 
 /**
  * @file
- * Throttle utility
+ * Throttler utility
  */
 
-#ifndef AM_THROTTLE_H_INCLUDED
-#define AM_THROTTLE_H_INCLUDED
+#ifndef AM_THROTTLER_H_INCLUDED
+#define AM_THROTTLER_H_INCLUDED
 
 #include <stdbool.h>
 #include <inttypes.h>
 
-/** The throttle state */
-struct am_throttle {
+/** The throttler state */
+struct am_throttler {
     /** last allow timestamp */
-    uint32_t last_ms;
+    uint32_t last_ticks;
     /** the state initialization status */
     bool initialized;
 };
 
-/** The throttle state constructor */
-#define AM_THROTTLE_CREATE() (struct am_throttle){.initialized = 0}
+/** The throttler state constructor */
+#define AM_THROTTLER_CREATE() (struct am_throttler){.initialized = 0}
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * Return true at most once per interval_ms.
+ * Return true at most once per interval_ticks.
  *
  * First call returns true immediately.
- * Then returns true again only after interval_ms has elapsed.
+ * Then returns true again only after interval_ticks has elapsed.
  *
  * Typical use:
- *   if (am_throttle_allow(&err_throttle, 1000, now_ms)) {
+ *   if (am_throttler_allow(&throttler, 1000, now_ticks)) {
  *       ...
  *   }
  *
- * @param throttle     the throttle state
- * @param interval_ms  the throttle interval [ms]
- * @param now_ms       current time [ms]
+ * @param throttler       the throttler state
+ * @param interval_ticks  the throttler interval [ticks]
+ * @param now_ticks       current time [ticks]
  *
- * @retval true   on the first call and after interval_ms has elapsed
+ * @retval true   on the first call and after interval_ticks has elapsed
  * @retval false  otherwise
  */
-bool am_throttle_allow(
-    struct am_throttle* throttle, uint32_t interval_ms, uint32_t now_ms
+bool am_throttler_allow(
+    struct am_throttler* throttler, uint32_t interval_ticks, uint32_t now_ticks
 );
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* AM_THROTTLE_H_INCLUDED */
+#endif /* AM_THROTTLER_H_INCLUDED */
