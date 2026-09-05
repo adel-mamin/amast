@@ -354,22 +354,22 @@ uint32_t am_time_get_ms(void) {
 }
 
 uint32_t am_time_get_ticks(int timebase) {
-    (void)timebase;
+    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase || AM_TIMEBASE_MS == timebase);
     return am_time_get_ms();
 }
 
 uint32_t am_time_get_ticks_from_ms(int timebase, uint32_t ms) {
-    (void)timebase;
+    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase || AM_TIMEBASE_MS == timebase);
     return ms;
 }
 
 uint32_t am_time_get_ms_from_ticks(int timebase, uint32_t ticks) {
-    (void)timebase;
+    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase || AM_TIMEBASE_MS == timebase);
     return ticks;
 }
 
 void am_sleep_ticks(int timebase, uint32_t ticks) {
-    (void)timebase;
+    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase || AM_TIMEBASE_MS == timebase);
     AM_ASSERT(ticks <= UINT_MAX);
     uv_sleep((unsigned)ticks);
 }

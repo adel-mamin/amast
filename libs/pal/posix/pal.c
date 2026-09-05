@@ -367,22 +367,22 @@ uint32_t am_time_get_ms(void) {
 }
 
 uint32_t am_time_get_ticks(int timebase) {
-    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase);
+    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase || AM_TIMEBASE_MS == timebase);
     return am_time_get_ms();
 }
 
 uint32_t am_time_get_ticks_from_ms(int timebase, uint32_t ms) {
-    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase);
+    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase || AM_TIMEBASE_MS == timebase);
     return ms;
 }
 
 uint32_t am_time_get_ms_from_ticks(int timebase, uint32_t ticks) {
-    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase);
+    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase || AM_TIMEBASE_MS == timebase);
     return ticks;
 }
 
 void am_sleep_ticks(int timebase, uint32_t ticks) {
-    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase);
+    AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase || AM_TIMEBASE_MS == timebase);
     if (0 == ticks) {
         return;
     }

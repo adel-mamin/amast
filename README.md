@@ -278,7 +278,6 @@ struct app {
     struct am_ao ao;
     struct am_timer *timer;
     struct am_timer_event_x timeout;
-    int ticks;
 };
 
 static enum am_rc app_state_a(struct am_hsm* hsm, const struct am_event *event);
@@ -301,7 +300,7 @@ static enum am_rc app_state_b(struct am_hsm* hsm, const struct am_event *event) 
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("state B\n");
-        am_timer_arm(me->timer, &me->timeout.event, me->ticks, /*interval=*/0);
+        am_timer_arm(me->timer, &me->timeout.event, 1000, /*interval=*/0);
         return am_hsm_handled(hsm);
 
     case AM_EVT_EXIT:
@@ -313,7 +312,7 @@ static enum am_rc app_state_b(struct am_hsm* hsm, const struct am_event *event) 
 
     case EVT_TIMER:
         am_printf("timer\n");
-        am_timer_arm(me->timer, &me->timeout.event, me->ticks, /*interval=*/0);
+        am_timer_arm(me->timer, &me->timeout.event, 1000, /*interval=*/0);
         return am_hsm_handled(hsm);
     }
     return am_hsm_super(hsm, am_hsm_top);
@@ -331,7 +330,6 @@ static void app_init(struct app *me, struct am_timer *timer) {
     am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
     me->timer = timer;
     me->timeout = am_timer_event_create_x(EVT_TIMER, &me->ao);
-    me->ticks = am_time_get_ticks_from_ms(AM_TIMEBASE_DEFAULT, 1000);
 }
 
 static void ticker_cb(void* param) {
@@ -403,7 +401,7 @@ int main(void) {
     );
 
     int ticker = am_ticker_create(&(struct am_ticker_cfg){
-        .timebase = AM_TIMEBASE_DEFAULT,
+        .timebase = AM_TIMEBASE_MS,
         .ticker_cb = ticker_cb,
         .ctx = &timer,
         .priority_hint = AM_AO_PRIO_MIN,

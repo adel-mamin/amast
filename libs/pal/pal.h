@@ -58,6 +58,9 @@
 /** Default timebase. */
 #define AM_TIMEBASE_DEFAULT 0
 
+/** Millisecond timebase. */
+#define AM_TIMEBASE_MS 1
+
 #ifdef __cplusplus
 extern "C" {
 #endif

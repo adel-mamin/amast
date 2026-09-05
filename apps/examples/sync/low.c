@@ -28,7 +28,6 @@
 
 #include "event/event_sync.h"
 #include "timer/timer.h"
-#include "pal/pal.h"
 
 #include "low.h"
 #include "events.h"
@@ -46,9 +45,7 @@ static bool low_proc(
     case EVT_JOB_REQ:
         AM_ASSERT(!am_timer_is_armed(low->timer, &low->timer_event.event));
 
-        am_timer_arm(
-            low->timer, &low->timer_event.event, low->timeout, /*interval=*/0
-        );
+        am_timer_arm(low->timer, &low->timer_event.event, 1000, /*interval=*/0);
         break;
 
     case EVT_TIMEOUT:
@@ -74,7 +71,6 @@ void low_init(
     low->timer = timer;
     low->handler_id = am_event_sync_register(hub, "low", low_proc, low);
     low->timer_event = am_timer_event_create_x(EVT_TIMEOUT, &low->handler_id);
-    low->timeout = am_time_get_ticks_from_ms(AM_TIMEBASE_DEFAULT, 1000);
 
     am_event_sync_subscribe(hub, low->handler_id, EVT_JOB_REQ);
 }

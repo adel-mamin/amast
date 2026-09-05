@@ -100,7 +100,7 @@ static void test_ringbuf_threading(void) {
     );
 
     int ticker = am_ticker_create(&(struct am_ticker_cfg){
-        .timebase = AM_TIMEBASE_DEFAULT,
+        .timebase = AM_TIMEBASE_MS,
         .ticker_cb = ticker_cb,
         .ctx = &timer,
         .priority_hint = AM_AO_PRIO_MIN
