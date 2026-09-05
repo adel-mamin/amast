@@ -274,60 +274,60 @@ It demonstrates:
 enum { EVT_SWITCH_MODE = AM_EVT_USER, EVT_PUB_MAX, EVT_TIMER };
 
 struct app {
-    struct am_hsm hsm;
+    struct am_fsm fsm;
     struct am_ao ao;
     struct am_timer *timer;
     struct am_timer_event_x timeout;
 };
 
-static enum am_rc app_state_a(struct am_hsm* hsm, const struct am_event *event);
-static enum am_rc app_state_b(struct am_hsm* hsm, const struct am_event *event);
+static enum am_rc app_state_a(struct am_fsm* fsm, const struct am_event *event);
+static enum am_rc app_state_b(struct am_fsm* fsm, const struct am_event *event);
 
-static enum am_rc app_state_a(struct am_hsm* hsm, const struct am_event *event) {
+static enum am_rc app_state_a(struct am_fsm* fsm, const struct am_event *event) {
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("state A\n");
-        return am_hsm_handled(hsm);
+        return am_fsm_handled(fsm);
 
     case EVT_SWITCH_MODE:
-        return am_hsm_tran(hsm, app_state_b);
+        return am_fsm_tran(fsm, app_state_b);
     }
-    return am_hsm_super(hsm, am_hsm_top);
+    return am_fsm_handled(fsm);
 }
 
-static enum am_rc app_state_b(struct am_hsm* hsm, const struct am_event *event) {
-    struct app* me = AM_CONTAINER_OF(hsm, struct app, hsm);
+static enum am_rc app_state_b(struct am_fsm* fsm, const struct am_event *event) {
+    struct app* me = AM_CONTAINER_OF(fsm, struct app, fsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("state B\n");
         am_timer_arm(me->timer, &me->timeout.event, 1000, /*interval=*/0);
-        return am_hsm_handled(hsm);
+        return am_fsm_handled(fsm);
 
     case AM_EVT_EXIT:
         am_timer_disarm(me->timer, &me->timeout.event);
-        return am_hsm_handled(hsm);
+        return am_fsm_handled(fsm);
 
     case EVT_SWITCH_MODE:
-        return am_hsm_tran(hsm, app_state_a);
+        return am_fsm_tran(fsm, app_state_a);
 
     case EVT_TIMER:
         am_printf("timer\n");
         am_timer_arm(me->timer, &me->timeout.event, 1000, /*interval=*/0);
-        return am_hsm_handled(hsm);
+        return am_fsm_handled(fsm);
     }
-    return am_hsm_super(hsm, am_hsm_top);
+    return am_fsm_handled(fsm);
 }
 
-static enum am_rc app_initial(struct am_hsm* hsm, const struct am_event *event) {
-    struct app* me = AM_CONTAINER_OF(hsm, struct app, hsm);
+static enum am_rc app_initial(struct am_fsm* fsm, const struct am_event *event) {
+    struct app* me = AM_CONTAINER_OF(fsm, struct app, fsm);
     am_ao_subscribe(&me->ao, EVT_SWITCH_MODE);
-    return am_hsm_tran(hsm, app_state_a);
+    return am_fsm_tran(fsm, app_state_a);
 }
 
 static void app_init(struct app *me, struct am_timer *timer) {
     memset(me, 0, sizeof(*me));
-    am_hsm_init(&me->hsm, am_hsm_state_make(app_initial));
-    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
+    am_fsm_init(&me->fsm, app_initial);
+    am_ao_init(&me->ao, am_fsm_start_cb, am_fsm_dispatch_cb, &me->fsm);
     me->timer = timer;
     me->timeout = am_timer_event_create_x(EVT_TIMER, &me->ao);
 }
