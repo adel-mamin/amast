@@ -11,11 +11,13 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - Remove unused source files
 - Use FSM when applicable in `apps/examples`
+- Rename `throttle` to `throttler`
 
 ### Added
 
 - synchronous event handler name to `am_event_sync_register()` API
 - new API `am_event_sync_get_name()`
+- add millisecond timebase `AM_TIMEBASE_MS`
 
 ## v0.17.2 - 25-July-2026
 
