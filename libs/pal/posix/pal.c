@@ -593,6 +593,8 @@ static void timespec_add_ns(struct timespec* ts, long ns) {
 
 static void am_ticker_task(void* arg) {
     struct am_ticker* ticker = arg;
+    AM_ASSERT(ticker);
+    AM_ASSERT(ticker->cfg.ticker_cb);
 
     struct timespec next;
     clock_gettime(CLOCK_MONOTONIC, &next);
@@ -609,9 +611,7 @@ static void am_ticker_task(void* arg) {
             break;
         }
 
-        if (ticker->cfg.ticker_cb != NULL) {
-            ticker->cfg.ticker_cb(ticker->cfg.ctx);
-        }
+        ticker->cfg.ticker_cb(ticker->cfg.ctx);
     }
 }
 
