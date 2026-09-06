@@ -7,6 +7,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+## v0.17.3 - 06-September-2026
+
 ### Changed
 
 - Remove unused source files
