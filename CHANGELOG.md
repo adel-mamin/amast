@@ -7,6 +7,14 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- cppcheck warnings for posix and libuv builds
+
+### Added
+
+- cppcheck for posix and libuv builds
+
 ## v0.17.3 - 06-September-2026
 
 ### Changed
