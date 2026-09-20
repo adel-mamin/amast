@@ -17,6 +17,7 @@ style = "meson compile -C builds/stubs style"
 cspell = "meson compile -C builds/stubs cspell"
 cppcheck_stubs = "meson compile -C builds/stubs cppcheck"
 cppcheck_posix = "meson compile -C builds/posix cppcheck"
+cppcheck_libuv = "meson compile -C builds/libuv cppcheck"
 tidy = "meson compile -C builds/stubs tidy"
 iwyu = "meson compile -C builds/stubs iwyu"
 doxygen = "meson compile -C builds/stubs doxygen"
@@ -37,7 +38,7 @@ stubs = { depends-on = ["setup_stubs", "libs_stubs", "test_stubs", "cppcheck_stu
 posix = { depends-on = ["setup_posix", "libs_posix", "test_posix", "cppcheck_posix"] }
 posix_debug = { depends-on = ["setup_posix_debug", "libs_posix_debug", "test_posix_debug"] }
 posix_size = { depends-on = ["setup_posix_size", "libs_posix_size"] }
-libuv = { depends-on = ["setup_libuv", "libs_libuv", "test_libuv"] }
+libuv = { depends-on = ["setup_libuv", "libs_libuv", "test_libuv", "cppcheck_libuv"] }
 
 docs = { depends-on = ["setup_stubs", "doxygen", "sphinx"] }
 
