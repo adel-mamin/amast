@@ -237,6 +237,7 @@ run_target(
         '--inline-suppr',
         '--check-level=exhaustive',
         '--suppress=sizeofDivisionMemfunc',
+        '--suppress=*:@0@/subprojects/*'.format(meson.project_source_root()),
         '--suppress=*:/opt/*',
         '--suppress=*:/usr/*',
         '--project=@0@'.format(meson.project_build_root() / 'compile_commands.json')
