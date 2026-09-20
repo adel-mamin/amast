@@ -402,11 +402,8 @@ void am_sleep_ms(uint32_t ms) {
 
 void am_sleep_till_ms(uint32_t ms) {
     uint32_t now_ms = am_time_get_ms();
-    uint32_t sleep_ms = ms - now_ms;
-    if (sleep_ms > UINT32_MAX) {
-        return;
-    }
-    usleep(sleep_ms * 1000);
+    uint32_t sleep_us = (ms - now_ms) * 1000;
+    usleep(sleep_us);
 }
 
 void am_sleep_till_ticks(int timebase, uint32_t ticks) {
@@ -627,7 +624,7 @@ int am_ticker_create(const struct am_ticker_cfg* cfg) {
     ticker->busy = true;
     ticker->cfg = *cfg;
     ticker->period_ns =
-        1000000 * am_time_get_ms_from_ticks(cfg->timebase, /*ticks=*/1);
+        1000000L * am_time_get_ms_from_ticks(cfg->timebase, /*ticks=*/1);
 
     return am_pal_id_from_index(0);
 }
