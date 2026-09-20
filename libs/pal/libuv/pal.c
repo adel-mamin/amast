@@ -370,7 +370,6 @@ uint32_t am_time_get_ms_from_ticks(int timebase, uint32_t ticks) {
 
 void am_sleep_ticks(int timebase, uint32_t ticks) {
     AM_ASSERT(AM_TIMEBASE_DEFAULT == timebase || AM_TIMEBASE_MS == timebase);
-    AM_ASSERT(ticks <= UINT_MAX);
     uv_sleep((unsigned)ticks);
 }
 
