@@ -444,8 +444,8 @@ void am_on_idle(void) {
 }
 
 int am_get_cpu_count(void) {
-    int count;
-    uv_cpu_info_t* info;
+    int count = 0;
+    uv_cpu_info_t* info = NULL;
 
     if (uv_cpu_info(&info, &count) == 0) {
         uv_free_cpu_info(info, count);

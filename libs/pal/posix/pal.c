@@ -30,6 +30,8 @@
 
 /* amast-pragma: verbatim-include-std-on */
 
+#undef _GNU_SOURCE
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 #define _GNU_SOURCE
 
 #include <stdbool.h>
@@ -37,6 +39,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#undef _POSIX_C_SOURCE
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 #define _POSIX_C_SOURCE 200809L
 
 #include <pthread.h>
@@ -362,7 +366,7 @@ void am_mutex_destroy(int mutex) {
 uint32_t am_time_get_ms(void) {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
-    long ms = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+    long ms = (ts.tv_sec * 1000) + (ts.tv_nsec / 1000000);
     return (uint32_t)ms;
 }
 
@@ -599,7 +603,7 @@ static void am_ticker_task(void* arg) {
     while (AM_ATOMIC_LOAD_N(&ticker->running)) {
         timespec_add_ns(&next, ticker->period_ns);
 
-        int rc;
+        int rc = 0;
         do {
             rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next, NULL);
         } while ((rc == EINTR) && AM_ATOMIC_LOAD_N(&ticker->running));

@@ -81,7 +81,7 @@ static void start_ao(void) {
 }
 
 int main(void) {
-    am_pal_global_init(/*args=*/NULL);
+    am_pal_global_init(/*arg=*/NULL);
     am_ao_global_init(/*cfg=*/NULL, /*sub=*/NULL, /*nsub=*/0);
 
     struct test* me = &m_test;

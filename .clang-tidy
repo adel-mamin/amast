@@ -43,3 +43,6 @@ CheckOptions:
       value: true
 
 WarningsAsErrors:       "*"
+
+HeaderFilterRegex: '.*'
+ExcludeHeaderFilterRegex: '.*/subprojects/.*'
