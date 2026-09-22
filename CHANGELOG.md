@@ -10,6 +10,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Fixed
 
 - cppcheck warnings for posix and libuv builds
+- clang-tidy warnings for posix and libuv builds
 
 ### Added
 
