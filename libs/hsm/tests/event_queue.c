@@ -57,7 +57,6 @@
 #include "common/compiler.h"
 #include "common/macros.h"
 #include "common/types.h"
-#include "event/event_async.h"
 #include "event/event_common.h"
 #include "event/event_pool.h"
 #include "event/event_queue.h"
@@ -185,8 +184,6 @@ int main(void) {
         AM_ASSERT(1 == am_event_alloc_get_nblocks(&alloc, /*index=*/0));
         AM_ASSERT(1 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
     }
-
-    am_event_async_global_init(/*sub=*/NULL, /*nsub=*/0, &alloc);
 
     hsmq_init(hsmq_log, &alloc);
 

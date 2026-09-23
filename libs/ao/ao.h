@@ -502,7 +502,7 @@ void am_ao_global_deinit(void);
  *
  * The @p event ID must be smaller than the number of elements
  * in the array of active object subscribe lists provided to
- * am_event_async_global_init().
+ * am_event_async_init().
  *
  * @param ao     active object to subscribe
  * @param event  the event ID to subscribe to
@@ -514,7 +514,7 @@ void am_ao_subscribe(const struct am_ao* ao, int event);
  *
  * The @p event ID must be smaller than the number of elements
  * in the array of active object subscribe lists provided to
- * am_event_async_global_init().
+ * am_event_async_init().
  *
  * @param ao     active object to unsubscribe
  * @param event  the event ID to unsubscribe from

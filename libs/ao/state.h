@@ -57,6 +57,9 @@ struct am_ao_state {
      */
     struct am_ao_prio running_ao_prio;
 
+    /** Asynchronous events hub */
+    struct am_event_async_hub async_hub;
+
     /** Event memory allocator */
     struct am_event_alloc* alloc;
 

@@ -146,7 +146,7 @@ void am_ao_start(
     me->running_ao_prio = prio;
 
     am_event_async_register_with_id(
-        am_ao_event_handler_unsafe, ao, ao->prio.ao
+        &me->async_hub, am_ao_event_handler_unsafe, ao, ao->prio.ao
     );
 
     if (ao->user_init_handler) {
@@ -163,7 +163,7 @@ void am_ao_stop(struct am_ao* ao) {
     struct am_ao_state* me = &am_ao_state_;
     AM_ASSERT(me->aos_cnt);
 
-    am_event_async_unsubscribe_all(ao->prio.ao);
+    am_event_async_unsubscribe_all(&me->async_hub, ao->prio.ao);
 
     me->crit_enter();
 
@@ -179,7 +179,7 @@ void am_ao_stop(struct am_ao* ao) {
 
     me->crit_exit();
 
-    am_event_async_unregister(ao->prio.ao);
+    am_event_async_unregister(&me->async_hub, ao->prio.ao);
 }
 
 void am_ao_notify_unsafe(const struct am_ao* ao) {

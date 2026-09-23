@@ -55,6 +55,24 @@ typedef bool (*am_event_async_fn)(
     void* ctx, const struct am_event* event, struct am_event_queue_policy policy
 );
 
+/** Asynchronous event hub. */
+struct am_event_async_hub {
+    /** User defined pubsub list. */
+    struct am_event_subscribe_list* sub;
+    /** User defined pubsub list length. */
+    int nsub;
+
+    /** Asynchronous event handlers */
+    struct am_event_async_handler {
+        /** Event handler function */
+        am_event_async_fn fn;
+        /** Event handler context */
+        void* ctx;
+    } handlers[AM_EVT_HANDLERS_NUM_MAX]; /**< event handlers */
+
+    struct am_event_alloc* alloc; /**< event allocator */
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -64,29 +82,40 @@ extern "C" {
  *
  * Must be called before calling any other asynchronous event API.
  *
+ * @param hub   asynchronous event hub to initialize
+ * @param sub   event subscribe list
+ * @param nsub  number of entries in the event subscribe list
+ * @param alloc event allocator
+ *
  * Thread unsafe.
  */
-void am_event_async_global_init(
-    struct am_event_subscribe_list* sub, int nsub, struct am_event_alloc* alloc
+void am_event_async_init(
+    struct am_event_async_hub* hub,
+    struct am_event_subscribe_list* sub,
+    int nsub,
+    struct am_event_alloc* alloc
 );
 
 /**
  * Check whether pub/sub support is enabled for asynchronous events.
  *
- * Pub/sub support is enabled when am_event_async_global_init() is called with a
+ * Pub/sub support is enabled when am_event_async_init() is called with a
  * valid array of subscription lists.
+ *
+ * @param hub  asynchronous event hub
  *
  * @return true if pub/sub support is enabled, otherwise false
  */
-bool am_event_async_is_pubsub_enabled(void);
+bool am_event_async_is_pubsub_enabled(struct am_event_async_hub* hub);
 
 /**
  * Subscribe event handler to @p event ID.
  *
  * The @p event ID must be smaller than the number of elements
  * in the array of subscription lists provided to
- * am_event_async_global_init().
+ * am_event_async_init().
  *
+ * @param hub         asynchronous event hub
  * @param handler_id  event handler to subscribe
  *                    The ID provided to am_event_async_register_with_id()
  *                    Passing an invalid event handler ID is a programming error
@@ -94,19 +123,22 @@ bool am_event_async_is_pubsub_enabled(void);
  * @param event_id    the event ID to subscribe to.
  *                    Must be more or equal to AM_EVT_USER.
  *                    Used to compute an index into the array of subscription
- *                    lists passed to am_event_async_global_init().
+ *                    lists passed to am_event_async_init().
  *                    Passing an event ID beyond the size of the array
  *                    results in an assertion failure.
  */
-void am_event_async_subscribe(int handler_id, int event_id);
+void am_event_async_subscribe(
+    struct am_event_async_hub* hub, int handler_id, int event_id
+);
 
 /**
  * Unsubscribe event handler from @p event ID.
  *
  * The @p event ID must be smaller than the number of elements
  * in the array of subscription lists provided to
- * am_event_async_global_init().
+ * am_event_async_init().
  *
+ * @param hub         asynchronous event hub
  * @param handler_id  event handler to unsubscribe
  *                    The ID provided to am_event_async_register_with_id()
  *                    Passing an invalid event handler ID is a programming error
@@ -114,25 +146,31 @@ void am_event_async_subscribe(int handler_id, int event_id);
  * @param event_id    the event ID to unsubscribe from.
  *                    Must be more or equal to AM_EVT_USER.
  *                    Used to compute an index into the array of subscription
- *                    lists passed to am_event_async_global_init().
+ *                    lists passed to am_event_async_init().
  *                    Passing an event ID beyond the size of the array
  *                    results in an assertion failure.
  */
-void am_event_async_unsubscribe(int handler_id, int event_id);
+void am_event_async_unsubscribe(
+    struct am_event_async_hub* hub, int handler_id, int event_id
+);
 
 /**
  * Unsubscribe event handler from all events.
  *
+ * @param hub         asynchronous event hub
  * @param handler_id  event handler to unsubscribe.
  *                    The ID provided to am_event_async_register_with_id()
  *                    Passing an invalid event handler ID is a programming error
  *                    and results in an assertion failure.
  */
-void am_event_async_unsubscribe_all(int handler_id);
+void am_event_async_unsubscribe_all(
+    struct am_event_async_hub* hub, int handler_id
+);
 
 /**
  * Register event handler with ID.
  *
+ * @param hub  asynchronous event hub
  * @param fn   the event handler function.
  *             Called by am_event_async_post() and am_event_async_publish()
  *             inside a critical section.
@@ -147,7 +185,10 @@ void am_event_async_unsubscribe_all(int handler_id);
  *                    am_event_async_unregister()
  */
 void am_event_async_register_with_id(
-    am_event_async_fn fn, void* ctx, int handler_id
+    struct am_event_async_hub* hub,
+    am_event_async_fn fn,
+    void* ctx,
+    int handler_id
 );
 
 /**
@@ -156,12 +197,13 @@ void am_event_async_register_with_id(
  * The event handler must be registered with am_event_async_register_with_id()
  * prior to calling this function.
  *
+ * @param hub         asynchronous event hub
  * @param handler_id  the ID of event handler to unregister.
  *                    The ID provided to am_event_async_register_with_id()
  *                    Passing an invalid event handler ID is a programming error
  *                    and results in an assertion failure.
  */
-void am_event_async_unregister(int handler_id);
+void am_event_async_unregister(struct am_event_async_hub* hub, int handler_id);
 
 /**
  * Post event to a specific event handler.
@@ -169,6 +211,7 @@ void am_event_async_unregister(int handler_id);
  * This function delivers @p event directly to the event handler identified by
  * @p dest_id.
  *
+ * @param hub       asynchronous event hub
  * @param dest_id   destination event handler ID provided to
  *                  am_event_async_register_with_id()
  *                  Passing an invalid event handler ID is a programming error
@@ -178,6 +221,7 @@ void am_event_async_unregister(int handler_id);
  * @return true on success, false otherwise
  */
 bool am_event_async_post(
+    struct am_event_async_hub* hub,
     int dest_id,
     const struct am_event* event,
     struct am_event_queue_policy policy
@@ -189,12 +233,15 @@ bool am_event_async_post(
  * This function delivers @p event to all event handlers subscribed to the
  * event ID carried by @p event.
  *
+ * @param hub           asynchronous event hub
  * @param event         input event
  * @param policy        event queue posting policy
  * @return true on success, false otherwise
  */
 bool am_event_async_publish(
-    const struct am_event* event, struct am_event_queue_policy policy
+    struct am_event_async_hub* hub,
+    const struct am_event* event,
+    struct am_event_queue_policy policy
 );
 
 #ifdef __cplusplus

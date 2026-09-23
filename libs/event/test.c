@@ -38,7 +38,6 @@
 
 #include "event_common.h"
 #include "event_queue.h"
-#include "event_async.h"
 #include "event_pool.h"
 
 static struct buf1 {
@@ -139,8 +138,6 @@ int main(void) {
         am_event_alloc_init(&ea);
         am_event_alloc_add_pool(&ea, &buf1, sizeof(buf1), sizeof(buf1), align);
 
-        am_event_async_global_init(/*sub=*/NULL, /*nsub=*/0, &ea);
-
         test_allocate(&ea, sizeof(buf1), /*pool_index_plus_one=*/1);
         test_allocate(&ea, sizeof(buf1) - 1, /*pool_index_plus_one=*/1);
     }
@@ -149,8 +146,6 @@ int main(void) {
         am_event_alloc_init(&ea);
         am_event_alloc_add_pool(&ea, &buf1, sizeof(buf1), sizeof(buf1), align);
         am_event_alloc_add_pool(&ea, &buf2, sizeof(buf2), sizeof(buf2), align);
-
-        am_event_async_global_init(/*sub=*/NULL, /*nsub=*/0, &ea);
 
         test_allocate(&ea, sizeof(buf1), /*pool_index_plus_one=*/1);
         test_allocate(&ea, sizeof(buf1) + 1, /*pool_index_plus_one=*/2);
@@ -163,8 +158,6 @@ int main(void) {
         am_event_alloc_add_pool(&ea, &buf1, sizeof(buf1), sizeof(buf1), align);
         am_event_alloc_add_pool(&ea, &buf2, sizeof(buf2), sizeof(buf2), align);
         am_event_alloc_add_pool(&ea, &buf3, sizeof(buf3), sizeof(buf3), align);
-
-        am_event_async_global_init(/*sub=*/NULL, /*nsub=*/0, &ea);
 
         test_allocate(&ea, sizeof(buf1), /*pool_index_plus_one=*/1);
         test_allocate(&ea, sizeof(buf2), /*pool_index_plus_one=*/2);
@@ -181,8 +174,6 @@ int main(void) {
         am_event_alloc_add_pool(&ea, &buf2, sizeof(buf2), sizeof(buf2), align);
         am_event_alloc_add_pool(&ea, &buf3, sizeof(buf3), sizeof(buf3), align);
         am_event_alloc_add_pool(&ea, &buf4, sizeof(buf4), sizeof(buf4), align);
-
-        am_event_async_global_init(/*sub=*/NULL, /*nsub=*/0, &ea);
 
         test_allocate(&ea, sizeof(buf1), /*pool_index_plus_one=*/1);
         test_allocate(&ea, sizeof(buf1) + 1, /*pool_index_plus_one=*/2);
@@ -203,8 +194,6 @@ int main(void) {
         am_event_alloc_add_pool(&ea, &buf3, sizeof(buf3), sizeof(buf3), align);
         am_event_alloc_add_pool(&ea, &buf4, sizeof(buf4), sizeof(buf4), align);
         am_event_alloc_add_pool(&ea, &buf5, sizeof(buf5), sizeof(buf5), align);
-
-        am_event_async_global_init(/*sub=*/NULL, /*nsub=*/0, &ea);
 
         test_allocate(&ea, sizeof(buf1), /*pool_index_plus_one=*/1);
         test_allocate(&ea, sizeof(buf1) + 1, /*pool_index_plus_one=*/2);

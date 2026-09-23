@@ -222,13 +222,15 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenstruct:: am_event_queue_policy
 
+.. doxygenstruct:: am_event_async_hub
+
 .. doxygentypedef:: am_event_handler_fn
 
 .. doxygentypedef:: am_event_sync_fn
 
 .. doxygentypedef:: am_event_async_fn
 
-.. doxygenfunction:: am_event_async_global_init
+.. doxygenfunction:: am_event_async_init
 
 .. doxygenfunction:: am_event_queue_init
 

@@ -7,6 +7,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Allocate `struct am_event_async_hub` on the caller side
+
 ### Fixed
 
 - cppcheck warnings for posix and libuv builds

@@ -64,7 +64,7 @@ bool am_ao_publish_exclude_x(
         .margin = margin,
         .exclude_id = ao ? ao->prio.ao : AM_EVENT_PUBLISHER_ID_NONE
     };
-    return am_event_async_publish(event, policy);
+    return am_event_async_publish(&me->async_hub, event, policy);
 }
 
 void am_ao_publish_exclude(
@@ -90,9 +90,12 @@ bool am_ao_post_fifo_x(
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
 
+    struct am_ao_state* me = &am_ao_state_;
     struct am_event_queue_policy policy = {.lifo = 0, .margin = margin};
 
-    return am_event_async_post(/*dest_id=*/ao->prio.ao, event, policy);
+    return am_event_async_post(
+        &me->async_hub, /*dest_id=*/ao->prio.ao, event, policy
+    );
 }
 
 void am_ao_post_fifo(struct am_ao* ao, const struct am_event* event) {
@@ -109,9 +112,12 @@ bool am_ao_post_lifo_x(
     AM_ASSERT(event);
     AM_ASSERT(margin >= 0);
 
+    struct am_ao_state* me = &am_ao_state_;
     struct am_event_queue_policy policy = {.lifo = 1, .margin = margin};
 
-    return am_event_async_post(/*dest_id=*/ao->prio.ao, event, policy);
+    return am_event_async_post(
+        &me->async_hub, /*dest_id=*/ao->prio.ao, event, policy
+    );
 }
 
 void am_ao_post_lifo(struct am_ao* ao, const struct am_event* event) {
@@ -124,7 +130,8 @@ void am_ao_subscribe(const struct am_ao* ao, int event) {
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
     AM_ASSERT(event >= AM_EVT_USER);
 
-    am_event_async_subscribe(ao->prio.ao, event);
+    struct am_ao_state* me = &am_ao_state_;
+    am_event_async_subscribe(&me->async_hub, ao->prio.ao, event);
 }
 
 void am_ao_unsubscribe(const struct am_ao* ao, int event) {
@@ -132,14 +139,16 @@ void am_ao_unsubscribe(const struct am_ao* ao, int event) {
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
     AM_ASSERT(event >= AM_EVT_USER);
 
-    am_event_async_unsubscribe(ao->prio.ao, event);
+    struct am_ao_state* me = &am_ao_state_;
+    am_event_async_unsubscribe(&me->async_hub, ao->prio.ao, event);
 }
 
 void am_ao_unsubscribe_all(const struct am_ao* ao) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
 
-    am_event_async_unsubscribe_all(ao->prio.ao);
+    struct am_ao_state* me = &am_ao_state_;
+    am_event_async_unsubscribe_all(&me->async_hub, ao->prio.ao);
 }
 
 void am_ao_init(
@@ -181,7 +190,7 @@ void am_ao_global_init(
     me->running_ao_prio = AM_AO_PRIO_INVALID;
 
     am_event_register_crit(me->crit_enter, me->crit_exit);
-    am_event_async_global_init(sub, nsub, cfg ? cfg->alloc : NULL);
+    am_event_async_init(&me->async_hub, sub, nsub, cfg ? cfg->alloc : NULL);
 }
 
 void am_ao_global_deinit(void) {}
