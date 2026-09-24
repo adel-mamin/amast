@@ -59,7 +59,7 @@ struct am_timer {
     struct {
         int pend;    /**< armed pending timer events count */
         int running; /**< armed timer events count */
-    } nevents;
+    } nevents;       /**< number of timer events */
 
     /** Armed events iterator. */
     struct am_slist_iterator it;
