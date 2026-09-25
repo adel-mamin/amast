@@ -96,7 +96,7 @@ void am_fsm_dispatch(struct am_fsm* fsm, const struct am_event* event) {
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
 
     fsm->dispatch_in_progress = true;
-    const int id = event->id;
+    const uint16_t event_id = event->id;
 
     enum am_rc rc = fsm_dispatch(fsm, event);
     if (AM_RC_TRAN_REDISPATCH == rc) {
@@ -119,7 +119,7 @@ void am_fsm_dispatch(struct am_fsm* fsm, const struct am_event* event) {
      *      am_event_inc_ref_cnt(e) & am_event_dec_ref_cnt(e)
      *  am_event_free(&e);
      */
-    AM_ASSERT(id == event->id); /* cppcheck-suppress knownArgument */
+    AM_ASSERT(event_id == event->id); /* cppcheck-suppress knownArgument */
 }
 
 void am_fsm_dispatch_cb(void* fsm, const struct am_event* event) {

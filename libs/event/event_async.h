@@ -34,6 +34,7 @@
 #define AM_EVENT_ASYNC_H_INCLUDED
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "event_common.h"
 #include "event_queue.h"
@@ -128,7 +129,7 @@ bool am_event_async_is_pubsub_enabled(struct am_event_async_hub* hub);
  *                    results in an assertion failure.
  */
 void am_event_async_subscribe(
-    struct am_event_async_hub* hub, int handler_id, int event_id
+    struct am_event_async_hub* hub, int handler_id, uint16_t event_id
 );
 
 /**
@@ -151,7 +152,7 @@ void am_event_async_subscribe(
  *                    results in an assertion failure.
  */
 void am_event_async_unsubscribe(
-    struct am_event_async_hub* hub, int handler_id, int event_id
+    struct am_event_async_hub* hub, int handler_id, uint16_t event_id
 );
 
 /**

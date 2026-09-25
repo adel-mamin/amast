@@ -125,7 +125,7 @@ void am_ao_post_lifo(struct am_ao* ao, const struct am_event* event) {
     AM_ASSERT(posted);
 }
 
-void am_ao_subscribe(const struct am_ao* ao, int event) {
+void am_ao_subscribe(const struct am_ao* ao, uint16_t event) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
     AM_ASSERT(event >= AM_EVT_USER);
@@ -134,7 +134,7 @@ void am_ao_subscribe(const struct am_ao* ao, int event) {
     am_event_async_subscribe(&me->async_hub, ao->prio.ao, event);
 }
 
-void am_ao_unsubscribe(const struct am_ao* ao, int event) {
+void am_ao_unsubscribe(const struct am_ao* ao, uint16_t event) {
     AM_ASSERT(ao);
     AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
     AM_ASSERT(event >= AM_EVT_USER);
@@ -233,7 +233,7 @@ void am_ao_crash_dump_event_queues_unsafe(
     }
 }
 
-void am_ao_log_last_events(void (*log)(const char* name, int event)) {
+void am_ao_log_last_events(void (*log)(const char* name, uint16_t event)) {
     AM_ASSERT(log);
 
     struct am_ao_state* me = &am_ao_state_;

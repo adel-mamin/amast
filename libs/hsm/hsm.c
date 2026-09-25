@@ -308,12 +308,12 @@ void am_hsm_dispatch(struct am_hsm* hsm, const struct am_event* event) {
     AM_ASSERT(AM_EVENT_HAS_USER_ID(event));
 
     hsm->dispatch_in_progress = true;
-    const int id = event->id;
+    const uint16_t event_id = event->id;
 
     enum am_rc rc = hsm_dispatch(hsm, event);
     if (AM_RC_TRAN_REDISPATCH == rc) {
         /* Event was freed / corrupted ? */
-        AM_ASSERT(id == event->id);
+        AM_ASSERT(event_id == event->id);
         rc = hsm_dispatch(hsm, event);
         AM_ASSERT(AM_RC_TRAN_REDISPATCH != rc);
     }
@@ -321,7 +321,7 @@ void am_hsm_dispatch(struct am_hsm* hsm, const struct am_event* event) {
     hsm->dispatch_in_progress = false;
 
     /* Event was freed / corrupted ? */
-    AM_ASSERT(id == event->id); /* cppcheck-suppress knownArgument */
+    AM_ASSERT(event_id == event->id); /* cppcheck-suppress knownArgument */
 }
 
 void am_hsm_dispatch_cb(void* hsm, const struct am_event* event) {

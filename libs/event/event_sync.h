@@ -34,6 +34,7 @@
 #define AM_EVENT_SYNC_H_INCLUDED
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "event_common.h"
 
@@ -148,7 +149,7 @@ bool am_event_sync_is_pubsub_enabled(const struct am_event_sync_hub* hub);
  *                    the size of the array results in an assertion failure.
  */
 void am_event_sync_subscribe(
-    struct am_event_sync_hub* hub, int handler_id, int event_id
+    struct am_event_sync_hub* hub, int handler_id, uint16_t event_id
 );
 
 /**
@@ -172,7 +173,7 @@ void am_event_sync_subscribe(
  *                    the size of the array results in an assertion failure.
  */
 void am_event_sync_unsubscribe(
-    struct am_event_sync_hub* hub, int handler_id, int event_id
+    struct am_event_sync_hub* hub, int handler_id, uint16_t event_id
 );
 
 /**

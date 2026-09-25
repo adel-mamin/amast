@@ -140,7 +140,7 @@ static enum am_rc hsmq_s1(struct am_hsm* hsm, const struct am_event* event) {
     case AM_EVT_A: {
         me->log("a-A;");
         const struct am_event* e =
-            am_event_allocate(me->alloc, /*id=*/AM_EVT_B, sizeof(*e));
+            am_event_allocate(me->alloc, /*event_id=*/AM_EVT_B, sizeof(*e));
         am_event_queue_push_back(&me->event_queue, e);
         return am_hsm_tran(hsm, hsmq_s2);
     }

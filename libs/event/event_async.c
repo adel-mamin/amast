@@ -66,7 +66,7 @@ bool am_event_async_is_pubsub_enabled(struct am_event_async_hub* hub) {
 }
 
 void am_event_async_subscribe(
-    struct am_event_async_hub* hub, int handler_id, int event_id
+    struct am_event_async_hub* hub, int handler_id, uint16_t event_id
 ) {
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
@@ -87,7 +87,7 @@ void am_event_async_subscribe(
 }
 
 void am_event_async_unsubscribe(
-    struct am_event_async_hub* hub, int handler_id, int event_id
+    struct am_event_async_hub* hub, int handler_id, uint16_t event_id
 ) {
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);

@@ -27,6 +27,7 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "common/alignment.h"
 #include "common/compiler.h"
@@ -195,16 +196,16 @@ static void test_defer(void) {
     am_hsm_start(&me->hsm, /*init_event=*/NULL);
 
     static const struct test {
-        int event;
+        uint16_t event_id;
         const char* out;
     } in[] = {
-        {.event = HSM_EVT_A, .out = "s1-A;"},
-        {.event = HSM_EVT_B, .out = "s1-B;s2-A;"},
+        {.event_id = HSM_EVT_A, .out = "s1-A;"},
+        {.event_id = HSM_EVT_B, .out = "s1-B;s2-A;"},
     };
 
     for (int i = 0; i < AM_COUNTOF(in); ++i) {
         const struct am_event* e = am_event_allocate(
-            &alloc, in[i].event, (int)sizeof(struct am_event)
+            &alloc, in[i].event_id, (int)sizeof(struct am_event)
         );
         am_event_inc_ref_cnt(e);
         am_hsm_dispatch(&me->hsm, e);

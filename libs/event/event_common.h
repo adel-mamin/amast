@@ -217,15 +217,15 @@ extern "C" {
  * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
  * to understand the limitations.
  *
- * @param alloc   the event allocator
- * @param id      the event identifier
- * @param size    the event size [bytes]
- * @param margin  free memory blocks to remain available after the allocation
+ * @param alloc     the event allocator
+ * @param event_id  the event identifier
+ * @param size      the event size [bytes]
+ * @param margin    free memory blocks to remain available after the allocation
  *
  * @return the newly allocated event
  */
 struct am_event* am_event_allocate_x(
-    struct am_event_alloc* alloc, int id, int size, int margin
+    struct am_event_alloc* alloc, uint16_t event_id, int size, int margin
 );
 
 /**
@@ -243,14 +243,14 @@ struct am_event* am_event_allocate_x(
  * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
  * to understand the limitations.
  *
- * @param alloc  the event allocator
- * @param id     the event identifier
- * @param size   the event size [bytes]
+ * @param alloc     the event allocator
+ * @param event_id  the event identifier
+ * @param size      the event size [bytes]
  *
  * @return the newly allocated event
  */
 struct am_event* am_event_allocate(
-    struct am_event_alloc* alloc, int id, int size
+    struct am_event_alloc* alloc, uint16_t event_id, int size
 );
 
 /**

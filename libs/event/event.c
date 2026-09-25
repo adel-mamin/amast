@@ -60,7 +60,7 @@ void am_event_register_crit(void (*crit_enter)(void), void (*crit_exit)(void)) {
 }
 
 struct am_event* am_event_allocate_x(
-    struct am_event_alloc* alloc, int id, int size, int margin
+    struct am_event_alloc* alloc, uint16_t event_id, int size, int margin
 ) {
     AM_ASSERT(size > 0);
     AM_ASSERT(alloc);
@@ -68,7 +68,7 @@ struct am_event* am_event_allocate_x(
     AM_ASSERT(alloc->npools <= AM_EVENT_POOL_INDEX_MAX);
     int maxind = alloc->npools - 1;
     AM_ASSERT(size <= am_onesize_get_block_size(&alloc->pools[maxind]));
-    AM_ASSERT(id >= AM_EVT_USER);
+    AM_ASSERT(event_id >= AM_EVT_USER);
     AM_ASSERT(margin >= 0);
 
     /* find allocator using binary search */
@@ -95,8 +95,8 @@ struct am_event* am_event_allocate_x(
     }
 
     memset(event, 0, sizeof(*event));
-    event->id = (uint16_t)id;
-    event->id_lsw = (uint16_t)id & AM_EVENT_ID_LSW_MASK;
+    event->id = event_id;
+    event->id_lsw = event_id & AM_EVENT_ID_LSW_MASK;
     event->pool_index_plus_one =
         (unsigned)(left + 1) & AM_EVENT_POOL_INDEX_MASK;
 
@@ -104,9 +104,10 @@ struct am_event* am_event_allocate_x(
 }
 
 struct am_event* am_event_allocate(
-    struct am_event_alloc* alloc, int id, int size
+    struct am_event_alloc* alloc, uint16_t event_id, int size
 ) {
-    struct am_event* event = am_event_allocate_x(alloc, id, size, /*margin=*/0);
+    struct am_event* event =
+        am_event_allocate_x(alloc, event_id, size, /*margin=*/0);
     AM_ASSERT(event);
 
     return event;

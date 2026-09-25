@@ -230,7 +230,7 @@ enum am_rc am_event_queue_pop_front_with_cb(
     if (!event) {
         return AM_RC_ERR;
     }
-    const int id = event->id;
+    const uint16_t id = event->id;
 
     if (cb) {
         cb(ctx, event);

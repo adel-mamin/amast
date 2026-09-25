@@ -34,6 +34,7 @@
 #define AM_AO_H_INCLUDED
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "common/macros.h"
 #include "event/event_common.h"
@@ -104,7 +105,7 @@ struct am_ao {
     void* ctx;                         /**< the event handler context */
     const char* name;                  /**< human readable name of AO */
     struct am_event_queue event_queue; /**< event queue */
-    int last_event;                    /**< last processed event */
+    uint16_t last_event;               /**< last processed event */
     int task_id;                       /**< task handle */
     /** AO priority */
     struct am_ao_prio prio;
@@ -507,7 +508,7 @@ void am_ao_global_deinit(void);
  * @param ao     active object to subscribe
  * @param event  the event ID to subscribe to
  */
-void am_ao_subscribe(const struct am_ao* ao, int event);
+void am_ao_subscribe(const struct am_ao* ao, uint16_t event);
 
 /**
  * Unsubscribe active object from @p event ID.
@@ -519,7 +520,7 @@ void am_ao_subscribe(const struct am_ao* ao, int event);
  * @param ao     active object to unsubscribe
  * @param event  the event ID to unsubscribe from
  */
-void am_ao_unsubscribe(const struct am_ao* ao, int event);
+void am_ao_unsubscribe(const struct am_ao* ao, uint16_t event);
 
 /**
  * Unsubscribe active object from all events.
@@ -589,7 +590,7 @@ void am_ao_crash_dump_event_queues_unsafe(
  *
  * @param log  the logging callback
  */
-void am_ao_log_last_events(void (*log)(const char* name, int event));
+void am_ao_log_last_events(void (*log)(const char* name, uint16_t event));
 
 /**
  * Block until all active objects are ready to run.

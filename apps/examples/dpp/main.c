@@ -31,6 +31,7 @@
  */
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include "common/alignment.h"
 #include "common/compiler.h"
@@ -48,7 +49,7 @@
 
 static struct am_event_alloc alloc;
 
-const char* event_to_str(int id) {
+const char* event_to_str(uint16_t id) {
     if (EVT_DONE == id) {
         return "DONE";
     }

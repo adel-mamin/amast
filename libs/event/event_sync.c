@@ -74,7 +74,7 @@ bool am_event_sync_is_pubsub_enabled(const struct am_event_sync_hub* hub) {
 }
 
 void am_event_sync_subscribe(
-    struct am_event_sync_hub* hub, int handler_id, int event_id
+    struct am_event_sync_hub* hub, int handler_id, uint16_t event_id
 ) {
     AM_ASSERT(hub);
     AM_ASSERT(hub->sub);
@@ -92,7 +92,7 @@ void am_event_sync_subscribe(
 }
 
 void am_event_sync_unsubscribe(
-    struct am_event_sync_hub* hub, int handler_id, int event_id
+    struct am_event_sync_hub* hub, int handler_id, uint16_t event_id
 ) {
     AM_ASSERT(hub);
     AM_ASSERT(hub->sub);

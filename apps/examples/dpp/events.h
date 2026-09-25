@@ -41,7 +41,7 @@ enum events {
     EVT_MAX
 };
 
-const char* event_to_str(int id);
+const char* event_to_str(uint16_t id);
 
 struct hungry {
     struct am_event event;
