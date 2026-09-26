@@ -11,6 +11,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - Allocate `struct am_event_async_hub` on the caller side
 - Use `uint16_t` for event IDs in event API
+- Prune `am_event_queue_flush()` as error-prone
 
 ### Fixed
 

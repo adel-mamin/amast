@@ -260,17 +260,6 @@ enum am_rc am_event_queue_pop_front_with_cb(
     return AM_RC_OK;
 }
 
-int am_event_queue_flush(struct am_event_queue* queue) {
-    int cnt = 0;
-    const struct am_event* e = NULL;
-    while ((e = am_event_queue_pop_front(queue)) != NULL) {
-        ++cnt;
-        AM_ASSERT(cnt <= queue->capacity);
-        am_event_free(queue->alloc, e);
-    }
-    return cnt;
-}
-
 int am_event_queue_flush_unsafe(struct am_event_queue* queue) {
     int cnt = 0;
     const struct am_event* e = NULL;
