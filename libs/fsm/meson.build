@@ -82,7 +82,7 @@ if unit_test
         [
             'tests' / 'event_queue.c',
         ],
-        dependencies: [libstr_dep, libfsm_dep, libevent_dep, libpal_dep, libassert_dep],
+        dependencies: [libstr_dep, libfsm_dep, libevent_dep, libassert_dep],
         include_directories: [include_directories('tests')])
     test('event_queue', e, suite: 'fsm')
 endif

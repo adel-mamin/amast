@@ -44,9 +44,9 @@ if unit_test
         'timer',
         ['timer.c', 'test.c', slist_src],
         dependencies : [
-            libassert_dep,
             libonesize_dep,
-            libevent_dep
+            libevent_dep,
+            libassert_dep,
         ],
         include_directories: inc)
     test('timer', e)

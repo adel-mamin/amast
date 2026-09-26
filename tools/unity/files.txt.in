@@ -3,7 +3,6 @@
 @SRC_ROOT@/libs/common/alignment.h
 @SRC_ROOT@/libs/common/constants.h
 @SRC_ROOT@/libs/common/types.h
-@SRC_ROOT@/libs/common/assert.c
 @SRC_ROOT@/libs/common/throttler.h
 @SRC_ROOT@/libs/common/throttler.c
 @SRC_ROOT@/libs/common/test.c
@@ -11,9 +10,12 @@
 @SRC_ROOT@/libs/pal/pal.h
 @SRC_ROOT@/libs/pal/freertos/pal.c
 @SRC_ROOT@/libs/pal/posix/pal.c
+@SRC_ROOT@/libs/pal/posix/assert.c
 @SRC_ROOT@/libs/pal/libuv/pal.c
+@SRC_ROOT@/libs/pal/libuv/assert.c
 @SRC_ROOT@/libs/pal/zephyr/pal.c
 @SRC_ROOT@/libs/pal/stubs/pal.c
+@SRC_ROOT@/libs/pal/stubs/assert.c
 
 @SRC_ROOT@/libs/bit/bit.h
 @SRC_ROOT@/libs/bit/bit.c

@@ -27,22 +27,22 @@
 e = executable(
     'hahi-example',
     ['hsm' / 'hahi' / 'hahi.c'],
-    dependencies: [libhsm_dep, libstr_dep, libassert_dep])
+    dependencies: [libhsm_dep, libstr_dep, libpal_dep, libassert_dep])
 
 e = executable(
     'regular-example',
     ['hsm' / 'regular' / 'example.c'],
-    dependencies: [libhsm_dep, libhsm_test_dep, libstr_dep, libassert_dep])
+    dependencies: [libhsm_dep, libhsm_test_dep, libstr_dep, libpal_dep, libassert_dep])
 
 e = executable(
     'submachine-example',
     ['hsm' / 'submachine' / 'complex' / 'example.c'],
-    dependencies: [libhsm_dep, libhsm_test_dep, libstr_dep, libassert_dep])
+    dependencies: [libhsm_dep, libhsm_test_dep, libstr_dep, libpal_dep, libassert_dep])
 
 e = executable(
     'calc-example',
     ['hsm' / 'submachine' / 'calc' / 'example.c'],
-    dependencies: [libhsm_dep, libhsm_test_dep, libstr_dep, libassert_dep])
+    dependencies: [libhsm_dep, libhsm_test_dep, libstr_dep, libpal_dep, libassert_dep])
 
 libdpp = library(
     'dpp',
@@ -51,14 +51,15 @@ libdpp = library(
         'dpp' / 'philo.c',
         'dpp' / 'table.c'
     ],
-    c_args : ['-DAM_ASSERT_FAILURE_ENABLED=0'],
     dependencies: [
         libhsm_dep,
         libstr_dep,
         libpal_dep,
         libevent_dep,
         libtimer_dep,
-        libbit_dep])
+        libbit_dep,
+        libassert_dep],
+)
 
 dpp_preemptive = executable(
     'dpp_preemptive',
@@ -81,12 +82,11 @@ libringbuf_example = library(
         'ringbuf' / 'reader.c',
         'ringbuf' / 'writer.c'
     ],
-    c_args : ['-DAM_ASSERT_FAILURE_ENABLED=0'],
     dependencies: [
-        libpal_dep,
         libringbuf_dep,
-        libassert_dep,
+        libpal_dep,
         libbit_dep,
+        libassert_dep,
     ])
 
 ringbuf_preemptive = executable(

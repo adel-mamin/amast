@@ -64,7 +64,13 @@ if pal_backend != 'stubs'
         [
             'tests' / 'minimal.c'
         ],
-        dependencies: [libao_preemptive_dep, libassert_dep, libpal_dep, libevent_dep, libhsm_dep],
+        dependencies: [
+            libao_preemptive_dep,
+            libpal_dep,
+            libassert_dep,
+            libevent_dep,
+            libhsm_dep
+        ],
         include_directories: [include_directories('tests')])
     test('minimal_preemptive', e, suite: 'ao')
 
@@ -74,7 +80,12 @@ if pal_backend != 'stubs'
             'tests' / 'minimal.c'
         ],
         dependencies: [
-            libao_cooperative_dep, libassert_dep, libpal_dep, libbit_dep, libevent_dep, libhsm_dep
+            libao_cooperative_dep,
+            libpal_dep,
+            libassert_dep,
+            libbit_dep,
+            libevent_dep,
+            libhsm_dep,
         ],
         include_directories: [include_directories('tests')])
     test('minimal_cooperative', e, suite: 'ao')
@@ -86,11 +97,11 @@ if pal_backend != 'stubs'
         ],
         dependencies: [
             libao_cooperative_dep,
-            libassert_dep,
             libpal_dep,
+            libassert_dep,
             libbit_dep,
             libstr_dep,
-            libhsm_dep
+            libhsm_dep,
         ],
         include_directories: [include_directories('tests')])
     test('publish_cooperative', e, suite: 'ao')
@@ -100,7 +111,13 @@ if pal_backend != 'stubs'
         [
             'tests' / 'stop.c'
         ],
-        dependencies: [libao_preemptive_dep, libassert_dep, libpal_dep, libbit_dep, libhsm_dep],
+        dependencies: [
+            libao_preemptive_dep,
+            libpal_dep,
+            libassert_dep,
+            libbit_dep,
+            libhsm_dep,
+        ],
         include_directories: [include_directories('tests')])
     test('stop_preemptive', e, suite: 'ao')
 
@@ -110,7 +127,12 @@ if pal_backend != 'stubs'
             'tests' / 'stop.c'
         ],
         dependencies: [
-            libao_cooperative_dep, libassert_dep, libpal_dep, libbit_dep, libevent_dep, libhsm_dep
+            libao_cooperative_dep,
+            libpal_dep,
+            libassert_dep,
+            libbit_dep,
+            libevent_dep,
+            libhsm_dep,
         ],
         include_directories: [include_directories('tests')])
     test('stop_cooperative', e, suite: 'ao')

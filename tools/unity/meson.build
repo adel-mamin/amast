@@ -41,7 +41,7 @@ amast_cfg = configure_file(
 amast_exe = executable(
     'amast-unity',
     ['unity.c', str_src],
-    dependencies : [libassert_dep, libpal_dep],
+    dependencies : [libpal_dep, libassert_dep],
     c_args: ['-std=gnu99', '-ggdb'],
     include_directories: libs_inc
 )
@@ -108,7 +108,7 @@ if unit_test
             amast_src[1], # 'amast_test.c'
         ],
         include_directories: libs_inc,
-        dependencies: [libm_dep, libassert_dep]
+        dependencies: [libm_dep]
     )
     test('unity', e)
 endif

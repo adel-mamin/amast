@@ -32,8 +32,13 @@
 
 #include "common/compiler.h"
 #include "common/macros.h"
+#include "pal/pal.h"
+
+#ifdef AM_ASSERT_FAILURE_ENABLED
 
 AM_NORETURN void am_assert_failure(const char* file, int line) {
-    printf("%s:%d\n", file, line);
+    am_printf("%s:%d\n", file, line);
     __builtin_trap();
 }
+
+#endif /* AM_ASSERT_FAILURE_ENABLED */

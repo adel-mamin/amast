@@ -45,7 +45,8 @@ if unit_test
     e = executable(
         'onesize',
         ['onesize.c', 'test.c', slist_src],
-        dependencies : [libassert_dep],
-        include_directories: inc)
+        include_directories: inc,
+        dependencies: [libassert_dep],
+    )
     test('onesize', e)
 endif

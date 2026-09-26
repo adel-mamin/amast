@@ -148,7 +148,7 @@ if unit_test
         ],
         dependencies: [
             libstr_dep, libhsm_dep, libhsm_test_dep,
-            libevent_dep, libpal_dep, libassert_dep
+            libevent_dep, libassert_dep
         ],
         include_directories: [include_directories('tests')])
     test('event_queue', e, suite: 'hsm')
@@ -160,7 +160,7 @@ if unit_test
         ],
         dependencies: [
             libstr_dep, libhsm_dep, libhsm_test_dep,
-            libevent_dep, libpal_dep, libassert_dep
+            libevent_dep, libassert_dep
         ],
         include_directories: [include_directories('tests')])
     test('defer', e, suite: 'hsm')

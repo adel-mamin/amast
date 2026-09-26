@@ -44,7 +44,7 @@ if unit_test
         'dlist',
         ['dlist.c', 'test.c'],
         include_directories: inc,
-        dependencies : [libassert_dep]
+        dependencies: [libassert_dep],
     )
     test('dlist', e)
 endif

@@ -43,8 +43,8 @@ if unit_test
     e = executable(
         'slist',
         ['slist.c', 'test.c'],
-        link_with: libassert,
-        include_directories: inc
+        include_directories: inc,
+        dependencies: [libassert_dep],
     )
     test('slist', e)
 endif

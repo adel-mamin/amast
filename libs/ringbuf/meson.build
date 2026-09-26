@@ -47,6 +47,7 @@ if unit_test
             'test.c'
         ],
         dependencies: [libringbuf_dep, libassert_dep],
-        include_directories: [include_directories('.')])
+        include_directories: [include_directories('.')]
+    )
     test('ringbuf', e, suite: 'ringbuf')
 endif

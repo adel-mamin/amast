@@ -24,29 +24,25 @@
 # SOFTWARE.
 #
 
-assert_src = [files('assert.c')]
-
-libassert = library(
-    'assert',
-    [assert_src],
-    c_args: '-DAM_ASSERT_FAILURE_ENABLED',
-    include_directories: inc
-)
-libassert_dep = declare_dependency(link_with : libassert, include_directories : inc)
-
 libthrottler = library(
     'throttler',
     ['throttler.c'],
     include_directories: [inc, '.']
 )
-libthrottler_dep = declare_dependency(link_with : libthrottler, include_directories : inc)
+
+libcommon_dep = declare_dependency(include_directories : inc)
+
+libthrottler_dep = declare_dependency(
+    link_with : libthrottler,
+    include_directories : inc
+)
 
 if unit_test
     e = executable(
         'common',
-        ['test.c'],
+        ['test.c', 'assert.c'],
         include_directories: inc,
-        dependencies : [libassert_dep, libthrottler_dep]
+        dependencies : [libthrottler_dep]
     )
     test('common', e)
 endif

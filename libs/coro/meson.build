@@ -31,9 +31,8 @@ libcoro_dep = declare_dependency(
 if unit_test
     e = executable(
         'coro',
-        [
-            'test.c'
-        ],
-        dependencies: [libcoro_dep, libassert_dep])
+        ['test.c'],
+        dependencies: [libcoro_dep, libassert_dep],
+    )
     test('coro', e, suite: 'coro')
 endif

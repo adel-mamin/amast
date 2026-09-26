@@ -35,3 +35,12 @@ libpal_dep = declare_dependency(
     include_directories : inc,
     dependencies: libpal_ext_dep
 )
+
+libassert = library(
+    'assert',
+    ['assert.c'],
+    c_args : ['-DAM_ASSERT_FAILURE_ENABLED=1'],
+    dependencies: [libcommon_dep, libpal_dep],
+)
+libassert_dep = declare_dependency(link_with : libassert)
+

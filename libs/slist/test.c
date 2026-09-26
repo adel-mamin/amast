@@ -29,8 +29,8 @@
  * Singly linked list unit tests.
  */
 
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "common/macros.h"
 #include "slist/slist.h"
