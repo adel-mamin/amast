@@ -228,7 +228,7 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygentypedef:: am_event_sync_fn
 
-.. doxygentypedef:: am_event_async_fn
+.. doxygentypedef:: am_event_async_enqueue_fn
 
 .. doxygenfunction:: am_event_async_init
 

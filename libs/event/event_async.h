@@ -40,19 +40,27 @@
 #include "event_queue.h"
 
 /**
- * Asynchronous event handler function type.
+ * Asynchronous event enqueueing callback function type.
+ *
+ * event_async callback ≠ user event processing
+ *
+ * The callback should ideally only:
+ *
+ * - enqueue event using *_unsafe API
+ * - signal scheduler/actor if safe
+ * - return
  *
  * Called from am_event_async_post() and am_event_async_publish()
- * inside an event critical section. The handler must not call APIs
+ * inside an event critical section. The function must not call APIs
  * that may enter the same critical section, block, or perform long work.
  *
- * @param ctx     event handler specific context
- * @param event   event to handle
+ * @param ctx     event queueing function specific context
+ * @param event   event to queue
  * @param policy  the event queue handling policy
  *
  * @return true on success, false otherwise
  */
-typedef bool (*am_event_async_fn)(
+typedef bool (*am_event_async_enqueue_fn)(
     void* ctx, const struct am_event* event, struct am_event_queue_policy policy
 );
 
@@ -65,8 +73,8 @@ struct am_event_async_hub {
 
     /** Asynchronous event handlers. */
     struct am_event_async_handler {
-        /** Event handler function */
-        am_event_async_fn fn;
+        /** Event enqueueing function */
+        am_event_async_enqueue_fn fn;
         /** Event handler context */
         void* ctx;
     } handlers[AM_EVT_HANDLERS_NUM_MAX]; /**< event handlers */
@@ -190,7 +198,7 @@ void am_event_async_unsubscribe_all(
  */
 void am_event_async_register_with_id(
     struct am_event_async_hub* hub,
-    am_event_async_fn fn,
+    am_event_async_enqueue_fn fn,
     void* ctx,
     int handler_id
 );

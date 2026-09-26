@@ -128,7 +128,7 @@ void am_event_async_unsubscribe_all(
 
 void am_event_async_register_with_id(
     struct am_event_async_hub* hub,
-    am_event_async_fn fn,
+    am_event_async_enqueue_fn fn,
     void* ctx,
     int handler_id
 ) {

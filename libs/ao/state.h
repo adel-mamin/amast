@@ -95,12 +95,12 @@ void am_ao_notify_unsafe(const struct am_ao* ao);
 void am_ao_global_init_(void);
 
 /**
- * AO event handler.
+ * AO event enqueue function.
  *
- * Matches the type am_event_async_fn.
+ * Matches the type am_event_async_enqueue_fn.
  * Does not use critical section.
  */
-bool am_ao_event_handler_unsafe(
+bool am_ao_event_enqueue_unsafe(
     void* ctx, const struct am_event* event, struct am_event_queue_policy policy
 );
 

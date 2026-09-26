@@ -13,6 +13,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Use `uint16_t` for event IDs in event API
 - Prune `am_event_queue_flush()` as error-prone
 - Move `am_assert_failure()` to PAL
+- Rename `am_event_async_fn` to `am_event_async_enqueue_fn`
 
 ### Fixed
 
@@ -25,7 +26,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - cppcheck for posix and libuv builds
 - Add `struct am_event_queue_policy::exclude` field
-- Add `struct am_event_async_hub::handers_generation`
+- Add `struct am_event_async_hub::handlers_generation`
 
 ## v0.17.3 - 06-September-2026
 

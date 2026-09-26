@@ -62,7 +62,7 @@ static void am_ao_task_init(void* param) {
 
     struct am_ao_state* me = &am_ao_state_;
     am_event_async_register_with_id(
-        &me->async_hub, am_ao_event_handler_unsafe, ao, ao->prio.ao
+        &me->async_hub, am_ao_event_enqueue_unsafe, ao, ao->prio.ao
     );
 
     if (ao->user_init_handler) {
