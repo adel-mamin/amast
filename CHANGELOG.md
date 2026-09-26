@@ -25,6 +25,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - cppcheck for posix and libuv builds
 - Add `struct am_event_queue_policy::exclude` field
+- Add `struct am_event_async_hub::handers_generation`
 
 ## v0.17.3 - 06-September-2026
 

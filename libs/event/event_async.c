@@ -142,6 +142,7 @@ void am_event_async_register_with_id(
 
     hub->handlers[handler_id].fn = fn;
     hub->handlers[handler_id].ctx = ctx;
+    hub->handlers_generation[handler_id]++;
 
     am_event_crit_exit();
 }
@@ -220,6 +221,8 @@ bool am_event_async_publish(
     am_event_crit_enter();
 
     struct am_event_subscribe_list sub = hub->sub[si];
+    uint8_t generation[AM_EVT_HANDLERS_NUM_MAX];
+    memcpy(generation, hub->handlers_generation, sizeof(generation));
 
     am_event_crit_exit();
 
@@ -237,7 +240,10 @@ bool am_event_async_publish(
 
             struct am_event_async_handler* handler = &hub->handlers[ind];
 
-            if (handler->fn) {
+            /* make sure the handler has not changed while publishing the event
+             */
+            if (handler->fn &&
+                (hub->handlers_generation[ind] == generation[ind])) {
                 bool ok = handler->fn(handler->ctx, event, policy);
                 if (!ok) {
                     all_published = false;

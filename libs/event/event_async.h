@@ -63,13 +63,16 @@ struct am_event_async_hub {
     /** User defined pubsub list length. */
     int nsub;
 
-    /** Asynchronous event handlers */
+    /** Asynchronous event handlers. */
     struct am_event_async_handler {
         /** Event handler function */
         am_event_async_fn fn;
         /** Event handler context */
         void* ctx;
     } handlers[AM_EVT_HANDLERS_NUM_MAX]; /**< event handlers */
+
+    /** Handlers generation. */
+    uint8_t handlers_generation[AM_EVT_HANDLERS_NUM_MAX];
 
     struct am_event_alloc* alloc; /**< event allocator */
 };
