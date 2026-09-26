@@ -62,6 +62,10 @@ struct am_event_queue_policy {
      */
     unsigned lifo : 1;
     /**
+     * struct am_event_queue_policy::exclude_id is set
+     */
+    unsigned exclude : 1;
+    /**
      * The number of the free slots, which must remain
      * in event queue after placing the event.
      */

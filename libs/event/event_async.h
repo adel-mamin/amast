@@ -237,7 +237,7 @@ bool am_event_async_post(
  * @param hub           asynchronous event hub
  * @param event         input event
  * @param policy        event queue posting policy
- * @return true on success, false otherwise
+ * @return true if published to all subscribers, false otherwise
  */
 bool am_event_async_publish(
     struct am_event_async_hub* hub,

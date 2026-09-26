@@ -62,6 +62,7 @@ bool am_ao_publish_exclude_x(
     struct am_event_queue_policy policy = {
         .lifo = 0,
         .margin = margin,
+        .exclude = (ao != NULL),
         .exclude_id = ao ? ao->prio.ao : AM_EVENT_PUBLISHER_ID_NONE
     };
     return am_event_async_publish(&me->async_hub, event, policy);

@@ -229,7 +229,7 @@ bool am_event_async_publish(
             sub.list[i] &= (uint8_t)~(1U << (unsigned)msb);
 
             const int ind = (8 * i) + msb;
-            if (policy.exclude_id == ind) {
+            if (policy.exclude && (policy.exclude_id == ind)) {
                 continue;
             }
 
