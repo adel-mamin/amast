@@ -52,7 +52,12 @@ if unit_test
         'event',
         ['test.c', slist_src],
         c_args: ['-DAM_EVENT_POOLS_NUM_MAX=31'],
-        dependencies : [libonesize_dep, libevent_dep, libassert_dep],
+        dependencies : [
+            libonesize_dep,
+            libevent_dep,
+            libassert_dep,
+            libbit_dep,
+        ],
         include_directories: inc
     )
     test('event', e)

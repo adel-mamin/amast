@@ -29,6 +29,7 @@
  * Event allocation unit tests.
  */
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -39,6 +40,7 @@
 #include "event_common.h"
 #include "event_queue.h"
 #include "event_pool.h"
+#include "event_async.h"
 
 static struct buf1 {
     struct am_event e;
@@ -131,6 +133,56 @@ static void test_am_event_queue(const int capacity, const int rdwr_num) {
     AM_ASSERT(am_event_queue_is_empty(&q));
 }
 
+static bool test_event_proc(
+    void* ctx, const struct am_event* event, struct am_event_queue_policy policy
+) {
+    struct am_event_queue* queue = ctx;
+    enum am_rc rc = am_event_queue_push_unsafe(queue, event, policy);
+    return rc != AM_RC_ERR;
+}
+
+static void test_event_ref_cnt(void) {
+    enum {
+        EVT_TEST = AM_EVT_USER,
+        EVT_PUB_MAX,
+    };
+
+    const int align = AM_ALIGNOF(am_event_t);
+    struct am_event_alloc alloc;
+    am_event_alloc_init(&alloc);
+
+    struct am_event buf[4];
+    am_event_alloc_add_pool(&alloc, &buf, sizeof(buf), sizeof(buf[0]), align);
+
+    AM_ASSERT(2 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
+
+    struct am_event_async_hub hub;
+    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX];
+    am_event_async_init(&hub, pubsub_list, AM_COUNTOF(pubsub_list), &alloc);
+
+    static const struct am_event* queue_pool[2];
+    struct am_event_queue queue;
+    am_event_queue_init(&queue, queue_pool, AM_COUNTOF(queue_pool), &alloc);
+
+    const int handler_id = 0;
+    am_event_async_register_with_id(&hub, test_event_proc, &queue, handler_id);
+
+    am_event_async_subscribe(&hub, handler_id, EVT_TEST);
+
+    struct am_event_queue_policy policy = {.margin = 1};
+
+    const struct am_event* e = NULL;
+    e = am_event_allocate(&alloc, EVT_TEST, sizeof(struct am_event));
+
+    bool published_all = am_event_async_publish(&hub, e, policy);
+    AM_ASSERT(published_all);
+
+    e = am_event_allocate(&alloc, EVT_TEST, sizeof(struct am_event));
+
+    published_all = am_event_async_publish(&hub, e, policy);
+    AM_ASSERT(!published_all);
+}
+
 int main(void) {
     const int align = AM_ALIGNOF(am_event_t);
     {
@@ -214,6 +266,8 @@ int main(void) {
     test_am_event_queue(/*capacity=*/1, /*rdwr_num=*/1);
     test_am_event_queue(/*capacity=*/2, /*rdwr_num=*/1);
     test_am_event_queue(/*capacity=*/3, /*rdwr_num=*/3);
+
+    test_event_ref_cnt();
 
     return 0;
 }

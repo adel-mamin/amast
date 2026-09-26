@@ -18,6 +18,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - cppcheck warnings for posix and libuv builds
 - clang-tidy warnings for posix and libuv builds
+- Only free event in am_event_queue_push_unsafe() on margin violation
+  if the event's ref counter is zero
 
 ### Added
 

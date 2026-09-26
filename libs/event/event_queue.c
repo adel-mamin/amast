@@ -185,7 +185,9 @@ enum am_rc am_event_queue_push_unsafe(
     struct am_event* e = AM_CAST(struct am_event*, event);
 
     if (queue->nfree <= policy.margin) {
-        am_event_free_unsafe(queue->alloc, event);
+        if (0 == event->ref_counter) {
+            am_event_free_unsafe(queue->alloc, event);
+        }
 
         AM_ASSERT(policy.margin > 0);
 
