@@ -298,5 +298,6 @@ bool am_ao_event_enqueue_unsafe(
     if (AM_RC_QUEUE_WAS_EMPTY == rc) {
         am_ao_notify_unsafe(ao);
     }
-    return true;
+
+    return (AM_RC_ERR != rc);
 }
