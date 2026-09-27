@@ -22,6 +22,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - clang-tidy warnings for posix and libuv builds
 - Only free event in am_event_queue_push_unsafe() on margin violation
   if the event's ref counter is zero
+- Move handler callback asserts to critical section
+  in `am_event_async_subscribe()` and `am_event_async_unsubscribe()`
 
 ### Added
 

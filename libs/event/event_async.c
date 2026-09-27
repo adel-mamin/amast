@@ -70,7 +70,6 @@ void am_event_async_subscribe(
 ) {
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
-    AM_ASSERT(hub->handlers[handler_id].fn);
     AM_ASSERT(event_id >= AM_EVT_USER);
     AM_ASSERT(hub->sub != NULL);
 
@@ -81,6 +80,7 @@ void am_event_async_subscribe(
 
     am_event_crit_enter();
 
+    AM_ASSERT(hub->handlers[handler_id].fn);
     hub->sub[si].list[li] |= (uint8_t)(1U << (unsigned)(handler_id % 8));
 
     am_event_crit_exit();
@@ -91,7 +91,6 @@ void am_event_async_unsubscribe(
 ) {
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
-    AM_ASSERT(hub->handlers[handler_id].fn);
     AM_ASSERT(event_id >= AM_EVT_USER);
     AM_ASSERT(hub->sub != NULL);
 
@@ -101,6 +100,8 @@ void am_event_async_unsubscribe(
     int li = handler_id / 8;
 
     am_event_crit_enter();
+
+    AM_ASSERT(hub->handlers[handler_id].fn);
 
     hub->sub[si].list[li] &= (uint8_t)~(1U << (unsigned)(handler_id % 8));
 
@@ -112,12 +113,13 @@ void am_event_async_unsubscribe_all(
 ) {
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
-    AM_ASSERT(hub->handlers[handler_id].fn);
 
     int li = handler_id / 8;
     unsigned clear_mask = ~(1U << (unsigned)(handler_id % 8));
 
     am_event_crit_enter();
+
+    AM_ASSERT(hub->handlers[handler_id].fn);
 
     for (int i = 0; i < hub->nsub; ++i) {
         hub->sub[i].list[li] &= (uint8_t)clear_mask;
