@@ -250,8 +250,6 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygenfunction:: am_event_queue_get_capacity
 
-.. doxygenfunction:: am_event_queue_pop_front
-
 .. doxygenfunction:: am_event_queue_push_back
 
 .. doxygenfunction:: am_event_queue_push_front

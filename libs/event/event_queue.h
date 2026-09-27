@@ -332,34 +332,6 @@ int am_event_queue_get_nbusy_unsafe(const struct am_event_queue* queue);
 int am_event_queue_get_capacity(const struct am_event_queue* queue);
 
 /**
- * Pop an item from the front (head) of event queue.
- *
- * Takes O(1) to complete.
- *
- * Thread unsafe.
- *
- * @param queue  the event queue
- *
- * @return The popped item or NULL, if event queue was empty.
- */
-const struct am_event* am_event_queue_pop_front_unsafe(
-    struct am_event_queue* queue
-);
-
-/**
- * Pop an item from the front (head) of event queue.
- *
- * Takes O(1) to complete.
- *
- * Thread safe.
- *
- * @param queue  the event queue
- *
- * @return The popped item or NULL, if event queue was empty.
- */
-const struct am_event* am_event_queue_pop_front(struct am_event_queue* queue);
-
-/**
  * Get minimum number of free slots ever observed in event queue.
  *
  * Could be used to assess the usage of the event queue.

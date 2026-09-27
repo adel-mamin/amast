@@ -14,6 +14,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Prune `am_event_queue_flush()` as error-prone
 - Move `am_assert_failure()` to PAL
 - Rename `am_event_async_fn` to `am_event_async_enqueue_fn`
+- Hide `am_event_queue_pop_front(_unsafe)()` API
 
 ### Fixed
 

@@ -196,12 +196,37 @@ void am_ao_global_init(
 
 void am_ao_global_deinit(void) {}
 
-void am_ao_crash_dump_event_queues_unsafe(
-    int num,
-    void (*log)(
-        const char* name, int i, int len, int cap, const struct am_event* event
-    )
-) {
+typedef void (*log_fn)(
+    const char* name, int i, int len, int cap, const struct am_event* event
+);
+
+/** Event dump context */
+struct am_ao_event_dump_ctx {
+    struct am_ao* ao; /**< active object */
+    int queue_cap;    /**< queue capacity */
+    int event_index;  /**< event index */
+    int event_nbusy;  /**< number of events in the queue */
+    int event_ndump;  /**< number of events to dump */
+    log_fn log;       /**< logging callback */
+};
+
+static bool am_ao_event_dump_handle(void* ctx, const struct am_event* event) {
+    AM_ASSERT(ctx);
+    AM_ASSERT(event);
+
+    struct am_ao_event_dump_ctx* dump = ctx;
+    dump->log(
+        dump->ao->name,
+        dump->event_index,
+        dump->event_nbusy,
+        dump->queue_cap,
+        event
+    );
+
+    return true;
+}
+
+void am_ao_crash_dump_event_queues_unsafe(int num, log_fn log) {
     AM_ASSERT(num != 0);
     AM_ASSERT(log);
 
@@ -221,15 +246,23 @@ void am_ao_crash_dump_event_queues_unsafe(
         }
         const int cap = am_event_queue_get_capacity(q);
         const int nbusy = am_event_queue_get_nbusy_unsafe(q);
-        const int tnum = AM_MIN(num, nbusy);
-        if (0 == tnum) {
+        const int ndump = AM_MIN(num, nbusy);
+        if (0 == ndump) {
             log(ao->name, 0, nbusy, cap, /*event=*/NULL);
             continue;
         }
-        for (int j = 0; j < tnum; ++j) {
-            const struct am_event* e = am_event_queue_pop_front_unsafe(q);
-            AM_ASSERT(e);
-            log(ao->name, j, nbusy, cap, e);
+        for (int j = 0; j < ndump; ++j) {
+            struct am_ao_event_dump_ctx ctx = {
+                .ao = ao,
+                .queue_cap = cap,
+                .event_index = j,
+                .event_nbusy = nbusy,
+                .event_ndump = ndump,
+                .log = log,
+            };
+            (void)am_event_queue_pop_front_with_cb(
+                q, am_ao_event_dump_handle, &ctx
+            );
         }
     }
 }

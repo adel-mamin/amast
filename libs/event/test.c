@@ -75,6 +75,18 @@ static void test_allocate(
     am_event_free(alloc, e);
 }
 
+static bool test_event_pop_handle(
+    const void* ctx, const struct am_event* event
+) {
+    AM_ASSERT(ctx);
+    AM_ASSERT(event);
+
+    const struct am_event* event_expected = ctx;
+    AM_ASSERT(event == event_expected);
+
+    return true;
+}
+
 static void test_am_event_queue(const int capacity, const int rdwr_num) {
     struct am_event_alloc alloc;
     am_event_alloc_init(&alloc);
@@ -108,8 +120,9 @@ static void test_am_event_queue(const int capacity, const int rdwr_num) {
     }
 
     for (int i = 0; i < rdwr_num; ++i) {
-        const struct am_event* event = am_event_queue_pop_front(&q);
-        AM_ASSERT(event == &events[i]);
+        am_event_queue_pop_front_with_cb(
+            &q, (am_event_handler_fn)test_event_pop_handle, &events[i]
+        );
     }
 
     for (int i = 0; i < rdwr_num; ++i) {
@@ -125,8 +138,9 @@ static void test_am_event_queue(const int capacity, const int rdwr_num) {
     }
 
     for (int i = (rdwr_num - 1); i >= 0; --i) {
-        const struct am_event* event = am_event_queue_pop_front(&q);
-        AM_ASSERT(&events[i] == event);
+        am_event_queue_pop_front_with_cb(
+            &q, (am_event_handler_fn)test_event_pop_handle, &events[i]
+        );
     }
 
     AM_ASSERT(am_event_queue_get_nbusy_unsafe(&q) == 0);
