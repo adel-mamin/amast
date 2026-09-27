@@ -293,7 +293,8 @@ bool am_ao_event_enqueue_unsafe(
 
     AM_ASSERT(AM_ATOMIC_LOAD_N(&ao->running));
 
-    enum am_rc rc = am_event_queue_push_unsafe(&ao->event_queue, event, policy);
+    enum am_rc rc =
+        am_event_queue_try_push_unsafe(&ao->event_queue, event, policy);
     if (AM_RC_QUEUE_WAS_EMPTY == rc) {
         am_ao_notify_unsafe(ao);
     }

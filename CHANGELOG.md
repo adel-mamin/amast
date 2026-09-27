@@ -31,6 +31,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Add `struct am_event_queue_policy::exclude` field
 - Add `struct am_event_async_hub::handlers_generation`
 - Clarify the async event handlers' ID priority semantics
+- Add `am_event_queue_try_push_unsafe()`
 
 ## v0.17.3 - 06-September-2026
 

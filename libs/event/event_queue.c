@@ -173,7 +173,7 @@ enum am_rc am_event_queue_push(
     return rc;
 }
 
-enum am_rc am_event_queue_push_unsafe(
+enum am_rc am_event_queue_try_push_unsafe(
     struct am_event_queue* queue,
     const struct am_event* event,
     struct am_event_queue_policy policy
@@ -198,10 +198,6 @@ enum am_rc am_event_queue_push_unsafe(
     struct am_event* e = AM_CAST(struct am_event*, event);
 
     if (queue->nfree <= policy.margin) {
-        if (0 == event->ref_counter) {
-            am_event_free_unsafe(queue->alloc, event);
-        }
-
         AM_ASSERT(policy.margin > 0);
 
         return AM_RC_ERR;
@@ -234,6 +230,28 @@ enum am_rc am_event_queue_push_unsafe(
         return AM_RC_QUEUE_WAS_EMPTY;
     }
     return AM_RC_OK;
+}
+
+enum am_rc am_event_queue_push_unsafe(
+    struct am_event_queue* queue,
+    const struct am_event* event,
+    struct am_event_queue_policy policy
+) {
+    AM_ASSERT(queue);
+    AM_ASSERT(queue->init_called);
+    AM_ASSERT(event);
+    AM_ASSERT(policy.margin >= 0);
+    AM_ASSERT(policy.margin < queue->capacity);
+
+    enum am_rc rc = am_event_queue_try_push_unsafe(queue, event, policy);
+
+    if (AM_RC_OK != rc) {
+        if (0 == event->ref_counter) {
+            am_event_free_unsafe(queue->alloc, event);
+        }
+    }
+
+    return rc;
 }
 
 enum am_rc am_event_queue_pop_front_with_cb(

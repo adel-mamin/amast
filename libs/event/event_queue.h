@@ -111,7 +111,7 @@ void am_event_queue_init(
 void am_event_queue_deinit(struct am_event_queue* queue);
 
 /**
- * Push event to the back of event queue (eXtended version).
+ * Push event to the back of event queue.
  *
  * Checks if there are more free queue slots available than @p margin.
  * If not, then does not push. Otherwise pushes the event to the back of
@@ -119,7 +119,10 @@ void am_event_queue_deinit(struct am_event_queue* queue);
  *
  * Asserts, if policy.margin == 0 and the event was not pushed.
  *
- * Tries to free the event, if it was not pushed.
+ * Event Ownership:
+ * - On success, queue owns the event.
+ * - On failure, the event is released by this function.
+ * - Caller must not use the event after this call.
  *
  * Statically allocated events (the events for which am_event_is_static()
  * returns true) are never freed.
@@ -147,7 +150,7 @@ enum am_rc am_event_queue_push(
 );
 
 /**
- * Push event to the back of event queue (extended version).
+ * Try pushing event to the back of event queue.
  *
  * Checks if there are more free queue slots available than @p margin.
  * If not, then does not push. Otherwise pushes the event to the back of
@@ -155,12 +158,50 @@ enum am_rc am_event_queue_push(
  *
  * Asserts, if policy.margin == 0 and the event was not pushed.
  *
- * Tries to free the event, if it was not pushed.
+ * Event ownership:
+ * - On success, queue acquires a reference.
+ * - On failure, event ownership/refcount is unchanged.
+ *
+ * Thread unsafe.
+ *
+ * There are limitations to what application code can do with the event after
+ * calling this function. Please consult the
+ * <a href="https://amast.readthedocs.io/event.html">Event Ownership Diagram</a>
+ * to understand the limitations.
+ *
+ * @param queue   the event queue
+ * @param event   the event to push
+ * @param policy  the event queue handling policy
+ *
+ * @retval #AM_RC_OK               the event was pushed
+ * @retval #AM_RC_QUEUE_WAS_EMPTY  the event was pushed,
+ *                                 queue was empty
+ * @retval #AM_RC_ERR              the event was not pushed
+ */
+enum am_rc am_event_queue_try_push_unsafe(
+    struct am_event_queue* queue,
+    const struct am_event* event,
+    struct am_event_queue_policy policy
+);
+
+/**
+ * Push event to the back of event queue.
+ *
+ * Checks if there are more free queue slots available than @p margin.
+ * If not, then does not push. Otherwise pushes the event to the back of
+ * the event queue.
+ *
+ * Asserts, if policy.margin == 0 and the event was not pushed.
+ *
+ * Event Ownership:
+ * - On success, queue owns the event.
+ * - On failure, the event is released by this function.
+ * - Caller must not use the event after this call.
  *
  * Statically allocated events (the events for which am_event_is_static()
  * returns true) are never freed.
  *
- * Thread safe.
+ * Thread unsafe.
  *
  * There are limitations to what application code can do with the event after
  * calling this function. Please consult the
@@ -187,6 +228,11 @@ enum am_rc am_event_queue_push_unsafe(
  *
  * Asserts, if the event was not pushed.
  *
+ * Event Ownership:
+ * - On success, queue owns the event.
+ * - On failure, the event is released by this function.
+ * - Caller must not use the event after this call.
+ *
  * Thread safe.
  *
  * There are limitations to what application code can do with the event after
@@ -208,7 +254,10 @@ enum am_rc am_event_queue_push_back(
 /**
  * Push event to the front of event queue.
  *
- * Asserts, if the event was not pushed.
+ * Event Ownership:
+ * - On success, queue owns the event.
+ * - On failure, assert crash.
+ * - Caller must not use the event after this call.
  *
  * Thread safe.
  *
