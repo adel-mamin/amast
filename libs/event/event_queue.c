@@ -245,7 +245,7 @@ enum am_rc am_event_queue_push_unsafe(
 
     enum am_rc rc = am_event_queue_try_push_unsafe(queue, event, policy);
 
-    if (AM_RC_OK != rc) {
+    if (AM_RC_ERR == rc) {
         if (0 == event->ref_counter) {
             am_event_free_unsafe(queue->alloc, event);
         }
