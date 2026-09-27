@@ -7,6 +7,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+## v0.17.4 - 27-September-2026
+
 ### Changed
 
 - Allocate `struct am_event_async_hub` on the caller side
