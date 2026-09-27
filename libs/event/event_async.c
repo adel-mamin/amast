@@ -248,7 +248,8 @@ bool am_event_async_publish(
 
             struct am_event_async_handler* handler = &hub->handlers[ind];
 
-            /* make sure the handler has not changed while publishing the event
+            /*
+             * Make sure the handler has not changed while publishing the event.
              */
             if (handler->fn &&
                 (hub->handlers_generation[ind] == generation[ind])) {

@@ -68,6 +68,7 @@ struct am_event* am_event_allocate_x(
     AM_ASSERT(alloc->npools <= AM_EVENT_POOL_INDEX_MAX);
     int maxind = alloc->npools - 1;
     AM_ASSERT(size <= am_onesize_get_block_size(&alloc->pools[maxind]));
+    AM_ASSERT(size >= (int)sizeof(struct am_event));
     AM_ASSERT(event_id >= AM_EVT_USER);
     AM_ASSERT(margin >= 0);
 
