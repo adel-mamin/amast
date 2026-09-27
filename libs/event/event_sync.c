@@ -141,6 +141,7 @@ int am_event_sync_register(
             hub->handlers[i].name = name;
             hub->handlers[i].fn = fn;
             hub->handlers[i].ctx = ctx;
+            hub->handlers_generation[i]++;
             return i;
         }
     }
@@ -232,6 +233,9 @@ bool am_event_sync_publish_request(
     AM_ASSERT(si < hub->nsub);
 
     struct am_event_subscribe_list sub = hub->sub[si];
+    uint8_t generation[AM_EVT_HANDLERS_NUM_MAX];
+    memcpy(generation, hub->handlers_generation, sizeof(generation));
+
     for (int i = 0; i < AM_COUNTOF(sub.list); ++i) {
         while (sub.list[i]) {
             int msb = am_bit_u8_msb(sub.list[i]);
@@ -243,9 +247,15 @@ bool am_event_sync_publish_request(
 
             struct am_event_sync_handler* handler = &hub->handlers[handler_id];
 
-            AM_ASSERT(handler->fn);
-            if (!handler->fn(handler->ctx, event, out, out_size)) {
-                all_published = false;
+            /*
+             * Make sure the handler has not changed while publishing the event.
+             */
+            if (handler->fn && (hub->handlers_generation[handler_id] ==
+                                generation[handler_id])) {
+                bool ok = handler->fn(handler->ctx, event, out, out_size);
+                if (!ok) {
+                    all_published = false;
+                }
             }
         }
     }

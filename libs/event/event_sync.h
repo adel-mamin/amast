@@ -86,6 +86,9 @@ struct am_event_sync_hub {
         void* ctx;
     } handlers[AM_EVT_HANDLERS_NUM_MAX]; /**< event handlers */
 
+    /** Handlers generation. */
+    uint8_t handlers_generation[AM_EVT_HANDLERS_NUM_MAX];
+
     /** recursion counter */
     int recursion_count;
 
