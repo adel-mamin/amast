@@ -24,6 +24,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
   if the event's ref counter is zero
 - Move handler callback asserts to critical section
   in `am_event_async_subscribe()` and `am_event_async_unsubscribe()`
+- Handle observer re-registration in `am_event_sync_post_request()`
 
 ### Added
 

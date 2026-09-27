@@ -41,6 +41,7 @@
 #include "event_queue.h"
 #include "event_pool.h"
 #include "event_async.h"
+#include "event_sync.h"
 #include "common/compiler.h"
 #include "onesize/onesize.h"
 
@@ -369,6 +370,159 @@ static void test_event_async_publish_one_fail_one_succeeds(void) {
     AM_ASSERT(2 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
 }
 
+struct test_event_sync_unregister_ctx {
+    struct am_event_sync_hub* hub;
+    int handler_id;
+    int called;
+};
+
+static bool test_event_sync_handler(
+    void* ctx, const struct am_event* event, void* out, int out_size
+) {
+    (void)event;
+    (void)out;
+    (void)out_size;
+
+    int* called = ctx;
+    ++*called;
+
+    return true;
+}
+
+static bool test_event_sync_unregister_handler(
+    void* ctx, const struct am_event* event, void* out, int out_size
+) {
+    (void)event;
+    (void)out;
+    (void)out_size;
+
+    struct test_event_sync_unregister_ctx* test_ctx = ctx;
+    ++test_ctx->called;
+
+    am_event_sync_unregister(test_ctx->hub, test_ctx->handler_id);
+
+    return true;
+}
+
+struct test_event_sync_reuse_ctx {
+    struct am_event_sync_hub* hub;
+    int handler_id;
+    int called;
+    int replacement_called;
+};
+
+static bool test_event_sync_unregister_and_reuse_handler(
+    void* ctx, const struct am_event* event, void* out, int out_size
+) {
+    (void)event;
+    (void)out;
+    (void)out_size;
+
+    struct test_event_sync_reuse_ctx* test_ctx = ctx;
+    ++test_ctx->called;
+
+    am_event_sync_unregister(test_ctx->hub, test_ctx->handler_id);
+
+    int handler_id = am_event_sync_register(
+        test_ctx->hub,
+        "replacement",
+        test_event_sync_handler,
+        &test_ctx->replacement_called
+    );
+    AM_ASSERT(handler_id == test_ctx->handler_id);
+
+    return true;
+}
+
+static void test_event_sync_publish_handler_unregisters_later_handler(void) {
+    struct am_event_sync_hub hub;
+    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX];
+
+    am_event_sync_init(&hub, pubsub_list, AM_COUNTOF(pubsub_list));
+
+    int later_called = 0;
+
+    /*
+     * Register the target first so it gets the lower handler ID.
+     *
+     * Synchronous publish processes the most significant subscribed handler
+     * bit first, therefore the handler registered below executes before this
+     * one.
+     */
+    int later_id = am_event_sync_register(
+        &hub, "later", test_event_sync_handler, &later_called
+    );
+
+    struct test_event_sync_unregister_ctx ctx = {
+        .hub = &hub,
+        .handler_id = later_id,
+    };
+
+    int first_id = am_event_sync_register(
+        &hub, "first", test_event_sync_unregister_handler, &ctx
+    );
+
+    AM_ASSERT(first_id > later_id);
+
+    am_event_sync_subscribe(&hub, later_id, EVT_TEST);
+    am_event_sync_subscribe(&hub, first_id, EVT_TEST);
+
+    const struct am_event event = {
+        .id = EVT_TEST,
+    };
+
+    bool published_all = am_event_sync_publish(&hub, &event);
+
+    AM_ASSERT(published_all);
+    AM_ASSERT(ctx.called == 1);
+    AM_ASSERT(later_called == 0);
+}
+
+static void test_event_sync_publish_handler_unregisters_and_reuses_later_id(
+    void
+) {
+    struct am_event_sync_hub hub;
+    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX];
+
+    am_event_sync_init(&hub, pubsub_list, AM_COUNTOF(pubsub_list));
+
+    int old_handler_called = 0;
+
+    int later_id = am_event_sync_register(
+        &hub, "old", test_event_sync_handler, &old_handler_called
+    );
+
+    struct test_event_sync_reuse_ctx ctx = {
+        .hub = &hub,
+        .handler_id = later_id,
+    };
+
+    int first_id = am_event_sync_register(
+        &hub, "first", test_event_sync_unregister_and_reuse_handler, &ctx
+    );
+
+    AM_ASSERT(first_id > later_id);
+
+    am_event_sync_subscribe(&hub, later_id, EVT_TEST);
+    am_event_sync_subscribe(&hub, first_id, EVT_TEST);
+
+    const struct am_event event = {
+        .id = EVT_TEST,
+    };
+
+    bool published_all = am_event_sync_publish(&hub, &event);
+
+    AM_ASSERT(published_all);
+    AM_ASSERT(ctx.called == 1);
+
+    /*
+     * Neither the old occupant nor the new occupant of later_id may receive
+     * the event from the stale publication snapshot.
+     */
+    AM_ASSERT(old_handler_called == 0);
+    AM_ASSERT(ctx.replacement_called == 0);
+}
+
 int main(void) {
     const int align = AM_ALIGNOF(am_event_t);
     {
@@ -455,6 +609,9 @@ int main(void) {
 
     test_event_async_publish_two_succeed_two_fail();
     test_event_async_publish_one_fail_one_succeeds();
+
+    test_event_sync_publish_handler_unregisters_later_handler();
+    test_event_sync_publish_handler_unregisters_and_reuses_later_id();
 
     return 0;
 }

@@ -193,7 +193,11 @@ bool am_event_sync_post_request(
 
     hub->observer_cb(hub, dest_id, event);
 
-    bool ret = fn(ctx, event, out, out_size);
+    bool ret = false;
+
+    if (hub->handlers[dest_id].fn == fn) {
+        ret = fn(ctx, event, out, out_size);
+    }
 
     --hub->recursion_count;
 
