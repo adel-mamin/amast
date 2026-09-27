@@ -186,6 +186,10 @@ bool am_event_async_post(
     AM_ASSERT(handler->fn);
     bool ok = handler->fn(handler->ctx, event, policy);
 
+    if (!ok && (event->ref_counter == 0)) {
+        am_event_free_unsafe(hub->alloc, event);
+    }
+
     am_event_crit_exit();
 
     return ok;
