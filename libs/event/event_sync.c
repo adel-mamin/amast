@@ -187,6 +187,8 @@ bool am_event_sync_post_request(
     AM_ASSERT(fn);
     AM_ASSERT(event);
 
+    uint8_t generation = hub->handlers_generation[dest_id];
+
     void* ctx = hub->handlers[dest_id].ctx;
 
     ++hub->recursion_count;
@@ -195,7 +197,8 @@ bool am_event_sync_post_request(
 
     bool ret = false;
 
-    if (hub->handlers[dest_id].fn == fn) {
+    if (hub->handlers[dest_id].fn &&
+        hub->handlers_generation[dest_id] == generation) {
         ret = fn(ctx, event, out, out_size);
     }
 
