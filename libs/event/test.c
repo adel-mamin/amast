@@ -162,7 +162,7 @@ static bool test_event_enqueue(
     return rc != AM_RC_ERR;
 }
 
-static bool test_event_proc(void *ctx, const struct am_event *event) {
+static bool test_event_proc(void* ctx, const struct am_event* event) {
     (void)ctx;
     AM_ASSERT(event);
     AM_ASSERT(event->id == EVT_TEST);
@@ -190,24 +190,32 @@ static void test_event_async_publish_two_succeed_two_fail(void) {
 
     { /* async event consumer 1 */
         static const struct am_event* queue_pool[2];
-        am_event_queue_init(&queue[0], queue_pool, AM_COUNTOF(queue_pool), &alloc);
+        am_event_queue_init(
+            &queue[0], queue_pool, AM_COUNTOF(queue_pool), &alloc
+        );
 
         const int handler_id = 0;
-        am_event_async_register_with_id(&hub, test_event_enqueue, &queue[0], handler_id);
+        am_event_async_register_with_id(
+            &hub, test_event_enqueue, &queue[0], handler_id
+        );
 
         am_event_async_subscribe(&hub, handler_id, EVT_TEST);
     }
     { /* async event consumer 2 */
         static const struct am_event* queue_pool[2];
-        am_event_queue_init(&queue[1], queue_pool, AM_COUNTOF(queue_pool), &alloc);
+        am_event_queue_init(
+            &queue[1], queue_pool, AM_COUNTOF(queue_pool), &alloc
+        );
 
         const int handler_id = 1;
-        am_event_async_register_with_id(&hub, test_event_enqueue, &queue[1], handler_id);
+        am_event_async_register_with_id(
+            &hub, test_event_enqueue, &queue[1], handler_id
+        );
 
         am_event_async_subscribe(&hub, handler_id, EVT_TEST);
     }
 
-    /* pubish events */
+    /* publish events */
 
     struct am_event_queue_policy policy = {.margin = 1};
 
@@ -232,22 +240,30 @@ static void test_event_async_publish_two_succeed_two_fail(void) {
 
     enum am_rc rc = AM_RC_OK;
 
-    rc = am_event_queue_pop_front_with_cb(&queue[0], test_event_proc, /*ctx=*/NULL);
+    rc = am_event_queue_pop_front_with_cb(
+        &queue[0], test_event_proc, /*ctx=*/NULL
+    );
     AM_ASSERT(rc == AM_RC_OK);
 
     AM_ASSERT(1 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
 
-    rc = am_event_queue_pop_front_with_cb(&queue[0], test_event_proc, /*ctx=*/NULL);
+    rc = am_event_queue_pop_front_with_cb(
+        &queue[0], test_event_proc, /*ctx=*/NULL
+    );
     AM_ASSERT(rc == AM_RC_ERR);
 
     AM_ASSERT(1 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
 
-    rc = am_event_queue_pop_front_with_cb(&queue[1], test_event_proc, /*ctx=*/NULL);
+    rc = am_event_queue_pop_front_with_cb(
+        &queue[1], test_event_proc, /*ctx=*/NULL
+    );
     AM_ASSERT(rc == AM_RC_OK);
 
     AM_ASSERT(2 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
 
-    rc = am_event_queue_pop_front_with_cb(&queue[1], test_event_proc, /*ctx=*/NULL);
+    rc = am_event_queue_pop_front_with_cb(
+        &queue[1], test_event_proc, /*ctx=*/NULL
+    );
     AM_ASSERT(rc == AM_RC_ERR);
 
     AM_ASSERT(2 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
@@ -274,24 +290,32 @@ static void test_event_async_publish_one_fail_one_succeeds(void) {
 
     { /* async event consumer 1 */
         static const struct am_event* queue_pool[2];
-        am_event_queue_init(&queue[0], queue_pool, AM_COUNTOF(queue_pool), &alloc);
+        am_event_queue_init(
+            &queue[0], queue_pool, AM_COUNTOF(queue_pool), &alloc
+        );
 
         const int handler_id = 0;
-        am_event_async_register_with_id(&hub, test_event_enqueue, &queue[0], handler_id);
+        am_event_async_register_with_id(
+            &hub, test_event_enqueue, &queue[0], handler_id
+        );
 
         am_event_async_subscribe(&hub, handler_id, EVT_TEST);
     }
     { /* async event consumer 2 */
         static const struct am_event* queue_pool[3];
-        am_event_queue_init(&queue[1], queue_pool, AM_COUNTOF(queue_pool), &alloc);
+        am_event_queue_init(
+            &queue[1], queue_pool, AM_COUNTOF(queue_pool), &alloc
+        );
 
         const int handler_id = 1;
-        am_event_async_register_with_id(&hub, test_event_enqueue, &queue[1], handler_id);
+        am_event_async_register_with_id(
+            &hub, test_event_enqueue, &queue[1], handler_id
+        );
 
         am_event_async_subscribe(&hub, handler_id, EVT_TEST);
     }
 
-    /* pubish event */
+    /* publish event */
 
     struct am_event_queue_policy policy = {.margin = 1};
 
@@ -316,22 +340,30 @@ static void test_event_async_publish_one_fail_one_succeeds(void) {
 
     enum am_rc rc = AM_RC_OK;
 
-    rc = am_event_queue_pop_front_with_cb(&queue[0], test_event_proc, /*ctx=*/NULL);
+    rc = am_event_queue_pop_front_with_cb(
+        &queue[0], test_event_proc, /*ctx=*/NULL
+    );
     AM_ASSERT(rc == AM_RC_OK);
 
     AM_ASSERT(0 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
 
-    rc = am_event_queue_pop_front_with_cb(&queue[1], test_event_proc, /*ctx=*/NULL);
+    rc = am_event_queue_pop_front_with_cb(
+        &queue[1], test_event_proc, /*ctx=*/NULL
+    );
     AM_ASSERT(rc == AM_RC_OK);
 
     AM_ASSERT(1 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
 
-    rc = am_event_queue_pop_front_with_cb(&queue[0], test_event_proc, /*ctx=*/NULL);
+    rc = am_event_queue_pop_front_with_cb(
+        &queue[0], test_event_proc, /*ctx=*/NULL
+    );
     AM_ASSERT(rc == AM_RC_ERR);
 
     AM_ASSERT(1 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
 
-    rc = am_event_queue_pop_front_with_cb(&queue[1], test_event_proc, /*ctx=*/NULL);
+    rc = am_event_queue_pop_front_with_cb(
+        &queue[1], test_event_proc, /*ctx=*/NULL
+    );
     AM_ASSERT(rc == AM_RC_OK);
 
     AM_ASSERT(2 == am_event_alloc_get_nfree(&alloc, /*index=*/0));
