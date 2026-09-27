@@ -206,7 +206,8 @@ bool am_event_async_publish(
         AM_ASSERT(hub->alloc);
         /*
          * To avoid a potential race condition, if higher priority
-         * event handler preempts the event publishing and frees the event
+         * event handler (the event handler with larger ID value)
+         * preempts the event publishing and frees the event
          * as processed.
          */
         am_event_inc_ref_cnt(event);
@@ -215,8 +216,9 @@ bool am_event_async_publish(
     bool all_published = true;
 
     /*
-     * The event publishing is done for higher priority
-     * event handlers first to avoid priority inversion.
+     * The event publishing is done for event handlers
+     * with larger ID value first as they are treated as
+     * higher priority event handlers.
      */
     am_event_crit_enter();
 

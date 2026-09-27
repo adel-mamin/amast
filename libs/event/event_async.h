@@ -195,6 +195,11 @@ void am_event_async_unsubscribe_all(
  *                    am_event_async_unsubscribe_all(),
  *                    am_event_async_unsubscribe(),
  *                    am_event_async_unregister()
+ *                    Also defines the priority of the event handler:
+ *                    the event handlers with larger ID value get
+ *                    published events before the event handler with
+ *                    smaller ID value.
+ *                    This is done in am_event_async_publish().
  */
 void am_event_async_register_with_id(
     struct am_event_async_hub* hub,

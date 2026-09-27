@@ -81,9 +81,10 @@ AM_ASSERT_STATIC(AM_AO_NUM_MAX <= AM_EVT_HANDLERS_NUM_MAX);
 struct am_ao_prio {
     /**
      * Define the priority of active object.
-     * Used by AO library. Valid range [0, #AM_TASK_NUM_MAX[.
+     * Used by AO library. Valid range [#AM_AO_PRIO_MIN, #AM_AO_PRIO_MAX].
      * Must be unique for different active objects.
      * Used by both cooperative and preemptive ports of active objects.
+     * The larger the value - the higher is the priority.
      */
     unsigned ao : 8;
     /**
@@ -91,6 +92,7 @@ struct am_ao_prio {
      * Used by PAL library. Valid range [0, #AM_TASK_NUM_MAX[.
      * More than one active object may have same task priority.
      * Only used by preemptive port of active objects.
+     * The larger the value - the higher is the priority.
      */
     unsigned task : 8;
 };
