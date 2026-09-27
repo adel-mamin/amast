@@ -47,6 +47,7 @@ void am_event_alloc_add_pool(
     int block_size,
     int alignment
 ) {
+    AM_ASSERT(block_size >= (int)sizeof(struct am_event));
     AM_ASSERT(alloc->npools < AM_EVENT_POOLS_NUM_MAX);
     if (alloc->npools > 0) {
         int prev_size =
