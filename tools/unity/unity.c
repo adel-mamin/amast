@@ -327,7 +327,9 @@ static void add_amast_includes_std(FILE* f, const struct files* db) {
     for (int i = 0; i < db->includes_std_num; ++i) {
         if (strstr(db->includes_std[i], "#include") ||
             /* verbatim inclusion */
-            strstr(db->includes_std[i], "#define")) {
+            strstr(db->includes_std[i], "#define") ||
+            strstr(db->includes_std[i], "#undef") ||
+            strstr(db->includes_std[i], "/*")) {
             (void)fprintf(f, "%s", db->includes_std[i]);
         } else if (db->includes_std[i][0] == '\n') {
             (void)fprintf(f, "\n");

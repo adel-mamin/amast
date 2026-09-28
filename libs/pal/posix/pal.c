@@ -31,7 +31,7 @@
 /* amast-pragma: verbatim-include-std-on */
 
 #undef _GNU_SOURCE
-// NOLINTNEXTLINE(bugprone-reserved-identifier)
+/* NOLINTNEXTLINE(bugprone-reserved-identifier) */
 #define _GNU_SOURCE
 
 #include <stdbool.h>
@@ -40,7 +40,7 @@
 #include <string.h>
 
 #undef _POSIX_C_SOURCE
-// NOLINTNEXTLINE(bugprone-reserved-identifier)
+/* NOLINTNEXTLINE(bugprone-reserved-identifier) */
 #define _POSIX_C_SOURCE 200809L
 
 #include <pthread.h>
