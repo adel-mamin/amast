@@ -222,13 +222,9 @@ static void smoker_init(
 }
 
 struct agent {
-    /*
-     * Must be the first member of the structure.
-     * See https://amast.readthedocs.io/hsm.html#hsm-coding-rules for details
-     */
+    struct am_timer* timer;
     struct am_hsm hsm;
     struct am_ao ao;
-    struct am_timer* timer;
     struct am_timer_event_x timeout;
     int stats[AM_SMOKERS_NUM_MAX];
     int nstops;
