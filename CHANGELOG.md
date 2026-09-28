@@ -7,6 +7,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Add AM_EVT_HANDLERS_NUM_MAX to `amast_config.h`
+
 ## v0.17.4 - 27-September-2026
 
 ### Changed

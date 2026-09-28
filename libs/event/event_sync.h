@@ -290,8 +290,7 @@ bool am_event_sync_post_request(
  * Publish event to subscribed event handlers.
  *
  * This function delivers @p event to all event handlers subscribed to the
- * event ID carried by @p event and allows a subscribed handler to return an
- * output event in @p out.
+ * event ID carried by @p event.
  *
  * @param hub           synchronous event hub
  * @param event         input event

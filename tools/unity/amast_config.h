@@ -27,24 +27,22 @@
 #ifndef AMAST_CONFIG_H_INCLUDED
 #define AMAST_CONFIG_H_INCLUDED
 
-/**
- * Enable am_fsm_set_spy() API to register user callback
- * to intercept external events passed via am_fsm_dispatch() API.
- * Increases the size of struct am_fsm by the size of a function
- * pointer.
- */
-#define AM_FSM_SPY
-
 /** Enable am_assert_failure() implementation. */
 #ifndef AM_ASSERT_FAILURE_ENABLED
 #define AM_ASSERT_FAILURE_ENABLED 1
 #endif
 
 /**
- * The max number of event pools.
+ * The maximum number of event pools.
  * Valid range: [1,31].
  */
 #define AM_EVENT_POOLS_NUM_MAX 12
+
+/**
+ * The maximum number of event handlers.
+ * Valid range: [1,64].
+ */
+#define AM_EVT_HANDLERS_NUM_MAX 64
 
 /**
  * The maximum number of active objects.

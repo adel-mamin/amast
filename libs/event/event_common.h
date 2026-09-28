@@ -40,10 +40,11 @@
 #include "common/macros.h"
 #include "common/types.h"
 #include "onesize/onesize.h"
-/* #include "event/event_pool.h" */
 
+#ifndef AM_EVT_HANDLERS_NUM_MAX
 /** The maximum number of event handlers */
 #define AM_EVT_HANDLERS_NUM_MAX 64
+#endif /* AM_EVT_HANDLERS_NUM_MAX */
 
 /**
  * Empty event.
