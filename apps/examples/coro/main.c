@@ -322,7 +322,7 @@ static void input_task(void* param) {
 int main(void) {
     am_pal_global_init(/*arg=*/NULL);
 
-    struct am_event_subscribe_list pubsub_list[CORO_EVT_PUB_MAX];
+    struct am_event_subscribe_list pubsub_list[CORO_EVT_PUB_MAX - AM_EVT_USER];
     am_ao_global_init(/*cfg=*/NULL, pubsub_list, AM_COUNTOF(pubsub_list));
 
     struct am_timer timer;

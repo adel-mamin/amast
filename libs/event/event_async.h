@@ -97,6 +97,7 @@ extern "C" {
  * @param hub   asynchronous event hub to initialize
  * @param sub   event subscribe list
  * @param nsub  number of entries in the event subscribe list
+ *              Must be big enough to accommodate all user pub/sub events.
  * @param alloc event allocator
  *
  * Thread unsafe.

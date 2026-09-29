@@ -100,8 +100,8 @@ int main(void) {
         top_event_post(&top, &commit);
         low_event_post(&low, &commit);
 
-        am_sleep_till_ticks(AM_TIMEBASE_MS, now_ms + 1);
         now_ms += 1;
+        am_sleep_till_ticks(AM_TIMEBASE_MS, now_ms);
 
         timer_proc(&timer, &hub);
     }

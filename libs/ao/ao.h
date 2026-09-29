@@ -490,6 +490,7 @@ void am_ao_stop(struct am_ao* ao);
  *             the configuration. Can be NULL.
  * @param sub  The event subscribe list. Can be NULL.
  * @param nsub The size of the event subscribe list.
+ *             Must be big enough to accommodate all user pub/sub events.
  */
 void am_ao_global_init(
     const struct am_ao_cfg* cfg, struct am_event_subscribe_list* sub, int nsub

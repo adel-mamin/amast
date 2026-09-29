@@ -104,11 +104,11 @@ static void test_publish(void) {
         AM_ALIGN_MAX
     );
 
-    struct am_event_subscribe_list m_pubsub_list[AM_AO_EVT_PUB_MAX];
+    struct am_event_subscribe_list pubsub_list[AM_AO_EVT_PUB_MAX - AM_EVT_USER];
     struct am_ao_cfg cfg = {
         .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
     };
-    am_ao_global_init(&cfg, m_pubsub_list, AM_COUNTOF(m_pubsub_list));
+    am_ao_global_init(&cfg, pubsub_list, AM_COUNTOF(pubsub_list));
 
     publish_init(publish_log);
 

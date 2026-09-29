@@ -114,7 +114,8 @@ extern "C" {
  *               am_event_sync_publish_request(),
  *               am_event_sync_subscribe(), am_event_sync_unsubscribe() and
  *               am_event_sync_unsubscribe_all() APIs.
- * @param nsub   the number of elements in sub array
+ * @param nsub   the number of elements in sub array.
+ *               Must be big enough to accommodate all user pub/sub events.
  */
 void am_event_sync_init(
     struct am_event_sync_hub* hub, struct am_event_subscribe_list* sub, int nsub

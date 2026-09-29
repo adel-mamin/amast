@@ -389,7 +389,7 @@ int main(void) {
         AM_ALIGNOF(events_t)
     );
 
-    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX];
+    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX - AM_EVT_USER];
     struct am_ao_cfg cfg = {
         .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
     };

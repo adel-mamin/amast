@@ -10,10 +10,12 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Added
 
 - Add AM_EVT_HANDLERS_NUM_MAX to `amast_config.h`
+- Clarify the required size of pubsub event subscribe lists
 
 ### Fixed
 
 - Fix `amast_posix.c` file construction
+- The allocation of pubsub event subscribe lists
 
 ## v0.17.4 - 27-September-2026
 
