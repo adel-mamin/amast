@@ -177,7 +177,11 @@ int main(void) {
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
-    am_ao_global_init(/*cfg=*/NULL, /*sub=*/NULL, /*nsub=*/0);
+    struct am_ao_cfg cfg = {
+        .crit_enter = am_crit_enter,
+        .crit_exit = am_crit_exit,
+    };
+    am_ao_global_init(&cfg);
 
     struct wdt wdt;
     wdt_init(&wdt, &timer);
@@ -217,7 +221,7 @@ int main(void) {
     });
     am_ticker_start(ticker);
 
-    while (am_ao_get_cnt() > 0) {
+    while (am_ao_get_count() > 0) {
         am_ao_run_all();
     }
 

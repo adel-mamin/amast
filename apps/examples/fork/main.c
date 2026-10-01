@@ -227,9 +227,7 @@ int main(int argc, const char* argv[]) {
     struct am_event_alloc alloc;
     am_event_alloc_init(&alloc);
 
-    /*
-     * Event size is set to arbitrary value.
-     */
+    /* Event size is set to an arbitrary value. */
     char event_pool[EVT_MAX][128] AM_ALIGNED(AM_ALIGN_MAX);
     am_event_alloc_add_pool(
         &alloc,
@@ -239,11 +237,17 @@ int main(int argc, const char* argv[]) {
         AM_ALIGN_MAX
     );
 
-    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX - AM_EVT_USER];
+    struct am_event_subscription subscriptions[EVT_PUB_MAX - AM_EVT_USER];
     struct am_ao_cfg cfg = {
-        .crit_enter = am_crit_enter, .crit_exit = am_crit_exit, .alloc = &alloc
+        .crit_enter = am_crit_enter,
+        .crit_exit = am_crit_exit,
+        .async = {
+            .alloc = &alloc,
+            .subscriptions = subscriptions,
+            .subscription_count = AM_COUNTOF(subscriptions),
+        }
     };
-    am_ao_global_init(&cfg, pubsub_list, AM_COUNTOF(pubsub_list));
+    am_ao_global_init(&cfg);
 
     struct progress progress;
     progress_init(&progress, &timer);
@@ -283,7 +287,7 @@ int main(int argc, const char* argv[]) {
         /*arg=*/AM_CAST(void*, argv)
     );
 
-    while (am_ao_get_cnt() > 0) {
+    while (am_ao_get_count() > 0) {
         am_ao_run_all();
     }
 

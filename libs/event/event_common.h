@@ -152,7 +152,7 @@ AM_ALIGNOF_DEFINE(am_event_t);
 AM_ALIGNOF_DEFINE(am_event_ptr_t);
 
 /** The subscribe list for one event. */
-struct am_event_subscribe_list {
+struct am_event_subscription {
     uint8_t list[AM_DIV_CEIL(AM_EVT_HANDLERS_NUM_MAX, 8)]; /**< the bitmask */
 };
 

@@ -226,6 +226,8 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygentypedef:: am_event_handler_fn
 
+.. doxygenstruct:: am_event_async_cfg
+
 .. doxygentypedef:: am_event_sync_fn
 
 .. doxygentypedef:: am_event_async_enqueue_fn
@@ -485,7 +487,7 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygendefine:: AM_AO_PRIO_IS_VALID
 
-.. doxygenstruct:: am_event_subscribe_list
+.. doxygenstruct:: am_event_subscription
 
 .. doxygenfunction:: am_ao_publish_exclude_x
 
@@ -529,7 +531,7 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygenfunction:: am_ao_wait_start_all
 
-.. doxygenfunction:: am_ao_get_cnt
+.. doxygenfunction:: am_ao_get_count
 
 .. doxygenfunction:: am_ao_get_own_prio
 

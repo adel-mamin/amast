@@ -72,9 +72,9 @@ typedef void (*am_event_sync_observer_fn)(
 /** Synchronous event hub. */
 struct am_event_sync_hub {
     /** User defined pub/sub list. */
-    struct am_event_subscribe_list* sub;
+    struct am_event_subscription* subscriptions;
     /** User defined pub/sub list length. */
-    int nsub;
+    int subscription_count;
 
     /** Synchronous event handlers */
     struct am_event_sync_handler {
@@ -96,6 +96,25 @@ struct am_event_sync_hub {
     am_event_sync_observer_fn observer_cb;
 };
 
+/** Synchronous event hub configuration */
+struct am_event_sync_cfg {
+    /**
+     * The array of subscription lists
+     * Optional. Only needed, if event pub/sub functionality is used.
+     * The pub/sub functionality is provided by
+     * am_event_sync_publish_request(),
+     * am_event_sync_subscribe(), am_event_sync_unsubscribe() and
+     * am_event_sync_unsubscribe_all() APIs.
+     */
+    struct am_event_subscription* subscriptions;
+
+    /**
+     * The number of elements in subscriptions array.
+     * Must be big enough to accommodate all user pub/sub events.
+     */
+    int subscription_count;
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -107,18 +126,11 @@ extern "C" {
  *
  * Thread unsafe.
  *
- * @param hub    synchronous event hub to initialize
- * @param sub    the array of subscription lists
- *               Optional. Only needed, if event pub/sub functionality is used.
- *               The pub/sub functionality is provided by
- *               am_event_sync_publish_request(),
- *               am_event_sync_subscribe(), am_event_sync_unsubscribe() and
- *               am_event_sync_unsubscribe_all() APIs.
- * @param nsub   the number of elements in sub array.
- *               Must be big enough to accommodate all user pub/sub events.
+ * @param hub  synchronous event hub to initialize
+ * @param cfg  synchronous event hub configuration
  */
 void am_event_sync_init(
-    struct am_event_sync_hub* hub, struct am_event_subscribe_list* sub, int nsub
+    struct am_event_sync_hub* hub, const struct am_event_sync_cfg* cfg
 );
 
 /**

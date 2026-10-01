@@ -361,12 +361,16 @@ int main(void) {
     am_pal_global_init(/*arg=*/NULL);
 
     /* event publish/subscribe memory */
-    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX - AM_EVT_USER];
+    struct am_event_subscription subscriptions[EVT_PUB_MAX - AM_EVT_USER];
     struct am_ao_cfg cfg = {
-        .crit_enter = am_crit_enter, .crit_exit = am_crit_exit,
-        .alloc = NULL
+        .crit_enter = am_crit_enter,
+        .crit_exit = am_crit_exit,
+        .async = {
+            .subscriptions = subscriptions,
+            .subscription_count = AM_COUNTOF(subscriptions),
+        }
     };
-    am_ao_global_init(&cfg, pubsub_list, AM_COUNTOF(pubsub_list));
+    am_ao_global_init(&cfg);
 
     struct am_timer timer;
     am_timer_init(&timer);
@@ -408,7 +412,7 @@ int main(void) {
     });
     am_ticker_start(ticker);
 
-    while (am_ao_get_cnt() > 0) {
+    while (am_ao_get_count() > 0) {
         am_ao_run_all();
     }
 

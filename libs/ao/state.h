@@ -41,7 +41,7 @@ struct am_ao_state {
     /** User defined active objects, or NULL, if not defined. */
     struct am_ao* aos[AM_AO_NUM_MAX];
     /** Number of runnings AOs */
-    int aos_cnt;
+    int aos_count;
 
     /** User callback on idle state, when no AO is running. */
     void (*on_idle)(void);

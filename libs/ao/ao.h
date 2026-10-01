@@ -39,6 +39,7 @@
 #include "common/macros.h"
 #include "event/event_common.h"
 #include "event/event_queue.h"
+#include "event/event_async.h"
 #include "pal/pal.h"
 
 #ifndef AM_AO_NUM_MAX
@@ -143,8 +144,8 @@ struct am_ao_cfg {
     /** Callback to exit critical section. */
     void (*crit_exit)(void);
 
-    /** Event memory allocator. */
-    struct am_event_alloc* alloc;
+    /** Asynchronous event hub configuration */
+    struct am_event_async_cfg async;
 };
 
 #ifdef __cplusplus
@@ -487,14 +488,9 @@ void am_ao_stop(struct am_ao* ao);
  *
  * @param cfg  active object library configuration
  *             The active object library makes an internal copy of
- *             the configuration. Can be NULL.
- * @param sub  The event subscribe list. Can be NULL.
- * @param nsub The size of the event subscribe list.
- *             Must be big enough to accommodate all user pub/sub events.
+ *             the configuration. Must be not NULL.
  */
-void am_ao_global_init(
-    const struct am_ao_cfg* cfg, struct am_event_subscribe_list* sub, int nsub
-);
+void am_ao_global_init(const struct am_ao_cfg* cfg);
 
 /**
  * Active object library state de-initialization.
@@ -552,7 +548,7 @@ void am_ao_unsubscribe_all(const struct am_ao* ao);
  *
  * @retval true   dispatched one event
  * @retval false  dispatched no events.
- *                Call am_ao_get_cnt() to make sure there are still
+ *                Call am_ao_get_count() to make sure there are still
  *                running active objects available.
  */
 bool am_ao_run_all(void);
@@ -612,7 +608,7 @@ void am_ao_wait_start_all(void);
  *
  * @return the number of running active objects.
  */
-int am_ao_get_cnt(void);
+int am_ao_get_count(void);
 
 /**
  * Get active object own priority level.

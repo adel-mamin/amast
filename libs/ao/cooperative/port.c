@@ -139,7 +139,7 @@ void am_ao_start(
 
     AM_ASSERT(NULL == me->aos[prio.ao]);
     me->aos[prio.ao] = ao;
-    ++me->aos_cnt;
+    ++me->aos_count;
 
     AM_ATOMIC_STORE_N(&ao->running, true);
 
@@ -161,7 +161,7 @@ void am_ao_stop(struct am_ao* ao) {
     int task_id = am_task_get_own_id();
     AM_ASSERT(task_id == ao->task_id); /* check API description */
     struct am_ao_state* me = &am_ao_state_;
-    AM_ASSERT(me->aos_cnt);
+    AM_ASSERT(me->aos_count);
 
     am_event_async_unsubscribe_all(&me->async_hub, ao->prio.ao);
 
@@ -172,7 +172,7 @@ void am_ao_stop(struct am_ao* ao) {
     am_bit_u64_clear(&am_ready_aos_, ao->prio.ao);
 
     me->aos[ao->prio.ao] = NULL;
-    --me->aos_cnt;
+    --me->aos_count;
     ao->init_called = false;
 
     AM_ATOMIC_STORE_N(&ao->running, false);

@@ -7,6 +7,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Active object, async and sync modules initialization API
+
 ### Added
 
 - Add AM_EVT_HANDLERS_NUM_MAX to `amast_config.h`

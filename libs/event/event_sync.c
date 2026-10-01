@@ -52,32 +52,39 @@ static void am_event_sync_observer_nil(
 }
 
 void am_event_sync_init(
-    struct am_event_sync_hub* hub, struct am_event_subscribe_list* sub, int nsub
+    struct am_event_sync_hub* hub, const struct am_event_sync_cfg* cfg
 ) {
     AM_ASSERT(hub);
 
     memset(hub, 0, sizeof(*hub));
 
-    if (sub) {
-        AM_ASSERT(nsub > 0);
-        memset(sub, 0, sizeof(*sub) * (size_t)nsub);
+    if (cfg->subscriptions || cfg->subscription_count) {
+        AM_ASSERT(cfg->subscriptions);
+        AM_ASSERT(cfg->subscription_count > 0);
+
+        hub->subscriptions = cfg->subscriptions;
+        hub->subscription_count = cfg->subscription_count;
+
+        memset(
+            hub->subscriptions,
+            0,
+            sizeof(hub->subscriptions[0]) * (size_t)hub->subscription_count
+        );
     }
 
-    hub->sub = sub;
-    hub->nsub = nsub;
     hub->observer_cb = am_event_sync_observer_nil;
 }
 
 bool am_event_sync_is_pubsub_enabled(const struct am_event_sync_hub* hub) {
     AM_ASSERT(hub);
-    return (hub->sub != NULL);
+    return (hub->subscriptions != NULL);
 }
 
 void am_event_sync_subscribe(
     struct am_event_sync_hub* hub, int handler_id, uint16_t event_id
 ) {
     AM_ASSERT(hub);
-    AM_ASSERT(hub->sub);
+    AM_ASSERT(hub->subscriptions);
 
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
@@ -85,17 +92,18 @@ void am_event_sync_subscribe(
     AM_ASSERT(event_id >= AM_EVT_USER);
 
     int si = event_id - AM_EVT_USER;
-    AM_ASSERT(si < hub->nsub);
+    AM_ASSERT(si < hub->subscription_count);
 
     int li = handler_id / 8;
-    hub->sub[si].list[li] |= (uint8_t)(1U << (unsigned)(handler_id % 8));
+    hub->subscriptions[si].list[li] |=
+        (uint8_t)(1U << (unsigned)(handler_id % 8));
 }
 
 void am_event_sync_unsubscribe(
     struct am_event_sync_hub* hub, int handler_id, uint16_t event_id
 ) {
     AM_ASSERT(hub);
-    AM_ASSERT(hub->sub);
+    AM_ASSERT(hub->subscriptions);
 
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
@@ -103,17 +111,18 @@ void am_event_sync_unsubscribe(
     AM_ASSERT(event_id >= AM_EVT_USER);
 
     int si = event_id - AM_EVT_USER;
-    AM_ASSERT(si < hub->nsub);
+    AM_ASSERT(si < hub->subscription_count);
 
     int li = handler_id / 8;
-    hub->sub[si].list[li] &= (uint8_t)~(1U << (unsigned)(handler_id % 8));
+    hub->subscriptions[si].list[li] &=
+        (uint8_t)~(1U << (unsigned)(handler_id % 8));
 }
 
 void am_event_sync_unsubscribe_all(
     struct am_event_sync_hub* hub, int handler_id
 ) {
     AM_ASSERT(hub);
-    AM_ASSERT(hub->sub);
+    AM_ASSERT(hub->subscriptions);
 
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
@@ -122,8 +131,8 @@ void am_event_sync_unsubscribe_all(
     int li = handler_id / 8;
     unsigned clear_mask = ~(1U << (unsigned)(handler_id % 8));
 
-    for (int i = 0; i < hub->nsub; ++i) {
-        hub->sub[i].list[li] &= (uint8_t)clear_mask;
+    for (int i = 0; i < hub->subscription_count; ++i) {
+        hub->subscriptions[i].list[li] &= (uint8_t)clear_mask;
     }
 }
 
@@ -156,7 +165,7 @@ void am_event_sync_unregister(struct am_event_sync_hub* hub, int handler_id) {
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
     AM_ASSERT(hub->handlers[handler_id].fn);
 
-    if (hub->sub) {
+    if (hub->subscriptions) {
         am_event_sync_unsubscribe_all(hub, handler_id);
     }
 
@@ -226,7 +235,7 @@ bool am_event_sync_publish_request(
     int out_size
 ) {
     AM_ASSERT(hub);
-    AM_ASSERT(hub->sub);
+    AM_ASSERT(hub->subscriptions);
     AM_ASSERT(hub->recursion_count < AM_SYNC_RECURSION_MAX);
 
     AM_ASSERT(event);
@@ -237,16 +246,16 @@ bool am_event_sync_publish_request(
     bool all_published = true;
 
     int si = event->id - AM_EVT_USER;
-    AM_ASSERT(si < hub->nsub);
+    AM_ASSERT(si < hub->subscription_count);
 
-    struct am_event_subscribe_list sub = hub->sub[si];
+    struct am_event_subscription subscriptions = hub->subscriptions[si];
     uint8_t generation[AM_EVT_HANDLERS_NUM_MAX];
     memcpy(generation, hub->handlers_generation, sizeof(generation));
 
-    for (int i = 0; i < AM_COUNTOF(sub.list); ++i) {
-        while (sub.list[i]) {
-            int msb = am_bit_u8_msb(sub.list[i]);
-            sub.list[i] &= (uint8_t)~(1U << (unsigned)msb);
+    for (int i = 0; i < AM_COUNTOF(subscriptions.list); ++i) {
+        while (subscriptions.list[i]) {
+            int msb = am_bit_u8_msb(subscriptions.list[i]);
+            subscriptions.list[i] &= (uint8_t)~(1U << (unsigned)msb);
 
             int handler_id = (8 * i) + msb;
 

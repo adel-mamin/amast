@@ -125,7 +125,7 @@ void am_ao_start(
     AM_ASSERT(NULL == me->aos[prio.ao]);
     me->aos[prio.ao] = ao;
 
-    AM_ATOMIC_FETCH_ADD(&me->aos_cnt, 1);
+    AM_ATOMIC_FETCH_ADD(&me->aos_count, 1);
 
     ao->task_id = am_task_create(
         name,
@@ -147,7 +147,7 @@ void am_ao_stop(struct am_ao* ao) {
 
     int task_id = am_task_get_own_id();
     AM_ASSERT(task_id == ao->task_id); /* check API description */
-    AM_ASSERT(AM_ATOMIC_LOAD_N(&me->aos_cnt));
+    AM_ASSERT(AM_ATOMIC_LOAD_N(&me->aos_count));
 
     if (am_event_async_is_pubsub_enabled(&me->async_hub)) {
         am_ao_unsubscribe_all(ao);
@@ -160,7 +160,7 @@ void am_ao_stop(struct am_ao* ao) {
 
     me->aos[ao->prio.ao] = NULL;
 
-    AM_ATOMIC_FETCH_ADD(&me->aos_cnt, -1);
+    AM_ATOMIC_FETCH_ADD(&me->aos_count, -1);
 
     ao->init_called = false;
 
@@ -170,7 +170,7 @@ void am_ao_stop(struct am_ao* ao) {
 
     am_event_async_unregister(&me->async_hub, ao->prio.ao);
 
-    if (0 == AM_ATOMIC_LOAD_N(&me->aos_cnt)) {
+    if (0 == AM_ATOMIC_LOAD_N(&me->aos_count)) {
         am_task_notify(/*task_id=*/AM_TASK_ID_MAIN);
     }
 }

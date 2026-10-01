@@ -38,7 +38,6 @@
 #include "event/event_common.h"
 #include "event/event_async.h"
 #include "event/event_queue.h"
-#include "pal/pal.h"
 #include "ao/state.h"
 
 #include "ao/ao.h"
@@ -166,9 +165,9 @@ void am_ao_init(
     ao->init_called = true;
 }
 
-void am_ao_global_init(
-    const struct am_ao_cfg* cfg, struct am_event_subscribe_list* sub, int nsub
-) {
+void am_ao_global_init(const struct am_ao_cfg* cfg) {
+    AM_ASSERT(cfg);
+
     struct am_ao_state* me = &am_ao_state_;
     memset(me, 0, sizeof(*me));
 
@@ -176,22 +175,17 @@ void am_ao_global_init(
 
     AM_ATOMIC_STORE_N(&me->init_complete, false);
 
-    if (cfg) {
-        me->crit_enter = cfg->crit_enter;
-        me->crit_exit = cfg->crit_exit;
-        me->on_idle = cfg->on_idle;
-        me->alloc = cfg->alloc;
-    } else {
-        me->crit_enter = am_crit_enter;
-        me->crit_exit = am_crit_exit;
-        me->on_idle = am_on_idle;
-        me->alloc = NULL;
-    }
+    me->crit_enter = cfg->crit_enter;
+    me->crit_exit = cfg->crit_exit;
+    me->on_idle = cfg->on_idle;
+
+    me->alloc = cfg->async.alloc;
 
     me->running_ao_prio = AM_AO_PRIO_INVALID;
 
     am_event_register_crit(me->crit_enter, me->crit_exit);
-    am_event_async_init(&me->async_hub, sub, nsub, cfg ? cfg->alloc : NULL);
+
+    am_event_async_init(&me->async_hub, &cfg->async);
 }
 
 void am_ao_global_deinit(void) {}
@@ -280,7 +274,7 @@ void am_ao_log_last_events(void (*log)(const char* name, uint16_t event)) {
     }
 }
 
-int am_ao_get_cnt(void) { return AM_ATOMIC_LOAD_N(&am_ao_state_.aos_cnt); }
+int am_ao_get_count(void) { return AM_ATOMIC_LOAD_N(&am_ao_state_.aos_count); }
 
 bool am_ao_event_enqueue_unsafe(
     void* ctx, const struct am_event* event, struct am_event_queue_policy policy

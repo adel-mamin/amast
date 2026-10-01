@@ -83,9 +83,13 @@ int main(void) {
     am_timer_init(&timer);
 
     struct am_event_sync_hub hub;
-    struct am_event_subscribe_list pubsub_list[EVT_PUB_MAX - AM_EVT_USER];
+    struct am_event_subscription subscriptions[EVT_PUB_MAX - AM_EVT_USER];
 
-    am_event_sync_init(&hub, &pubsub_list[0], AM_COUNTOF(pubsub_list));
+    struct am_event_sync_cfg cfg = {
+        .subscriptions = subscriptions,
+        .subscription_count = AM_COUNTOF(subscriptions)
+    };
+    am_event_sync_init(&hub, &cfg);
     am_event_sync_observe(&hub, event_sync_observe);
 
     struct top top;

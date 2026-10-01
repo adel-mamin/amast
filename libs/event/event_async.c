@@ -40,29 +40,28 @@
 #include "event_queue.h"
 
 void am_event_async_init(
-    struct am_event_async_hub* hub,
-    struct am_event_subscribe_list* sub,
-    int nsub,
-    struct am_event_alloc* alloc
+    struct am_event_async_hub* hub, const struct am_event_async_cfg* cfg
 ) {
-    if (nsub) {
-        AM_ASSERT(sub != 0);
-    }
-    if (sub) {
-        AM_ASSERT(nsub > 0);
-        memset(sub, 0, sizeof(*sub) * (size_t)nsub);
+    if (cfg->subscription_count || cfg->subscriptions) {
+        AM_ASSERT(cfg->subscriptions != 0);
+        AM_ASSERT(cfg->subscription_count > 0);
+        memset(
+            cfg->subscriptions,
+            0,
+            sizeof(*cfg->subscriptions) * (size_t)cfg->subscription_count
+        );
     }
 
     memset(hub, 0, sizeof(*hub));
 
-    AM_ATOMIC_STORE_N(&hub->sub, sub);
-    hub->nsub = nsub;
+    hub->subscriptions = cfg->subscriptions;
+    hub->subscription_count = cfg->subscription_count;
 
-    hub->alloc = alloc;
+    hub->alloc = cfg->alloc;
 }
 
 bool am_event_async_is_pubsub_enabled(struct am_event_async_hub* hub) {
-    return AM_ATOMIC_LOAD_N(&hub->sub) != NULL;
+    return AM_ATOMIC_LOAD_N(&hub->subscriptions) != NULL;
 }
 
 void am_event_async_subscribe(
@@ -71,17 +70,18 @@ void am_event_async_subscribe(
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
     AM_ASSERT(event_id >= AM_EVT_USER);
-    AM_ASSERT(hub->sub != NULL);
+    AM_ASSERT(hub->subscriptions != NULL);
 
     int si = event_id - AM_EVT_USER;
-    AM_ASSERT(si < hub->nsub);
+    AM_ASSERT(si < hub->subscription_count);
 
     int li = handler_id / 8;
 
     am_event_crit_enter();
 
     AM_ASSERT(hub->handlers[handler_id].fn);
-    hub->sub[si].list[li] |= (uint8_t)(1U << (unsigned)(handler_id % 8));
+    hub->subscriptions[si].list[li] |=
+        (uint8_t)(1U << (unsigned)(handler_id % 8));
 
     am_event_crit_exit();
 }
@@ -92,10 +92,10 @@ void am_event_async_unsubscribe(
     AM_ASSERT(handler_id >= 0);
     AM_ASSERT(handler_id < AM_EVT_HANDLERS_NUM_MAX);
     AM_ASSERT(event_id >= AM_EVT_USER);
-    AM_ASSERT(hub->sub != NULL);
+    AM_ASSERT(hub->subscriptions != NULL);
 
     int si = event_id - AM_EVT_USER;
-    AM_ASSERT(si < hub->nsub);
+    AM_ASSERT(si < hub->subscription_count);
 
     int li = handler_id / 8;
 
@@ -103,7 +103,8 @@ void am_event_async_unsubscribe(
 
     AM_ASSERT(hub->handlers[handler_id].fn);
 
-    hub->sub[si].list[li] &= (uint8_t)~(1U << (unsigned)(handler_id % 8));
+    hub->subscriptions[si].list[li] &=
+        (uint8_t)~(1U << (unsigned)(handler_id % 8));
 
     am_event_crit_exit();
 }
@@ -121,8 +122,8 @@ void am_event_async_unsubscribe_all(
 
     AM_ASSERT(hub->handlers[handler_id].fn);
 
-    for (int i = 0; i < hub->nsub; ++i) {
-        hub->sub[i].list[li] &= (uint8_t)clear_mask;
+    for (int i = 0; i < hub->subscription_count; ++i) {
+        hub->subscriptions[i].list[li] &= (uint8_t)clear_mask;
     }
 
     am_event_crit_exit();
@@ -144,7 +145,7 @@ void am_event_async_register_with_id(
 
     hub->handlers[handler_id].fn = fn;
     hub->handlers[handler_id].ctx = ctx;
-    hub->handlers_generation[handler_id]++;
+    hub->handler_generations[handler_id]++;
 
     am_event_crit_exit();
 }
@@ -158,8 +159,8 @@ void am_event_async_unregister(struct am_event_async_hub* hub, int handler_id) {
     int h = handler_id / 8;
     unsigned clear_mask = ~(1U << (unsigned)(handler_id % 8));
 
-    for (int i = 0; i < hub->nsub; ++i) {
-        hub->sub[i].list[h] &= (uint8_t)clear_mask;
+    for (int i = 0; i < hub->subscription_count; ++i) {
+        hub->subscriptions[i].list[h] &= (uint8_t)clear_mask;
     }
 
     AM_ASSERT(hub->handlers[handler_id].fn);
@@ -200,13 +201,13 @@ bool am_event_async_publish(
     const struct am_event* event,
     struct am_event_queue_policy policy
 ) {
-    AM_ASSERT(hub->sub != NULL);
+    AM_ASSERT(hub->subscriptions != NULL);
     AM_ASSERT(event);
     AM_ASSERT(event->id >= AM_EVT_USER);
 
     int si = event->id - AM_EVT_USER;
 
-    AM_ASSERT(si < hub->nsub);
+    AM_ASSERT(si < hub->subscription_count);
 
     if (!am_event_is_static(event)) {
         AM_ASSERT(hub->alloc);
@@ -228,9 +229,9 @@ bool am_event_async_publish(
      */
     am_event_crit_enter();
 
-    struct am_event_subscribe_list sub = hub->sub[si];
-    uint8_t generation[AM_EVT_HANDLERS_NUM_MAX];
-    memcpy(generation, hub->handlers_generation, sizeof(generation));
+    struct am_event_subscription sub = hub->subscriptions[si];
+    uint8_t generations[AM_EVT_HANDLERS_NUM_MAX];
+    memcpy(generations, hub->handler_generations, sizeof(generations));
 
     am_event_crit_exit();
 
@@ -252,7 +253,7 @@ bool am_event_async_publish(
              * Make sure the handler has not changed while publishing the event.
              */
             if (handler->fn &&
-                (hub->handlers_generation[ind] == generation[ind])) {
+                (hub->handler_generations[ind] == generations[ind])) {
                 bool ok = handler->fn(handler->ctx, event, policy);
                 if (!ok) {
                     all_published = false;

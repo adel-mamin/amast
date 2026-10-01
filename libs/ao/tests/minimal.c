@@ -123,7 +123,11 @@ static int loopback_test_init(
 int main(void) {
     am_pal_global_init(/*arg=*/NULL);
 
-    am_ao_global_init(/*cfg=*/NULL, /*sub=*/NULL, /*nsub=*/0);
+    struct am_ao_cfg cfg = {
+        .crit_enter = am_crit_enter,
+        .crit_exit = am_crit_exit,
+    };
+    am_ao_global_init(&cfg);
 
     am_ao_init(
         &m_loopback.ao, am_hsm_start_cb, am_hsm_dispatch_cb, &m_loopback.hsm
@@ -160,7 +164,7 @@ int main(void) {
         /*init_event=*/NULL
     );
 
-    while (am_ao_get_cnt() > 0) {
+    while (am_ao_get_count() > 0) {
         am_ao_run_all();
     }
 

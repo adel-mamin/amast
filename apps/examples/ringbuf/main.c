@@ -70,7 +70,11 @@ static void test_ringbuf_threading(void) {
 
     am_ringbuf_init(&ringbuf, buf, AM_COUNTOF(buf));
 
-    am_ao_global_init(/*cfg=*/NULL, /*sub=*/NULL, /*nsub=*/0);
+    struct am_ao_cfg cfg = {
+        .crit_enter = am_crit_enter,
+        .crit_exit = am_crit_exit,
+    };
+    am_ao_global_init(&cfg);
 
     ringbuf_reader_init(&ringbuf, &timer, data, (int)sizeof(data));
     ringbuf_writer_init(&ringbuf, &timer, data, (int)sizeof(data));
@@ -107,7 +111,7 @@ static void test_ringbuf_threading(void) {
     });
     am_ticker_start(ticker);
 
-    while (am_ao_get_cnt() > 0) {
+    while (am_ao_get_count() > 0) {
         am_ao_run_all();
     }
 

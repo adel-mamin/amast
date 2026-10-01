@@ -82,14 +82,19 @@ static void start_ao(void) {
 
 int main(void) {
     am_pal_global_init(/*arg=*/NULL);
-    am_ao_global_init(/*cfg=*/NULL, /*sub=*/NULL, /*nsub=*/0);
+
+    struct am_ao_cfg cfg = {
+        .crit_enter = am_crit_enter,
+        .crit_exit = am_crit_exit,
+    };
+    am_ao_global_init(&cfg);
 
     struct test* me = &m_test;
     am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
     am_hsm_init(&me->hsm, am_hsm_state_make(test_init));
     start_ao();
 
-    while (am_ao_get_cnt() > 0) {
+    while (am_ao_get_count() > 0) {
         am_ao_run_all();
     }
 
@@ -97,7 +102,7 @@ int main(void) {
     am_hsm_init(&me->hsm, am_hsm_state_make(test_init));
     start_ao();
 
-    while (am_ao_get_cnt() > 0) {
+    while (am_ao_get_count() > 0) {
         am_ao_run_all();
     }
 

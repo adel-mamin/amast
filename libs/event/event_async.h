@@ -67,9 +67,9 @@ typedef bool (*am_event_async_enqueue_fn)(
 /** Asynchronous event hub. */
 struct am_event_async_hub {
     /** User defined pubsub list. */
-    struct am_event_subscribe_list* sub;
+    struct am_event_subscription* subscriptions;
     /** User defined pubsub list length. */
-    int nsub;
+    int subscription_count;
 
     /** Asynchronous event handlers. */
     struct am_event_async_handler {
@@ -79,10 +79,33 @@ struct am_event_async_hub {
         void* ctx;
     } handlers[AM_EVT_HANDLERS_NUM_MAX]; /**< event handlers */
 
-    /** Handlers generation. */
-    uint8_t handlers_generation[AM_EVT_HANDLERS_NUM_MAX];
+    /** Handler generations. */
+    uint8_t handler_generations[AM_EVT_HANDLERS_NUM_MAX];
 
     struct am_event_alloc* alloc; /**< event allocator */
+};
+
+/** Asynchronous event hub configuration */
+struct am_event_async_cfg {
+    /**
+     * The array of subscription lists.
+     * Optional. Only needed, if event pub/sub functionality is used.
+     * The pub/sub functionality is provided by API:
+     *
+     * am_event_async_publish()
+     * am_event_async_subscribe()
+     * am_event_async_unsubscribe()
+     * am_event_async_unsubscribe_all()
+     */
+    struct am_event_subscription* subscriptions;
+    /**
+     * Number of entries in the event subscribe list.
+     * Must be big enough to accommodate all user pub/sub events.
+     */
+    int subscription_count;
+
+    /** Event allocator */
+    struct am_event_alloc* alloc;
 };
 
 #ifdef __cplusplus
@@ -94,19 +117,13 @@ extern "C" {
  *
  * Must be called before calling any other asynchronous event API.
  *
- * @param hub   asynchronous event hub to initialize
- * @param sub   event subscribe list
- * @param nsub  number of entries in the event subscribe list
- *              Must be big enough to accommodate all user pub/sub events.
- * @param alloc event allocator
+ * @param hub  asynchronous event hub to initialize
+ * @param cfg  asynchronous event module configuration
  *
  * Thread unsafe.
  */
 void am_event_async_init(
-    struct am_event_async_hub* hub,
-    struct am_event_subscribe_list* sub,
-    int nsub,
-    struct am_event_alloc* alloc
+    struct am_event_async_hub* hub, const struct am_event_async_cfg* cfg
 );
 
 /**
