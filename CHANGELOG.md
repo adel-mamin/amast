@@ -7,6 +7,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+## v0.17.5 - 2-October-2026
+
 ### Changed
 
 - Active object, async and sync modules initialization API
