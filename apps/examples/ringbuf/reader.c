@@ -114,4 +114,4 @@ void ringbuf_reader_init(
     me->wait = am_timer_event_create_x(AM_EVT_RINGBUF_WAIT, &me->ao);
 }
 
-struct am_ao* ringbuf_reader_get_obj(void) { return &m_ringbuf_reader.ao; }
+struct am_ao* ringbuf_reader_get_ao(void) { return &m_ringbuf_reader.ao; }

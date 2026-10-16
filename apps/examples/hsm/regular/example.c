@@ -63,7 +63,7 @@ int main(void) {
 
     m_regular_log_buf[0] = '\0';
 
-    struct am_hsm* regular = regular_get_obj();
+    struct am_hsm* regular = regular_get_hsm();
     am_hsm_start(regular, /*init_event=*/NULL);
     test_print('*');
 

@@ -29,7 +29,7 @@
 
 #include "common/compiler.h"
 
-struct am_hsm* regular_get_obj(void);
+struct am_hsm* regular_get_hsm(void);
 void regular_init(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...));
 
 #endif /* REGULAR_H_INCLUDED */

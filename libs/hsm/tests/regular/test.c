@@ -56,7 +56,7 @@ static AM_PRINTF(1, 0) void test_log(const char* fmt, ...) {
 static void test_regular(void) {
     regular_init(test_log);
 
-    struct am_hsm* hsm = regular_get_obj();
+    struct am_hsm* hsm = regular_get_hsm();
     am_hsm_start(hsm, /*init_event=*/NULL);
 
     {
@@ -102,14 +102,14 @@ static void test_regular(void) {
 
     for (int i = 0; i < AM_COUNTOF(in); ++i) {
         struct am_event e = {.id = in[i].event};
-        am_hsm_dispatch(regular_get_obj(), &e);
+        am_hsm_dispatch(regular_get_hsm(), &e);
         AM_ASSERT(
             0 == strncmp(m_regular_log_buf, in[i].out, strlen(in[i].out))
         );
         m_regular_log_buf[0] = '\0';
     }
 
-    am_hsm_deinit(regular_get_obj());
+    am_hsm_deinit(regular_get_hsm());
 
     {
         static const char* out = "s211-EXIT;s21-EXIT;s2-EXIT;s-EXIT;";

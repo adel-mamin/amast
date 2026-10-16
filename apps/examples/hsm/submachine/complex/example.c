@@ -63,7 +63,7 @@ int main(void) {
 
     m_log_buf[0] = '\0';
 
-    struct am_hsm* complex = complex_get_obj();
+    struct am_hsm* complex = complex_get_hsm();
     am_hsm_start(complex, /*init_event=*/NULL);
     test_print('*');
 

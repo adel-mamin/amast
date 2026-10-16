@@ -56,7 +56,7 @@ struct am_blk calc_get_operand(struct am_hsm* me, int index);
 char calc_get_operator(struct am_hsm* me);
 bool calc_get_result(struct am_hsm* me, double* res);
 void calc_init(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...));
-struct am_hsm* calc_get_obj(void);
+struct am_hsm* calc_get_hsm(void);
 
 #ifdef __cplusplus
 }

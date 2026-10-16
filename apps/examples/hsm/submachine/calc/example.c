@@ -41,7 +41,7 @@ static void calc_print(void) {
     static char buf_prev[256];
     static char buf[256];
 
-    struct am_hsm* calc = calc_get_obj();
+    struct am_hsm* calc = calc_get_hsm();
     struct am_blk d0 = calc_get_operand(calc, 0);
     struct am_blk d1 = calc_get_operand(calc, 1);
     char op = calc_get_operator(calc);
@@ -109,7 +109,7 @@ int main(void) {
     printf("Type [0-9 . / * + - c d =] (x to turn off)\n");
     printf(AM_COLOR_RESET);
 
-    struct am_hsm* calc = calc_get_obj();
+    struct am_hsm* calc = calc_get_hsm();
     am_hsm_start(calc, /*init_event=*/NULL);
     calc_print();
 

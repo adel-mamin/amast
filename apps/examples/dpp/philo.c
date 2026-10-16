@@ -180,7 +180,7 @@ void philo_init(
     me->alloc = alloc;
 }
 
-struct am_ao* philo_get_obj(int id) {
+struct am_ao* philo_get_ao(int id) {
     AM_ASSERT(id >= 0);
     AM_ASSERT(id < AM_COUNTOF(m_philo));
     return &m_philo[id].ao;

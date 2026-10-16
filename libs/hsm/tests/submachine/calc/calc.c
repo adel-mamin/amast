@@ -593,4 +593,4 @@ bool calc_get_result(struct am_hsm* me, double* res) {
     return ((struct calc*)me)->result_valid;
 }
 
-struct am_hsm* calc_get_obj(void) { return &m_calc.hsm; }
+struct am_hsm* calc_get_hsm(void) { return &m_calc.hsm; }

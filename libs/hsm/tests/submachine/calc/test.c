@@ -51,7 +51,7 @@ static AM_PRINTF(1, 0) void test_calc_log(const char* fmt, ...) {
 static void test_calc(void) {
     calc_init(test_calc_log);
 
-    struct am_hsm* calc = calc_get_obj();
+    struct am_hsm* calc = calc_get_hsm();
 
     am_hsm_start(calc, /*init_event=*/NULL);
 

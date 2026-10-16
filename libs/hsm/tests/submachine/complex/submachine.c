@@ -331,4 +331,4 @@ void complex_sm_init(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
     me->log = log;
 }
 
-struct am_hsm* complex_get_obj(void) { return &m_complex_sm.hsm; }
+struct am_hsm* complex_get_hsm(void) { return &m_complex_sm.hsm; }

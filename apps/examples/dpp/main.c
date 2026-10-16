@@ -155,14 +155,14 @@ int main(void) {
     am_ao_global_init(&cfg);
 
     for (int i = 0; i < PHILO_NUM; ++i) {
-        philo_init(i, table_get_obj(), &timer, &alloc);
+        philo_init(i, table_get_ao(), &timer, &alloc);
     }
     table_init(/*nsessions=*/100, &alloc);
 
     const struct am_event* queue_table[2 * PHILO_NUM];
 
     am_ao_start(
-        table_get_obj(),
+        table_get_ao(),
         (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
         /*queue=*/queue_table,
         /*queue_size=*/AM_COUNTOF(queue_table), /* NOLINT */
@@ -181,7 +181,7 @@ int main(void) {
     for (int i = 0; i < AM_COUNTOF(names); ++i) {
         unsigned char prio = (unsigned char)(AM_AO_PRIO_MIN + i);
         am_ao_start(
-            philo_get_obj(i),
+            philo_get_ao(i),
             (struct am_ao_prio){.ao = prio, .task = prio},
             /*queue=*/queue_philo[i],
             /*queue_size=*/AM_COUNTOF(queue_philo[i]),

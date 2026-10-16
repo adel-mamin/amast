@@ -29,7 +29,7 @@
 
 #include "event/event_common.h"
 
-struct am_ao* table_get_obj(void);
+struct am_ao* table_get_ao(void);
 void table_init(int nsessions, struct am_event_alloc* alloc);
 
 #endif /* DPP_TABLE_H_INCLUDED */

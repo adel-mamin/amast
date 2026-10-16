@@ -384,4 +384,4 @@ void regular_init(void (*log)(const char* fmt, ...)) {
     me->log = log;
 }
 
-struct am_hsm* regular_get_obj(void) { return &m_regular.hsm; }
+struct am_hsm* regular_get_hsm(void) { return &m_regular.hsm; }

@@ -33,7 +33,7 @@
 
 #define PHILO_NUM 5
 
-struct am_ao* philo_get_obj(int id);
+struct am_ao* philo_get_ao(int id);
 void philo_init(
     int id,
     struct am_ao* table,

@@ -106,4 +106,4 @@ void ringbuf_writer_init(
     me->wait = am_timer_event_create_x(AM_EVT_RINGBUF_WAIT, &me->ao);
 }
 
-struct am_ao* ringbuf_writer_get_obj(void) { return &m_ringbuf_writer.ao; }
+struct am_ao* ringbuf_writer_get_ao(void) { return &m_ringbuf_writer.ao; }

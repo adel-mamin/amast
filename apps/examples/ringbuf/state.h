@@ -52,7 +52,7 @@ void ringbuf_writer_init(
     int len
 );
 
-struct am_ao* ringbuf_reader_get_obj(void);
-struct am_ao* ringbuf_writer_get_obj(void);
+struct am_ao* ringbuf_reader_get_ao(void);
+struct am_ao* ringbuf_writer_get_ao(void);
 
 #endif /* RINGBUF_STATE_H_INCLUDED */
