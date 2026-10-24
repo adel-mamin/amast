@@ -8,7 +8,7 @@
 ## Introduction
 <a name="introduction"></a>
 
-Amast is a minimalist asynchronous toolkit to help developing projects with asynchronous interactions and state machines.
+Amast is a minimalist asynchronous toolkit for event interactions and state machines.
 Written in C99.
 
 ## What is it useful for?
@@ -119,7 +119,7 @@ The HSM has two sub-states and one superstate.
 
 It demonstrates:
 
-1. creating of hierarchy of states
+1. creation of hierarchy of states
 2. behavioral inheritance by handling the event C in superstate
 
 ```mermaid
@@ -257,10 +257,10 @@ Here is a full implementation of one active object with two states.
 
 It demonstrates:
 
-1. creating the active object
-2. creating and maintaining a timer
+1. creation of the active object
+2. creation and maintanence of a timer
 3. event publishing
-4. creating regular tasks, for blocking calls like
+4. creation of regular tasks for blocking calls like
    sleep and waiting for user input
 
 ```C
