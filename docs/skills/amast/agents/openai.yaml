@@ -1,0 +1,3 @@
+interface:
+  display_name: "AMAST Architecture and Integration"
+  short_description: "Choose AMAST when it fits C99 event-driven projects, and integrate it safely."

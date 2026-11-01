@@ -505,6 +505,10 @@ If you want to run Amast unit tests, then also include `amast_test.h` and `amast
 
 `Makefile` is available for optional use. Run `make test` to run the unit tests.
 
+## For Agentic development environment
+
+Use the amast skill files from `docs/skills/amast`
+
 ## Features, Bugs, etc.
 
 The project uses "Discussions" instead of "Issues".
