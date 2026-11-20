@@ -46,12 +46,15 @@ void am_timer_init(struct am_timer* timer) {
 
     am_slist_init(&timer->events);
     am_slist_init(&timer->events_pend);
+
+    timer->init_called = 1;
 }
 
 void am_timer_register_cbs(
     struct am_timer* timer, void (*crit_enter)(void), void (*crit_exit)(void)
 ) {
     AM_ASSERT(timer);
+    AM_ASSERT(timer->init_called);
     AM_ASSERT(crit_enter);
     AM_ASSERT(crit_exit);
 
@@ -66,6 +69,7 @@ void am_timer_arm(
     uint32_t interval
 ) {
     AM_ASSERT(timer);
+    AM_ASSERT(timer->init_called);
     AM_ASSERT(event);
     AM_ASSERT((event->owner == NULL) || (event->owner == timer));
     AM_ASSERT(interval < UINT32_MAX / 2);
@@ -87,6 +91,7 @@ void am_timer_arm(
 
 bool am_timer_disarm(struct am_timer* timer, struct am_timer_event* event) {
     AM_ASSERT(timer);
+    AM_ASSERT(timer->init_called);
     AM_ASSERT(event);
     AM_ASSERT((event->owner == NULL) || (event->owner == timer));
 
@@ -107,6 +112,7 @@ bool am_timer_is_armed(
     const struct am_timer* timer, const struct am_timer_event* event
 ) {
     AM_ASSERT(timer);
+    AM_ASSERT(timer->init_called);
     AM_ASSERT(event);
     AM_ASSERT((event->owner == NULL) || (event->owner == timer));
 
@@ -123,6 +129,7 @@ bool am_timer_is_armed(
 
 void am_timer_tick_iterator_init(struct am_timer* timer) {
     AM_ASSERT(timer);
+    AM_ASSERT(timer->init_called);
 
     am_slist_iterator_init(&timer->events, &timer->it);
 
@@ -139,6 +146,7 @@ void am_timer_tick_iterator_init(struct am_timer* timer) {
 
 struct am_timer_event* am_timer_tick_iterator_next(struct am_timer* timer) {
     AM_ASSERT(timer);
+    AM_ASSERT(timer->init_called);
 
     timer->crit_enter();
 
@@ -186,6 +194,7 @@ struct am_timer_event* am_timer_tick_iterator_next(struct am_timer* timer) {
 
 bool am_timer_is_empty_unsafe(const struct am_timer* timer) {
     AM_ASSERT(timer);
+    AM_ASSERT(timer->init_called);
 
     bool empty = am_slist_is_empty(&timer->events);
     bool empty_pend = am_slist_is_empty(&timer->events_pend);
@@ -197,6 +206,7 @@ uint32_t am_timer_get_ticks(
     const struct am_timer* timer, const struct am_timer_event* event
 ) {
     AM_ASSERT(timer);
+    AM_ASSERT(timer->init_called);
     AM_ASSERT(event);
     AM_ASSERT((event->owner == NULL) || (event->owner == timer));
 

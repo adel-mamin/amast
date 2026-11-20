@@ -66,6 +66,9 @@ struct am_timer {
 
     void (*crit_enter)(void); /**< Enter critical section. */
     void (*crit_exit)(void);  /**< Exit critical section. */
+
+    /** Safety net to catch a missing am_timer_init() call. */
+    uint8_t init_called : 1;
 };
 
 /** Timer event. */
