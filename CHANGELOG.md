@@ -17,6 +17,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Changed
 
 - Rename `struct am_ao_cfg` to `struct am_ao_global_cfg`
+- Rename `am_task_create()` to `am_task_start()`
 
 ## v0.17.5 - 2-October-2026
 

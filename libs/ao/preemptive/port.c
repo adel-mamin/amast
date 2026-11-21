@@ -121,7 +121,7 @@ void am_ao_start(struct am_ao* ao, struct am_ao_cfg* cfg) {
 
     AM_ATOMIC_FETCH_ADD(&me->aos_count, 1);
 
-    ao->task_id = am_task_create(&(struct am_task_cfg){
+    ao->task_id = am_task_start(&(struct am_task_cfg){
         .name = cfg->name,
         .prio = cfg->prio.task,
         .stack = cfg->stack,

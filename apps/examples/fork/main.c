@@ -270,7 +270,7 @@ int main(int argc, const char* argv[]) {
         }
     );
 
-    am_task_create(&(struct am_task_cfg){
+    am_task_start(&(struct am_task_cfg){
         .name = "ticker",
         .prio = AM_AO_PRIO_MIN,
         .stack = NULL,
@@ -281,7 +281,7 @@ int main(int argc, const char* argv[]) {
         .arg = &timer
     });
 
-    am_task_create(&(struct am_task_cfg){
+    am_task_start(&(struct am_task_cfg){
         .name = "job",
         .prio = AM_AO_PRIO_MAX,
         .stack = NULL,

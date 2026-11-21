@@ -66,7 +66,7 @@ void am_crit_exit(void) {
 
 int am_task_get_own_id(void) { TaskHandle_t h = xTaskGetCurrentTaskHandle(); }
 
-void* am_task_create(struct am_task_cfg* cfg) {
+void* am_task_start(struct am_task_cfg* cfg) {
     AM_ASSERT(cfg);
     AM_ASSERT(AM_ALIGNOF_PTR(cfg->stack) >= AM_ALIGNOF(StackType_t));
     AM_ASSERT(cfg->stack_size > 0);

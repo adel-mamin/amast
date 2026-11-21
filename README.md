@@ -398,7 +398,7 @@ int main(void) {
     );
 
     /* user input controlling task */
-    am_task_create(&(struct am_task_cfg){
+    am_task_start(&(struct am_task_cfg){
         .name = "input",
         .prio = AM_AO_PRIO_MIN,
         .stack = NULL,

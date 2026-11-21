@@ -581,7 +581,7 @@ The source code of the corresponding header file is in `pal.h <https://github.co
 .. doxygenstruct:: am_task_cfg
    :members:
 
-.. doxygenfunction:: am_task_create
+.. doxygenfunction:: am_task_start
 
 .. doxygenfunction:: am_task_notify
 

@@ -175,19 +175,19 @@ struct am_task_cfg {
  * @param cfg task configuration
  * @return unique task ID
  */
-int am_task_create(struct am_task_cfg* cfg);
+int am_task_start(struct am_task_cfg* cfg);
 
 /**
  * Wake up PAL task.
  *
- * @param task_id  task ID returned by am_task_create()
+ * @param task_id  task ID returned by am_task_start()
  */
 void am_task_notify(int task_id);
 
 /**
  * Block PAL task till am_task_notify() is called.
  *
- * @param task_id  the task ID returned by am_task_create()
+ * @param task_id  the task ID returned by am_task_start()
  */
 void am_task_wait(int task_id);
 
@@ -202,7 +202,7 @@ int am_task_get_own_id(void);
  * Block until all tasks are ready to run.
  *
  * Prevents using tasks before they are ready to run.
- * To be run once at the start of tasks created with am_task_create() API.
+ * To be run once at the start of tasks created with am_task_start() API.
  */
 void am_task_init_wait(void);
 

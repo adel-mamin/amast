@@ -46,7 +46,7 @@ void am_crit_enter(void) {}
 
 void am_crit_exit(void) {}
 
-int am_task_create(struct am_task_cfg* cfg) {
+int am_task_start(struct am_task_cfg* cfg) {
     (void)cfg;
 
     return AM_TASK_ID_NONE;

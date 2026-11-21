@@ -181,7 +181,7 @@ static struct am_task* am_task_get_hnd(int task_id) {
     return &am_tasks_[am_pal_index_from_id(task_id)];
 }
 
-int am_task_create(struct am_task_cfg* cfg) {
+int am_task_start(struct am_task_cfg* cfg) {
     AM_ASSERT(cfg);
     AM_ASSERT(cfg->entry_fn);
     AM_ASSERT(cfg->prio >= 0);

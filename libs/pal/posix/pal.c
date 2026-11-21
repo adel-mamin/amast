@@ -202,7 +202,7 @@ int am_task_get_own_id(void) {
 
 static void am_mutex_init(pthread_mutex_t* me);
 
-int am_task_create(struct am_task_cfg* cfg) {
+int am_task_start(struct am_task_cfg* cfg) {
     AM_ASSERT(cfg);
     AM_ASSERT(cfg->entry_fn);
     AM_ASSERT(cfg->prio >= 0);
@@ -634,8 +634,8 @@ void am_ticker_start(int ticker_id) {
     bool was_running = AM_ATOMIC_EXCHANGE_N(&ticker->running, true);
     AM_ASSERT(!was_running);
 
-    /* ticker thread to feed timers */
-    ticker->task_id = am_task_create(&(struct am_task_cfg){
+    /* ticker task to feed timers */
+    ticker->task_id = am_task_start(&(struct am_task_cfg){
         .name = ticker->name,
         .prio = ticker->cfg.priority_hint,
         .stack = NULL,

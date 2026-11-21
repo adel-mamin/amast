@@ -264,7 +264,7 @@ static struct am_task* am_task_get_hnd(int task_id) {
     return &tasks_[am_pal_index_from_id(task_id)];
 }
 
-int am_task_create(struct am_task_cfg* cfg) {
+int am_task_start(struct am_task_cfg* cfg) {
     AM_ASSERT(cfg);
     AM_ASSERT(ntasks_ < AM_TASK_NUM_MAX);
 
@@ -563,7 +563,7 @@ void am_ticker_start(int ticker_id) {
     bool was_running = AM_ATOMIC_EXCHANGE_N(&ticker->running, true);
     AM_ASSERT(!was_running);
 
-    ticker->task_id = am_task_create(&(struct am_task_cfg){
+    ticker->task_id = am_task_start(&(struct am_task_cfg){
         .name = ticker->name,
         .prio = ticker->cfg.priority_hint,
         .stack = NULL,
