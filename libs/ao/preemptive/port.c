@@ -127,16 +127,16 @@ void am_ao_start(
 
     AM_ATOMIC_FETCH_ADD(&me->aos_count, 1);
 
-    ao->task_id = am_task_create(
-        name,
-        prio.task,
-        stack,
-        stack_size,
-        /*init=*/am_ao_task_init,
-        /*entry=*/am_ao_task,
-        /*flags=*/AM_TASK_FLAG_DETACH | AM_TASK_FLAG_WAIT_INIT,
-        /*arg=*/ao
-    );
+    ao->task_id = am_task_create(&(struct am_task_cfg){
+        .name = name,
+        .prio = prio.task,
+        .stack = stack,
+        .stack_size = stack_size,
+        .init_fn = am_ao_task_init,
+        .entry_fn = am_ao_task,
+        .flags = AM_TASK_FLAG_DETACH | AM_TASK_FLAG_WAIT_INIT,
+        .arg = ao
+    });
 }
 
 void am_ao_stop(struct am_ao* ao) {

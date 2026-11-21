@@ -355,16 +355,16 @@ int main(void) {
     );
 
     /* user input controlling thread */
-    am_task_create(
-        "input",
-        AM_AO_PRIO_MIN,
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*init=*/NULL,
-        /*entry=*/input_task,
-        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
-        /*arg=*/&coro
-    );
+    am_task_create(&(struct am_task_cfg){
+        .name = "input",
+        .prio = AM_AO_PRIO_MIN,
+        .stack = NULL,
+        .stack_size = 0,
+        .init_fn = NULL,
+        .entry_fn = input_task,
+        .flags = AM_TASK_FLAG_WAIT_INIT,
+        .arg = &coro
+    });
 
     int ticker = am_ticker_create(&(struct am_ticker_cfg){
         .timebase = AM_TIMEBASE_MS,

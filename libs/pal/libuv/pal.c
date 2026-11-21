@@ -47,9 +47,9 @@ struct am_task {
     /** libuv semaphore */
     uv_sem_t semaphore;
     /** libuv thread init */
-    void (*init)(void*);
+    void (*init_fn)(void*);
     /** libuv thread entry */
-    void (*entry)(void*);
+    void (*entry_fn)(void*);
     /** libuv thread argument */
     void* arg;
     /** task name */
@@ -230,14 +230,14 @@ static void task_entry_wrapper(void* arg) {
     int ret = pthread_setschedparam(thread, policy, &param);
     AM_ASSERT(0 == ret);
 
-    if (task->init) {
-        task->init(task->arg);
+    if (task->init_fn) {
+        task->init_fn(task->arg);
     }
     if ((task->flags & AM_TASK_FLAG_WAIT_INIT) == AM_TASK_FLAG_WAIT_INIT) {
         am_task_init_wait();
     }
 
-    task->entry(task->arg);
+    task->entry_fn(task->arg);
 
     if (!AM_ATOMIC_LOAD_N(&task->joinable)) {
         uv_sem_destroy(&task->semaphore);
@@ -264,18 +264,8 @@ static struct am_task* am_task_get_hnd(int task_id) {
     return &tasks_[am_pal_index_from_id(task_id)];
 }
 
-int am_task_create(
-    const char* name,
-    int prio,
-    void* stack,
-    int stack_size,
-    void (*init)(void*),
-    void (*entry)(void*),
-    unsigned flags,
-    void* arg
-) {
-    (void)stack;
-    (void)stack_size;
+int am_task_create(struct am_task_cfg* cfg) {
+    AM_ASSERT(cfg);
     AM_ASSERT(ntasks_ < AM_TASK_NUM_MAX);
 
     int index = -1;
@@ -291,20 +281,20 @@ int am_task_create(
     }
     AM_ASSERT(task);
 
-    task->init = init;
-    task->entry = entry;
-    task->arg = arg;
+    task->init_fn = cfg->init_fn;
+    task->entry_fn = cfg->entry_fn;
+    task->arg = cfg->arg;
     task->id = am_pal_id_from_index(index);
-    task->prio = prio;
-    task->flags = flags;
-    task->name = name;
+    task->prio = cfg->prio;
+    task->flags = cfg->flags;
+    task->name = cfg->name;
 
     int rc = uv_sem_init(&task->semaphore, 0);
     AM_ASSERT(rc == 0);
     rc = uv_thread_create(&task->thread, task_entry_wrapper, task);
     AM_ASSERT(rc == 0);
 
-    if (AM_TASK_FLAG_DETACH == (flags & AM_TASK_FLAG_DETACH)) {
+    if (AM_TASK_FLAG_DETACH == (cfg->flags & AM_TASK_FLAG_DETACH)) {
         rc = uv_thread_detach(&task->thread);
         AM_ASSERT(rc == 0);
         AM_ATOMIC_STORE_N(&task->joinable, false);
@@ -570,16 +560,16 @@ void am_ticker_start(int ticker_id) {
     bool was_running = AM_ATOMIC_EXCHANGE_N(&ticker->running, true);
     AM_ASSERT(!was_running);
 
-    ticker->task_id = am_task_create(
-        "ticker",
-        ticker->cfg.priority_hint,
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*init=*/NULL,
-        /*entry=*/am_ticker_task,
-        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
-        /*arg=*/ticker
-    );
+    ticker->task_id = am_task_create(&(struct am_task_cfg){
+        .name = "ticker",
+        .prio = ticker->cfg.priority_hint,
+        .stack = NULL,
+        .stack_size = 0,
+        .init_fn = NULL,
+        .entry_fn = am_ticker_task,
+        .flags = AM_TASK_FLAG_WAIT_INIT,
+        .arg = ticker
+    });
 }
 
 void am_ticker_stop(int ticker_id) {

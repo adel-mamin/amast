@@ -134,6 +134,37 @@ void am_mutex_unlock(int mutex);
  */
 void am_mutex_destroy(int mutex);
 
+/** Task configuration. */
+struct am_task_cfg {
+    /**
+     * Human readable task name. Not copied.
+     * Must remain valid after the call.
+     */
+    const char* name;
+    /** Task priority [0, #AM_TASK_NUM_MAX[. */
+    int prio;
+    /** Task stack. */
+    void* stack;
+    /** Task stack size [bytes]. */
+    int stack_size;
+    /**
+     * Task init function.
+     * Called from the task context before @p entry_fn.
+     * Can be NULL.
+     */
+    void (*init_fn)(void* arg);
+    /** Task entry function. Must not be NULL. */
+    void (*entry_fn)(void* arg);
+    /** Task flags (bit combination of AM_TASK_FLAG_... constants) */
+    unsigned flags;
+    /**
+     * Task entry function argument.
+     * PAL does not use other than providing it as an argument
+     * to task entry function.
+     */
+    void* arg;
+};
+
 /**
  * Initialize a task, then schedules it for execution.
  *
@@ -141,31 +172,10 @@ void am_mutex_destroy(int mutex);
  * The kernel scheduler may preempt the current task to allow
  * the new task to execute.
  *
- * @param name        human readable task name. Not copied.
- *                    Must remain valid after the call.
- * @param prio        task priority [0, #AM_TASK_NUM_MAX[.
- * @param stack       task stack
- * @param stack_size  task stack size [bytes]
- * @param init        task init function
- *                    Called from the task context before @p entry.
- *                    Can be NULL.
- * @param entry       task entry function. Must not be NULL.
- * @param flags       task flags (bit combination of AM_TASK_FLAG_... constants)
- * @param arg         task entry function argument.
- *                    PAL does not use other than providing it as an argument
- *                    to task entry function
+ * @param cfg task configuration
  * @return unique task ID
  */
-int am_task_create(
-    const char* name,
-    int prio,
-    void* stack,
-    int stack_size,
-    void (*init)(void* arg),
-    void (*entry)(void* arg),
-    unsigned flags,
-    void* arg
-);
+int am_task_create(struct am_task_cfg* cfg);
 
 /**
  * Wake up PAL task.

@@ -63,7 +63,7 @@ struct am_task {
     /** the task is valid */
     bool valid;
     /** entry function */
-    void (*entry)(void* arg);
+    void (*entry_fn)(void* arg);
     /** entry function argument */
     void* arg;
 };
@@ -160,7 +160,7 @@ static void am_pal_thread_entry(void* p1, void* p2, void* p3) {
     struct am_task* task = (struct am_task*)p1;
 
     AM_ASSERT(task->entry);
-    task->entry(task->arg);
+    task->entry_fn(task->arg);
 }
 
 static bool am_task_id_is_valid(int task_id) {
@@ -181,22 +181,13 @@ static struct am_task* am_task_get_hnd(int task_id) {
     return &am_tasks_[am_pal_index_from_id(task_id)];
 }
 
-int am_task_create(
-    const char* name,
-    int prio,
-    void* stack,
-    int stack_size,
-    void (*entry)(void* arg),
-    unsigned flags;
-    void* arg
-) {
-    (void)flags;
-
-    AM_ASSERT(entry);
-    AM_ASSERT(prio >= 0);
-    AM_ASSERT(prio < AM_TASK_NUM_MAX);
-    AM_ASSERT(stack);
-    AM_ASSERT(stack_size > K_THREAD_STACK_RESERVED);
+int am_task_create(struct am_task_cfg* cfg) {
+    AM_ASSERT(cfg);
+    AM_ASSERT(cfg->entry_fn);
+    AM_ASSERT(cfg->prio >= 0);
+    AM_ASSERT(cfg->prio < AM_TASK_NUM_MAX);
+    AM_ASSERT(cfg->stack);
+    AM_ASSERT(cfg->stack_size > K_THREAD_STACK_RESERVED);
 
     int index = -1;
     struct am_task* me = NULL;
@@ -210,15 +201,15 @@ int am_task_create(
     }
     AM_ASSERT(index >= 0);
 
-    int zephyr_prio = AM_TASK_NUM_MAX - prio;
+    int zephyr_prio = AM_TASK_NUM_MAX - cfg->prio;
 
-    me->entry = entry;
-    me->arg = arg;
+    me->entry_fn = cfg->entry_fn;
+    me->arg = cfg->arg;
 
     me->tid = k_thread_create(
         /*new_thread=*/&me->thread,
-        /*stack=*/(k_thread_stack_t*)stack,
-        /*stack_size=*/(size_t)(stack_size - K_THREAD_STACK_RESERVED),
+        /*stack=*/(k_thread_stack_t*)cfg->stack,
+        /*stack_size=*/(size_t)(cfg->stack_size - K_THREAD_STACK_RESERVED),
         /*entry=*/am_pal_thread_entry,
         /*p1=*/(void*)me,
         /*p2=*/NULL,
@@ -228,7 +219,7 @@ int am_task_create(
         /*delay=*/K_NO_WAIT
     );
 
-    int rc = k_thread_name_set(me->tid, name ? name : "ao");
+    int rc = k_thread_name_set(me->tid, cfg->name ? cfg->name : "ao");
     AM_ASSERT(0 == rc);
 
     return am_pal_id_from_index(index);

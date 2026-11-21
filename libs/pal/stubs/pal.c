@@ -46,24 +46,8 @@ void am_crit_enter(void) {}
 
 void am_crit_exit(void) {}
 
-int am_task_create(
-    const char* name,
-    int prio,
-    void* stack,
-    int stack_size,
-    void (*init)(void* arg),
-    void (*entry)(void* arg),
-    unsigned flags,
-    void* arg
-) {
-    (void)name;
-    (void)prio;
-    (void)stack;
-    (void)stack_size;
-    (void)init;
-    (void)entry;
-    (void)flags;
-    (void)arg;
+int am_task_create(struct am_task_cfg* cfg) {
+    (void)cfg;
 
     return AM_TASK_ID_NONE;
 }

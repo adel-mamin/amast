@@ -265,27 +265,27 @@ int main(int argc, const char* argv[]) {
         /*init_event=*/NULL
     );
 
-    am_task_create(
-        "ticker",
-        AM_AO_PRIO_MIN,
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*init=*/NULL,
-        /*entry=*/ticker_task,
-        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
-        /*arg=*/&timer
-    );
+    am_task_create(&(struct am_task_cfg){
+        .name = "ticker",
+        .prio = AM_AO_PRIO_MIN,
+        .stack = NULL,
+        .stack_size = 0,
+        .init_fn = NULL,
+        .entry_fn = ticker_task,
+        .flags = AM_TASK_FLAG_WAIT_INIT,
+        .arg = &timer
+    });
 
-    am_task_create(
-        "job",
-        AM_AO_PRIO_MAX,
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*init=*/NULL,
-        /*entry=*/(void (*)(void*))job_task,
-        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
-        /*arg=*/AM_CAST(void*, argv)
-    );
+    am_task_create(&(struct am_task_cfg){
+        .name = "job",
+        .prio = AM_AO_PRIO_MAX,
+        .stack = NULL,
+        .stack_size = 0,
+        .init_fn = NULL,
+        .entry_fn = (void (*)(void*))job_task,
+        .flags = AM_TASK_FLAG_WAIT_INIT,
+        .arg = AM_CAST(void*, argv)
+    });
 
     while (am_ao_get_count() > 0) {
         am_ao_run_all();

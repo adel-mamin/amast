@@ -40,7 +40,7 @@ struct am_task {
     /* the task is valid */
     bool valid;
     /* entry function */
-    void (*entry)(void* arg);
+    void (*entry_fn)(void* arg);
     /* entry function argument */
     void* arg;
 };
@@ -66,22 +66,12 @@ void am_crit_exit(void) {
 
 int am_task_get_own_id(void) { TaskHandle_t h = xTaskGetCurrentTaskHandle(); }
 
-void* am_task_create(
-    const char* name,
-    int prio,
-    void* stack,
-    int stack_size,
-    void (*init)(void* arg),
-    void (*entry)(void* arg),
-    unsigned flags,
-    void* arg
-) {
-    (void)flags;
-
-    AM_ASSERT(AM_ALIGNOF_PTR(stack) >= AM_ALIGNOF(StackType_t));
-    AM_ASSERT(stack_size > 0);
-    AM_ASSERT(entry);
-    AM_ASSERT(prio >= 0);
+void* am_task_create(struct am_task_cfg* cfg) {
+    AM_ASSERT(cfg);
+    AM_ASSERT(AM_ALIGNOF_PTR(cfg->stack) >= AM_ALIGNOF(StackType_t));
+    AM_ASSERT(cfg->stack_size > 0);
+    AM_ASSERT(cfg->entry_fn);
+    AM_ASSERT(cfg->prio >= 0);
 
     int index = -1;
     struct am_task* task = NULL;
@@ -96,12 +86,12 @@ void* am_task_create(
     AM_ASSERT(task && (index >= 0));
 
     TaskHandle_t h = xTaskCreateStatic(
-        entry,
-        name,
-        (uint32_t)((unsigned)stack_size / sizeof(StackType_t)),
+        cfg->entry_fn,
+        cfg->name,
+        (uint32_t)((unsigned)cfg->stack_size / sizeof(StackType_t)),
         (void*)&tcb[ntcb],
-        (unsigned)prio + tskIDLE_PRIORITY,
-        (StackType_t*)stack,
+        (unsigned)cfg->prio + tskIDLE_PRIORITY,
+        (StackType_t*)cfg->stack,
         &tcb[ntcb]
     );
     AM_ASSERT(h);

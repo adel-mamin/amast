@@ -81,9 +81,9 @@ struct am_task {
     /** the task waits for the startup gate to open */
     bool init_complete;
     /** init function */
-    void (*init)(void* arg);
+    void (*init_fn)(void* arg);
     /** entry function */
-    void (*entry)(void* arg);
+    void (*entry_fn)(void* arg);
     /** entry function argument */
     void* arg;
     /** flags */
@@ -143,18 +143,18 @@ static struct am_task* am_task_get_hnd(int task_id) {
 static void* thread_entry_wrapper(void* arg) {
     AM_ASSERT(arg);
     struct am_task* task = (struct am_task*)arg;
-    AM_ASSERT(task->entry);
+    AM_ASSERT(task->entry_fn);
 
     AM_ATOMIC_STORE_N(&task->running, true);
 
-    if (task->init) {
-        task->init(task->arg);
+    if (task->init_fn) {
+        task->init_fn(task->arg);
     }
     if (task->flags & AM_TASK_FLAG_WAIT_INIT) {
         am_task_init_wait();
     }
 
-    task->entry(task->arg);
+    task->entry_fn(task->arg);
 
     int rc = pthread_mutex_destroy(&task->mutex);
     AM_ASSERT(0 == rc);
@@ -202,20 +202,11 @@ int am_task_get_own_id(void) {
 
 static void am_mutex_init(pthread_mutex_t* me);
 
-int am_task_create(
-    const char* name,
-    int prio,
-    void* stack,
-    const int stack_size,
-    void (*init)(void* arg),
-    void (*entry)(void* arg),
-    unsigned flags,
-    void* arg
-) {
-    (void)stack;
-    AM_ASSERT(entry);
-    AM_ASSERT(prio >= 0);
-    AM_ASSERT(prio < AM_TASK_NUM_MAX);
+int am_task_create(struct am_task_cfg* cfg) {
+    AM_ASSERT(cfg);
+    AM_ASSERT(cfg->entry_fn);
+    AM_ASSERT(cfg->prio >= 0);
+    AM_ASSERT(cfg->prio < AM_TASK_NUM_MAX);
 
     int index = -1;
     struct am_task* task = NULL;
@@ -239,7 +230,7 @@ int am_task_create(
     AM_ASSERT(0 == ret);
 
     ret = pthread_attr_setstacksize(
-        &attr, (size_t)AM_MAX(stack_size, PTHREAD_STACK_MIN)
+        &attr, (size_t)AM_MAX(cfg->stack_size, PTHREAD_STACK_MIN)
     );
     AM_ASSERT(0 == ret);
 
@@ -250,8 +241,8 @@ int am_task_create(
     int min_prio = sched_get_priority_min(policy);
     int max_prio = sched_get_priority_max(policy);
 
-    int prio_scaled = prio * (max_prio - min_prio) / (AM_TASK_NUM_MAX - 1);
-    prio = min_prio + prio_scaled;
+    int prio_scaled = cfg->prio * (max_prio - min_prio) / (AM_TASK_NUM_MAX - 1);
+    int prio = min_prio + prio_scaled;
 
     struct sched_param param = {.sched_priority = prio};
     ret = pthread_attr_setschedparam(&attr, &param);
@@ -259,19 +250,19 @@ int am_task_create(
     ret = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
     AM_ASSERT(0 == ret);
 
-    task->init = init;
-    task->entry = entry;
-    task->arg = arg;
-    task->flags = flags;
+    task->init_fn = cfg->init_fn;
+    task->entry_fn = cfg->entry_fn;
+    task->arg = cfg->arg;
+    task->flags = cfg->flags;
 
     ret = pthread_create(&task->thread, &attr, thread_entry_wrapper, task);
     AM_ASSERT(0 == ret);
     pthread_attr_destroy(&attr);
 
-    task->name = name;
-    pthread_setname_np(task->thread, name);
+    task->name = cfg->name;
+    pthread_setname_np(task->thread, cfg->name);
 
-    if (AM_TASK_FLAG_DETACH == (flags & AM_TASK_FLAG_DETACH)) {
+    if (AM_TASK_FLAG_DETACH == (cfg->flags & AM_TASK_FLAG_DETACH)) {
         ret = pthread_detach(task->thread);
         AM_ASSERT(0 == ret);
         AM_ATOMIC_STORE_N(&task->joinable, false);
@@ -641,16 +632,16 @@ void am_ticker_start(int ticker_id) {
     AM_ASSERT(!was_running);
 
     /* ticker thread to feed timers */
-    ticker->task_id = am_task_create(
-        "ticker",
-        ticker->cfg.priority_hint,
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*init=*/NULL,
-        /*entry=*/am_ticker_task,
-        /*flags=*/AM_TASK_FLAG_WAIT_INIT,
-        /*arg=*/ticker
-    );
+    ticker->task_id = am_task_create(&(struct am_task_cfg){
+        .name = "ticker",
+        .prio = ticker->cfg.priority_hint,
+        .stack = NULL,
+        .stack_size = 0,
+        .init_fn = NULL,
+        .entry_fn = am_ticker_task,
+        .flags = AM_TASK_FLAG_WAIT_INIT,
+        .arg = ticker
+    });
 }
 
 void am_ticker_stop(int ticker_id) {

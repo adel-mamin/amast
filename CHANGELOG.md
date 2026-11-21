@@ -10,6 +10,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Added
 
 - Add amast skill files to `docs/skills/amast`
+- Add `struct am_task_cfg`
 
 ## v0.17.5 - 2-October-2026
 
