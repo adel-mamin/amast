@@ -34,8 +34,9 @@
 #include "common/macros.h"
 #include "bit/bit.h"
 
-static const int8_t am_bit_msb_from_u4[] = {0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3,
-                                            3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4};
+static const int8_t am_bit_msb_from_u4[] = {
+    0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4
+};
 
 bool am_bit_u64_is_empty(const struct am_bit_u64* u64) {
     return 0 == u64->bytes;

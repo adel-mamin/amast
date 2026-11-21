@@ -267,7 +267,7 @@ bool am_event_sync_publish_request(
              * Make sure the handler has not changed while publishing the event.
              */
             if (handler->fn && (hub->handlers_generation[handler_id] ==
-                                generation[handler_id])) {
+                                   generation[handler_id])) {
                 bool ok = handler->fn(handler->ctx, event, out, out_size);
                 if (!ok) {
                     all_published = false;
