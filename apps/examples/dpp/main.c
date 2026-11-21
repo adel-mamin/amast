@@ -164,6 +164,7 @@ int main(void) {
     am_ao_start(
         table_get_ao(),
         &(struct am_ao_cfg){
+            .name = "table",
             .prio =
                 (struct am_ao_prio){
                     .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
@@ -172,7 +173,6 @@ int main(void) {
             .queue_size = AM_COUNTOF(queue_table), /* NOLINT */
             .stack = NULL,
             .stack_size = 0,
-            .name = "table",
             .init_event = NULL
         }
     );
@@ -188,12 +188,12 @@ int main(void) {
         am_ao_start(
             philo_get_ao(i),
             &(struct am_ao_cfg){
+                .name = names[i],
                 .prio = (struct am_ao_prio){.ao = prio, .task = prio},
                 .queue = queue_philo[i],
                 .queue_size = AM_COUNTOF(queue_philo[i]),
                 .stack = NULL,
                 .stack_size = 0,
-                .name = names[i],
                 .init_event = NULL
             }
         );

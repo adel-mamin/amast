@@ -123,6 +123,7 @@ static void test_publish(void) {
     am_ao_start(
         &me->ao,
         &(struct am_ao_cfg){
+            .name = "publish",
             .prio =
                 (struct am_ao_prio){
                     .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
@@ -131,7 +132,6 @@ static void test_publish(void) {
             .queue_size = AM_COUNTOF(m_queue_publish),
             .stack = NULL,
             .stack_size = 0,
-            .name = "publish",
             .init_event = NULL
         }
     );

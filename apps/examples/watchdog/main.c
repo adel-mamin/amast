@@ -193,6 +193,7 @@ int main(void) {
     am_ao_start(
         &watched.ao,
         &(struct am_ao_cfg){
+            .name = "watched",
             .prio =
                 (struct am_ao_prio){
                     .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
@@ -201,7 +202,6 @@ int main(void) {
             .queue_size = AM_COUNTOF(queue_watched),
             .stack = NULL,
             .stack_size = 0,
-            .name = "watched",
             .init_event = NULL
         }
     );
@@ -210,6 +210,7 @@ int main(void) {
     am_ao_start(
         &wdt.ao,
         &(struct am_ao_cfg){
+            .name = "wdt",
             .prio =
                 (struct am_ao_prio){
                     .ao = AM_AO_PRIO_MIN, .task = AM_AO_PRIO_MIN
@@ -218,7 +219,6 @@ int main(void) {
             .queue_size = AM_COUNTOF(queue_wdt),
             .stack = NULL,
             .stack_size = 0,
-            .name = "wdt",
             .init_event = NULL
         }
     );

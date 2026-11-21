@@ -257,6 +257,7 @@ int main(int argc, const char* argv[]) {
     am_ao_start(
         &progress.ao,
         &(struct am_ao_cfg){
+            .name = "progress",
             .prio =
                 (struct am_ao_prio){
                     .ao = AM_AO_PRIO_LOW, .task = AM_AO_PRIO_LOW
@@ -265,7 +266,6 @@ int main(int argc, const char* argv[]) {
             .queue_size = AM_COUNTOF(event_queue),
             .stack = NULL,
             .stack_size = 0,
-            .name = "progress",
             .init_event = NULL
         }
     );

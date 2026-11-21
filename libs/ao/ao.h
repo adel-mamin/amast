@@ -441,6 +441,12 @@ void am_ao_init(
 
 /** AO configuration */
 struct am_ao_cfg {
+    /**
+     * Human readable name of active object.
+     * Not copied. Must remain valid after the call.
+     * Can be NULL.
+     */
+    const char* name;
     /** Priority */
     struct am_ao_prio prio;
     /** The active object's event queue. */
@@ -451,12 +457,6 @@ struct am_ao_cfg {
     void* stack;
     /** The stack size [bytes]. */
     int stack_size;
-    /**
-     * Human readable name of active object.
-     * Not copied. Must remain valid after the call.
-     * Can be NULL.
-     */
-    const char* name;
     /**
      * Init event. Can be NULL.
      * The event is not freed. The caller is responsible

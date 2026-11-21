@@ -332,6 +332,7 @@ int main(void) {
     am_ao_start(
         &balancer.ao,
         &(struct am_ao_cfg){
+            .name = "balancer",
             .prio =
                 (struct am_ao_prio){
                     .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
@@ -340,7 +341,6 @@ int main(void) {
             .queue_size = AM_COUNTOF(queue_balancer),
             .stack = NULL,
             .stack_size = 0,
-            .name = "balancer",
             .init_event = NULL
         }
     );
@@ -351,12 +351,12 @@ int main(void) {
         am_ao_start(
             &workers[i].ao,
             &(struct am_ao_cfg){
+                .name = "worker",
                 .prio = (struct am_ao_prio){.ao = prio, .task = AM_AO_PRIO_LOW},
                 .queue = queue_worker[i],
                 .queue_size = AM_COUNTOF(queue_worker[i]),
                 .stack = NULL,
                 .stack_size = 0,
-                .name = "worker",
                 .init_event = NULL
             }
         );
