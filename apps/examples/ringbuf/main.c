@@ -104,6 +104,7 @@ static void test_ringbuf_threading(void) {
     );
 
     int ticker = am_ticker_create(&(struct am_ticker_cfg){
+        .name = "timebase_ms",
         .timebase = AM_TIMEBASE_MS,
         .ticker_cb = ticker_cb,
         .ctx = &timer,

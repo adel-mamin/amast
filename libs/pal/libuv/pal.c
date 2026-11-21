@@ -488,6 +488,8 @@ void am_task_run_all(void) {}
 
 /** Ticker handler */
 struct am_ticker {
+    /** ticker name */
+    const char* name;
     /** ticker identifier */
     int task_id;
     /** ticker configuration */
@@ -544,6 +546,7 @@ int am_ticker_create(const struct am_ticker_cfg* cfg) {
     AM_ASSERT(!ticker->busy);
 
     memset(ticker, 0, sizeof(*ticker));
+    ticker->name = cfg->name;
     ticker->busy = true;
     ticker->cfg = *cfg;
     ticker->period_ns =
@@ -561,7 +564,7 @@ void am_ticker_start(int ticker_id) {
     AM_ASSERT(!was_running);
 
     ticker->task_id = am_task_create(&(struct am_task_cfg){
-        .name = "ticker",
+        .name = ticker->name,
         .prio = ticker->cfg.priority_hint,
         .stack = NULL,
         .stack_size = 0,

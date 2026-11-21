@@ -350,6 +350,8 @@ int am_get_cpu_count(void);
 
 /** Ticker configuration */
 struct am_ticker_cfg {
+    /** ticker name */
+    const char* name;
     /** ticker timebase */
     int timebase;
     /**
