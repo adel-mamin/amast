@@ -122,13 +122,18 @@ static void test_publish(void) {
 
     am_ao_start(
         &me->ao,
-        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/m_queue_publish,
-        /*queue_size=*/AM_COUNTOF(m_queue_publish),
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*name=*/"publish",
-        /*init_event=*/NULL
+        &(struct am_ao_cfg){
+            .prio =
+                (struct am_ao_prio){
+                    .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
+                },
+            .queue = m_queue_publish,
+            .queue_size = AM_COUNTOF(m_queue_publish),
+            .stack = NULL,
+            .stack_size = 0,
+            .name = "publish",
+            .init_event = NULL
+        }
     );
 
     am_ao_run_all();

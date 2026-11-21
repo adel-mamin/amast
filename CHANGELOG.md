@@ -11,6 +11,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 - Add amast skill files to `docs/skills/amast`
 - Add `struct am_task_cfg`
+- Add `struct am_ao_cfg` for am_ao_start()
 - Add name to tickers
 
 ### Changed

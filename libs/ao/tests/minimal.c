@@ -144,24 +144,34 @@ int main(void) {
 
     am_ao_start(
         &m_loopback.ao,
-        (struct am_ao_prio){.ao = AM_AO_PRIO_HIGH, .task = AM_AO_PRIO_HIGH},
-        /*queue=*/m_queue_loopback,
-        /*queue_size=*/AM_COUNTOF(m_queue_loopback),
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*name=*/"loopback",
-        /*init_event=*/NULL
+        &(struct am_ao_cfg){
+            .prio =
+                (struct am_ao_prio){
+                    .ao = AM_AO_PRIO_HIGH, .task = AM_AO_PRIO_HIGH
+                },
+            .queue = m_queue_loopback,
+            .queue_size = AM_COUNTOF(m_queue_loopback),
+            .stack = NULL,
+            .stack_size = 0,
+            .name = "loopback",
+            .init_event = NULL
+        }
     );
 
     am_ao_start(
         &m_loopback_test.ao,
-        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/m_queue_loopback_test,
-        /*queue_size=*/AM_COUNTOF(m_queue_loopback_test),
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*name=*/"loopback_test",
-        /*init_event=*/NULL
+        &(struct am_ao_cfg){
+            .prio =
+                (struct am_ao_prio){
+                    .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
+                },
+            .queue = m_queue_loopback_test,
+            .queue_size = AM_COUNTOF(m_queue_loopback_test),
+            .stack = NULL,
+            .stack_size = 0,
+            .name = "loopback_test",
+            .init_event = NULL
+        }
     );
 
     while (am_ao_get_count() > 0) {

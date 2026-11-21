@@ -414,13 +414,18 @@ int main(void) {
 
     am_ao_start(
         &agent.ao,
-        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/queue_agent,
-        /*queue_size=*/AM_COUNTOF(queue_agent),
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*name=*/"agent",
-        /*init_event=*/NULL
+        &(struct am_ao_cfg){
+            .prio =
+                (struct am_ao_prio){
+                    .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
+                },
+            .queue = queue_agent,
+            .queue_size = AM_COUNTOF(queue_agent),
+            .stack = NULL,
+            .stack_size = 0,
+            .name = "agent",
+            .init_event = NULL
+        }
     );
 
     const struct am_event* queue_smoker[AM_SMOKERS_NUM_MAX][5];
@@ -429,15 +434,18 @@ int main(void) {
         unsigned char prio = (unsigned char)(AM_AO_PRIO_MIN + i);
         am_ao_start(
             &smokers[i].ao,
-            (struct am_ao_prio){
-                .ao = (unsigned char)(prio + i), .task = AM_AO_PRIO_LOW
-            },
-            /*queue=*/queue_smoker[i],
-            /*queue_size=*/AM_COUNTOF(queue_smoker[i]),
-            /*stack=*/NULL,
-            /*stack_size=*/0,
-            /*name=*/"smoker",
-            /*init_event=*/NULL
+            &(struct am_ao_cfg){
+                .prio =
+                    (struct am_ao_prio){
+                        .ao = (unsigned char)(prio + i), .task = AM_AO_PRIO_LOW
+                    },
+                .queue = queue_smoker[i],
+                .queue_size = AM_COUNTOF(queue_smoker[i]),
+                .stack = NULL,
+                .stack_size = 0,
+                .name = "smoker",
+                .init_event = NULL
+            }
         );
     }
 

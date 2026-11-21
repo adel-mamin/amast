@@ -163,13 +163,18 @@ int main(void) {
 
     am_ao_start(
         table_get_ao(),
-        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/queue_table,
-        /*queue_size=*/AM_COUNTOF(queue_table), /* NOLINT */
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*name=*/"table",
-        /*init_event=*/NULL
+        &(struct am_ao_cfg){
+            .prio =
+                (struct am_ao_prio){
+                    .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
+                },
+            .queue = queue_table,
+            .queue_size = AM_COUNTOF(queue_table), /* NOLINT */
+            .stack = NULL,
+            .stack_size = 0,
+            .name = "table",
+            .init_event = NULL
+        }
     );
 
     static const char* names[PHILO_NUM] = {
@@ -182,13 +187,15 @@ int main(void) {
         unsigned char prio = (unsigned char)(AM_AO_PRIO_MIN + i);
         am_ao_start(
             philo_get_ao(i),
-            (struct am_ao_prio){.ao = prio, .task = prio},
-            /*queue=*/queue_philo[i],
-            /*queue_size=*/AM_COUNTOF(queue_philo[i]),
-            /*stack=*/NULL,
-            /*stack_size=*/0,
-            /*name=*/names[i],
-            /*init_event=*/NULL
+            &(struct am_ao_cfg){
+                .prio = (struct am_ao_prio){.ao = prio, .task = prio},
+                .queue = queue_philo[i],
+                .queue_size = AM_COUNTOF(queue_philo[i]),
+                .stack = NULL,
+                .stack_size = 0,
+                .name = names[i],
+                .init_event = NULL
+            }
         );
     }
 

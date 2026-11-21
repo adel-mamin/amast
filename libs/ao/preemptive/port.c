@@ -99,39 +99,33 @@ bool am_ao_run_all(void) {
     return false;
 }
 
-void am_ao_start(
-    struct am_ao* ao,
-    struct am_ao_prio prio,
-    const struct am_event* queue[],
-    int queue_size,
-    void* stack,
-    int stack_size,
-    const char* name,
-    const struct am_event* init_event
-) {
+void am_ao_start(struct am_ao* ao, struct am_ao_cfg* cfg) {
     AM_ASSERT(ao);
     AM_ASSERT(ao->init_called);
-    AM_ASSERT(AM_AO_PRIO_IS_VALID(prio));
-    AM_ASSERT(queue);
-    AM_ASSERT(queue_size > 0);
+    AM_ASSERT(cfg);
+    AM_ASSERT(AM_AO_PRIO_IS_VALID(cfg->prio));
+    AM_ASSERT(cfg->queue);
+    AM_ASSERT(cfg->queue_size > 0);
 
     struct am_ao_state* me = &am_ao_state_;
-    am_event_queue_init(&ao->event_queue, queue, queue_size, me->alloc);
+    am_event_queue_init(
+        &ao->event_queue, cfg->queue, cfg->queue_size, me->alloc
+    );
 
-    ao->prio = prio;
-    ao->name = name;
-    ao->init_event = init_event;
+    ao->prio = cfg->prio;
+    ao->name = cfg->name;
+    ao->init_event = cfg->init_event;
 
-    AM_ASSERT(NULL == me->aos[prio.ao]);
-    me->aos[prio.ao] = ao;
+    AM_ASSERT(NULL == me->aos[cfg->prio.ao]);
+    me->aos[cfg->prio.ao] = ao;
 
     AM_ATOMIC_FETCH_ADD(&me->aos_count, 1);
 
     ao->task_id = am_task_create(&(struct am_task_cfg){
-        .name = name,
-        .prio = prio.task,
-        .stack = stack,
-        .stack_size = stack_size,
+        .name = cfg->name,
+        .prio = cfg->prio.task,
+        .stack = cfg->stack,
+        .stack_size = cfg->stack_size,
         .init_fn = am_ao_task_init,
         .entry_fn = am_ao_task,
         .flags = AM_TASK_FLAG_DETACH | AM_TASK_FLAG_WAIT_INIT,

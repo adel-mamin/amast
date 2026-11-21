@@ -192,25 +192,35 @@ int main(void) {
     const struct am_event* queue_watched[1];
     am_ao_start(
         &watched.ao,
-        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/queue_watched,
-        /*queue_size=*/AM_COUNTOF(queue_watched),
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*name=*/"watched",
-        /*init_event=*/NULL
+        &(struct am_ao_cfg){
+            .prio =
+                (struct am_ao_prio){
+                    .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
+                },
+            .queue = queue_watched,
+            .queue_size = AM_COUNTOF(queue_watched),
+            .stack = NULL,
+            .stack_size = 0,
+            .name = "watched",
+            .init_event = NULL
+        }
     );
 
     const struct am_event* queue_wdt[2];
     am_ao_start(
         &wdt.ao,
-        (struct am_ao_prio){.ao = AM_AO_PRIO_MIN, .task = AM_AO_PRIO_MIN},
-        /*queue=*/queue_wdt,
-        /*queue_size=*/AM_COUNTOF(queue_wdt),
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*name=*/"wdt",
-        /*init_event=*/NULL
+        &(struct am_ao_cfg){
+            .prio =
+                (struct am_ao_prio){
+                    .ao = AM_AO_PRIO_MIN, .task = AM_AO_PRIO_MIN
+                },
+            .queue = queue_wdt,
+            .queue_size = AM_COUNTOF(queue_wdt),
+            .stack = NULL,
+            .stack_size = 0,
+            .name = "wdt",
+            .init_event = NULL
+        }
     );
 
     int ticker = am_ticker_create(&(struct am_ticker_cfg){

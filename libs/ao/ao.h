@@ -439,6 +439,32 @@ void am_ao_init(
     struct am_ao* ao, am_ao_fn init_handler, am_ao_fn event_handler, void* ctx
 );
 
+/** AO configuration */
+struct am_ao_cfg {
+    /** Priority */
+    struct am_ao_prio prio;
+    /** The active object's event queue. */
+    const struct am_event** queue;
+    /** The event queue size [sizeof(struct am_event *)]. */
+    int queue_size;
+    /** The active object stack. */
+    void* stack;
+    /** The stack size [bytes]. */
+    int stack_size;
+    /**
+     * Human readable name of active object.
+     * Not copied. Must remain valid after the call.
+     * Can be NULL.
+     */
+    const char* name;
+    /**
+     * Init event. Can be NULL.
+     * The event is not freed. The caller is responsible
+     * for freeing the event after the call.
+     */
+    const struct am_event* init_event;
+};
+
 /**
  * Start active object.
  *
@@ -448,29 +474,10 @@ void am_ao_init(
  * beginning from the lowest priority active objects because they tend
  * to have bigger event queues.
  *
- * @param ao          the active object to start
- * @param prio        priority
- * @param queue       the active object's event queue
- * @param queue_size  the event queue size [sizeof(struct am_event *)]
- * @param stack       active object stack
- * @param stack_size  the stack size [bytes]
- * @param name        human readable name of active object.
- *                    Not copied. Must remain valid after the call.
- *                    Can be NULL.
- * @param init_event  init event. Can be NULL.
- *                    The event is not freed. The caller is responsible
- *                    for freeing the event after the call.
+ * @param ao   the active object to start
+ * @param cfg  AO configuration
  */
-void am_ao_start(
-    struct am_ao* ao,
-    struct am_ao_prio prio,
-    const struct am_event* queue[],
-    int queue_size,
-    void* stack,
-    int stack_size,
-    const char* name,
-    const struct am_event* init_event
-);
+void am_ao_start(struct am_ao* ao, struct am_ao_cfg* cfg);
 
 /**
  * Stop active object.

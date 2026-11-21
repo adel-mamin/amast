@@ -507,6 +507,9 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygenfunction:: am_ao_init
 
+.. doxygenstruct:: am_ao_cfg
+   :members:
+
 .. doxygenfunction:: am_ao_start
 
 .. doxygenfunction:: am_ao_stop

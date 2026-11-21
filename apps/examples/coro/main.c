@@ -345,13 +345,18 @@ int main(void) {
     /* traffic lights controlling active object */
     am_ao_start(
         &coro.ao,
-        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/event_queue,
-        /*queue_size=*/AM_COUNTOF(event_queue),
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*name=*/"coro",
-        /*init_event=*/NULL
+        &(struct am_ao_cfg){
+            .prio =
+                (struct am_ao_prio){
+                    .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
+                },
+            .queue = event_queue,
+            .queue_size = AM_COUNTOF(event_queue),
+            .stack = NULL,
+            .stack_size = 0,
+            .name = "coro",
+            .init_event = NULL
+        }
     );
 
     /* user input controlling thread */

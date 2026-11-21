@@ -256,13 +256,18 @@ int main(int argc, const char* argv[]) {
 
     am_ao_start(
         &progress.ao,
-        (struct am_ao_prio){.ao = AM_AO_PRIO_LOW, .task = AM_AO_PRIO_LOW},
-        /*queue=*/event_queue,
-        /*queue_size=*/AM_COUNTOF(event_queue),
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*name=*/"progress",
-        /*init_event=*/NULL
+        &(struct am_ao_cfg){
+            .prio =
+                (struct am_ao_prio){
+                    .ao = AM_AO_PRIO_LOW, .task = AM_AO_PRIO_LOW
+                },
+            .queue = event_queue,
+            .queue_size = AM_COUNTOF(event_queue),
+            .stack = NULL,
+            .stack_size = 0,
+            .name = "progress",
+            .init_event = NULL
+        }
     );
 
     am_task_create(&(struct am_task_cfg){

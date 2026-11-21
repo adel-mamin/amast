@@ -111,46 +111,37 @@ bool am_ao_run_all(void) {
     return dispatched;
 }
 
-void am_ao_start(
-    struct am_ao* ao,
-    struct am_ao_prio prio,
-    const struct am_event* queue[],
-    int queue_size,
-    void* stack,
-    int stack_size,
-    const char* name,
-    const struct am_event* init_event
-) {
-    (void)stack;
-    (void)stack_size;
-
+void am_ao_start(struct am_ao* ao, struct am_ao_cfg* cfg) {
     AM_ASSERT(ao);
     AM_ASSERT(ao->init_called);
-    AM_ASSERT(AM_AO_PRIO_IS_VALID(prio));
-    AM_ASSERT(queue);
-    AM_ASSERT(queue_size > 0);
+    AM_ASSERT(cfg);
+    AM_ASSERT(AM_AO_PRIO_IS_VALID(cfg->prio));
+    AM_ASSERT(cfg->queue);
+    AM_ASSERT(cfg->queue_size > 0);
 
     struct am_ao_state* me = &am_ao_state_;
-    am_event_queue_init(&ao->event_queue, queue, queue_size, me->alloc);
+    am_event_queue_init(
+        &ao->event_queue, cfg->queue, cfg->queue_size, me->alloc
+    );
 
-    ao->prio = prio;
-    ao->name = name;
+    ao->prio = cfg->prio;
+    ao->name = cfg->name;
     ao->task_id = am_task_get_own_id();
 
-    AM_ASSERT(NULL == me->aos[prio.ao]);
-    me->aos[prio.ao] = ao;
+    AM_ASSERT(NULL == me->aos[cfg->prio.ao]);
+    me->aos[cfg->prio.ao] = ao;
     ++me->aos_count;
 
     AM_ATOMIC_STORE_N(&ao->running, true);
 
-    me->running_ao_prio = prio;
+    me->running_ao_prio = cfg->prio;
 
     am_event_async_register_with_id(
         &me->async_hub, am_ao_event_enqueue_unsafe, ao, ao->prio.ao
     );
 
     if (ao->user_init_handler) {
-        ao->user_init_handler(ao->ctx, init_event);
+        ao->user_init_handler(ao->ctx, cfg->init_event);
     }
     me->running_ao_prio = AM_AO_PRIO_INVALID;
 }

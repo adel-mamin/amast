@@ -1,9 +1,23 @@
 BasedOnStyle: Google
+
+IndentWidth: 4
+ContinuationIndentWidth: 4
+BracedInitializerIndentWidth: 4
+ColumnLimit: 80
+
 BinPackArguments: false
 BinPackParameters: false
-ColumnLimit: 80
-IndentWidth: 4
-SortIncludes: false
-AlignAfterOpenBracket: BlockIndent
+BinPackLongBracedList: false
+
+AlignAfterOpenBracket: false
+
+Cpp11BracedListStyle: FunctionCall
+BreakAfterOpenBracketBracedList: true
+BreakBeforeCloseBracketBracedList: true
+
+BreakAfterOpenBracketFunction: true
+BreakBeforeCloseBracketFunction: true
+
 BreakBeforeBraces: Attach
 IndentCaseLabels: false
+SortIncludes: false

@@ -82,25 +82,35 @@ static void test_ringbuf_threading(void) {
     const struct am_event* queue_reader[1];
     am_ao_start(
         ringbuf_reader_get_ao(),
-        (struct am_ao_prio){.ao = AM_AO_PRIO_MID, .task = AM_AO_PRIO_MID},
-        /*queue=*/queue_reader,
-        /*queue_size=*/AM_COUNTOF(queue_reader),
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*name=*/"ringbuf_reader",
-        /*init_event=*/NULL
+        &(struct am_ao_cfg){
+            .prio =
+                (struct am_ao_prio){
+                    .ao = AM_AO_PRIO_MID, .task = AM_AO_PRIO_MID
+                },
+            .queue = queue_reader,
+            .queue_size = AM_COUNTOF(queue_reader),
+            .stack = NULL,
+            .stack_size = 0,
+            .name = "ringbuf_reader",
+            .init_event = NULL
+        }
     );
 
     const struct am_event* queue_writer[1];
     am_ao_start(
         ringbuf_writer_get_ao(),
-        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/queue_writer,
-        /*queue_size=*/AM_COUNTOF(queue_writer),
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*name=*/"ringbuf_writer",
-        /*init_event=*/NULL
+        &(struct am_ao_cfg){
+            .prio =
+                (struct am_ao_prio){
+                    .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
+                },
+            .queue = queue_writer,
+            .queue_size = AM_COUNTOF(queue_writer),
+            .stack = NULL,
+            .stack_size = 0,
+            .name = "ringbuf_writer",
+            .init_event = NULL
+        }
     );
 
     int ticker = am_ticker_create(&(struct am_ticker_cfg){

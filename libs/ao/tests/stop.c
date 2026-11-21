@@ -70,13 +70,18 @@ static int test_init(struct am_hsm* hsm, const struct am_event* event) {
 static void start_ao(void) {
     am_ao_start(
         &m_test.ao,
-        (struct am_ao_prio){.ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX},
-        /*queue=*/m_queue_test,
-        /*queue_size=*/AM_COUNTOF(m_queue_test),
-        /*stack=*/NULL,
-        /*stack_size=*/0,
-        /*name=*/"test",
-        /*init_event=*/NULL
+        &(struct am_ao_cfg){
+            .prio =
+                (struct am_ao_prio){
+                    .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
+                },
+            .queue = m_queue_test,
+            .queue_size = AM_COUNTOF(m_queue_test),
+            .stack = NULL,
+            .stack_size = 0,
+            .name = "test",
+            .init_event = NULL
+        }
     );
 }
 
