@@ -121,14 +121,14 @@ struct am_ao {
 };
 
 /** Active object library state configuration. */
-struct am_ao_cfg {
+struct am_ao_global_cfg {
     /**
      * Callback to enter low power mode.
      *
      * The callback is called with critical section being entered
-     * by calling am_ao_cfg::crit_enter() to allow
+     * by calling am_ao_global_cfg::crit_enter() to allow
      * for race condition free transition to low power mode(s).
-     * The am_ao_cfg::crit_exit() is called by the library after
+     * The am_ao_global_cfg::crit_exit() is called by the library after
      * the callback is returned.
      *
      * Do not post or publish events from this callback.
@@ -490,7 +490,7 @@ void am_ao_stop(struct am_ao* ao);
  *             The active object library makes an internal copy of
  *             the configuration. Must be not NULL.
  */
-void am_ao_global_init(const struct am_ao_cfg* cfg);
+void am_ao_global_init(const struct am_ao_global_cfg* cfg);
 
 /**
  * Active object library state de-initialization.

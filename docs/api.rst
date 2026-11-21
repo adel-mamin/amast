@@ -471,7 +471,7 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygentypedef:: am_ao_fn
 
-.. doxygenstruct:: am_ao_cfg
+.. doxygenstruct:: am_ao_global_cfg
    :members:
 
 .. doxygenstruct:: am_ao_prio

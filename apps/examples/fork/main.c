@@ -238,7 +238,7 @@ int main(int argc, const char* argv[]) {
     );
 
     struct am_event_subscription subscriptions[EVT_PUB_MAX - AM_EVT_USER];
-    struct am_ao_cfg cfg = {
+    struct am_ao_global_cfg cfg = {
         .crit_enter = am_crit_enter,
         .crit_exit = am_crit_exit,
         .async = {

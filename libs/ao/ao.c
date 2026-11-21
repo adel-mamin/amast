@@ -165,7 +165,7 @@ void am_ao_init(
     ao->init_called = true;
 }
 
-void am_ao_global_init(const struct am_ao_cfg* cfg) {
+void am_ao_global_init(const struct am_ao_global_cfg* cfg) {
     AM_ASSERT(cfg);
 
     struct am_ao_state* me = &am_ao_state_;

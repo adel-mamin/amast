@@ -177,7 +177,7 @@ int main(void) {
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
-    struct am_ao_cfg cfg = {
+    struct am_ao_global_cfg cfg = {
         .crit_enter = am_crit_enter,
         .crit_exit = am_crit_exit,
     };

@@ -83,7 +83,7 @@ static void start_ao(void) {
 int main(void) {
     am_pal_global_init(/*arg=*/NULL);
 
-    struct am_ao_cfg cfg = {
+    struct am_ao_global_cfg cfg = {
         .crit_enter = am_crit_enter,
         .crit_exit = am_crit_exit,
     };

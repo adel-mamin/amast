@@ -13,6 +13,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Add `struct am_task_cfg`
 - Add name to tickers
 
+### Changed
+
+- Rename `struct am_ao_cfg` to `struct am_ao_global_cfg`
+
 ## v0.17.5 - 2-October-2026
 
 ### Changed
