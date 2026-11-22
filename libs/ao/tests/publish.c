@@ -105,7 +105,8 @@ static void test_publish(void) {
     );
 
     struct am_event_subscription subscriptions[AM_AO_EVT_PUB_MAX - AM_EVT_USER];
-    struct am_ao_global_cfg cfg = {
+
+    am_ao_global_init(&(struct am_ao_global_cfg){
         .crit_enter = am_crit_enter,
         .crit_exit = am_crit_exit,
         .async = {
@@ -113,8 +114,7 @@ static void test_publish(void) {
             .subscriptions = subscriptions,
             .subscription_count = AM_COUNTOF(subscriptions),
         }
-    };
-    am_ao_global_init(&cfg);
+    });
 
     publish_init(publish_log);
 

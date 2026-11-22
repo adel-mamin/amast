@@ -390,7 +390,8 @@ int main(void) {
     );
 
     struct am_event_subscription subscriptions[EVT_PUB_MAX - AM_EVT_USER];
-    struct am_ao_global_cfg cfg = {
+
+    am_ao_global_init(&(struct am_ao_global_cfg){
         .crit_enter = am_crit_enter,
         .crit_exit = am_crit_exit,
         .async = {
@@ -398,8 +399,7 @@ int main(void) {
             .subscriptions = subscriptions,
             .subscription_count = AM_COUNTOF(subscriptions),
         }
-    };
-    am_ao_global_init(&cfg);
+    });
 
     struct smoker smokers[AM_SMOKERS_NUM_MAX];
     struct agent agent;

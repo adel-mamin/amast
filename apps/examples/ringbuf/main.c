@@ -70,11 +70,10 @@ static void test_ringbuf_threading(void) {
 
     am_ringbuf_init(&ringbuf, buf, AM_COUNTOF(buf));
 
-    struct am_ao_global_cfg cfg = {
+    am_ao_global_init(&(struct am_ao_global_cfg){
         .crit_enter = am_crit_enter,
         .crit_exit = am_crit_exit,
-    };
-    am_ao_global_init(&cfg);
+    });
 
     ringbuf_reader_init(&ringbuf, &timer, data, (int)sizeof(data));
     ringbuf_writer_init(&ringbuf, &timer, data, (int)sizeof(data));

@@ -123,11 +123,10 @@ static int loopback_test_init(
 int main(void) {
     am_pal_global_init(/*arg=*/NULL);
 
-    struct am_ao_global_cfg cfg = {
+    am_ao_global_init(&(struct am_ao_global_cfg){
         .crit_enter = am_crit_enter,
         .crit_exit = am_crit_exit,
-    };
-    am_ao_global_init(&cfg);
+    });
 
     am_ao_init(
         &m_loopback.ao, am_hsm_start_cb, am_hsm_dispatch_cb, &m_loopback.hsm

@@ -143,7 +143,8 @@ int main(void) {
     );
 
     struct am_event_subscription subscriptions[AM_AO_EVT_PUB_MAX - AM_EVT_USER];
-    struct am_ao_global_cfg cfg = {
+
+    am_ao_global_init(&(struct am_ao_global_cfg){
         .crit_enter = am_crit_enter,
         .crit_exit = am_crit_exit,
         .async = {
@@ -151,8 +152,7 @@ int main(void) {
             .subscriptions = &subscriptions[0],
             .subscription_count = AM_COUNTOF(subscriptions),
         }
-    };
-    am_ao_global_init(&cfg);
+    });
 
     for (int i = 0; i < PHILO_NUM; ++i) {
         philo_init(i, table_get_ao(), &timer, &alloc);

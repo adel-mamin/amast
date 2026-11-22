@@ -177,11 +177,10 @@ int main(void) {
 
     am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
 
-    struct am_ao_global_cfg cfg = {
+    am_ao_global_init(&(struct am_ao_global_cfg){
         .crit_enter = am_crit_enter,
         .crit_exit = am_crit_exit,
-    };
-    am_ao_global_init(&cfg);
+    });
 
     struct wdt wdt;
     wdt_init(&wdt, &timer);
