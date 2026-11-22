@@ -7,6 +7,8 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+## v0.17.6 - 22-November-2026
+
 ### Added
 
 - Add amast skill files to `docs/skills/amast`
