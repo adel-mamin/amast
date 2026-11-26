@@ -67,13 +67,14 @@ struct am_coro {
  * @param me  pointer to the `struct am_coro` managing the coroutine state
  */
 #define AM_CORO_BEGIN(me) {                                 \
-    switch ((me)->state) {                                  \
+    struct am_coro *coro_ = (me);                           \
+    switch (coro_->state) {                                 \
     default:                                                \
         AM_ASSERT(0);                                       \
         break;                                              \
     case AM_CORO_STATE_INIT:                                \
         /* to suppress cppcheck warnings */                 \
-        (me)->state = AM_CORO_STATE_INIT
+        coro_->state = AM_CORO_STATE_INIT
 
 /**
  * Mark the end of coroutine function/block.
@@ -81,6 +82,20 @@ struct am_coro {
  * Should be called at the end of coroutine function/block.
  */
 #define AM_CORO_END() }} do {} while (0)
+
+/**
+ * Yield control back to caller.
+ *
+ * Allows the coroutine function/block to yield.
+ *
+ * Control resumes after this point, when the function is called again.
+ */
+#define AM_CORO_YIELD() do {                                \
+            coro_->state = __LINE__;                        \
+            return AM_RC_CORO_BUSY;                         \
+        case __LINE__:                                      \
+            coro_->state = AM_CORO_STATE_INIT;              \
+    } while (0)
 
 /**
  * Await a condition before proceeding.
@@ -91,17 +106,12 @@ struct am_coro {
  *
  * Continues the function execution once the `cond` evaluates to `true`.
  *
- * @param me  pointer to the `struct am_coro` managing the coroutine state
  * @param cond  the condition to check for continuation
  */
-#define AM_CORO_AWAIT(me, cond) do {                        \
-            (me)->state = __LINE__;                         \
-            /* FALLTHROUGH */                               \
-        case __LINE__:                                      \
-            if (!(cond)) {                                  \
-                return AM_RC_CORO_BUSY;                     \
-            }                                               \
-            (me)->state = AM_CORO_STATE_INIT;               \
+#define AM_CORO_AWAIT(cond) do {                            \
+        while (!(cond)) {                                   \
+            AM_CORO_YIELD();                                \
+        }                                                   \
     } while (0)
 
 /**
@@ -114,36 +124,14 @@ struct am_coro {
  * if #AM_RC_CORO_BUSY is returned. Otherwise the execution continues
  * on next invocation without the function call.
  *
- * @param me  pointer to the `struct am_coro` managing the coroutine state
  * @param func  the function to check the return value of
  */
-#define AM_CORO_CALL(me, func) do {                         \
-            (me)->state = __LINE__;                         \
-            /* FALLTHROUGH */                               \
-        case __LINE__: {                                    \
-            enum am_rc rc_ = (func);                        \
-            if (AM_RC_CORO_BUSY == rc_) {                   \
-                return AM_RC_CORO_BUSY;                     \
-            }                                               \
-            AM_ASSERT(AM_RC_CORO_DONE == rc_);              \
-            (me)->state = AM_CORO_STATE_INIT;               \
+#define AM_CORO_CALL(func) do {                             \
+        enum am_rc rc_;                                     \
+        while ((rc_ = (func)) == AM_RC_CORO_BUSY) {         \
+            AM_CORO_YIELD();                                \
         }                                                   \
-    } while (0)
-
-/**
- * Yield control back to caller.
- *
- * Allows the coroutine function/block to yield.
- *
- * Control resumes after this point, when the function is called again.
- *
- * @param me  pointer to the `struct am_coro` managing the coroutine state
- */
-#define AM_CORO_YIELD(me) do {                              \
-            (me)->state = __LINE__;                         \
-            return AM_RC_CORO_BUSY;                         \
-        case __LINE__:                                      \
-            (me)->state = AM_CORO_STATE_INIT;               \
+        AM_ASSERT(AM_RC_CORO_DONE == rc_);                  \
     } while (0)
 
 /* clang-format on */
