@@ -83,7 +83,7 @@ int main(void) {
     am_timer_init(&timer);
 
     struct am_event_sync_hub hub;
-    struct am_event_subscription subscriptions[EVT_PUB_MAX - AM_EVT_USER];
+    struct am_event_subscription subscriptions[AM_EVT_SUB_COUNT(EVT_PUB_MAX)];
 
     struct am_event_sync_cfg cfg = {
         .subscriptions = subscriptions,

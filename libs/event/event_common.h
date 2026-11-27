@@ -91,6 +91,12 @@
 #define AM_EVT_USER 4
 
 /**
+ * The count of event subscriptions.
+ * Used to determine the size of event subscription array.
+ */
+#define AM_EVT_SUB_COUNT(v) ((v) - AM_EVT_USER)
+
+/**
  * Check if event has a valid user event ID.
  *
  * @param event   the event to check

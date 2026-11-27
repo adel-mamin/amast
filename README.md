@@ -346,7 +346,7 @@ int main(void) {
     am_pal_global_init(/*arg=*/NULL);
 
     /* event publish/subscribe memory */
-    struct am_event_subscription subscriptions[EVT_PUB_MAX - AM_EVT_USER];
+    struct am_event_subscription subscriptions[AM_EVT_SUB_COUNT(EVT_PUB_MAX)];
 
     am_ao_global_init(&(struct am_ao_global_cfg){
         .crit_enter = am_crit_enter,

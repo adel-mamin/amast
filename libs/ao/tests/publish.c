@@ -106,7 +106,8 @@ static void test_publish(void) {
         AM_ALIGN_MAX
     );
 
-    struct am_event_subscription subscriptions[AM_AO_EVT_PUB_MAX - AM_EVT_USER];
+    struct am_event_subscription
+        subscriptions[AM_EVT_SUB_COUNT(AM_AO_EVT_PUB_MAX)];
 
     am_ao_global_init(&(struct am_ao_global_cfg){
         .crit_enter = am_crit_enter,

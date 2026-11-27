@@ -186,7 +186,7 @@ static void test_event_async_publish_two_succeed_two_fail(void) {
     struct am_event_queue queue[2];
 
     struct am_event_async_hub hub;
-    struct am_event_subscription subscriptions[EVT_PUB_MAX - AM_EVT_USER];
+    struct am_event_subscription subscriptions[AM_EVT_SUB_COUNT(EVT_PUB_MAX)];
     struct am_event_async_cfg async_cfg = {
         .alloc = &alloc,
         .subscriptions = subscriptions,
@@ -291,7 +291,7 @@ static void test_event_async_publish_one_fail_one_succeeds(void) {
     struct am_event_queue queue[2];
 
     struct am_event_async_hub hub;
-    struct am_event_subscription subscriptions[EVT_PUB_MAX - AM_EVT_USER];
+    struct am_event_subscription subscriptions[AM_EVT_SUB_COUNT(EVT_PUB_MAX)];
     struct am_event_async_cfg async_cfg = {
         .alloc = &alloc,
         .subscriptions = subscriptions,
@@ -446,7 +446,7 @@ static bool test_event_sync_unregister_and_reuse_handler(
 
 static void test_event_sync_publish_handler_unregisters_later_handler(void) {
     struct am_event_sync_hub hub;
-    struct am_event_subscription subscriptions[EVT_PUB_MAX - AM_EVT_USER];
+    struct am_event_subscription subscriptions[AM_EVT_SUB_COUNT(EVT_PUB_MAX)];
 
     struct am_event_sync_cfg cfg = {
         .subscriptions = subscriptions,
@@ -496,7 +496,7 @@ static void test_event_sync_publish_handler_unregisters_and_reuses_later_id(
     void
 ) {
     struct am_event_sync_hub hub;
-    struct am_event_subscription subscriptions[EVT_PUB_MAX - AM_EVT_USER];
+    struct am_event_subscription subscriptions[AM_EVT_SUB_COUNT(EVT_PUB_MAX)];
 
     struct am_event_sync_cfg cfg = {
         .subscriptions = subscriptions,

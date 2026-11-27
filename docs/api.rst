@@ -210,6 +210,8 @@ The source code of the corresponding header file is in `event.h <https://github.
 
 .. doxygendefine:: AM_EVT_USER
 
+.. doxygendefine:: AM_EVT_SUB_COUNT
+
 .. doxygendefine:: AM_EVENT_POOLS_NUM_MAX
 
 .. doxygendefine:: AM_EVENT_HAS_USER_ID
