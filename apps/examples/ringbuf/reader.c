@@ -73,9 +73,7 @@ static void dispatch(void* ctx, const struct am_event* event) {
         int size = 0;
         (void)am_ringbuf_get_read_ptr(me->ringbuf, &ptr, &size);
         if (size < me->len) {
-            am_timer_arm(
-                me->timer, &me->wait.event, /*ticks=*/1, /*interval=*/0
-            );
+            am_timer_arm_once(me->timer, &me->wait.event, /*ticks=*/1);
             return;
         }
         AM_ASSERT(ptr);

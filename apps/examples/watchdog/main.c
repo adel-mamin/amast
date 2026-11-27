@@ -122,13 +122,13 @@ static enum am_rc wdt_proc(struct am_fsm* fsm, const struct am_event* event) {
     struct wdt* me = AM_CONTAINER_OF(fsm, struct wdt, fsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_timer_arm(me->timer, &me->bark.event, AM_BARK_TIMEOUT_MS, 0);
+        am_timer_arm_once(me->timer, &me->bark.event, AM_BARK_TIMEOUT_MS);
         return am_fsm_handled(fsm);
     }
     case EVT_WDT_FEED: {
         am_printff("EVT_WDT_FEED received\n");
         /* re-arm bark timer */
-        am_timer_arm(me->timer, &me->bark.event, AM_BARK_TIMEOUT_MS, 0);
+        am_timer_arm_once(me->timer, &me->bark.event, AM_BARK_TIMEOUT_MS);
         return am_fsm_handled(fsm);
     }
     case EVT_WDT_BARK: {

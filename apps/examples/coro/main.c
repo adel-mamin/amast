@@ -149,11 +149,11 @@ static enum am_rc coro_blinking_green(struct coro* me) {
     /* blinking green */
     for (me->i = 0; me->i < 4; ++me->i) {
         am_printff("\b" AM_COLOR_BLACK AM_SOLID_BLOCK "\b");
-        am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/700, 0);
+        am_timer_arm_once(me->timer, &me->timeout.event, /*ticks=*/700);
         AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
         am_printff(AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/700, 0);
+        am_timer_arm_once(me->timer, &me->timeout.event, /*ticks=*/700);
         AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
     }
 
@@ -168,17 +168,17 @@ static enum am_rc coro_regular_(struct coro* me) {
     for (;;) {
         /* red */
         am_printff(AM_COLOR_RED AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/2000, 0);
+        am_timer_arm_once(me->timer, &me->timeout.event, /*ticks=*/2000);
         AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
         /* yellow */
         am_printff("\b" AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/1000, 0);
+        am_timer_arm_once(me->timer, &me->timeout.event, /*ticks=*/1000);
         AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
         /* green */
         am_printff("\b" AM_COLOR_GREEN AM_SOLID_BLOCK AM_COLOR_RESET);
-        am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/2000, 0);
+        am_timer_arm_once(me->timer, &me->timeout.event, /*ticks=*/2000);
         AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
         /* blinking green */
@@ -235,11 +235,11 @@ static enum am_rc coro_off(struct am_hsm* hsm, const struct am_event* event) {
         for (;;) {
             am_printff("\b");
             am_printff(AM_COLOR_YELLOW AM_SOLID_BLOCK AM_COLOR_RESET);
-            am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/1000, 0);
+            am_timer_arm_once(me->timer, &me->timeout.event, /*ticks=*/1000);
             AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
 
             am_printff("\b" AM_COLOR_BLACK AM_SOLID_BLOCK "\b");
-            am_timer_arm(me->timer, &me->timeout.event, /*ticks=*/700, 0);
+            am_timer_arm_once(me->timer, &me->timeout.event, /*ticks=*/700);
             AM_CORO_AWAIT(!am_timer_is_armed(me->timer, &me->timeout.event));
         }
 

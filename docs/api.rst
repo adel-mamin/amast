@@ -332,6 +332,8 @@ The source code of the corresponding header file is in `timer.h <https://github.
 
 .. doxygenfunction:: am_timer_arm
 
+.. doxygenfunction:: am_timer_arm_once
+
 .. doxygenfunction:: am_timer_disarm
 
 .. doxygenfunction:: am_timer_is_armed

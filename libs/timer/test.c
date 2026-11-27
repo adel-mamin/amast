@@ -45,10 +45,10 @@ static void test_arm(void) {
 
     am_timer_init(&timer);
 
-    am_timer_arm(&timer, &test, /*ticks=*/1, /*interval=*/0);
+    am_timer_arm_once(&timer, &test, /*ticks=*/1);
     AM_ASSERT(am_timer_is_armed(&timer, &test));
 
-    am_timer_arm(&timer, &test2, /*ticks=*/1, /*interval=*/0);
+    am_timer_arm_once(&timer, &test2, /*ticks=*/1);
     AM_ASSERT(am_timer_is_armed(&timer, &test2));
 
     am_timer_disarm(&timer, &test2);
@@ -63,14 +63,14 @@ static void test_arm(void) {
 
     AM_ASSERT(am_timer_is_empty_unsafe(&timer));
 
-    am_timer_arm(&timer, &test, /*ticks=*/1, /*interval=*/0);
+    am_timer_arm_once(&timer, &test, /*ticks=*/1);
     AM_ASSERT(am_timer_is_armed(&timer, &test));
 
     am_timer_tick_iterator_init(&timer);
     e = am_timer_tick_iterator_next(&timer);
     AM_ASSERT(e && (test.event.id == e->event.id));
 
-    am_timer_arm(&timer, &test2, /*ticks=*/1, /*interval=*/0);
+    am_timer_arm_once(&timer, &test2, /*ticks=*/1);
     AM_ASSERT(am_timer_is_armed(&timer, &test2));
 
     am_timer_tick_iterator_init(&timer);

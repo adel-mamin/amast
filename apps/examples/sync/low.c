@@ -45,7 +45,7 @@ static bool low_proc(
     case EVT_JOB_REQ:
         AM_ASSERT(!am_timer_is_armed(low->timer, &low->timer_event.event));
 
-        am_timer_arm(low->timer, &low->timer_event.event, 1000, /*interval=*/0);
+        am_timer_arm_once(low->timer, &low->timer_event.event, 1000);
         break;
 
     case EVT_TIMEOUT:

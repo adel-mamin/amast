@@ -196,7 +196,7 @@ static enum am_rc balancer_proc(
     struct balancer* me = AM_CONTAINER_OF(fsm, struct balancer, fsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_timer_arm(me->timer, &me->timeout.event, AM_TIMEOUT_MS, 0);
+        am_timer_arm_once(me->timer, &me->timeout.event, AM_TIMEOUT_MS);
         am_ao_post_fifo(&me->ao, &m_evt_start);
         return am_fsm_handled(fsm);
     }

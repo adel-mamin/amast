@@ -167,7 +167,7 @@ static enum am_rc smoker_smoking(
     struct smoker* me = AM_CONTAINER_OF(hsm, struct smoker, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY:
-        am_timer_arm(me->timer, &me->done.event, /*ticks=*/20, /*interval=*/0);
+        am_timer_arm_once(me->timer, &me->done.event, /*ticks=*/20);
         return am_hsm_handled(hsm);
 
     case AM_EVT_EXIT:
@@ -306,7 +306,7 @@ static enum am_rc agent_proc(struct am_hsm* hsm, const struct am_event* event) {
     struct agent* me = AM_CONTAINER_OF(hsm, struct agent, hsm);
     switch (event->id) {
     case AM_EVT_ENTRY: {
-        am_timer_arm(me->timer, &me->timeout.event, AM_TIMEOUT_MS, 0);
+        am_timer_arm_once(me->timer, &me->timeout.event, AM_TIMEOUT_MS);
         am_ao_post_fifo(&me->ao, &m_evt_start);
         return am_hsm_handled(hsm);
     }

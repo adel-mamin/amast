@@ -213,6 +213,21 @@ void am_timer_arm(
 );
 
 /**
+ * Arm one-shot timer event.
+ *
+ * Equivalent to calling am_timer_arm() with zero interval.
+ *
+ * @param timer  the timer
+ * @param event  the timer event to arm
+ * @param ticks  number of ticks until the event expires
+ */
+static inline void am_timer_arm_once(
+    struct am_timer* timer, struct am_timer_event* event, uint32_t ticks
+) {
+    am_timer_arm(timer, event, ticks, /*interval=*/0);
+}
+
+/**
  * Disarm timer event.
  *
  * The disarmed event is only marked for removal with this function.
