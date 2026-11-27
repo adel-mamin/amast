@@ -42,7 +42,7 @@
 
 #include <stdbool.h>
 
-#include "common/types.h" /* IWYU pragma: keep */
+#include "common/types.h"
 
 /**
  * Init value of coroutine function/block state.
