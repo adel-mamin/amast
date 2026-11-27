@@ -10,6 +10,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Added
 
 - Add `am_fsm_dispatch_id()` and `am_hsm_dispatch_id()` APIs
+- Add `am_ao_init_fsm()` and `am_ao_init_hsm()` APIs
 
 ### Changed
 

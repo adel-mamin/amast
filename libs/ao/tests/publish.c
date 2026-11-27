@@ -78,8 +78,10 @@ static enum am_rc publish_initial(
 
 static void publish_init(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
     struct test_publish* me = &m_publish;
-    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
+
     am_hsm_init(&me->hsm, publish_initial);
+    am_ao_init_hsm(&me->ao, &me->hsm);
+
     me->log = log;
 }
 

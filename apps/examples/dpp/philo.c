@@ -171,8 +171,9 @@ void philo_init(
     memset(me, 0, sizeof(*me));
     me->cnt = 0;
     me->id = id;
-    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
+
     am_hsm_init(&me->hsm, philo_initial);
+    am_ao_init_hsm(&me->ao, &me->hsm);
 
     me->table = table;
     me->timer = timer;

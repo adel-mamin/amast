@@ -146,8 +146,8 @@ static enum am_rc progress_initial(
 }
 
 static void progress_init(struct progress* me, struct am_timer* timer) {
-    am_ao_init(&me->ao, am_fsm_start_cb, am_fsm_dispatch_cb, &me->fsm);
     am_fsm_init(&me->fsm, progress_initial);
+    am_ao_init_fsm(&me->ao, &me->fsm);
 
     me->timer = timer;
     me->progress = am_timer_event_create_x(EVT_PROGRESS_TICK, &me->ao);

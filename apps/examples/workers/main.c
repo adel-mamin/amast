@@ -131,8 +131,10 @@ static void worker_init(
     struct worker* me, int id, struct am_event_alloc* alloc
 ) {
     memset(me, 0, sizeof(*me));
-    am_ao_init(&me->ao, am_fsm_start_cb, am_fsm_dispatch_cb, &me->fsm);
+
     am_fsm_init(&me->fsm, worker_initial);
+    am_ao_init_fsm(&me->ao, &me->fsm);
+
     me->id = id;
     me->alloc = alloc;
 }
@@ -252,8 +254,9 @@ static void balancer_init(
 ) {
     memset(me, 0, sizeof(*me));
     me->ncpus = ncpus;
-    am_ao_init(&me->ao, am_fsm_start_cb, am_fsm_dispatch_cb, &me->fsm);
+
     am_fsm_init(&me->fsm, balancer_initial);
+    am_ao_init_fsm(&me->ao, &me->fsm);
 
     me->workers = workers;
     me->nworkers = nworkers;

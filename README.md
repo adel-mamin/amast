@@ -327,7 +327,7 @@ static enum am_rc app_initial(struct am_fsm* fsm, const struct am_event *event) 
 static void app_init(struct app *me, struct am_timer *timer) {
     memset(me, 0, sizeof(*me));
     am_fsm_init(&me->fsm, app_initial);
-    am_ao_init(&me->ao, am_fsm_start_cb, am_fsm_dispatch_cb, &me->fsm);
+    am_ao_init_fsm(&me->ao, &me->fsm);
     me->timer = timer;
     me->timeout = am_timer_event_create_x(EVT_TIMER, &me->ao);
 }

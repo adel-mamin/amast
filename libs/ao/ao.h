@@ -41,6 +41,8 @@
 #include "event/event_queue.h"
 #include "event/event_async.h"
 #include "pal/pal.h"
+#include "fsm/fsm.h"
+#include "hsm/hsm.h"
 
 #ifndef AM_AO_NUM_MAX
 /** The maximum number of active objects. */
@@ -438,6 +440,48 @@ void am_ao_post_lifo(struct am_ao* ao, const struct am_event* event);
 void am_ao_init(
     struct am_ao* ao, am_ao_fn init_handler, am_ao_fn event_handler, void* ctx
 );
+
+/**
+ * Initialize active object with finite state machine (FSM).
+ *
+ * The @p fsm must be initialized with am_fsm_init before
+ * calling this function.
+ *
+ * The FSM is started by the active object library when the
+ * active object starts. All events received by the active
+ * object are dispatched to the FSM.
+ *
+ * The @p fsm must remain valid for the lifetime of the active object.
+ *
+ * See am_ao_init() for the initialization restrictions.
+ *
+ * @param ao   the active object to initialize
+ * @param fsm  the finite state machine
+ */
+static inline void am_ao_init_fsm(struct am_ao* ao, struct am_fsm* fsm) {
+    am_ao_init(ao, am_fsm_start_cb, am_fsm_dispatch_cb, fsm);
+}
+
+/**
+ * Initialize active object with hierarchical state machine (HSM).
+ *
+ * The @p hsm must be initialized with am_hsm_init before
+ * calling this function.
+ *
+ * The HSM is started by the active object library when the
+ * active object starts. All events received by the active
+ * object are dispatched to the HSM.
+ *
+ * The @p hsm must remain valid for the lifetime of the active object.
+ *
+ * See am_ao_init() for the initialization restrictions.
+ *
+ * @param ao   the active object to initialize
+ * @param hsm  the hierarchical state machine
+ */
+static inline void am_ao_init_hsm(struct am_ao* ao, struct am_hsm* hsm) {
+    am_ao_init(ao, am_hsm_start_cb, am_hsm_dispatch_cb, hsm);
+}
 
 /** AO configuration */
 struct am_ao_cfg {

@@ -508,6 +508,10 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygenfunction:: am_ao_init
 
+.. doxygenfunction:: am_ao_init_fsm
+
+.. doxygenfunction:: am_ao_init_hsm
+
 .. doxygenstruct:: am_ao_cfg
    :members:
 

@@ -210,8 +210,10 @@ static void smoker_init(
     struct am_event_alloc* alloc
 ) {
     memset(me, 0, sizeof(*me));
+
     am_hsm_init(&me->hsm, smoker_initial);
-    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
+    am_ao_init_hsm(&me->ao, &me->hsm);
+
     me->id = id;
     me->resource_own = me->resource_acquired = resource;
 
@@ -344,8 +346,9 @@ static void agent_init(
     struct agent* me, struct am_timer* timer, struct am_event_alloc* alloc
 ) {
     memset(me, 0, sizeof(*me));
+
     am_hsm_init(&me->hsm, agent_initial);
-    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
+    am_ao_init_hsm(&me->ao, &me->hsm);
 
     me->timer = timer;
     me->timeout = am_timer_event_create_x(EVT_TIMEOUT, &me->ao);

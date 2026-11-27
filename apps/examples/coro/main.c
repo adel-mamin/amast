@@ -266,8 +266,8 @@ static enum am_rc coro_initial(
 static void coro_init(struct coro* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
 
-    am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
     am_hsm_init(&me->hsm, coro_initial);
+    am_ao_init_hsm(&me->ao, &me->hsm);
 
     me->timer = timer;
     me->timeout = am_timer_event_create_x(CORO_EVT_TIMER, &me->ao);
