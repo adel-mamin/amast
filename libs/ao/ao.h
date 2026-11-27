@@ -43,6 +43,7 @@
 #include "pal/pal.h"
 #include "fsm/fsm.h"
 #include "hsm/hsm.h"
+#include "timer/timer.h"
 
 #ifndef AM_AO_NUM_MAX
 /** The maximum number of active objects. */
@@ -667,6 +668,30 @@ int am_ao_get_count(void);
  * @return the priority level
  */
 int am_ao_get_own_prio(void);
+
+/**
+ * Process timer tick and deliver expired timer events.
+ *
+ * All timer events armed in the timer must be of type
+ * struct am_timer_event_x. The context pointer of each timer event
+ * must point to the recipient active object or be NULL.
+ *
+ * If the context pointer is not NULL, the expired timer event is
+ * posted to the recipient active object using am_ao_post_fifo().
+ * Otherwise, the event is published using am_ao_publish().
+ *
+ * @param timer  the timer
+ */
+void am_ao_timer_tick(struct am_timer* timer);
+
+/**
+ * Callback version of am_ao_timer_tick().
+ *
+ * The function can be used as a ticker callback.
+ *
+ * @param param  pointer to struct am_timer
+ */
+static inline void am_ao_timer_tick_cb(void* param) { am_ao_timer_tick(param); }
 
 #ifdef __cplusplus
 }

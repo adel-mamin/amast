@@ -109,21 +109,6 @@ AM_NORETURN void am_assert_failure(const char* file, int line) {
     __builtin_trap();
 }
 
-static void ticker_cb(void* param) {
-    struct am_timer* timer = param;
-
-    am_timer_tick_iterator_init(timer);
-    struct am_timer_event* fired = NULL;
-    while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
-        void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
-        if (owner) {
-            am_ao_post_fifo(owner, &fired->event);
-        } else {
-            am_ao_publish(&fired->event);
-        }
-    }
-}
-
 int main(void) {
     am_pal_global_init(/*arg=*/NULL);
 
@@ -196,7 +181,7 @@ int main(void) {
     int ticker = am_ticker_create(&(struct am_ticker_cfg){
         .name = "timebase_ms",
         .timebase = AM_TIMEBASE_MS,
-        .ticker_cb = ticker_cb,
+        .ticker_cb = am_ao_timer_tick_cb,
         .ctx = &timer,
         .priority_hint = AM_AO_PRIO_MIN
     });

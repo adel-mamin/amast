@@ -39,6 +39,7 @@
 #include "event/event_async.h"
 #include "event/event_queue.h"
 #include "ao/state.h"
+#include "timer/timer.h"
 
 #include "ao/ao.h"
 
@@ -294,4 +295,17 @@ bool am_ao_event_enqueue_unsafe(
     }
 
     return (AM_RC_ERR != rc);
+}
+
+void am_ao_timer_tick(struct am_timer* timer) {
+    am_timer_tick_iterator_init(timer);
+    struct am_timer_event* fired = NULL;
+    while ((fired = am_timer_tick_iterator_next(timer)) != NULL) {
+        void* owner = AM_CAST(struct am_timer_event_x*, fired)->ctx;
+        if (owner) {
+            am_ao_post_fifo(owner, &fired->event);
+        } else {
+            am_ao_publish(&fired->event);
+        }
+    }
 }
