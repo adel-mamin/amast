@@ -404,10 +404,7 @@ int main(void) {
         &agent.ao,
         &(struct am_ao_cfg){
             .name = "agent",
-            .prio =
-                (struct am_ao_prio){
-                    .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
-                },
+            .prio = am_ao_prio_make(AM_AO_PRIO_MAX),
             .queue = queue_agent,
             .queue_size = AM_COUNTOF(queue_agent),
         }

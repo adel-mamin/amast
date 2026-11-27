@@ -145,10 +145,7 @@ int main(void) {
         &m_loopback.ao,
         &(struct am_ao_cfg){
             .name = "loopback",
-            .prio =
-                (struct am_ao_prio){
-                    .ao = AM_AO_PRIO_HIGH, .task = AM_AO_PRIO_HIGH
-                },
+            .prio = am_ao_prio_make(AM_AO_PRIO_HIGH),
             .queue = m_queue_loopback,
             .queue_size = AM_COUNTOF(m_queue_loopback),
         }
@@ -158,10 +155,7 @@ int main(void) {
         &m_loopback_test.ao,
         &(struct am_ao_cfg){
             .name = "loopback_test",
-            .prio =
-                (struct am_ao_prio){
-                    .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
-                },
+            .prio = am_ao_prio_make(AM_AO_PRIO_MAX),
             .queue = m_queue_loopback_test,
             .queue_size = AM_COUNTOF(m_queue_loopback_test),
         }

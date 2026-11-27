@@ -670,6 +670,19 @@ int am_ao_get_count(void);
 int am_ao_get_own_prio(void);
 
 /**
+ * Make active object priority.
+ *
+ * Sets both active object and task priorities to @p prio.
+ *
+ * @param prio  the priority in range [#AM_AO_PRIO_MIN, #AM_AO_PRIO_MAX]
+ *
+ * @return active object priority
+ */
+static inline struct am_ao_prio am_ao_prio_make(uint8_t prio) {
+    return (struct am_ao_prio){.ao = prio, .task = prio};
+}
+
+/**
  * Process timer tick and deliver expired timer events.
  *
  * All timer events armed in the timer must be of type

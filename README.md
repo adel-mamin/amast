@@ -370,10 +370,7 @@ int main(void) {
         &app.ao,
         &(struct am_ao_cfg){
             .name = "app",
-            .prio = (struct am_ao_prio){
-                .ao = AM_AO_PRIO_MAX,
-                .task = AM_AO_PRIO_MAX
-            },
+            .prio = am_ao_prio_make(AM_AO_PRIO_MAX),
             .queue = event_queue,
             .queue_size = AM_COUNTOF(event_queue),
         }

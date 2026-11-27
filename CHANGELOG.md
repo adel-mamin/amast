@@ -13,6 +13,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Add `am_ao_init_fsm()` and `am_ao_init_hsm()` APIs
 - Add `am_ao_timer_tick()` and `am_ao_timer_tick_cb()` APIs
 - Add `am_timer_arm_once()`
+- Add `am_ao_prio_make()`
 
 ### Changed
 

@@ -68,10 +68,7 @@ static void test_ringbuf_threading(void) {
         ringbuf_reader_get_ao(),
         &(struct am_ao_cfg){
             .name = "ringbuf_reader",
-            .prio =
-                (struct am_ao_prio){
-                    .ao = AM_AO_PRIO_MID, .task = AM_AO_PRIO_MID
-                },
+            .prio = am_ao_prio_make(AM_AO_PRIO_MID),
             .queue = queue_reader,
             .queue_size = AM_COUNTOF(queue_reader),
         }
@@ -82,10 +79,7 @@ static void test_ringbuf_threading(void) {
         ringbuf_writer_get_ao(),
         &(struct am_ao_cfg){
             .name = "ringbuf_writer",
-            .prio =
-                (struct am_ao_prio){
-                    .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
-                },
+            .prio = am_ao_prio_make(AM_AO_PRIO_MAX),
             .queue = queue_writer,
             .queue_size = AM_COUNTOF(queue_writer),
         }

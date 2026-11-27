@@ -321,10 +321,7 @@ int main(void) {
         &balancer.ao,
         &(struct am_ao_cfg){
             .name = "balancer",
-            .prio =
-                (struct am_ao_prio){
-                    .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
-                },
+            .prio = am_ao_prio_make(AM_AO_PRIO_MAX),
             .queue = queue_balancer,
             .queue_size = AM_COUNTOF(queue_balancer),
         }

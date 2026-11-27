@@ -258,10 +258,7 @@ int main(int argc, const char* argv[]) {
         &progress.ao,
         &(struct am_ao_cfg){
             .name = "progress",
-            .prio =
-                (struct am_ao_prio){
-                    .ao = AM_AO_PRIO_LOW, .task = AM_AO_PRIO_LOW
-                },
+            .prio = am_ao_prio_make(AM_AO_PRIO_LOW),
             .queue = event_queue,
             .queue_size = AM_COUNTOF(event_queue),
         }

@@ -126,10 +126,7 @@ static void test_publish(void) {
         &me->ao,
         &(struct am_ao_cfg){
             .name = "publish",
-            .prio =
-                (struct am_ao_prio){
-                    .ao = AM_AO_PRIO_MAX, .task = AM_AO_PRIO_MAX
-                },
+            .prio = am_ao_prio_make(AM_AO_PRIO_MAX),
             .queue = m_queue_publish,
             .queue_size = AM_COUNTOF(m_queue_publish),
         }
