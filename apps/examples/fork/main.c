@@ -264,9 +264,6 @@ int main(int argc, const char* argv[]) {
                 },
             .queue = event_queue,
             .queue_size = AM_COUNTOF(event_queue),
-            .stack = NULL,
-            .stack_size = 0,
-            .init_event = NULL
         }
     );
 

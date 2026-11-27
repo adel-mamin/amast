@@ -203,9 +203,6 @@ int main(void) {
                 },
             .queue = queue_watched,
             .queue_size = AM_COUNTOF(queue_watched),
-            .stack = NULL,
-            .stack_size = 0,
-            .init_event = NULL
         }
     );
 
@@ -220,9 +217,6 @@ int main(void) {
                 },
             .queue = queue_wdt,
             .queue_size = AM_COUNTOF(queue_wdt),
-            .stack = NULL,
-            .stack_size = 0,
-            .init_event = NULL
         }
     );
 

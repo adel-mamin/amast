@@ -425,9 +425,6 @@ int main(void) {
                 },
             .queue = queue_agent,
             .queue_size = AM_COUNTOF(queue_agent),
-            .stack = NULL,
-            .stack_size = 0,
-            .init_event = NULL
         }
     );
 
@@ -445,9 +442,6 @@ int main(void) {
                     },
                 .queue = queue_smoker[i],
                 .queue_size = AM_COUNTOF(queue_smoker[i]),
-                .stack = NULL,
-                .stack_size = 0,
-                .init_event = NULL
             }
         );
     }

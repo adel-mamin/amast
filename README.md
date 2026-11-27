@@ -391,9 +391,6 @@ int main(void) {
             },
             .queue = event_queue,
             .queue_size = AM_COUNTOF(event_queue),
-            .stack = NULL,
-            .stack_size = 0,
-            .init_event = NULL
         }
     );
 
@@ -401,9 +398,6 @@ int main(void) {
     am_task_start(&(struct am_task_cfg){
         .name = "input",
         .prio = AM_AO_PRIO_MIN,
-        .stack = NULL,
-        .stack_size = 0,
-        .init_fn = NULL,
         .entry_fn = input_task,
         .flags = AM_TASK_FLAG_WAIT_INIT,
         .arg = &app

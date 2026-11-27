@@ -132,9 +132,6 @@ static void test_publish(void) {
                 },
             .queue = m_queue_publish,
             .queue_size = AM_COUNTOF(m_queue_publish),
-            .stack = NULL,
-            .stack_size = 0,
-            .init_event = NULL
         }
     );
 

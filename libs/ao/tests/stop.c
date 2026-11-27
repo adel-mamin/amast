@@ -78,9 +78,6 @@ static void start_ao(void) {
                 },
             .queue = m_queue_test,
             .queue_size = AM_COUNTOF(m_queue_test),
-            .stack = NULL,
-            .stack_size = 0,
-            .init_event = NULL
         }
     );
 }

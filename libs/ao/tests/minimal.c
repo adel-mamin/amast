@@ -151,9 +151,6 @@ int main(void) {
                 },
             .queue = m_queue_loopback,
             .queue_size = AM_COUNTOF(m_queue_loopback),
-            .stack = NULL,
-            .stack_size = 0,
-            .init_event = NULL
         }
     );
 
@@ -167,9 +164,6 @@ int main(void) {
                 },
             .queue = m_queue_loopback_test,
             .queue_size = AM_COUNTOF(m_queue_loopback_test),
-            .stack = NULL,
-            .stack_size = 0,
-            .init_event = NULL
         }
     );
 

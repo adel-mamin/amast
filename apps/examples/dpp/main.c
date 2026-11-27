@@ -171,9 +171,6 @@ int main(void) {
                 },
             .queue = queue_table,
             .queue_size = AM_COUNTOF(queue_table), /* NOLINT */
-            .stack = NULL,
-            .stack_size = 0,
-            .init_event = NULL
         }
     );
 
@@ -192,9 +189,6 @@ int main(void) {
                 .prio = (struct am_ao_prio){.ao = prio, .task = prio},
                 .queue = queue_philo[i],
                 .queue_size = AM_COUNTOF(queue_philo[i]),
-                .stack = NULL,
-                .stack_size = 0,
-                .init_event = NULL
             }
         );
     }

@@ -342,9 +342,6 @@ int main(void) {
                 },
             .queue = queue_balancer,
             .queue_size = AM_COUNTOF(queue_balancer),
-            .stack = NULL,
-            .stack_size = 0,
-            .init_event = NULL
         }
     );
 
@@ -358,9 +355,6 @@ int main(void) {
                 .prio = (struct am_ao_prio){.ao = prio, .task = AM_AO_PRIO_LOW},
                 .queue = queue_worker[i],
                 .queue_size = AM_COUNTOF(queue_worker[i]),
-                .stack = NULL,
-                .stack_size = 0,
-                .init_event = NULL
             }
         );
     }

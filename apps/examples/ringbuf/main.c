@@ -89,9 +89,6 @@ static void test_ringbuf_threading(void) {
                 },
             .queue = queue_reader,
             .queue_size = AM_COUNTOF(queue_reader),
-            .stack = NULL,
-            .stack_size = 0,
-            .init_event = NULL
         }
     );
 
@@ -106,9 +103,6 @@ static void test_ringbuf_threading(void) {
                 },
             .queue = queue_writer,
             .queue_size = AM_COUNTOF(queue_writer),
-            .stack = NULL,
-            .stack_size = 0,
-            .init_event = NULL
         }
     );
 
