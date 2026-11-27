@@ -123,7 +123,7 @@ int main(void) {
         }
         int n = getchar();
         if (EOF == c) {
-            am_hsm_dispatch(calc, &(struct am_event){.id = EVT_OFF});
+            am_hsm_dispatch_id(calc, EVT_OFF);
             goto end;
         }
         printf("\033[A\r"); /* move the cursor up one line */
@@ -134,7 +134,7 @@ int main(void) {
             printf("%s", blank);
             n = getchar();
             if (EOF == n) {
-                am_hsm_dispatch(calc, &(struct am_event){.id = EVT_OFF});
+                am_hsm_dispatch_id(calc, EVT_OFF);
                 goto end;
             }
         }
@@ -142,7 +142,7 @@ int main(void) {
 
         c = tolower(c);
         if ('x' == c) {
-            am_hsm_dispatch(calc, &(struct am_event){.id = EVT_OFF});
+            am_hsm_dispatch_id(calc, EVT_OFF);
             goto end;
         }
         struct calc_event e = {.data = (char)c};

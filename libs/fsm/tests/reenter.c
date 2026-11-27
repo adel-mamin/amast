@@ -94,7 +94,7 @@ static void test_reenter_fsm(void) {
     struct reenter_fsm* me = &m_reenter_fsm;
 
     am_fsm_start(&me->fsm, /*init_event=*/NULL);
-    am_fsm_dispatch(&me->fsm, &(struct am_event){.id = AM_EVT_USER});
+    am_fsm_dispatch_id(&me->fsm, AM_EVT_USER);
 
     const char* out =
         "s-AM_EVT_ENTRY;s-AM_EVT_USER;s-AM_EVT_EXIT;"

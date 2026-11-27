@@ -144,13 +144,13 @@ static void test_oven_hsm(void) {
     am_hsm_start(&me->hsm, /*init_event=*/NULL);
     AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state_make(oven_hsm_off)));
 
-    am_hsm_dispatch(&me->hsm, &(struct am_event){.id = HSM_EVT_ON});
+    am_hsm_dispatch_id(&me->hsm, HSM_EVT_ON);
     AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state_make(oven_hsm_on)));
 
-    am_hsm_dispatch(&me->hsm, &(struct am_event){.id = HSM_EVT_OPEN});
+    am_hsm_dispatch_id(&me->hsm, HSM_EVT_OPEN);
     AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state_make(oven_hsm_open)));
 
-    am_hsm_dispatch(&me->hsm, &(struct am_event){.id = HSM_EVT_CLOSE});
+    am_hsm_dispatch_id(&me->hsm, HSM_EVT_CLOSE);
     AM_ASSERT(am_hsm_state_is_eq(&me->hsm, am_hsm_state_make(oven_hsm_on)));
 }
 

@@ -133,13 +133,23 @@ static inline enum am_rc am_fsm_tran_redispatch(
 /**
  * Synchronously dispatch an event to an FSM.
  *
- * The caller retains ownership of @p event. Do not free the event from user
- * state handlers.
+ * The caller retains ownership of @p event.
+ * Do not free the event from user state handlers.
  *
  * @param fsm    FSM to dispatch @p event to.
  * @param event  Event to dispatch.
  */
 void am_fsm_dispatch(struct am_fsm* fsm, const struct am_event* event);
+
+/**
+ * Synchronously dispatch an event with given ID to an FSM.
+ *
+ * @param fsm  FSM to dispatch @p event to.
+ * @param id   Event ID to dispatch.
+ */
+static inline void am_fsm_dispatch_id(struct am_fsm* fsm, const uint16_t id) {
+    am_fsm_dispatch(fsm, &(struct am_event){.id = id});
+}
 
 /**
  * Callback-compatible wrapper around am_fsm_dispatch().

@@ -31,7 +31,6 @@
 #include "common/compiler.h"
 #include "common/constants.h"
 #include "common/macros.h"
-#include "event/event_common.h"
 #include "strlib/strlib.h"
 #include "hsm/hsm.h"
 #include "common.h"
@@ -107,11 +106,11 @@ int main(void) {
         m_regular_log_buf[0] = '\0';
 
         if (terminate) {
-            am_hsm_dispatch(regular, &(struct am_event){.id = HSM_EVT_TERM});
+            am_hsm_dispatch_id(regular, HSM_EVT_TERM);
             test_print(c);
             break;
         }
-        am_hsm_dispatch(regular, &(struct am_event){.id = e[index]});
+        am_hsm_dispatch_id(regular, e[index]);
         test_print(c);
     }
     m_regular_log_buf[0] = '\0';

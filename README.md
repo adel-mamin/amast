@@ -86,8 +86,8 @@ int main(void) {
     am_fsm_init(&app.fsm, init);
     am_fsm_start(&app.fsm, /*init_event=*/NULL);
 
-    am_fsm_dispatch(&app.fsm, &(struct am_event){.id = EVT_B});
-    am_fsm_dispatch(&app.fsm, &(struct am_event){.id = EVT_A});
+    am_fsm_dispatch_id(&app.fsm, EVT_B);
+    am_fsm_dispatch_id(&app.fsm, EVT_A);
 
     am_fsm_deinit(&app.fsm);
 
@@ -218,9 +218,9 @@ int main(void) {
     am_hsm_init(&app.hsm, init);
     am_hsm_start(&app.hsm, /*init_event=*/NULL);
 
-    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = EVT_B});
-    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = EVT_A});
-    am_hsm_dispatch(&app.hsm, &(struct am_event){.id = EVT_C});
+    am_hsm_dispatch_id(&app.hsm, EVT_B);
+    am_hsm_dispatch_id(&app.hsm, EVT_A);
+    am_hsm_dispatch_id(&app.hsm, EVT_C);
 
     am_hsm_deinit(&app.hsm);
 

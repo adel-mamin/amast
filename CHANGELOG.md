@@ -7,6 +7,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Add `am_fsm_dispatch_id()` and `am_hsm_dispatch_id()` APIs
+
 ### Changed
 
 - Rework coroutine API (`libs/coro/coro.h`)

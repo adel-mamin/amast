@@ -338,6 +338,16 @@ static inline enum am_rc am_hsm_super_i(
 void am_hsm_dispatch(struct am_hsm* hsm, const struct am_event* event);
 
 /**
+ * Synchronously dispatch an event with given ID to an HSM.
+ *
+ * @param hsm  HSM to dispatch @p event to.
+ * @param id   Event ID to dispatch.
+ */
+static inline void am_hsm_dispatch_id(struct am_hsm* hsm, const uint16_t id) {
+    am_hsm_dispatch(hsm, &(struct am_event){.id = id});
+}
+
+/**
  * Callback-compatible wrapper around am_hsm_dispatch().
  *
  * @param hsm    HSM object passed as a void pointer.
