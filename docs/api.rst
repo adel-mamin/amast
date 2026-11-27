@@ -602,7 +602,7 @@ The source code of the corresponding header file is in `pal.h <https://github.co
 
 .. doxygenfunction:: am_task_init_wait
 
-.. doxygenfunction:: am_task_run_all
+.. doxygenfunction:: am_task_run
 
 .. doxygenfunction:: am_time_get_ms
 

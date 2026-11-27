@@ -333,7 +333,7 @@ int am_get_cpu_count(void) {
 #endif
 }
 
-void am_task_run_all(void) {}
+void am_task_run(void) {}
 
 void am_task_init_wait(void) {
     am_mutex_lock(init_complete_mutex_);

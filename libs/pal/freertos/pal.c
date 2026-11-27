@@ -162,4 +162,4 @@ int am_get_cpu_count(void) {
 
 void am_task_init_wait(void) {}
 
-void am_task_run_all(void) { vTaskStartScheduler(); }
+void am_task_run(void) { vTaskStartScheduler(); }

@@ -482,7 +482,7 @@ void am_task_init_wait(void) {
     am_mutex_unlock(init_complete_mutex_);
 }
 
-void am_task_run_all(void) {}
+void am_task_run(void) {}
 
 #define NSEC_PER_MSEC 1000000ULL
 

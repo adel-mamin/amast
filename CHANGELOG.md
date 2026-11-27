@@ -24,6 +24,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Remove redundant initialization in `am_ao_start()` calls
 - Rename ticker ticker_cb to tick_cb
 - Rename `am_ao_run_all()` into `am_ao_run()`.
+- Rename `am_task_run_all()` into `am_task_run()`
 
 ## v0.17.6 - 22-November-2026
 

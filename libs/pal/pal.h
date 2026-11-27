@@ -207,7 +207,7 @@ int am_task_get_own_id(void);
 void am_task_init_wait(void);
 
 /** Run all PAL tasks */
-void am_task_run_all(void);
+void am_task_run(void);
 
 /**
  * Get current time in milliseconds.

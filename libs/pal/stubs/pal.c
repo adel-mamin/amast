@@ -136,7 +136,7 @@ void am_pal_flush(void) {}
 
 int am_get_cpu_count(void) { return 1; }
 
-void am_task_run_all(void) {}
+void am_task_run(void) {}
 
 void am_task_init_wait(void) {}
 

@@ -516,7 +516,7 @@ int am_get_cpu_count(void) {
     return (nprocs < 1) ? 1 : (int)nprocs;
 }
 
-void am_task_run_all(void) {}
+void am_task_run(void) {}
 
 void am_task_init_wait(void) {
     int task_id = am_task_get_own_id();
