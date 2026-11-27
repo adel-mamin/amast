@@ -507,7 +507,7 @@ static struct am_ticker tickers[1];
 static void am_ticker_task(void* arg) {
     struct am_ticker* ticker = arg;
     AM_ASSERT(ticker);
-    AM_ASSERT(ticker->cfg.ticker_cb);
+    AM_ASSERT(ticker->cfg.tick_cb);
 
     const uint64_t period_ns = (uint64_t)ticker->period_ns;
     uint64_t next_ns = uv_hrtime();
@@ -533,13 +533,13 @@ static void am_ticker_task(void* arg) {
             break;
         }
 
-        ticker->cfg.ticker_cb(ticker->cfg.ctx);
+        ticker->cfg.tick_cb(ticker->cfg.ctx);
     }
 }
 
 int am_ticker_create(const struct am_ticker_cfg* cfg) {
     AM_ASSERT(cfg);
-    AM_ASSERT(cfg->ticker_cb);
+    AM_ASSERT(cfg->tick_cb);
 
     struct am_ticker* ticker = &tickers[0];
 

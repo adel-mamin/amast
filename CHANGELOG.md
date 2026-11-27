@@ -18,6 +18,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Rework coroutine API (`libs/coro/coro.h`)
 - Rework `am_fsm_init()` and `am_hsm_init()` APIs
 - Remove redundant initialization in `am_ao_start()` calls
+- Rename ticker ticker_cb to tick_cb
 
 ## v0.17.6 - 22-November-2026
 

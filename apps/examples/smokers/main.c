@@ -434,7 +434,7 @@ int main(void) {
     int ticker = am_ticker_create(&(struct am_ticker_cfg){
         .name = "timebase_ms",
         .timebase = AM_TIMEBASE_MS,
-        .ticker_cb = am_ao_timer_tick_cb,
+        .tick_cb = am_ao_timer_tick_cb,
         .ctx = &timer,
         .priority_hint = AM_AO_PRIO_MIN
     });

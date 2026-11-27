@@ -355,10 +355,10 @@ struct am_ticker_cfg {
     /** ticker timebase */
     int timebase;
     /**
-     * ticker callback
+     * tick callback
      * @param ctx  callback context
      */
-    void (*ticker_cb)(void* ctx);
+    void (*tick_cb)(void* ctx);
     /** ticker context */
     void* ctx;
     /** ticker thread platform specific priority hint (optional) */
