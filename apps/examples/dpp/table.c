@@ -196,7 +196,7 @@ void table_init(int nsessions, struct am_event_alloc* alloc) {
     me->nsessions = nsessions;
     me->alloc = alloc;
 
-    am_hsm_init(&me->hsm, am_hsm_state_make(table_initial));
+    am_hsm_init(&me->hsm, table_initial);
     am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
 }
 

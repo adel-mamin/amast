@@ -409,9 +409,10 @@ struct am_hsm_state am_hsm_get_state(const struct am_hsm* hsm);
  * The initial state handler must return am_hsm_tran() or am_hsm_tran_i().
  *
  * @param hsm    HSM object to initialize.
- * @param state  Initial state descriptor of @p hsm.
+ * @param init   Top-level initial transition handler invoked by
+ *               am_hsm_start() to establish the initial active state.
  */
-void am_hsm_init(struct am_hsm* hsm, struct am_hsm_state state);
+void am_hsm_init(struct am_hsm* hsm, am_hsm_state_fn init);
 
 /**
  * De-initialize an HSM object.

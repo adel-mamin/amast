@@ -128,7 +128,7 @@ static void defer_init(
     struct am_event_alloc* alloc
 ) {
     struct test_defer* me = &m_test_defer;
-    am_hsm_init(&me->hsm, am_hsm_state_make(defer_initial));
+    am_hsm_init(&me->hsm, defer_initial);
     me->log = log;
 
     /* setup HSM event queue */

@@ -107,7 +107,7 @@ static void reenter_hsm_init(
     AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)
 ) {
     struct reenter_hsm* me = &m_reenter_hsm;
-    am_hsm_init(&me->hsm, am_hsm_state_make(reenter_hsm_initial));
+    am_hsm_init(&me->hsm, reenter_hsm_initial);
     me->log = log;
     me->log_buf[0] = '\0';
 }

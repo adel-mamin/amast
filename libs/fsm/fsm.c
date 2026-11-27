@@ -131,11 +131,11 @@ bool am_fsm_is_in(const struct am_fsm* fsm, const am_fsm_state_fn state) {
     return fsm->state == state;
 }
 
-void am_fsm_init(struct am_fsm* fsm, const am_fsm_state_fn state) {
+void am_fsm_init(struct am_fsm* fsm, const am_fsm_state_fn init) {
     AM_ASSERT(fsm);
-    AM_ASSERT(state);
+    AM_ASSERT(init);
     memset(fsm, 0, sizeof(*fsm));
-    fsm->state = state;
+    fsm->state = init;
 }
 
 void am_fsm_deinit(struct am_fsm* fsm) {

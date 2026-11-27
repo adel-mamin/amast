@@ -327,7 +327,7 @@ static enum am_rc complex_sm_initial(
 
 void complex_sm_init(AM_PRINTF(1, 0) void (*log)(const char* fmt, ...)) {
     struct complex_sm* me = &m_complex_sm;
-    am_hsm_init(&me->hsm, am_hsm_state_make(complex_sm_initial));
+    am_hsm_init(&me->hsm, complex_sm_initial);
     me->log = log;
 }
 

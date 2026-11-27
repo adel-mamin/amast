@@ -172,7 +172,7 @@ void philo_init(
     me->cnt = 0;
     me->id = id;
     am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
-    am_hsm_init(&me->hsm, am_hsm_state_make(philo_initial));
+    am_hsm_init(&me->hsm, philo_initial);
 
     me->table = table;
     me->timer = timer;

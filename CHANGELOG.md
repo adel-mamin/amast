@@ -10,6 +10,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 ### Changed
 
 - Rework coroutine API (`libs/coro/coro.h`)
+- Rework `am_fsm_init()` and `am_hsm_init()` APIs
 
 ## v0.17.6 - 22-November-2026
 

@@ -371,11 +371,11 @@ struct am_hsm_state am_hsm_get_state(const struct am_hsm* hsm) {
     return hsm_get_state(hsm);
 }
 
-void am_hsm_init(struct am_hsm* hsm, struct am_hsm_state state) {
+void am_hsm_init(struct am_hsm* hsm, const am_hsm_state_fn init) {
     AM_ASSERT(hsm);
-    AM_ASSERT(state.fn);
+    AM_ASSERT(init);
     memset(hsm, 0, sizeof(*hsm));
-    hsm_set_state(hsm, state);
+    hsm_set_state(hsm, am_hsm_state_make(init));
     hsm->init_called = true;
 }
 

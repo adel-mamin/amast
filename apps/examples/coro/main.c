@@ -267,7 +267,7 @@ static void coro_init(struct coro* me, struct am_timer* timer) {
     memset(me, 0, sizeof(*me));
 
     am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
-    am_hsm_init(&me->hsm, am_hsm_state_make(coro_initial));
+    am_hsm_init(&me->hsm, coro_initial);
 
     me->timer = timer;
     me->timeout = am_timer_event_create_x(CORO_EVT_TIMER, &me->ao);

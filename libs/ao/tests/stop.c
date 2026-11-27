@@ -95,7 +95,7 @@ int main(void) {
 
     struct test* me = &m_test;
     am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
-    am_hsm_init(&me->hsm, am_hsm_state_make(test_init));
+    am_hsm_init(&me->hsm, test_init);
     start_ao();
 
     while (am_ao_get_count() > 0) {
@@ -103,7 +103,7 @@ int main(void) {
     }
 
     am_ao_init(&me->ao, am_hsm_start_cb, am_hsm_dispatch_cb, &me->hsm);
-    am_hsm_init(&me->hsm, am_hsm_state_make(test_init));
+    am_hsm_init(&me->hsm, test_init);
     start_ao();
 
     while (am_ao_get_count() > 0) {

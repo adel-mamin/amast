@@ -178,9 +178,10 @@ am_fsm_state_fn am_fsm_get_state(const struct am_fsm* fsm);
  * The initial state handler must return am_fsm_tran().
  *
  * @param fsm    FSM object to initialize.
- * @param state  Initial state/event handler function of @p fsm.
+ * @param init   Top-level initial transition handler invoked by
+ *               am_fsm_start() to establish the initial active state.
  */
-void am_fsm_init(struct am_fsm* fsm, am_fsm_state_fn state);
+void am_fsm_init(struct am_fsm* fsm, am_fsm_state_fn init);
 
 /**
  * De-initialize an FSM object.
