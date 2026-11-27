@@ -133,21 +133,21 @@ static void test_publish(void) {
         }
     );
 
-    am_ao_run_all();
+    am_ao_step();
 
     static const struct am_event event = {.id = AM_EVT_PUB};
 
     am_ao_publish(&event);
 
-    am_ao_run_all();
+    am_ao_step();
 
     const char* expected = "s-PUB";
     AM_ASSERT(0 == strncmp(m_publish.log_buf, expected, strlen(expected)));
     m_publish.log_buf[0] = '\0';
 
-    am_ao_run_all();
+    am_ao_step();
     am_ao_publish_exclude(&event, &me->ao);
-    am_ao_run_all();
+    am_ao_step();
 
     AM_ASSERT('\0' == m_publish.log_buf[0]);
 

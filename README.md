@@ -394,9 +394,7 @@ int main(void) {
     });
     am_ticker_start(ticker);
 
-    while (am_ao_get_count() > 0) {
-        am_ao_run_all();
-    }
+    am_ao_run(); /* block until all active objects have exited */
 
     am_ticker_stop(ticker);
 

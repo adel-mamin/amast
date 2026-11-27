@@ -286,9 +286,7 @@ int main(int argc, const char* argv[]) {
         .arg = AM_CAST(void*, argv)
     });
 
-    while (am_ao_get_count() > 0) {
-        am_ao_run_all();
-    }
+    am_ao_run();
 
     am_ao_global_deinit();
 

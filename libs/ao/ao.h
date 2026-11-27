@@ -581,29 +581,33 @@ void am_ao_unsubscribe(const struct am_ao* ao, uint16_t event);
 void am_ao_unsubscribe_all(const struct am_ao* ao);
 
 /**
- * Run all active objects.
+ * Execute one cooperative active object scheduling step.
  *
- * Blocks for preemptive AO library build and returns when all active objects
- * were stopped.
+ * Dispatches at most one event from the highest priority active
+ * object with pending events.
  *
- * What follows only applies to cooperative library build of AO.
+ * If no events are pending, calls am_ao_global_cfg::on_idle(),
+ * if configured, with the critical section entered.
  *
- * Executes initial transition of all newly started active objects.
+ * The function is only available in cooperative mode.
  *
- * Non blocking and returns after dispatching zero or one event.
- *
- * The function is expected to be called repeatedly to dispatch
- * events to active objects.
- *
- * If no events were dispatched (the function returned false),
- * then the event processor is in idle state.
- *
- * @retval true   dispatched one event
- * @retval false  dispatched no events.
- *                Call am_ao_get_count() to make sure there are still
- *                running active objects available.
+ * @retval true   an event was dispatched
+ * @retval false  no event was dispatched
  */
-bool am_ao_run_all(void);
+bool am_ao_step(void);
+
+/**
+ * Run active objects until all active objects are stopped.
+ *
+ * In cooperative mode, repeatedly calls am_ao_step() until
+ * all active objects are stopped.
+ *
+ * In preemptive mode, releases active object tasks for execution
+ * and blocks until all active objects are stopped.
+ *
+ * The function is available in both cooperative and preemptive modes.
+ */
+void am_ao_run(void);
 
 /**
  * Check if active object event queue is empty.

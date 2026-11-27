@@ -15,6 +15,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Add `am_timer_arm_once()`
 - Add `am_ao_prio_make()`
 - Add `AM_EVT_SUB_COUNT()` macro
+- Add `am_ao_step()` API
 
 ### Changed
 
@@ -22,6 +23,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Rework `am_fsm_init()` and `am_hsm_init()` APIs
 - Remove redundant initialization in `am_ao_start()` calls
 - Rename ticker ticker_cb to tick_cb
+- Rename `am_ao_run_all()` into `am_ao_run()`.
 
 ## v0.17.6 - 22-November-2026
 

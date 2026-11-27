@@ -61,7 +61,7 @@ static bool am_ao_handle(void* ctx, const struct am_event* event) {
     return true;
 }
 
-bool am_ao_run_all(void) {
+bool am_ao_step(void) {
     struct am_ao_state* me = &am_ao_state_;
 
     bool init_complete = AM_ATOMIC_EXCHANGE_N(&me->init_complete, true);
@@ -109,6 +109,12 @@ bool am_ao_run_all(void) {
     } while (!dispatched);
 
     return dispatched;
+}
+
+void am_ao_run(void) {
+    while (am_ao_get_count() > 0) {
+        am_ao_step();
+    }
 }
 
 void am_ao_start(struct am_ao* ao, struct am_ao_cfg* cfg) {

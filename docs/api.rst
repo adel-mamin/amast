@@ -533,7 +533,9 @@ The source code of the corresponding header file is in `ao.h <https://github.com
 
 .. doxygenfunction:: am_ao_unsubscribe_all
 
-.. doxygenfunction:: am_ao_run_all
+.. doxygenfunction:: am_ao_run
+
+.. doxygenfunction:: am_ao_step
 
 .. doxygenfunction:: am_ao_event_queue_is_empty
 

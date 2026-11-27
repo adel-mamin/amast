@@ -94,18 +94,14 @@ int main(void) {
 
     start_ao();
 
-    while (am_ao_get_count() > 0) {
-        am_ao_run_all();
-    }
+    am_ao_run();
 
     am_hsm_init(&me->hsm, test_init);
     am_ao_init_hsm(&me->ao, &me->hsm);
 
     start_ao();
 
-    while (am_ao_get_count() > 0) {
-        am_ao_run_all();
-    }
+    am_ao_run();
 
     am_ao_global_deinit();
     am_pal_global_deinit();

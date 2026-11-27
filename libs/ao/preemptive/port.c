@@ -86,17 +86,17 @@ static void am_ao_task(void* param) {
     }
 }
 
-bool am_ao_run_all(void) {
-    struct am_ao_state* me = &am_ao_state_;
-    bool init_complete = AM_ATOMIC_EXCHANGE_N(&me->init_complete, true);
-    if (!init_complete) {
-        am_task_init_wait();
+void am_ao_run(void) {
+    while (am_ao_get_count() > 0) {
+        struct am_ao_state* me = &am_ao_state_;
+        bool init_complete = AM_ATOMIC_EXCHANGE_N(&me->init_complete, true);
+        if (!init_complete) {
+            am_task_init_wait();
+        }
+
+        /* wait all AOs to complete */
+        am_task_wait(AM_TASK_ID_MAIN);
     }
-
-    /* wait all AOs to complete */
-    am_task_wait(AM_TASK_ID_MAIN);
-
-    return false;
 }
 
 void am_ao_start(struct am_ao* ao, struct am_ao_cfg* cfg) {
