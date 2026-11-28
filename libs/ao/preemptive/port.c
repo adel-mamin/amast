@@ -70,31 +70,68 @@ static void am_ao_task_init(void* param) {
     }
 }
 
+static void am_ao_stop_(struct am_ao* ao) {
+    struct am_ao_state* me = &am_ao_state_;
+
+    AM_ASSERT(ao->stop_requested);
+    AM_ASSERT(AM_ATOMIC_LOAD_N(&me->aos_count));
+
+    am_event_async_unregister(&me->async_hub, ao->prio.ao);
+
+    me->crit_enter();
+
+    am_event_queue_flush_unsafe(&ao->event_queue);
+    am_event_queue_deinit(&ao->event_queue);
+
+    me->aos[ao->prio.ao] = NULL;
+
+    ao->init_called = false;
+    AM_ATOMIC_STORE_N(&ao->running, false);
+
+    if (1 == AM_ATOMIC_FETCH_ADD(&me->aos_count, -1)) {
+        am_task_notify(/*task_id=*/AM_TASK_ID_MAIN);
+    }
+
+    me->crit_exit();
+}
+
 static void am_ao_task(void* param) {
     AM_ASSERT(param);
 
-    struct am_ao* ao = (struct am_ao*)param;
+    struct am_ao* ao = param;
 
-    while (AM_LIKELY(ao->running)) {
+    while (AM_LIKELY(!ao->stop_requested)) {
         while (am_event_queue_is_empty(&ao->event_queue)) {
             am_task_wait(ao->task_id);
         }
+
         enum am_rc rc = am_event_queue_pop_front_with_cb(
             &ao->event_queue, am_ao_handle, ao
         );
         AM_ASSERT(AM_RC_OK == rc);
     }
+
+    am_ao_stop_(ao);
 }
 
 void am_ao_run(void) {
-    while (am_ao_get_count() > 0) {
-        struct am_ao_state* me = &am_ao_state_;
-        bool init_complete = AM_ATOMIC_EXCHANGE_N(&me->init_complete, true);
-        if (!init_complete) {
-            am_task_init_wait();
+    struct am_ao_state* me = &am_ao_state_;
+
+    bool init_complete = AM_ATOMIC_EXCHANGE_N(&me->init_complete, true);
+
+    if (!init_complete) {
+        am_task_init_wait();
+    }
+
+    for (;;) {
+        me->crit_enter();
+        bool stopped = (0 == AM_ATOMIC_LOAD_N(&me->aos_count));
+        me->crit_exit();
+
+        if (stopped) {
+            break;
         }
 
-        /* wait all AOs to complete */
         am_task_wait(AM_TASK_ID_MAIN);
     }
 }
@@ -131,38 +168,6 @@ void am_ao_start(struct am_ao* ao, struct am_ao_cfg* cfg) {
         .flags = AM_TASK_FLAG_DETACH | AM_TASK_FLAG_WAIT_INIT,
         .arg = ao
     });
-}
-
-void am_ao_stop(struct am_ao* ao) {
-    AM_ASSERT(ao);
-    AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
-    struct am_ao_state* me = &am_ao_state_;
-    AM_ASSERT(AM_ATOMIC_LOAD_N(&me->init_complete));
-
-    int task_id = am_task_get_own_id();
-    AM_ASSERT(task_id == ao->task_id); /* check API description */
-    AM_ASSERT(AM_ATOMIC_LOAD_N(&me->aos_count));
-
-    am_event_async_unregister(&me->async_hub, ao->prio.ao);
-
-    me->crit_enter();
-
-    am_event_queue_flush_unsafe(&ao->event_queue);
-    am_event_queue_deinit(&ao->event_queue);
-
-    me->aos[ao->prio.ao] = NULL;
-
-    AM_ATOMIC_FETCH_ADD(&me->aos_count, -1);
-
-    ao->init_called = false;
-
-    AM_ATOMIC_STORE_N(&ao->running, false);
-
-    me->crit_exit();
-
-    if (0 == AM_ATOMIC_LOAD_N(&me->aos_count)) {
-        am_task_notify(/*task_id=*/AM_TASK_ID_MAIN);
-    }
 }
 
 void am_ao_notify(const struct am_ao* ao) {

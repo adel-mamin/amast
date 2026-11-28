@@ -309,3 +309,12 @@ void am_ao_timer_tick(struct am_timer* timer) {
         }
     }
 }
+
+void am_ao_stop(struct am_ao* ao) {
+    AM_ASSERT(ao);
+    AM_ASSERT(AM_ATOMIC_LOAD_N(&ao->running));
+    AM_ASSERT(am_task_get_own_id() == ao->task_id);
+    AM_ASSERT(am_ao_get_own_prio() == ao->prio.ao);
+
+    ao->stop_requested = true;
+}

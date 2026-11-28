@@ -121,6 +121,8 @@ struct am_ao {
     bool init_called;
     /** am_ao_start() call was made for the AO */
     bool running;
+    /** am_ao_stop() call was made for the AO */
+    bool stop_requested;
 };
 
 /** Active object library state configuration. */
@@ -525,11 +527,16 @@ struct am_ao_cfg {
 void am_ao_start(struct am_ao* ao, struct am_ao_cfg* cfg);
 
 /**
- * Stop active object.
+ * Request active object termination.
  *
  * Can only be called by the active object itself.
- * The active object is expected to release all allocated
- * resources before calling this function.
+ *
+ * The active object is stopped after the current run-to-completion
+ * step is completed. No further events are dispatched to the active
+ * object after that step.
+ *
+ * The active object's pending events are released and its event
+ * queue is deinitialized.
  *
  * @param ao  the active object to stop
  */

@@ -61,6 +61,30 @@ static bool am_ao_handle(void* ctx, const struct am_event* event) {
     return true;
 }
 
+static void am_ao_stop_(struct am_ao* ao) {
+    struct am_ao_state* me = &am_ao_state_;
+
+    AM_ASSERT(ao->stop_requested);
+    AM_ASSERT(me->aos_count);
+
+    am_event_async_unregister(&me->async_hub, ao->prio.ao);
+
+    me->crit_enter();
+
+    am_event_queue_flush_unsafe(&ao->event_queue);
+    am_event_queue_deinit(&ao->event_queue);
+    am_bit_u64_clear(&am_ready_aos_, ao->prio.ao);
+
+    me->aos[ao->prio.ao] = NULL;
+
+    ao->init_called = false;
+    AM_ATOMIC_STORE_N(&ao->running, false);
+
+    --me->aos_count;
+
+    me->crit_exit();
+}
+
 bool am_ao_step(void) {
     struct am_ao_state* me = &am_ao_state_;
 
@@ -104,6 +128,10 @@ bool am_ao_step(void) {
             &ao->event_queue, am_ao_handle, ao
         );
         AM_ASSERT(AM_RC_OK == rc);
+
+        if (ao->stop_requested) {
+            am_ao_stop_(ao);
+        }
 
         dispatched = true;
     } while (!dispatched);
@@ -150,31 +178,10 @@ void am_ao_start(struct am_ao* ao, struct am_ao_cfg* cfg) {
         ao->user_init_handler(ao->ctx, cfg->init_event);
     }
     me->running_ao_prio = AM_AO_PRIO_INVALID;
-}
 
-void am_ao_stop(struct am_ao* ao) {
-    AM_ASSERT(ao);
-    AM_ASSERT(AM_AO_PRIO_IS_VALID(ao->prio));
-    int task_id = am_task_get_own_id();
-    AM_ASSERT(task_id == ao->task_id); /* check API description */
-    struct am_ao_state* me = &am_ao_state_;
-    AM_ASSERT(me->aos_count);
-
-    am_event_async_unregister(&me->async_hub, ao->prio.ao);
-
-    me->crit_enter();
-
-    am_event_queue_flush_unsafe(&ao->event_queue);
-    am_event_queue_deinit(&ao->event_queue);
-    am_bit_u64_clear(&am_ready_aos_, ao->prio.ao);
-
-    me->aos[ao->prio.ao] = NULL;
-    --me->aos_count;
-    ao->init_called = false;
-
-    AM_ATOMIC_STORE_N(&ao->running, false);
-
-    me->crit_exit();
+    if (ao->stop_requested) {
+        am_ao_stop_(ao);
+    }
 }
 
 void am_ao_notify_unsafe(const struct am_ao* ao) {
