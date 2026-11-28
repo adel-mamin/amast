@@ -163,7 +163,7 @@ static enum am_rc coro_blinking_green(struct coro* me) {
 }
 
 static enum am_rc coro_regular_(struct coro* me) {
-    AM_CORO_BEGIN(&me->coro_blinking_green);
+    AM_CORO_BEGIN(&me->coro);
 
     for (;;) {
         /* red */
