@@ -68,7 +68,9 @@ static void am_ao_stop_(struct am_ao* ao) {
     AM_ASSERT(me->aos_count);
 
     if (ao->user_deinit_handler) {
+        me->running_ao_prio = AM_AO_PRIO_INVALID;
         ao->user_deinit_handler(ao->ctx);
+        me->running_ao_prio = AM_AO_PRIO_INVALID;
     }
 
     am_event_async_unregister(&me->async_hub, ao->prio.ao);
