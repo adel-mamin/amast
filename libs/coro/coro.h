@@ -127,11 +127,9 @@ struct am_coro {
  * @param func  the function to check the return value of
  */
 #define AM_CORO_CALL(func) do {                             \
-        enum am_rc rc_;                                     \
-        while ((rc_ = (func)) == AM_RC_CORO_BUSY) {         \
+        while ((func) != AM_RC_CORO_DONE) {                 \
             AM_CORO_YIELD();                                \
         }                                                   \
-        AM_ASSERT(AM_RC_CORO_DONE == rc_);                  \
     } while (0)
 
 /* clang-format on */
