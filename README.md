@@ -271,7 +271,7 @@ It demonstrates:
 #include "amast_config.h"
 #include "amast.h"
 
-enum { EVT_SWITCH_MODE = AM_EVT_USER, EVT_PUB_MAX, EVT_TIMER };
+enum { EVT_SWITCH_MODE = AM_EVT_USER, EVT_QUIT, EVT_PUB_MAX, EVT_TIMER };
 
 struct app {
     struct am_fsm fsm;
@@ -300,19 +300,26 @@ static enum am_rc app_state_b(struct am_fsm* fsm, const struct am_event *event) 
     switch (event->id) {
     case AM_EVT_ENTRY:
         am_printf("state B\n");
-        am_timer_arm_once(me->timer, &me->timeout.event, 1000);
+        am_timer_arm(me->timer, &me->timeout.event, 1000, 1000);
         return am_fsm_handled(fsm);
 
     case AM_EVT_EXIT:
+        am_printf("exit\n");
         am_timer_disarm(me->timer, &me->timeout.event);
         am_ao_stop(&me->ao);
         return am_fsm_handled(fsm);
 
     case EVT_SWITCH_MODE:
+        am_printf("switch mode\n");
         return am_fsm_tran(fsm, app_state_a);
 
     case EVT_TIMER:
         am_printf("timer\n");
+        return am_fsm_handled(fsm);
+
+    case EVT_QUIT:
+        am_printf("quit\n");
+        am_ao_stop(&me->ao);
         return am_fsm_handled(fsm);
     }
     return am_fsm_handled(fsm);
@@ -321,6 +328,7 @@ static enum am_rc app_state_b(struct am_fsm* fsm, const struct am_event *event) 
 static enum am_rc app_initial(struct am_fsm* fsm, const struct am_event *event) {
     struct app* me = AM_CONTAINER_OF(fsm, struct app, fsm);
     am_ao_subscribe(&me->ao, EVT_SWITCH_MODE);
+    am_ao_subscribe(&me->ao, EVT_QUIT);
     return am_fsm_tran(fsm, app_state_a);
 }
 
@@ -332,14 +340,20 @@ static void app_init(struct app *me, struct am_timer *timer) {
     me->timeout = am_timer_event_create_x(EVT_TIMER, &me->ao);
 }
 
-static void input_task(void *param) {
+static void input_task(void* param) {
     int ch;
     while ((ch = getc(stdin)) != EOF) {
+        if ('q' == ch) {
+            break;
+        }
         if ('\n' == ch) {
             static struct am_event event = {.id = EVT_SWITCH_MODE};
             am_ao_publish(&event);
         }
     }
+
+    static struct am_event event = {.id = EVT_QUIT};
+    am_ao_publish(&event);
 }
 
 int main(void) {
