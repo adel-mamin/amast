@@ -143,9 +143,7 @@ void am_ao_stop(struct am_ao* ao) {
     AM_ASSERT(task_id == ao->task_id); /* check API description */
     AM_ASSERT(AM_ATOMIC_LOAD_N(&me->aos_count));
 
-    if (am_event_async_is_pubsub_enabled(&me->async_hub)) {
-        am_ao_unsubscribe_all(ao);
-    }
+    am_event_async_unregister(&me->async_hub, ao->prio.ao);
 
     me->crit_enter();
 
@@ -161,8 +159,6 @@ void am_ao_stop(struct am_ao* ao) {
     AM_ATOMIC_STORE_N(&ao->running, false);
 
     me->crit_exit();
-
-    am_event_async_unregister(&me->async_hub, ao->prio.ao);
 
     if (0 == AM_ATOMIC_LOAD_N(&me->aos_count)) {
         am_task_notify(/*task_id=*/AM_TASK_ID_MAIN);

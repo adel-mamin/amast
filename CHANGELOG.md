@@ -27,6 +27,10 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Rename `am_task_run_all()` into `am_task_run()`
 - Rework `am_timer_init()`
 
+### Fixed
+
+- Unregister the asynchronous event handler before destroying the AO event queue
+
 ## v0.17.6 - 22-November-2026
 
 ### Added

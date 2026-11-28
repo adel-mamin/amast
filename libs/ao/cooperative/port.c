@@ -160,7 +160,7 @@ void am_ao_stop(struct am_ao* ao) {
     struct am_ao_state* me = &am_ao_state_;
     AM_ASSERT(me->aos_count);
 
-    am_event_async_unsubscribe_all(&me->async_hub, ao->prio.ao);
+    am_event_async_unregister(&me->async_hub, ao->prio.ao);
 
     me->crit_enter();
 
@@ -175,8 +175,6 @@ void am_ao_stop(struct am_ao* ao) {
     AM_ATOMIC_STORE_N(&ao->running, false);
 
     me->crit_exit();
-
-    am_event_async_unregister(&me->async_hub, ao->prio.ao);
 }
 
 void am_ao_notify_unsafe(const struct am_ao* ao) {
