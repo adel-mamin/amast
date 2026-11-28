@@ -40,6 +40,15 @@
 #include "event/event_common.h"
 #include "slist/slist.h"
 
+/** Timer configuration. */
+struct am_timer_cfg {
+    /** Enter critical section. */
+    void (*crit_enter)(void);
+
+    /** Exit critical section. */
+    void (*crit_exit)(void);
+};
+
 /** Timer state. */
 struct am_timer {
     /** A list of armed timer events. */
@@ -64,8 +73,8 @@ struct am_timer {
     /** Armed events iterator. */
     struct am_slist_iterator it;
 
-    void (*crit_enter)(void); /**< Enter critical section. */
-    void (*crit_exit)(void);  /**< Exit critical section. */
+    /** Timer configuration. */
+    struct am_timer_cfg cfg;
 
     /** Safety net to catch a missing am_timer_init() call. */
     uint8_t init_called : 1;
@@ -115,9 +124,20 @@ extern "C" {
 /**
  * Timer state initialization.
  *
+ * Both critical section callbacks must be either NULL or non-NULL.
+ *
+ * If @p cfg is NULL or both callbacks are NULL, no internal
+ * synchronization is performed.
+ *
+ * The critical section callbacks must be provided if the timer
+ * state is accessed concurrently without external synchronization.
+ *
+ * The configuration is not retained by the timer.
+ *
  * @param timer  the timer state
+ * @param cfg    the timer configuration or NULL
  */
-void am_timer_init(struct am_timer* timer);
+void am_timer_init(struct am_timer* timer, const struct am_timer_cfg* cfg);
 
 /**
  * Timer event constructor.
@@ -146,17 +166,6 @@ static inline struct am_timer_event_x am_timer_event_create_x(
     e.ctx = ctx;
     return e;
 }
-
-/**
- * Register callbacks with timer state.
- *
- * @param timer  the timer state
- * @param crit_enter  enter critical section
- * @param crit_exit  exit critical section
- */
-void am_timer_register_cbs(
-    struct am_timer* timer, void (*crit_enter)(void), void (*crit_exit)(void)
-);
 
 /**
  * Initialize tick iterator.

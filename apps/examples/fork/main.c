@@ -221,8 +221,12 @@ int main(int argc, const char* argv[]) {
     }
 
     struct am_timer timer;
-    am_timer_init(&timer);
-    am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
+    am_timer_init(
+        &timer,
+        &(struct am_timer_cfg){
+            .crit_enter = am_crit_enter, .crit_exit = am_crit_exit
+        }
+    );
 
     struct am_event_alloc alloc;
     am_event_alloc_init(&alloc);

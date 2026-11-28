@@ -38,28 +38,23 @@
 
 static void timer_crit_stub(void) {}
 
-void am_timer_init(struct am_timer* timer) {
+void am_timer_init(struct am_timer* timer, const struct am_timer_cfg* cfg) {
     AM_ASSERT(timer);
 
     memset(timer, 0, sizeof(*timer));
-    timer->crit_enter = timer->crit_exit = timer_crit_stub;
+
+    if (cfg) {
+        AM_ASSERT((cfg->crit_enter == NULL) == (cfg->crit_exit == NULL));
+        timer->cfg = *cfg;
+    } else {
+        timer->cfg.crit_enter = timer_crit_stub;
+        timer->cfg.crit_exit = timer_crit_stub;
+    }
 
     am_slist_init(&timer->events);
     am_slist_init(&timer->events_pend);
 
     timer->init_called = 1;
-}
-
-void am_timer_register_cbs(
-    struct am_timer* timer, void (*crit_enter)(void), void (*crit_exit)(void)
-) {
-    AM_ASSERT(timer);
-    AM_ASSERT(timer->init_called);
-    AM_ASSERT(crit_enter);
-    AM_ASSERT(crit_exit);
-
-    timer->crit_enter = crit_enter;
-    timer->crit_exit = crit_exit;
 }
 
 void am_timer_arm(
@@ -74,7 +69,7 @@ void am_timer_arm(
     AM_ASSERT((event->owner == NULL) || (event->owner == timer));
     AM_ASSERT(interval < UINT32_MAX / 2);
 
-    timer->crit_enter();
+    timer->cfg.crit_enter();
 
     event->oneshot_ticks = AM_MAX(ticks, 1);
     event->interval_ticks = interval & (uint32_t)0x7FFFFFFF;
@@ -86,7 +81,7 @@ void am_timer_arm(
         ++timer->nevents.pend;
     }
 
-    timer->crit_exit();
+    timer->cfg.crit_exit();
 }
 
 bool am_timer_disarm(struct am_timer* timer, struct am_timer_event* event) {
@@ -95,7 +90,7 @@ bool am_timer_disarm(struct am_timer* timer, struct am_timer_event* event) {
     AM_ASSERT(event);
     AM_ASSERT((event->owner == NULL) || (event->owner == timer));
 
-    timer->crit_enter();
+    timer->cfg.crit_enter();
 
     bool was_armed = (event->owner == timer) && !event->disarm_pending;
     if (event->owner == timer) {
@@ -103,7 +98,7 @@ bool am_timer_disarm(struct am_timer* timer, struct am_timer_event* event) {
         event->disarm_pending = 1;
     }
 
-    timer->crit_exit();
+    timer->cfg.crit_exit();
 
     return was_armed;
 }
@@ -116,13 +111,13 @@ bool am_timer_is_armed(
     AM_ASSERT(event);
     AM_ASSERT((event->owner == NULL) || (event->owner == timer));
 
-    timer->crit_enter();
+    timer->cfg.crit_enter();
 
     bool is_linked = am_slist_item_is_linked(&event->item);
     bool armed = is_linked && (event->owner == timer);
     bool disarm_pending = event->disarm_pending;
 
-    timer->crit_exit();
+    timer->cfg.crit_exit();
 
     return armed && !disarm_pending;
 }
@@ -133,7 +128,7 @@ void am_timer_tick_iterator_init(struct am_timer* timer) {
 
     am_slist_iterator_init(&timer->events, &timer->it);
 
-    timer->crit_enter();
+    timer->cfg.crit_enter();
 
     if (!am_slist_is_empty(&timer->events_pend)) {
         am_slist_append(&timer->events, &timer->events_pend);
@@ -141,14 +136,14 @@ void am_timer_tick_iterator_init(struct am_timer* timer) {
         timer->nevents.pend = 0;
     }
 
-    timer->crit_exit();
+    timer->cfg.crit_exit();
 }
 
 struct am_timer_event* am_timer_tick_iterator_next(struct am_timer* timer) {
     AM_ASSERT(timer);
     AM_ASSERT(timer->init_called);
 
-    timer->crit_enter();
+    timer->cfg.crit_enter();
 
     int nevents = timer->nevents.running;
 
@@ -187,7 +182,7 @@ struct am_timer_event* am_timer_tick_iterator_next(struct am_timer* timer) {
         break;
     }
 
-    timer->crit_exit();
+    timer->cfg.crit_exit();
 
     return event;
 }
@@ -210,9 +205,9 @@ uint32_t am_timer_get_ticks(
     AM_ASSERT(event);
     AM_ASSERT((event->owner == NULL) || (event->owner == timer));
 
-    timer->crit_enter();
+    timer->cfg.crit_enter();
     uint32_t ticks = (event->owner == timer) ? event->oneshot_ticks : 0;
-    timer->crit_exit();
+    timer->cfg.crit_exit();
 
     return ticks;
 }

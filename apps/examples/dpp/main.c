@@ -115,8 +115,12 @@ int main(void) {
     am_event_alloc_init(&alloc);
 
     struct am_timer timer;
-    am_timer_init(&timer);
-    am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
+    am_timer_init(
+        &timer,
+        &(struct am_timer_cfg){
+            .crit_enter = am_crit_enter, .crit_exit = am_crit_exit
+        }
+    );
 
     char event_pool[3 * PHILO_NUM][128] AM_ALIGNED(AM_ALIGN_MAX);
     am_event_alloc_add_pool(

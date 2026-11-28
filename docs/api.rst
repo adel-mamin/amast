@@ -314,6 +314,8 @@ Timer API documentation.
 
 The source code of the corresponding header file is in `timer.h <https://github.com/adel-mamin/amast/blob/main/libs/timer/timer.h>`_.
 
+.. doxygenstruct:: am_timer_cfg
+
 .. doxygenstruct:: am_timer
 
 .. doxygenstruct:: am_timer_event
@@ -325,8 +327,6 @@ The source code of the corresponding header file is in `timer.h <https://github.
 .. doxygenfunction:: am_timer_event_create
 
 .. doxygenfunction:: am_timer_event_create_x
-
-.. doxygenfunction:: am_timer_register_cbs
 
 .. doxygenfunction:: am_timer_tick_iterator_init
 

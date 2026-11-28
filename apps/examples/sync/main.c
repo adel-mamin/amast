@@ -80,7 +80,7 @@ int main(void) {
     am_pal_global_init(/*arg=*/NULL);
 
     struct am_timer timer;
-    am_timer_init(&timer);
+    am_timer_init(&timer, /*cfg=*/NULL);
 
     struct am_event_sync_hub hub;
     struct am_event_subscription subscriptions[AM_EVT_SUB_COUNT(EVT_PUB_MAX)];

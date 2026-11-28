@@ -44,8 +44,12 @@ static void test_ringbuf_threading(void) {
     am_pal_global_init(/*arg=*/NULL);
 
     struct am_timer timer;
-    am_timer_init(&timer);
-    am_timer_register_cbs(&timer, am_crit_enter, am_crit_exit);
+    am_timer_init(
+        &timer,
+        &(struct am_timer_cfg){
+            .crit_enter = am_crit_enter, .crit_exit = am_crit_exit
+        }
+    );
 
     uint8_t buf[9];
 
