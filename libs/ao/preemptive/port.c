@@ -76,6 +76,10 @@ static void am_ao_stop_(struct am_ao* ao) {
     AM_ASSERT(ao->stop_requested);
     AM_ASSERT(AM_ATOMIC_LOAD_N(&me->aos_count));
 
+    if (ao->user_deinit_handler) {
+        ao->user_deinit_handler(ao->ctx);
+    }
+
     am_event_async_unregister(&me->async_hub, ao->prio.ao);
 
     me->crit_enter();
@@ -157,6 +161,8 @@ void am_ao_start(struct am_ao* ao, struct am_ao_cfg* cfg) {
     me->aos[cfg->prio.ao] = ao;
 
     AM_ATOMIC_FETCH_ADD(&me->aos_count, 1);
+
+    ao->stop_requested = false;
 
     ao->task_id = am_task_start(&(struct am_task_cfg){
         .name = cfg->name,

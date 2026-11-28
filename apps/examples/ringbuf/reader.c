@@ -104,7 +104,7 @@ void ringbuf_reader_init(
     struct ringbuf_reader* me = &m_ringbuf_reader;
     memset(me, 0, sizeof(*me));
     me->len = 1;
-    am_ao_init(&me->ao, init, dispatch, me);
+    am_ao_init(&me->ao, init, dispatch, /*deinit_handler=*/NULL, me);
     me->ringbuf = ringbuf;
     me->timer = timer;
     me->data = data;

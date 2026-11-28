@@ -67,6 +67,10 @@ static void am_ao_stop_(struct am_ao* ao) {
     AM_ASSERT(ao->stop_requested);
     AM_ASSERT(me->aos_count);
 
+    if (ao->user_deinit_handler) {
+        ao->user_deinit_handler(ao->ctx);
+    }
+
     am_event_async_unregister(&me->async_hub, ao->prio.ao);
 
     me->crit_enter();
@@ -173,6 +177,8 @@ void am_ao_start(struct am_ao* ao, struct am_ao_cfg* cfg) {
     am_event_async_register_with_id(
         &me->async_hub, am_ao_event_enqueue_unsafe, ao, ao->prio.ao
     );
+
+    ao->stop_requested = false;
 
     if (ao->user_init_handler) {
         ao->user_init_handler(ao->ctx, cfg->init_event);

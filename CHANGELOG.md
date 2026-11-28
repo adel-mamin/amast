@@ -26,7 +26,7 @@ and this project adheres to [0-based versioning](https://0ver.org/).
 - Rename `am_ao_run_all()` into `am_ao_run()`.
 - Rename `am_task_run_all()` into `am_task_run()`
 - Rework `am_timer_init()`
-- Rework `am_ao_stop()`
+- Rework `am_ao_stop()` and AO stop sequence
 
 ### Fixed
 

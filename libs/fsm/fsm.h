@@ -206,6 +206,13 @@ void am_fsm_init(struct am_fsm* fsm, am_fsm_state_fn init);
 void am_fsm_deinit(struct am_fsm* fsm);
 
 /**
+ * Callback-compatible wrapper around am_fsm_deinit().
+ *
+ * @param fsm  FSM object passed as a void pointer.
+ */
+static inline void am_fsm_deinit_cb(void* fsm) { am_fsm_deinit(fsm); }
+
+/**
  * Perform an FSM initial transition.
  *
  * Calls the initial state handler set by am_fsm_init() with @p init_event and

@@ -96,7 +96,7 @@ void ringbuf_writer_init(
     struct ringbuf_writer* me = &m_ringbuf_writer;
     memset(me, 0, sizeof(*me));
     me->len = 1;
-    am_ao_init(&me->ao, init, dispatch, me);
+    am_ao_init(&me->ao, init, dispatch, /*deinit_handler=*/NULL, me);
     me->ringbuf = ringbuf;
     me->data = data;
     me->datalen = len;

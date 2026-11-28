@@ -437,6 +437,13 @@ void am_hsm_init(struct am_hsm* hsm, am_hsm_state_fn init);
 void am_hsm_deinit(struct am_hsm* hsm);
 
 /**
+ * Callback-compatible wrapper around am_hsm_deinit().
+ *
+ * @param hsm  HSM object passed as a void pointer.
+ */
+static inline void am_hsm_deinit_cb(void* hsm) { am_hsm_deinit(hsm); }
+
+/**
  * Perform an HSM initial transition.
  *
  * Calls the initial state handler set by am_hsm_init() with @p init_event and

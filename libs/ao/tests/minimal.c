@@ -128,18 +128,11 @@ int main(void) {
         .crit_exit = am_crit_exit,
     });
 
-    am_ao_init(
-        &m_loopback.ao, am_hsm_start_cb, am_hsm_dispatch_cb, &m_loopback.hsm
-    );
     am_hsm_init(&m_loopback.hsm, loopback_init);
+    am_ao_init_hsm(&m_loopback.ao, &m_loopback.hsm);
 
-    am_ao_init(
-        &m_loopback_test.ao,
-        am_hsm_start_cb,
-        am_hsm_dispatch_cb,
-        &m_loopback_test.hsm
-    );
     am_hsm_init(&m_loopback_test.hsm, loopback_test_init);
+    am_ao_init_hsm(&m_loopback_test.ao, &m_loopback_test.hsm);
 
     am_ao_start(
         &m_loopback.ao,

@@ -101,13 +101,15 @@ struct am_ao_prio {
     unsigned task : 8;
 };
 
-/** Active object event handler */
-typedef void (*am_ao_fn)(void* ctx, const struct am_event* event);
-
 /** The active object. */
 struct am_ao {
-    am_ao_fn user_init_handler;        /**< user init event handler */
-    am_ao_fn user_event_handler;       /**< user event handler */
+    /** user init event handler */
+    void (*user_init_handler)(void* ctx, const struct am_event* event);
+    /** user event handler */
+    void (*user_event_handler)(void* ctx, const struct am_event* event);
+    /** User deinitialization handler. */
+    void (*user_deinit_handler)(void* ctx);
+
     void* ctx;                         /**< the event handler context */
     const char* name;                  /**< human readable name of AO */
     struct am_event_queue event_queue; /**< event queue */
@@ -427,21 +429,29 @@ void am_ao_post_lifo(struct am_ao* ao, const struct am_event* event);
 /**
  * Active object initialization.
  *
- * @param ao             the active object to initialize
- * @param init_handler   the init event handler
- *                       The init event handler is run once on the start of
- *                       the active object, when the event queue is already
- *                       initialized. The init event handler can post events
- *                       to itself. The event queues of other active objects
- *                       are not guaranteed to be initialized when the init
- *                       event handler is called. Therefore the init event
- *                       handler is not allowed to post/publish events
- *                       to other active objects.
- * @param event_handler  the event handler
- * @param ctx            the event handler context
+ * @param ao              the active object to initialize
+ * @param init_handler    the init event handler
+ *                        The init event handler is run once on the start of
+ *                        the active object, when the event queue is already
+ *                        initialized. The init event handler can post events
+ *                        to itself. The event queues of other active objects
+ *                        are not guaranteed to be initialized when the init
+ *                        event handler is called. Therefore the init event
+ *                        handler is not allowed to post/publish events
+ *                        to other active objects.
+ * @param event_handler   the event handler
+ * @param deinit_handler  the deinitialization handler or NULL
+ *                        Called in the active object's execution context
+ *                        after its final run-to-completion step and before
+ *                        its event queue is deinitialized.
+ * @param ctx             the event handler context
  */
 void am_ao_init(
-    struct am_ao* ao, am_ao_fn init_handler, am_ao_fn event_handler, void* ctx
+    struct am_ao* ao,
+    void (*init_handler)(void* ctx, const struct am_event* event),
+    void (*event_handler)(void* ctx, const struct am_event* event),
+    void (*deinit_handler)(void* ctx),
+    void* ctx
 );
 
 /**
@@ -462,7 +472,7 @@ void am_ao_init(
  * @param fsm  the finite state machine
  */
 static inline void am_ao_init_fsm(struct am_ao* ao, struct am_fsm* fsm) {
-    am_ao_init(ao, am_fsm_start_cb, am_fsm_dispatch_cb, fsm);
+    am_ao_init(ao, am_fsm_start_cb, am_fsm_dispatch_cb, am_fsm_deinit_cb, fsm);
 }
 
 /**
@@ -483,7 +493,7 @@ static inline void am_ao_init_fsm(struct am_ao* ao, struct am_fsm* fsm) {
  * @param hsm  the hierarchical state machine
  */
 static inline void am_ao_init_hsm(struct am_ao* ao, struct am_hsm* hsm) {
-    am_ao_init(ao, am_hsm_start_cb, am_hsm_dispatch_cb, hsm);
+    am_ao_init(ao, am_hsm_start_cb, am_hsm_dispatch_cb, am_hsm_deinit_cb, hsm);
 }
 
 /** AO configuration */
@@ -535,8 +545,12 @@ void am_ao_start(struct am_ao* ao, struct am_ao_cfg* cfg);
  * step is completed. No further events are dispatched to the active
  * object after that step.
  *
- * The active object's pending events are released and its event
- * queue is deinitialized.
+ * The deinitialization handler, if provided, is called in the
+ * active object's execution context.
+ *
+ * The active object is then unsubscribed from all events,
+ * its pending events are released and its event queue is
+ * deinitialized.
  *
  * @param ao  the active object to stop
  */

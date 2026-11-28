@@ -305,6 +305,7 @@ static enum am_rc app_state_b(struct am_fsm* fsm, const struct am_event *event) 
 
     case AM_EVT_EXIT:
         am_timer_disarm(me->timer, &me->timeout.event);
+        am_ao_stop(&me->ao);
         return am_fsm_handled(fsm);
 
     case EVT_SWITCH_MODE:
@@ -312,7 +313,6 @@ static enum am_rc app_state_b(struct am_fsm* fsm, const struct am_event *event) 
 
     case EVT_TIMER:
         am_printf("timer\n");
-        am_timer_arm_once(me->timer, &me->timeout.event, 1000);
         return am_fsm_handled(fsm);
     }
     return am_fsm_handled(fsm);

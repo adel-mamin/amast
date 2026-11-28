@@ -153,7 +153,11 @@ void am_ao_unsubscribe_all(const struct am_ao* ao) {
 }
 
 void am_ao_init(
-    struct am_ao* ao, am_ao_fn init_handler, am_ao_fn event_handler, void* ctx
+    struct am_ao* ao,
+    void (*init_handler)(void* ctx, const struct am_event* event),
+    void (*event_handler)(void* ctx, const struct am_event* event),
+    void (*deinit_handler)(void* ctx),
+    void* ctx
 ) {
     AM_ASSERT(ao);
     AM_ASSERT(event_handler);
@@ -162,6 +166,7 @@ void am_ao_init(
     memset(ao, 0, sizeof(*ao));
     ao->user_init_handler = init_handler;
     ao->user_event_handler = event_handler;
+    ao->user_deinit_handler = deinit_handler;
     ao->ctx = ctx;
     ao->init_called = true;
 }
